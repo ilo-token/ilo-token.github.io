@@ -2,10 +2,22 @@
 
 class ParseError extends Error {}
 
-function parseSubject() {
+/**
+ * parses phrase
+ */
+function parsePhrase(array) {
   throw new Error("todo");
 }
-function parsePredicate() {
+/**
+ * parses subject which may have "en" in it
+ */
+function parseSubject(array) {
+  throw new Error("todo");
+}
+/**
+ * parses predicate after "li" or "o", also handles multiple "li"
+ */
+function parsePredicate(array) {
   throw new Error("todo");
 }
 /**
@@ -14,20 +26,27 @@ function parsePredicate() {
 function parseClause(array) {
   if (array.length > 1 && (array[0] === "mi" || array[0] === "sina")) {
     if (array[1] === "li") {
-      throw new ParseError('"mi/sina li (pred)" construction');
+      throw new ParseError(`"${array[0]} li (pred)" construction`);
     }
     if (array.includes("li")) {
-      throw new ParseError('"mi/sina (pred) li (pred)" construction');
+      throw new ParseError(`"${array[0]} (pred) li (pred)" construction`);
     }
+    throw new Error("todo");
   } else if (array.includes("li")) {
     if (array.includes("o")) {
       throw new ParseError('clause with both "li" and "o"');
     }
+    throw new Error("todo");
   } else if (array.includes("o")) {
     if (array.slice(array.indexOf("o")).includes("o")) {
       throw new ParseError('clause with multiple "o"');
     }
+    throw new Error("todo");
   } else {
+    parseSubject(array).map((subject) => ({
+      type: "en phrase",
+      ...subject,
+    }));
   }
 }
 /**
@@ -220,6 +239,9 @@ function parse(tokiPona) {
   const words = tokiPona
     .trim()
     .replace(/[.!?]*$/, "")
-    .split(/\s+/);
-  return parseFromWords(words);
+    .replaceAll(",", " ");
+  if (/[.!?]/.test(words)) {
+    throw new ParseError("Multiple sentences");
+  }
+  return parseFromWords(words.split(/\s+/));
 }
