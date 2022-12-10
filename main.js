@@ -1,14 +1,48 @@
 "use strict";
 
+class ParseError extends Error {}
 /**
- * parses array of toki pona words without "a" and "taso" particles in the
- * start and end of an array
+ * parses simple sentence without la
+ */
+function parseSimpleSentence(array) {
+  if (array.length > 1 && (array[0] === "mi" || array[0] === "sina")) {
+  } else if (array.includes("li") || array.includes("o")) {
+  } else {
+  }
+}
+/**
+ * parses sentence without "a" and "taso" particles in the start and end of an
+ * array
+ *
+ * if empty array is passed, this will return type of "a or taso only",
+ * intended for sentences sentences that only contains a or taso
  */
 function parsePureSentence(array) {
+  if (array.length === 0) {
+    return [
+      {
+        type: "a or taso only",
+      },
+    ];
+  }
+  const beforeLa = [];
+  let sentence = [];
+  for (let i = 0; i < array.length; i++) {
+    if (array[i] === "la") {
+      if (sentence.length === 0) {
+        throw new ParseError("no content before la");
+      }
+      beforeLa.push(sentence);
+      sentence = [];
+    }
+  }
+  if (sentence.length === 0) {
+    throw new ParseError("no content");
+  }
   throw new Error("todo");
 }
 /**
- * parses array of toki pona words
+ * parses sentence
  */
 function parseFromWords(array) {
   if (array.length === 0) {
@@ -133,7 +167,7 @@ function parseFromWords(array) {
             type: "a",
             count: 1,
           },
-          sentence,
+          ...sentence,
         })),
       ];
     }
@@ -143,7 +177,7 @@ function parseFromWords(array) {
       end: {
         type: "none",
       },
-      sentence,
+      ...sentence,
     }));
   }
 }
