@@ -1,28 +1,21 @@
 "use strict";
-function parseFromWords(array) {
-  if (array.length === 0) {
-    return [];
-  }
-  if (array[0] === "taso") {
-    return [
-      {
-        type: "taso",
-        rest: parseFromWords(array.slice(1)),
-      },
-    ];
-  }
-  if (array[0] === "a") {
-    let laugh = array.length;
-    for (let i = 1; i < array.length; i++) {
-      if (array[i] !== "a") {
-        laugh = i - 1;
-      }
-    }
-    return [
-      { type: "a", count: laugh, rest: parseFromWords(array.slice(laugh)) },
-    ];
-  }
+
+/**
+ * parses array of toki pona words without a's and taso particles in the start
+ * and end of an array
+ */
+function parsePureSentence(array) {
+  throw new Error("todo");
 }
+/**
+ * parses array of toki pona words
+ */
+function parseFromWords(array) {
+  throw new Error("todo");
+}
+/**
+ * parses toki pona sentence into multiple possible AST represented as array
+ */
 function parse(tokiPona) {
   const words = tokiPona
     .trim()
