@@ -1,12 +1,32 @@
 "use strict";
 
 class ParseError extends Error {}
+
+function parseSubject() {
+  throw new Error("todo");
+}
+function parsePredicate() {
+  throw new Error("todo");
+}
 /**
  * parses simple sentence without la
  */
-function parseSimpleSentence(array) {
+function parseClause(array) {
   if (array.length > 1 && (array[0] === "mi" || array[0] === "sina")) {
-  } else if (array.includes("li") || array.includes("o")) {
+    if (array[1] === "li") {
+      throw new ParseError('"mi/sina li (pred)" construction');
+    }
+    if (array.includes("li")) {
+      throw new ParseError('"mi/sina (pred) li (pred)" construction');
+    }
+  } else if (array.includes("li")) {
+    if (array.includes("o")) {
+      throw new ParseError('clause with both "li" and "o"');
+    }
+  } else if (array.includes("o")) {
+    if (array.slice(array.indexOf("o")).includes("o")) {
+      throw new ParseError('clause with multiple "o"');
+    }
   } else {
   }
 }
@@ -30,20 +50,28 @@ function parsePureSentence(array) {
   for (let i = 0; i < array.length; i++) {
     if (array[i] === "la") {
       if (sentence.length === 0) {
-        throw new ParseError(
-          'Having no content before "la" is considered invalid for this tool'
-        );
+        throw new ParseError('Having no content before "la"');
       }
       beforeLa.push(sentence);
       sentence = [];
     }
   }
   if (sentence.length === 0) {
-    throw new ParseError(
-      'Having no content after "la" is considered invalid for this tool'
+    throw new ParseError('Having no content after "la"');
+  }
+  let beforeLaClauses = [[]];
+  for (const clause of beforeLa) {
+    beforeLaClauses = beforeLaClauses.flatMap((prev) =>
+      parseClause(clause).map((parsedClause) => prev.concat([parsedClause]))
     );
   }
-  throw new Error("todo");
+  return parseClause(sentence).flatMap((sentence) =>
+    beforeLaClauses.map((clauses) => ({
+      type: "la",
+      beforeLa: clauses,
+      sentence,
+    }))
+  );
 }
 /**
  * parses sentence
