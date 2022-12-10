@@ -1,0 +1,19 @@
+body {
+  margin: 10px;
+  font-family: sans-serif;
+}
+textarea {
+  box-sizing: border-box;
+  width: 100%;
+}
+@media (min-width: 800px) {
+  body {
+    margin: 50px;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: black;
+    color: white;
+  }
+}
