@@ -73,6 +73,8 @@ function parsePureSentence(array) {
       }
       beforeLa.push(sentence);
       sentence = [];
+    } else {
+      sentence.push(array[i]);
     }
   }
   if (sentence.length === 0) {
