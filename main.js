@@ -30,14 +30,18 @@ function parsePureSentence(array) {
   for (let i = 0; i < array.length; i++) {
     if (array[i] === "la") {
       if (sentence.length === 0) {
-        throw new ParseError("having no content before \"la\" is invalid for this tool");
+        throw new ParseError(
+          'Having no content before "la" is considered invalid for this tool'
+        );
       }
       beforeLa.push(sentence);
       sentence = [];
     }
   }
   if (sentence.length === 0) {
-    throw new ParseError("having no content after \"la\" is invalid for this tool");
+    throw new ParseError(
+      'Having no content after "la" is considered invalid for this tool'
+    );
   }
   throw new Error("todo");
 }
