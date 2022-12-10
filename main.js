@@ -240,7 +240,7 @@ function parse(tokiPona) {
     .trim()
     .replace(/[.!?]*$/, "")
     .replaceAll(",", " ");
-  if (/[.!?]/.test(words)) {
+  if (/[:.!?]/.test(words)) {
     throw new ParseError("Multiple sentences");
   }
   return parseFromWords(words.split(/\s+/));
