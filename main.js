@@ -126,7 +126,7 @@ function parseFromWords(array) {
           end: {
             type: "none",
           },
-          sentence: [],
+          type: "a or taso only",
         },
       ];
     }
@@ -142,7 +142,7 @@ function parseFromWords(array) {
             end: {
               type: "none",
             },
-            sentence: [],
+            type: "a or taso only",
           },
         ];
       case 2:
@@ -156,7 +156,7 @@ function parseFromWords(array) {
               end: {
                 type: "none",
               },
-              sentence: [],
+              type: "a or taso only",
             },
             {
               start: {
@@ -167,7 +167,7 @@ function parseFromWords(array) {
                 type: "a",
                 count: 1,
               },
-              sentence: [],
+              type: "a or taso only",
             },
           ];
         }
