@@ -12,10 +12,13 @@
 Few assumptions has been made for this tool:
 
 - One can't doubly emphasis a word: "mi a a" is "me haha", not "_me_" nor "so so me".
-- There can't multiple consecutive "a"s in the middle of a sentence.
+- There can't be multiple consecutive "a"s in the middle of a sentence.
 - "taso" is only either a modifier or a particle, it can't be used as a head word.
 - "taso" is only a particle if it is in the start of a sentence. Else where, it must be a modifier.
 - There must be a clause before and after "la".
+- If a clause starts with "mi" or "sina", it cannot contain "li" particle.
+- A clause can't contain both "li" and "o"
+- A clause can't contain multiple "o"s
 
 Some of these assumptions may be lifted in the future.
 
