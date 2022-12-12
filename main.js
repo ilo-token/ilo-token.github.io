@@ -2,6 +2,116 @@
 
 class ParseError extends Error {}
 
+const HEADWORD = [
+  "akesi",
+  "ala",
+  "alasa",
+  "ale",
+  "anpa",
+  "ante",
+  "awen",
+  "esun",
+  "ijo",
+  "ike",
+  "ilo",
+  "insa",
+  "jaki",
+  "jan",
+  "jelo",
+  "jo",
+  "kala",
+  "kalama",
+  "kama",
+  "kasi",
+  "ken",
+  "kili",
+  "kiwen",
+  "ko",
+  "kon",
+  "kule",
+  "kulupu",
+  "kute",
+  "lape",
+  "laso",
+  "lawa",
+  "leko",
+  "len",
+  "lete",
+  "lili",
+  "linja",
+  "lipu",
+  "loje",
+  "lon",
+  "luka",
+  "lukin",
+  "lupa",
+  "ma",
+  "mama",
+  "mani",
+  "meli",
+  "mi",
+  "mije",
+  "moku",
+  "moli",
+  "monsi",
+  "mu",
+  "mun",
+  "musi",
+  "mute",
+  "nanpa",
+  "nasa",
+  "nasin",
+  "nena",
+  "ni",
+  "nimi",
+  "noka",
+  "olin",
+  "ona",
+  "open",
+  "pakala",
+  "pan",
+  "pana",
+  "pilin",
+  "pimeja",
+  "pini",
+  "pipi",
+  "poka",
+  "pona",
+  "seli",
+  "selo",
+  "seme",
+  "sewi",
+  "sijelo",
+  "sike",
+  "sin",
+  "sina",
+  "sinpin",
+  "sitelen",
+  "sona",
+  "soweli",
+  "suli",
+  "suno",
+  "supa",
+  "suwi",
+  "tan",
+  "tawa",
+  "telo",
+  "tenpo",
+  "toki",
+  "tomo",
+  "tonsi",
+  "tu",
+  "unpa",
+  "utala",
+  "walo",
+  "wan",
+  "waso",
+  "wawa",
+  "weka",
+  "wile",
+];
+const MODIFIER = HEADWORD.concat("taso");
+const PREPOSITION = ["tawa", "lon", "sama", "tan", "kepeken"];
 /**
  * parses phrase
  */
@@ -24,15 +134,16 @@ function parsePredicate(array) {
  * parses simple sentence without la
  */
 function parseClause(array) {
-  if (array.length > 1 && (array[0] === "mi" || array[0] === "sina")) {
-    if (array[1] === "li") {
-      throw new ParseError(`"${array[0]} li (pred)" construction`);
-    }
-    if (array.includes("li")) {
-      throw new ParseError(`"${array[0]} (pred) li (pred)" construction`);
-    }
+  if (
+    array.length > 1 &&
+    (array[0] === "mi" || array[0] === "sina") &&
+    !array.includes("li")
+  ) {
     throw new Error("todo");
   } else if (array.includes("li")) {
+    if (array[0] === "mi" || array[0] === "sina") {
+      throw new ParseError(`"${array[0]} li (pred)" construction`);
+    }
     if (array.includes("o")) {
       throw new ParseError('clause with both "li" and "o"');
     }
@@ -43,9 +154,9 @@ function parseClause(array) {
     }
     throw new Error("todo");
   } else {
-    parseSubject(array).map((subject) => ({
-      type: "en phrase",
-      ...subject,
+    parsePhrase(array).map((phrase) => ({
+      type: "phrase",
+      ...phrase,
     }));
   }
 }
@@ -70,6 +181,9 @@ function parsePureSentence(array) {
     if (array[i] === "la") {
       if (sentence.length === 0) {
         throw new ParseError('Having no content before "la"');
+      }
+      if (array[i + 1] === "a") {
+        throw new ParseError('"la a"');
       }
       beforeLa.push(sentence);
       sentence = [];
