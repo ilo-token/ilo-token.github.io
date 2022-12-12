@@ -7,7 +7,7 @@ An imperfect Toki Pona to English translator that translates into multiple sente
 The goals for this projects are:
 
 - Provide translation that covers most of semantics and meaning of a Toki Pona sentence, but it doesn't have to be complete. This gives translations for users to scan into to give them a feel of how broad a Toki Pona sentence can mean.
-- As much as possible, provide translations that are grammatically sound: not just correct but also feels right. For example, "red one thing" sounds off than "one red thing". Due to the difference of English and Toki Pona, the translator may fall severely short for this goal, but we can try!
+- As much as possible, provide translations that are grammatically sound: not just correct but also feels right. For example, "red one thing" sounds off than "one red thing". Due to the difference of English and Toki Pona and nuances of English, the translator may fall severely short for this goal, but we can try!
 
 ## Non-goals
 
