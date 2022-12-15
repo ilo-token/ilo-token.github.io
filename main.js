@@ -2,7 +2,20 @@
 
 class ParseError extends Error {}
 
-const HEADWORD = [
+const PARTICLES = new Set([
+  "a",
+  "ala",
+  "anu",
+  "e",
+  "en",
+  "la",
+  "li",
+  "nanpa",
+  "o",
+  "pi",
+  "taso",
+]);
+const HEADWORD = new Set([
   "akesi",
   "ala",
   "alasa",
@@ -77,6 +90,7 @@ const HEADWORD = [
   "pipi",
   "poka",
   "pona",
+  "sama",
   "seli",
   "selo",
   "seme",
@@ -109,13 +123,97 @@ const HEADWORD = [
   "wawa",
   "weka",
   "wile",
-];
-const MODIFIER = HEADWORD.concat("taso");
-const PREPOSITION = ["tawa", "lon", "sama", "tan", "kepeken"];
+]);
+const MODIFIER = new Set([...HEADWORD, "taso"]);
+const PREVERB = new Set([
+  "alasa",
+  "awen",
+  "kama",
+  "ken",
+  "lukin",
+  "open",
+  "pini",
+  "sona",
+  "wile",
+]);
+const PREPOSITION = new Set(["kepeken", "lon", "sama", "tan", "tawa"]);
+let VOCABULARY = new Set([
+  ...PARTICLES,
+  ...HEADWORD,
+  ...PREVERB,
+  ...PREPOSITION,
+]);
+
+/**
+ * parses string of modifiers
+ */
+function parseModifier(array) {
+  if (array.length === 0) {
+    return [[]];
+  }
+  let modifiers = [[]];
+  for (const [i, item] of array.entries()) {
+    if (!MODIFIER.has(item)) {
+      if (VOCABULARY.has(item)) {
+        throw new ParseError(`"${item}" as modifier`);
+      } else {
+        throw new ParseError(`"${item}"`);
+      }
+    }
+    if (item === "pi") {
+      const phrases = parsePhrase(array.slice(i + 1));
+      throw new Error("todo");
+      break;
+    }
+    if (item === "a") {
+      for (const arr of modifiers) {
+        arr[arr.length - 1].emphasized = true;
+      }
+    } else if (/^[A-Z]/.test(item)) {
+      for (const arr of modifiers) {
+        if (arr.length > 0 && arr[arr.length - 1].type === "proper word") {
+          const properWord = arr.pop();
+          arr.push({
+            type: "proper word",
+            name: properWord.name + " " + item,
+            emphasized: false,
+          });
+        } else {
+          arr.push({
+            type: "proper word",
+            name: item,
+            emphasized: false,
+          });
+        }
+      }
+    } else {
+      for (const arr of modifiers) {
+        arr.push({
+          type: "word",
+          word: item,
+          emphasized: false,
+        });
+      }
+    }
+  }
+  return modifiers;
+}
 /**
  * parses phrase
  */
 function parsePhrase(array) {
+  if (/^[A-Z]/.test(array[0])) {
+    throw new ParseError("Proper name as headword");
+  }
+  if (!HEADWORD.has(array[0])) {
+    if (VOCABULARY.has(array[0])) {
+      throw new ParseError(`"${array[0]}" as headword`);
+    } else {
+      throw new ParseError(`"${array[0]}"`);
+    }
+  }
+  if (array[array.length - 1] === "a") {
+  }
   throw new Error("todo");
 }
 /**
@@ -139,18 +237,25 @@ function parseClause(array) {
     (array[0] === "mi" || array[0] === "sina") &&
     !array.includes("li")
   ) {
+    if (array[1] === "a") {
+      if (array.length === 2) {
+        throw new ParseError(`"${array[0]} a (pred)" construction`);
+      } else {
+        throw new Error("todo");
+      }
+    }
     throw new Error("todo");
   } else if (array.includes("li")) {
-    if (array[0] === "mi" || array[0] === "sina") {
+    if ((array[0] === "mi" || array[0] === "sina") && array[1] === "li") {
       throw new ParseError(`"${array[0]} li (pred)" construction`);
     }
     if (array.includes("o")) {
-      throw new ParseError('clause with both "li" and "o"');
+      throw new ParseError('Clause with both "li" and "o"');
     }
     throw new Error("todo");
   } else if (array.includes("o")) {
     if (array.slice(array.indexOf("o")).includes("o")) {
-      throw new ParseError('clause with multiple "o"');
+      throw new ParseError('Multiple "o"s');
     }
     throw new Error("todo");
   } else {
@@ -177,8 +282,8 @@ function parsePureSentence(array) {
   }
   const beforeLa = [];
   let sentence = [];
-  for (let i = 0; i < array.length; i++) {
-    if (array[i] === "la") {
+  for (const [i, item] of array.entries()) {
+    if (item === "la") {
       if (sentence.length === 0) {
         throw new ParseError('Having no content before "la"');
       }
@@ -188,7 +293,7 @@ function parsePureSentence(array) {
       beforeLa.push(sentence);
       sentence = [];
     } else {
-      sentence.push(array[i]);
+      sentence.push(item);
     }
   }
   if (sentence.length === 0) {
@@ -221,8 +326,8 @@ function parseFromWords(array) {
   let start_slice = 0;
   if (array[0] === "a") {
     let broke = false;
-    for (let i = 1; i < array.length; i++) {
-      if (array[i] !== "a") {
+    for (const [i, item] of [...array.entries()].filter(([i, _]) => i > 1)) {
+      if (item !== "a") {
         start = {
           type: "a",
           count: i,
@@ -352,12 +457,39 @@ function parseFromWords(array) {
  * parses toki pona sentence into multiple possible AST represented as array
  */
 function parse(tokiPona) {
-  const words = tokiPona
+  const cleanSentence = tokiPona
     .trim()
     .replace(/[.!?]*$/, "")
     .replaceAll(",", " ");
-  if (/[:.!?]/.test(words)) {
+  if (/[:.!?]/.test(cleanSentence)) {
     throw new ParseError("Multiple sentences");
   }
-  return parseFromWords(words.split(/\s+/));
+  let words = cleanSentence.split(/\s+/);
+  if (words[0] === "") {
+    words = [];
+  }
+  if (words.includes("anu")) {
+    throw new ParseError('"anu"');
+  }
+  // TODO: handle multiple consecutive "a"s inside sentence as error
+  return parseFromWords(words);
 }
+document.addEventListener("DOMContentLoaded", () => {
+  const input = document.getElementById("input");
+  const error = document.getElementById("error");
+  input.addEventListener("input", () => {
+    error.innerText = "";
+    let ast;
+    try {
+      ast = parse(input.value);
+    } catch (e) {
+      if (e instanceof ParseError) {
+        error.innerText = `${e.message} is unrecognized`;
+        return;
+      } else {
+        throw e;
+      }
+    }
+    throw new Error("todo");
+  });
+});
