@@ -2,9 +2,13 @@ body {
   margin: 10px;
   font-family: sans-serif;
 }
-textarea {
+#input {
   box-sizing: border-box;
+  resize: vertical;
   width: 100%;
+}
+#error {
+  color: red;
 }
 @media (min-width: 800px) {
   body {
