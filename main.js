@@ -153,13 +153,6 @@ function parseModifier(array) {
   }
   let modifiers = [[]];
   for (const [i, item] of array.entries()) {
-    if (!MODIFIER.has(item)) {
-      if (VOCABULARY.has(item)) {
-        throw new ParseError(`"${item}" as modifier`);
-      } else {
-        throw new ParseError(`"${item}"`);
-      }
-    }
     if (item === "pi") {
       const phrases = parsePhrase(array.slice(i + 1));
       modifiers = modifiers.flatMap((arr) =>
@@ -194,6 +187,12 @@ function parseModifier(array) {
             emphasized: false,
           });
         }
+      }
+    } else if (!MODIFIER.has(item)) {
+      if (VOCABULARY.has(item)) {
+        throw new ParseError(`"${item}" as modifier`);
+      } else {
+        throw new ParseError(`"${item}"`);
       }
     } else {
       for (const arr of modifiers) {
@@ -291,7 +290,7 @@ function parseClause(array) {
     }
     throw new Error("todo");
   } else {
-    parsePhrase(array).map((phrase) => ({
+    return parsePhrase(array).map((phrase) => ({
       type: "phrase",
       ...phrase,
     }));
