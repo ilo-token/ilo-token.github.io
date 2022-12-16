@@ -162,7 +162,16 @@ function parseModifier(array) {
     }
     if (item === "pi") {
       const phrases = parsePhrase(array.slice(i + 1));
-      throw new Error("todo");
+      modifiers = modifiers.flatMap((arr) =>
+        phrases.map((phrase) =>
+          arr.concat([
+            {
+              type: "pi",
+              ...phrase,
+            },
+          ])
+        )
+      );
       break;
     }
     if (item === "a") {
@@ -213,8 +222,31 @@ function parsePhrase(array) {
     }
   }
   if (array[array.length - 1] === "a") {
+    return [
+      ...parseModifier(array.slice(1, -1)).map((modifier) => ({
+        headword: array[0],
+        emphasis: "whole",
+        modifiers: modifier,
+      })),
+      ...parseModifier(array.slice(1)).map((modifier) => ({
+        headword: array[0],
+        emphasis: "none",
+        modifiers: modifier,
+      })),
+    ];
   }
-  throw new Error("todo");
+  if (array[1] === "a") {
+    return parseModifier(array.slice(2)).map((modifier) => ({
+      headword: array[0],
+      emphasis: "headword",
+      modifiers: modifier,
+    }));
+  }
+  return parseModifier(array.slice(1)).map((modifier) => ({
+    headword: array[0],
+    emphasis: "none",
+    modifiers: modifier,
+  }));
 }
 /**
  * parses subject which may have "en" in it
