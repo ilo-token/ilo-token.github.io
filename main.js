@@ -47,7 +47,6 @@ const HEADWORD = new Set([
   "lape",
   "laso",
   "lawa",
-  "leko",
   "len",
   "lete",
   "lili",
@@ -93,7 +92,6 @@ const HEADWORD = new Set([
   "sama",
   "seli",
   "selo",
-  "seme",
   "sewi",
   "sijelo",
   "sike",
@@ -143,7 +141,570 @@ let VOCABULARY = new Set([
   ...PREVERB,
   ...PREPOSITION,
 ]);
+const NOUN = {
+  akesi: ["reptile", "reptiles", "amphibian", "amphibians"],
+  ala: ["nothing", "no"],
+  alasa: ["searching"],
+  ale: ["everything"],
+  anpa: ["bottom", "bottoms"],
+  ante: ["change", "changes"],
+  awen: ["staying"],
+  esun: ["shop", "shops"],
+  ijo: ["thing", "things"],
+  ike: ["badness"],
+  ilo: ["tool", "tools"],
+  insa: ["inside", "insides"],
+  jaki: ["obscenity", "obscenities"],
+  jan: ["person", "persons", "people", "human", "humans", "humanity"],
+  jelo: ["yellowness"],
+  jo: ["possession", "possessions"],
+  kala: ["fish", "fishes"],
+  kalama: ["sound", "sounds"],
+  kama: ["arrival", "arrivals"],
+  kasi: ["plant", "plants"],
+  ken: ["ability", "abilities"],
+  kili: ["fruit", "fruits", "vegetable", "vegetables"],
+  kiwen: ["hard thing", "hard things"],
+  ko: ["soft thing", "soft things", "powder"],
+  kon: ["air", "essence", "essences"],
+  kule: ["color", "colors", "colour", "colours"],
+  kulupu: ["group", "groups"],
+  kute: ["ear", "ears", "listening"],
+  lape: ["sleep", "rest"],
+  laso: ["blueness", "greenness"],
+  lawa: ["head", "heads", "control", "controls"],
+  len: ["cloth", "clothes", "hiding"],
+  lete: ["coldness"],
+  lili: ["smallness"],
+  linja: ["long flexible thing", "long flexible things"],
+  lipu: ["book", "books", "paper-like thing", "paper-like things"],
+  loje: ["redness"],
+  lon: ["truth"],
+  luka: ["hand", "hands", "arm", "arms"],
+  lukin: ["eye", "eyes", "sight"],
+  lupa: ["hole", "holes"],
+  ma: ["place", "places", "earth"],
+  mama: ["parent", "parents", "caring"],
+  mani: ["money", "large domestic animal", "large domestic animals"],
+  meli: ["woman", "women", "femminity"],
+  mi: ["I", "me", "we", "us"],
+  mije: ["man", "men", "masculinity"],
+  moku: ["food", "foods", "drink", "drinks"],
+  moli: ["death"],
+  monsi: ["back"],
+  mu: ["moo"],
+  mun: ["moon", "moons", "star", "stars", "planet", "planets", "glowing thing"],
+  musi: ["entertainment", "entertainments"],
+  mute: ["many"],
+  nanpa: ["number", "numbers"],
+  nasa: ["siliness", "strangeness"],
+  nasin: ["way"],
+  nena: ["bump"],
+  ni: ["this", "that", "these", "those"],
+  nimi: ["name", "names", "word", "words"],
+  noka: ["foot", "feet", "leg", "legs"],
+  olin: ["love"],
+  ona: ["they", "them", "it"],
+  open: ["beginning", "beginnings"],
+  pakala: ["mistake", "mistakes"],
+  pan: ["grain", "grains"],
+  pana: ["emission", "emissions"],
+  palisa: ["long hard thing", "long hard things"],
+  pilin: ["feeling", "feelings", "emotion", "emotions"],
+  pimeja: ["blackness"],
+  pini: ["end", "ends"],
+  pipi: ["insect", "insects", "bug", "bugs"],
+  poka: ["side", "sides", "hips"],
+  pona: ["goodness", "simplicity"],
+  sama: ["likeness", "similarity"],
+  seli: ["fire", "heat", "chemical reaction", "chemical reactions"],
+  selo: ["skin", "shape", "shapes"],
+  sewi: ["up", "divinity", "divinities"],
+  sijelo: ["body", "bodies"],
+  sike: ["round thing", "round things"],
+  sin: ["new thing", "new things"],
+  sina: ["you", "you all"],
+  sinpin: ["face", "faces", "wall", "walls"],
+  sitelen: ["writting", "writtings", "image", "images"],
+  sona: ["knowledge", "knowledges"],
+  soweli: ["animal", "animals"],
+  suli: ["hugeness", "importance"],
+  suno: ["light source", "light sources", "sun"],
+  supa: ["horizontal surface", "horizontal surfaces"],
+  suwi: ["sweetness", "innocence"],
+  tan: ["reason"],
+  tawa: ["movement"],
+  telo: ["liquid"],
+  tenpo: ["time"],
+  toki: ["speech", "speeches", "language", "languages", "hello"],
+  tomo: ["house", "houses"],
+  tonsi: ["trangender", "transgenders", "non-binary", "non-binaries"],
+  tu: ["pair"],
+  unpa: ["sex"],
+  utala: ["fight", "conflict", "difficulty"],
+  walo: ["whiteness", "paleness"],
+  wan: ["single", "lonliness"],
+  waso: ["bird", "birds"],
+  wawa: ["power", "powers"],
+  weka: ["leaving"],
+  wile: ["want", "wants", "need", "needs"],
+};
+const ADJECTIVE = {
+  akesi: ["reptilian", "amphibian"],
+  ala: ["not", "no"],
+  alasa: [],
+  ale: ["all"],
+  anpa: ["bottom"],
+  ante: ["other", "different"],
+  awen: [],
+  esun: [],
+  ijo: [],
+  ike: ["bad"],
+  ilo: [],
+  insa: [],
+  jaki: ["gross"],
+  jan: ["humanly"],
+  jelo: ["yellow"],
+  jo: [],
+  kala: [],
+  kalama: [],
+  kama: [],
+  kasi: [],
+  ken: [],
+  kili: [],
+  kiwen: ["hard"],
+  ko: ["soft"],
+  kon: [],
+  kule: ["colorful"],
+  kulupu: [],
+  kute: [],
+  lape: [],
+  laso: ["blue", "green"],
+  lawa: [],
+  len: ["hidden"],
+  lete: ["cold"],
+  lili: ["small"],
+  linja: ["long flexible", "long flexible"],
+  lipu: ["paper-like"],
+  loje: ["red"],
+  lon: ["truthful"],
+  luka: [],
+  lukin: [],
+  lupa: [],
+  ma: ["earthy"],
+  mama: [],
+  mani: [],
+  meli: ["woman", "femminine"],
+  mi: ["my", "our"],
+  mije: ["man", "masculine"],
+  moku: [],
+  moli: ["dead"],
+  monsi: [],
+  mu: [],
+  mun: ["glowing"],
+  musi: ["entertaining"],
+  mute: ["many"],
+  nanpa: ["numeric"],
+  nasa: ["silly", "strange"],
+  nasin: [],
+  nena: [],
+  ni: ["this", "that", "these", "those"],
+  nimi: [],
+  noka: [],
+  olin: [],
+  ona: ["their", "its"],
+  open: [],
+  pakala: ["broken"],
+  pan: [],
+  pana: [],
+  palisa: ["long hard"],
+  pilin: [],
+  pimeja: ["black", "brown", "gray", "grey"],
+  pini: [],
+  pipi: [],
+  poka: [],
+  pona: ["good", "simple"],
+  sama: [],
+  seli: ["hot"],
+  selo: [],
+  sewi: ["divine"],
+  sijelo: [],
+  sike: ["round"],
+  sin: ["new"],
+  sina: ["your"],
+  sinpin: [],
+  sitelen: [],
+  sona: ["knowledgeable"],
+  soweli: [],
+  suli: ["huge", "important"],
+  suno: ["shining"],
+  supa: [],
+  suwi: ["sweet", "innocent"],
+  tan: [],
+  tawa: ["moving"],
+  telo: ["liquid"],
+  tenpo: [],
+  toki: [],
+  tomo: [],
+  tonsi: ["trangender", "non-binary"],
+  tu: ["two"],
+  unpa: ["sexual"],
+  utala: ["conflicting", "fighting", "difficult"],
+  walo: ["white", "pale"],
+  wan: ["single", "one"],
+  waso: [],
+  wawa: ["powerful"],
+  weka: [],
+  wile: [],
+};
+const ADVERB = {
+  akesi: [],
+  ala: ["not"],
+  alasa: [],
+  ale: ["completely"],
+  anpa: [],
+  ante: [],
+  awen: [],
+  esun: [],
+  ijo: [],
+  ike: ["badly"],
+  ilo: [],
+  insa: [],
+  jaki: [],
+  jan: [],
+  jelo: [],
+  jo: [],
+  kala: [],
+  kalama: [],
+  kama: [],
+  kasi: [],
+  ken: [],
+  kili: [],
+  kiwen: [],
+  ko: [],
+  kon: [],
+  kule: ["colorfully"],
+  kulupu: [],
+  kute: [],
+  lape: [],
+  laso: [],
+  lawa: [],
+  len: [],
+  lete: [],
+  lili: [],
+  linja: [],
+  lipu: [],
+  loje: [],
+  lon: ["truthfully"],
+  luka: [],
+  lukin: [],
+  lupa: [],
+  ma: [],
+  mama: [],
+  mani: [],
+  meli: [],
+  mi: [],
+  mije: [],
+  moku: [],
+  moli: [],
+  monsi: [],
+  mu: [],
+  mun: [],
+  musi: [],
+  mute: ["very"],
+  nanpa: ["numerically"],
+  nasa: [],
+  nasin: [],
+  nena: [],
+  ni: [],
+  nimi: [],
+  noka: [],
+  olin: [],
+  ona: [],
+  open: [],
+  pakala: [],
+  pan: [],
+  pana: [],
+  palisa: [],
+  pilin: [],
+  pimeja: [],
+  pini: [],
+  pipi: [],
+  poka: [],
+  pona: ["goodly"],
+  sama: [],
+  seli: [],
+  selo: [],
+  sewi: ["divinely"],
+  sijelo: [],
+  sike: [],
+  sin: ["newly"],
+  sina: [],
+  sinpin: [],
+  sitelen: [],
+  sona: ["knowledgeably"],
+  soweli: [],
+  suli: ["hugely", "importantly"],
+  suno: [],
+  supa: [],
+  suwi: [],
+  tan: [],
+  tawa: [],
+  telo: [],
+  tenpo: [],
+  toki: [],
+  tomo: [],
+  tonsi: [],
+  tu: [],
+  unpa: ["sexually"],
+  utala: ["conflictingly", "difficultly"],
+  walo: [],
+  wan: [],
+  waso: [],
+  wawa: ["powerfully"],
+  weka: [],
+  wile: [],
+};
 
+function translatepPhraseToAdverb(phrase) {
+  let translations = ADVERB[phrase.headword].slice();
+  if (phrase.emphasis === "headword") {
+    translations = translations.flatMap((word) => [`so ${word}`, `(${word})`]);
+  }
+  for (const modifier of phrase.modifiers) {
+    switch (modifier.type) {
+      case "proper word":
+        return [];
+      case "word":
+        if (modifier.emphasized) {
+          translations = translations.flatMap((word) =>
+            ADVERB[modifier.word].flatMap((adverb) => [
+              `(${adverb}) ${word}`,
+              `so ${adverb} ${word}`,
+            ])
+          );
+        } else {
+          translations = translations.flatMap((word) =>
+            ADVERB[modifier.word].map((adverb) => `${adverb} ${word}`)
+          );
+        }
+        break;
+      case "pi":
+        throw new Error("todo");
+    }
+  }
+  return translations;
+}
+/**
+ * translates phrase into adjective
+ */
+function translatepPhraseToAdjective(phrase) {
+  let translations = ADJECTIVE[phrase.headword].slice();
+  if (phrase.emphasis === "headword") {
+    translations = translations.flatMap((word) => [`so ${word}`, `(${word})`]);
+  }
+  for (const modifier of phrase.modifiers) {
+    switch (modifier.type) {
+      case "proper word":
+        if (modifier.emphasized) {
+          translations = translations.map(
+            (word) => `${word} (named ${modifier.name})`
+          );
+        } else {
+          translations = translations.map(
+            (word) => `${word} named ${modifier.name}`
+          );
+        }
+        break;
+      case "word":
+        if (modifier.emphasized) {
+          translations = translations.flatMap((word) =>
+            ADVERB[modifier.word].flatMap((adverb) => [
+              `(${adverb}) ${word}`,
+              `so ${adverb} ${word}`,
+            ])
+          );
+        } else {
+          translations = translations.flatMap((word) =>
+            ADVERB[modifier.word].map((adverb) => `${adverb} ${word}`)
+          );
+        }
+        break;
+      case "pi":
+        translations = translations.flatMap((word) =>
+          translatepPhraseToAdverb(phrase).map((adverb) => `${adverb} ${word}`)
+        );
+        break;
+    }
+  }
+  return translations;
+}
+/**
+ * translates phrase into noun phrase without "of"s
+ *
+ * this doesn't handle whole phrase emphasis
+ */
+function translatePhraseToSimpleNoun(phrase) {
+  let translations = NOUN[phrase.headword].slice();
+  if (phrase.emphasis === "headword") {
+    translations = translations.map((word) => `(${word})`);
+  }
+  for (const modifier of phrase.modifiers) {
+    switch (modifier.type) {
+      case "proper word":
+        if (modifier.emphasized) {
+          translations = translations.map(
+            (word) => `${word} (named ${modifier.name})`
+          );
+        } else {
+          translations = translations.map(
+            (word) => `${word} named ${modifier.name}`
+          );
+        }
+        break;
+      case "word":
+        if (modifier.emphasized) {
+          translations = translations.flatMap((word) =>
+            ADJECTIVE[modifier.word].flatMap((adjective) => [
+              `(${adjective}) ${word}`,
+              `so ${adjective} ${word}`,
+            ])
+          );
+        } else {
+          translations = translations.flatMap((word) =>
+            ADJECTIVE[modifier.word].map((adjective) => `${adjective} ${word}`)
+          );
+        }
+        break;
+      case "pi":
+        translations = translations.flatMap((word) =>
+          translatepPhraseToAdjective(phrase).map(
+            (adjective) => `${adjective} ${word}`
+          )
+        );
+        break;
+    }
+  }
+  return translations;
+}
+function translatePhraseToNoun(phrase) {
+  const translations = translatePhraseToSimpleNoun(phrase);
+  for (const [i, item] of phrase.modifiers.entries()) {
+    const heads = translatePhraseToSimpleNoun({
+      ...phrase,
+      modifiers: [
+        ...phrase.modifiers.slice(0, i),
+        ...phrase.modifiers.slice(i + 1),
+      ],
+    });
+    switch (item.type) {
+      case "proper word":
+        continue;
+      case "word":
+        if (item.emphasized) {
+          for (const head of heads) {
+            for (const noun of NOUN[item.word]) {
+              translations.push(`${head} of (${noun})`);
+            }
+          }
+        } else {
+          for (const head of heads) {
+            for (const noun of NOUN[item.word]) {
+              translations.push(`${head} of ${noun}`);
+            }
+          }
+        }
+        break;
+      case "pi":
+        const phrases = translatePhraseToSimpleNoun(item);
+        for (const head of heads) {
+          for (const phrase of phrases) {
+            translations.push(`${head} of ${phrase}`);
+          }
+        }
+        break;
+    }
+  }
+  return translations;
+}
+/**
+ * translates clauses before la
+ */
+function translateLaClause(clause) {
+  switch (clause.type) {
+    case "phrase":
+      return translatePhraseToNoun(clause);
+    default:
+      throw new Error("todo");
+  }
+}
+/**
+ * translates clauses after la or without la
+ */
+function translateFinalClause(clause) {
+  switch (clause.type) {
+    case "phrase":
+      return [
+        ...translatePhraseToNoun(clause),
+        ...translatepPhraseToAdjective(clause),
+      ];
+    default:
+      throw new Error("todo");
+  }
+}
+/**
+ * translates sentence without a or taso
+ */
+function translatePureSentence(sentence) {
+  if (sentence.beforeLa.length > 0) {
+    throw new Error("todo");
+  }
+  return translateFinalClause(sentence.sentence);
+}
+function translateSentence(sentence) {
+  let start;
+  switch (sentence.start.type) {
+    case "none":
+      start = "";
+      break;
+    case "a":
+      if (sentence.start.count === 1) {
+        start = "ah";
+      } else {
+        start = Array(sentence.start.count).fill("ha").join("");
+      }
+      break;
+    case "taso":
+      if (sentence.start.emphasized) {
+        start = "(however),";
+      } else {
+        start = "however,";
+      }
+      break;
+  }
+  let punctuation = ".";
+  let end;
+  switch (sentence.end.type) {
+    case "none":
+      end = "";
+      break;
+    case "a":
+      if (sentence.end.count === 1) {
+        punctuation = "!";
+        end = "";
+      } else {
+        end = Array(sentence.end.count).fill("ha").join("");
+      }
+      break;
+  }
+  if (sentence.type === "a or taso only") {
+    return [`${start} ${end}`.trim() + punctuation];
+  } else {
+    return translatePureSentence(sentence).map(
+      (sentence) => `${start} ${sentence} ${end}`.trim() + punctuation
+    );
+  }
+}
 /**
  * parses string of modifiers
  */
@@ -152,6 +713,7 @@ function parseModifier(array) {
     return [[]];
   }
   let modifiers = [[]];
+  // TODO: handle multiple separate proper word as error
   for (const [i, item] of array.entries()) {
     if (item === "pi") {
       const phrases = parsePhrase(array.slice(i + 1));
@@ -450,7 +1012,7 @@ function parseFromWords(array) {
                 type: "a",
                 count: i,
               },
-              sentence,
+              ...sentence,
             })
           );
         }
@@ -462,7 +1024,7 @@ function parseFromWords(array) {
           end: {
             type: "none",
           },
-          sentence,
+          ...sentence,
         })),
         ...parsePureSentence(array.slice(start_slice, -1)).map((sentence) => ({
           start,
@@ -505,14 +1067,21 @@ function parse(tokiPona) {
   // TODO: handle multiple consecutive "a"s inside sentence as error
   return parseFromWords(words);
 }
+function translate(tokiPona) {
+  return parse(tokiPona).flatMap(translateSentence);
+}
 document.addEventListener("DOMContentLoaded", () => {
   const input = document.getElementById("input");
+  const output = document.getElementById("output");
   const error = document.getElementById("error");
   input.addEventListener("input", () => {
+    while (output.children.length > 0) {
+      output.removeChild(output.children[0]);
+    }
     error.innerText = "";
-    let ast;
+    let translations;
     try {
-      ast = parse(input.value);
+      translations = translate(input.value);
     } catch (e) {
       if (e instanceof ParseError) {
         error.innerText = `${e.message} is unrecognized`;
@@ -521,6 +1090,16 @@ document.addEventListener("DOMContentLoaded", () => {
         throw e;
       }
     }
-    throw new Error("todo");
+    if (translations.length === 0) {
+      error.innerText = `whoops`;
+    }
+    for (const translation of translations) {
+      const emphasized = translation
+        .replaceAll("(", "<em>")
+        .replaceAll(")", "</em>");
+      const list = document.createElement("li");
+      list.innerHTML = emphasized;
+      output.appendChild(list);
+    }
   });
 });
