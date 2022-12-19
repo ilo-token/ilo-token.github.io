@@ -2,13 +2,19 @@ body {
   margin: 10px;
   font-family: sans-serif;
 }
+a {
+  color: #0057af;
+}
+a:visited {
+  color: #551a8b;
+}
 #input {
   box-sizing: border-box;
   resize: vertical;
   width: 100%;
 }
 #error {
-  color: red;
+  color: #b60000;
 }
 @media (min-width: 800px) {
   body {
@@ -19,5 +25,14 @@ body {
   body {
     background-color: black;
     color: white;
+  }
+  a {
+    color: #3197ff;
+  }
+  a:visited {
+    color: #b47de7;
+  }
+  #error {
+    color: #ff5e5e;
   }
 }
