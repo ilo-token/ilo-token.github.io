@@ -487,7 +487,7 @@ const ADVERB = {
   wile: [],
 };
 
-function translatepPhraseToAdverb(phrase) {
+function translatePhraseToAdverb(phrase) {
   let translations = ADVERB[phrase.headword].slice();
   if (phrase.emphasis === "headword") {
     translations = translations.flatMap((word) => [`so ${word}`, `(${word})`]);
@@ -519,7 +519,7 @@ function translatepPhraseToAdverb(phrase) {
 /**
  * translates phrase into adjective
  */
-function translatepPhraseToAdjective(phrase) {
+function translatePhraseToAdjective(phrase) {
   let translations = ADJECTIVE[phrase.headword].slice();
   if (phrase.emphasis === "headword") {
     translations = translations.flatMap((word) => [`so ${word}`, `(${word})`]);
@@ -553,7 +553,7 @@ function translatepPhraseToAdjective(phrase) {
         break;
       case "pi":
         translations = translations.flatMap((word) =>
-          translatepPhraseToAdverb(phrase).map((adverb) => `${adverb} ${word}`)
+          translatePhraseToAdverb(phrase).map((adverb) => `${adverb} ${word}`)
         );
         break;
     }
@@ -599,7 +599,7 @@ function translatePhraseToSimpleNoun(phrase) {
         break;
       case "pi":
         translations = translations.flatMap((word) =>
-          translatepPhraseToAdjective(phrase).map(
+          translatePhraseToAdjective(phrase).map(
             (adjective) => `${adjective} ${word}`
           )
         );
@@ -667,7 +667,7 @@ function translateFinalClause(clause) {
     case "phrase":
       return [
         ...translatePhraseToNoun(clause),
-        ...translatepPhraseToAdjective(clause),
+        ...translatePhraseToAdjective(clause),
       ];
     default:
       throw new Error("todo");
