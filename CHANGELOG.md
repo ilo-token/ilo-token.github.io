@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.0.2
+## 0.0.2 (on development)
 
 - Translator can now put emphasis on whole phrases.
 - Fix "(word) a" not being parsed properly.
