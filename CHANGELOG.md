@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.2
+
+- Translator can now put emphasis on whole phrases.
+
 ## 0.0.1
 
 For this version, the word list and translations have been updated. Few words that have been missed has been added. Translation lists has been updated. This includes simplifying translation lists such as deduplicating translation words that have mostly the same meaning, as well as adding more translation words.

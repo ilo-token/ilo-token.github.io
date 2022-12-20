@@ -514,6 +514,9 @@ function translatePhraseToAdverb(phrase) {
         throw new Error("todo");
     }
   }
+  if (phrase.emphasis === "whole") {
+    translations = translations.map((translation) => `(${translation})`);
+  }
   return translations;
 }
 /**
@@ -557,6 +560,9 @@ function translatePhraseToAdjective(phrase) {
         );
         break;
     }
+  }
+  if (phrase.emphasis === "whole") {
+    translations = translations.map((translation) => `(${translation})`);
   }
   return translations;
 }
@@ -608,8 +614,11 @@ function translatePhraseToSimpleNoun(phrase) {
   }
   return translations;
 }
+/**
+ * translates phrase into noun phrase with "of"s
+ */
 function translatePhraseToNoun(phrase) {
-  const translations = translatePhraseToSimpleNoun(phrase);
+  let translations = translatePhraseToSimpleNoun(phrase);
   for (const [i, item] of phrase.modifiers.entries()) {
     const heads = translatePhraseToSimpleNoun({
       ...phrase,
@@ -645,6 +654,9 @@ function translatePhraseToNoun(phrase) {
         }
         break;
     }
+  }
+  if (phrase.emphasis === "whole") {
+    translations = translations.map((translation) => `(${translation})`);
   }
   return translations;
 }
