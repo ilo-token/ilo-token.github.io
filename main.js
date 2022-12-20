@@ -815,6 +815,13 @@ function parsePhrase(array) {
       throw new ParseError(`"${array[0]}"`);
     }
   }
+  if (array[1] === "a") {
+    return parseModifier(array.slice(2)).map((modifier) => ({
+      headword: array[0],
+      emphasis: "headword",
+      modifiers: modifier,
+    }));
+  }
   if (array[array.length - 1] === "a") {
     return [
       ...parseModifier(array.slice(1, -1)).map((modifier) => ({
@@ -828,13 +835,6 @@ function parsePhrase(array) {
         modifiers: modifier,
       })),
     ];
-  }
-  if (array[1] === "a") {
-    return parseModifier(array.slice(2)).map((modifier) => ({
-      headword: array[0],
-      emphasis: "headword",
-      modifiers: modifier,
-    }));
   }
   return parseModifier(array.slice(1)).map((modifier) => ({
     headword: array[0],

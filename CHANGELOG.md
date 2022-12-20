@@ -3,6 +3,7 @@
 ## 0.0.2
 
 - Translator can now put emphasis on whole phrases.
+- Fix "(word) a" not being parsed properly.
 
 ## 0.0.1
 
