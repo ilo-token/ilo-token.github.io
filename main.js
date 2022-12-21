@@ -1,6 +1,7 @@
 "use strict";
 
-class ParseError extends Error {}
+class UnrecognizedError extends Error {}
+class UntranslatableError extends Error {}
 
 const PARTICLES = new Set([
   "a",
@@ -657,6 +658,10 @@ function translatePhraseToNoun(phrase) {
 function translateLaClause(clause) {
   switch (clause.type) {
     case "phrase":
+      const translations = translatePhraseToNoun(clause);
+      if (translations.length === 0) {
+        throw new UntranslatableError("complicated phrase");
+      }
       return translatePhraseToNoun(clause);
     default:
       throw new Error("todo");
@@ -776,9 +781,9 @@ function parseModifier(array) {
       }
     } else if (!MODIFIER.has(item)) {
       if (VOCABULARY.has(item)) {
-        throw new ParseError(`"${item}" as modifier`);
+        throw new UnrecognizedError(`"${item}" as modifier`);
       } else {
-        throw new ParseError(`"${item}"`);
+        throw new UnrecognizedError(`"${item}"`);
       }
     } else {
       for (const arr of modifiers) {
@@ -797,13 +802,13 @@ function parseModifier(array) {
  */
 function parsePhrase(array) {
   if (/^[A-Z]/.test(array[0])) {
-    throw new ParseError("Proper name as headword");
+    throw new UnrecognizedError("Proper name as headword");
   }
   if (!HEADWORD.has(array[0])) {
     if (VOCABULARY.has(array[0])) {
-      throw new ParseError(`"${array[0]}" as headword`);
+      throw new UnrecognizedError(`"${array[0]}" as headword`);
     } else {
-      throw new ParseError(`"${array[0]}"`);
+      throw new UnrecognizedError(`"${array[0]}"`);
     }
   }
   if (array[1] === "a") {
@@ -856,7 +861,7 @@ function parseClause(array) {
   ) {
     if (array[1] === "a") {
       if (array.length === 2) {
-        throw new ParseError(`"${array[0]} a (pred)" construction`);
+        throw new UnrecognizedError(`"${array[0]} a (pred)" construction`);
       } else {
         throw new Error("todo");
       }
@@ -864,15 +869,15 @@ function parseClause(array) {
     throw new Error("todo");
   } else if (array.includes("li")) {
     if ((array[0] === "mi" || array[0] === "sina") && array[1] === "li") {
-      throw new ParseError(`"${array[0]} li (pred)" construction`);
+      throw new UnrecognizedError(`"${array[0]} li (pred)" construction`);
     }
     if (array.includes("o")) {
-      throw new ParseError('Clause with both "li" and "o"');
+      throw new UnrecognizedError('Clause with both "li" and "o"');
     }
     throw new Error("todo");
   } else if (array.includes("o")) {
     if (array.slice(array.indexOf("o")).includes("o")) {
-      throw new ParseError('Multiple "o"s');
+      throw new UnrecognizedError('Multiple "o"s');
     }
     throw new Error("todo");
   } else {
@@ -902,10 +907,10 @@ function parsePureSentence(array) {
   for (const [i, item] of array.entries()) {
     if (item === "la") {
       if (sentence.length === 0) {
-        throw new ParseError('Having no content before "la"');
+        throw new UnrecognizedError('Having no content before "la"');
       }
       if (array[i + 1] === "a") {
-        throw new ParseError('"la a"');
+        throw new UnrecognizedError('"la a"');
       }
       beforeLa.push(sentence);
       sentence = [];
@@ -914,7 +919,7 @@ function parsePureSentence(array) {
     }
   }
   if (sentence.length === 0) {
-    throw new ParseError('Having no content after "la"');
+    throw new UnrecognizedError('Having no content after "la"');
   }
   let beforeLaClauses = [[]];
   for (const clause of beforeLa) {
@@ -1079,14 +1084,14 @@ function parse(tokiPona) {
     .replace(/[.!?]*$/, "")
     .replaceAll(",", " ");
   if (/[:.!?]/.test(cleanSentence)) {
-    throw new ParseError("Multiple sentences");
+    throw new UnrecognizedError("Multiple sentences");
   }
   let words = cleanSentence.split(/\s+/);
   if (words[0] === "") {
     words = [];
   }
   if (words.includes("anu")) {
-    throw new ParseError('"anu"');
+    throw new UnrecognizedError('"anu"');
   }
   // TODO: handle multiple consecutive "a"s inside sentence as error
   return parseFromWords(words);
@@ -1107,8 +1112,11 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       translations = translate(input.value);
     } catch (e) {
-      if (e instanceof ParseError) {
+      if (e instanceof UnrecognizedError) {
         error.innerText = `${e.message} is unrecognized`;
+        return;
+      } else if (e instanceof UntranslatableError) {
+        error.innerText = `${e.message} can't be translated, but it should be. This is a bug. Consider providing feedback`;
         return;
       } else {
         throw e;
