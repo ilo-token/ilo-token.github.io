@@ -748,14 +748,14 @@ function parseModifier(array) {
   for (const [i, item] of array.entries()) {
     if (item === "pi") {
       const phrase = array.slice(i + 1);
+      if (phrase.includes("pi")) {
+        throw new UnrecognizedError('multiple "pi"');
+      }
       if (phrase.length === 0) {
         throw new UnrecognizedError('no content after "pi"');
       }
       if (phrase.length === 1) {
         throw new UnrecognizedError('single modifier after "pi"');
-      }
-      if (phrase.includes("pi")) {
-        throw new UnrecognizedError('multiple "pi"');
       }
       const phrases = parsePhrase(array.slice(i + 1));
       modifiers = modifiers.flatMap((arr) =>
