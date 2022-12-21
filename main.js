@@ -745,6 +745,13 @@ function parseModifier(array) {
   // TODO: handle multiple separate proper word as error
   for (const [i, item] of array.entries()) {
     if (item === "pi") {
+      const phrase = array.slice(i + 1);
+      if (phrase.length === 0) {
+        throw new UnrecognizedError('no content after "pi"');
+      }
+      if (phrase.length === 1) {
+        throw new UnrecognizedError('single modifier after "pi"');
+      }
       const phrases = parsePhrase(array.slice(i + 1));
       modifiers = modifiers.flatMap((arr) =>
         phrases.map((phrase) =>

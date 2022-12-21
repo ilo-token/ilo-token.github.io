@@ -8,6 +8,7 @@
 - Untranslatable phrases now handled as untranslatable error
 - New kind of error where the sentence can't be translated but it should be
 - Replaced "whoops" error with untranslatable error
+- Having at most one modifier after \"pi\" is now considered unrecognized error.
 - Minor fixes and changes
 
 ## 0.0.1
