@@ -548,7 +548,9 @@ function translatePhraseToAdjective(phrase) {
         break;
       case "pi":
         translations = translations.flatMap((word) =>
-          translatePhraseToAdjective(modifier).map((adverb) => `${adverb} ${word}`)
+          translatePhraseToAdjective(modifier).map(
+            (adverb) => `${adverb} ${word}`
+          )
         );
         break;
     }
@@ -751,6 +753,9 @@ function parseModifier(array) {
       }
       if (phrase.length === 1) {
         throw new UnrecognizedError('single modifier after "pi"');
+      }
+      if (phrase.includes("pi")) {
+        throw new UnrecognizedError('multiple "pi"');
       }
       const phrases = parsePhrase(array.slice(i + 1));
       modifiers = modifiers.flatMap((arr) =>

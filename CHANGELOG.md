@@ -9,6 +9,7 @@
 - New kind of error where the sentence can't be translated but it should be
 - Replaced "whoops" error with untranslatable error
 - Having at most one modifier after \"pi\" is now considered unrecognized error.
+- Multiple "pi" is now considered unrecognized error.
 - Fix adverbs and adjective not being translated properly.
 - Minor fixes and changes
 
