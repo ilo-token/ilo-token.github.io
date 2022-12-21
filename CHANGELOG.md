@@ -11,6 +11,7 @@
 - Having at most one modifier after "pi" is now considered unrecognized error.
 - Multiple "pi" is now considered unrecognized error.
 - Fix adverbs and adjective not being translated properly.
+- Handle multiple proper word as error &ndash; phrases like "jan Sonja pona Lang" will be unrecognizable.
 - Minor fixes and changes.
 
 ## 0.0.1

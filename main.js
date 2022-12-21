@@ -744,6 +744,7 @@ function parseModifier(array) {
     return [[]];
   }
   let modifiers = [[]];
+  let haveName = false;
   // TODO: handle multiple separate proper word as error
   for (const [i, item] of array.entries()) {
     if (item === "pi") {
@@ -775,6 +776,10 @@ function parseModifier(array) {
         arr[arr.length - 1].emphasized = true;
       }
     } else if (/^[A-Z]/.test(item)) {
+      if (haveName && i > 0 && !/^[A-Z]/.test(array[i - 1])) {
+        throw new UnrecognizedError("multiple proper name");
+      }
+      haveName = true;
       for (const arr of modifiers) {
         if (arr.length > 0 && arr[arr.length - 1].type === "proper word") {
           const properWord = arr.pop();
