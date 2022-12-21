@@ -1116,14 +1116,14 @@ document.addEventListener("DOMContentLoaded", () => {
         error.innerText = `${e.message} is unrecognized`;
         return;
       } else if (e instanceof UntranslatableError) {
-        error.innerText = `${e.message} can't be translated, but it should be. This is a bug. Consider providing feedback`;
+        error.innerText = `${e.message} can't be translated, but it should be. This is a bug. Consider providing feedback.`;
         return;
       } else {
         throw e;
       }
     }
-    if (translations.length === 0) {
-      error.innerText = `whoops`;
+    if (input.value !== "" && translations.length === 0) {
+      error.innerText = `This sentence can't be translated, but it should be. This is a bug. Consider providing feedback.`;
     }
     for (const translation of translations) {
       const emphasized = translation

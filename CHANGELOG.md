@@ -7,6 +7,7 @@
 - Proper name now can't modify adjective translations &ndash; translations like "good named Nimi" are now removed.
 - Untranslatable phrases now handled as untranslatable error
 - New kind of error where the sentence can't be translated but it should be
+- Replaced "whoops" error with untranslatable error
 - Minor fixes and changes
 
 ## 0.0.1
