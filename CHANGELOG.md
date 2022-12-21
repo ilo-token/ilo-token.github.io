@@ -4,6 +4,7 @@
 
 - Translator can now put emphasis on whole phrases.
 - Fix "(word) a" not being parsed properly.
+- Proper name now can't modify adjective translations &ndash; translations like "good named Nimi" are now removed.
 
 ## 0.0.1
 

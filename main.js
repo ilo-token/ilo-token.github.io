@@ -530,16 +530,7 @@ function translatePhraseToAdjective(phrase) {
   for (const modifier of phrase.modifiers) {
     switch (modifier.type) {
       case "proper word":
-        if (modifier.emphasized) {
-          translations = translations.map(
-            (word) => `${word} (named ${modifier.name})`
-          );
-        } else {
-          translations = translations.map(
-            (word) => `${word} named ${modifier.name}`
-          );
-        }
-        break;
+        return [];
       case "word":
         if (modifier.emphasized) {
           translations = translations.flatMap((word) =>
