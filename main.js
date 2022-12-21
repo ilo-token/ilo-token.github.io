@@ -548,7 +548,7 @@ function translatePhraseToAdjective(phrase) {
         break;
       case "pi":
         translations = translations.flatMap((word) =>
-          translatePhraseToAdverb(phrase).map((adverb) => `${adverb} ${word}`)
+          translatePhraseToAdjective(modifier).map((adverb) => `${adverb} ${word}`)
         );
         break;
     }
