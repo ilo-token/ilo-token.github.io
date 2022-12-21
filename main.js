@@ -599,7 +599,7 @@ function translatePhraseToSimpleNoun(phrase) {
         break;
       case "pi":
         translations = translations.flatMap((word) =>
-          translatePhraseToAdjective(phrase).map(
+          translatePhraseToAdjective(modifier).map(
             (adjective) => `${adjective} ${word}`
           )
         );
