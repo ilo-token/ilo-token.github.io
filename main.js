@@ -965,7 +965,7 @@ function parseFromWords(array) {
   let start_slice = 0;
   if (array[0] === "a") {
     let broke = false;
-    for (const [i, item] of [...array.entries()].filter(([i, _]) => i > 1)) {
+    for (const [i, item] of [...array.entries()]) {
       if (item !== "a") {
         start = {
           type: "a",
