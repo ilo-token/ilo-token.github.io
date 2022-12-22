@@ -664,7 +664,7 @@ function translateLaClause(clause) {
       if (translations.length === 0) {
         throw new UntranslatableError("complicated phrase");
       }
-      return translatePhraseToNoun(clause);
+      return translations;
     default:
       throw new Error("todo");
   }
