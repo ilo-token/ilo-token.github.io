@@ -13,6 +13,31 @@
 - Multiple "pi" is now considered unrecognized error.
 - Fix adverbs and adjective not being translated properly.
 - Handle multiple proper word as error &ndash; phrases like "jan Sonja pona Lang" will be unrecognizable.
+- Simplify translation lists:
+  - _toki_ &ndash; merge adjectives "speaking" and "writing" as "communicating".
+  - _mun_ &ndash; merge "moon", "moons", "star", "stars", "planet" and "planets" into "celestial object" and "celestial objects".
+  - _pilin_ &ndash; remove "feeling" and "feelings", "emotion" and "emotions" seems enough
+  - _sona_ &ndash; remove "knowledgeably", doesn't seems to match the definition of _sona_.
+- Replace translation words:
+  - _ante_ &ndash; replace nouns "change" and "changes" with noun "changing".
+  - _jan_ &ndash; replace "humanly" with "person-like".
+  - _kama_ &ndash; replace "arrival" and "arrivals" with noun "arriving".
+  - _pona_ &ndash; replace "properly" with "nicely".
+  - _toki_ &ndash; replace "speech" and "speeches" with "communication" and "communications".
+  - _selo_ &ndash; replace "shape" and "shapes" with "outer form", "boundary", and "boundaries".
+  - _sewi_ &ndash; replace "up" with "above".
+- Add translation words:
+  - _anpa_ &ndash; add "under".
+  - _lape_ &ndash; add adjective "sleeping".
+  - _lawa_ &ndash; add adjective "controlling".
+  - _lete_ &ndash; add "uncooked".
+  - _mama_ &ndash; add "creators".
+  - _musi_ &ndash; add "entertainingly".
+  - _moli_ &ndash; add "deadly".
+  - _nasa_ &ndash; add "strangely".
+  - _pini_ &ndash; add adjective "ended".
+  - _suwi_ &ndash; add "cuteness", "cute", and "sweetly".
+  - _tan_ &ndash; add "origin".
 - Minor fixes and changes.
 
 ## 0.0.1
