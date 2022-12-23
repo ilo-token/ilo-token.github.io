@@ -2,6 +2,10 @@
 
 ## 0.0.2
 
+For this version. Major bugs related to phrase translation has been fixed. The translation lists has been updated as well.
+
+You may need to force restart the webpage: shift + click the restart button; or ctrl + shift + R.
+
 - Translator can now put emphasis on whole phrases.
 - Fix "(content word) a" not being parsed properly.
 - Fix "a (words)" not being parsed properly.
