@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.0.2 (on development)
+## 0.0.2
 
 - Translator can now put emphasis on whole phrases.
 - Fix "(content word) a" not being parsed properly.
