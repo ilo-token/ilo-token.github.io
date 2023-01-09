@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.0 (on development)
+
+- Add "(adjective) in (adjective) way" translation
+- Handle complicated phrase as error
+
 ## 0.0.2
 
 For this version. Major bugs related to phrase translation has been fixed. The translation lists has been updated as well.

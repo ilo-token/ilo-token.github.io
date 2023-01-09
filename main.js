@@ -521,9 +521,9 @@ function translatePhraseToAdverb(phrase) {
   return translations;
 }
 /**
- * translates phrase into adjective
+ * translates phrase into adjective without "in X way"
  */
-function translatePhraseToAdjective(phrase) {
+function translatePhraseToSimpleAdjective(phrase) {
   let translations = ADJECTIVE[phrase.headword].slice();
   if (phrase.emphasis === "headword") {
     translations = translations.flatMap((word) => [`so ${word}`, `(${word})`]);
@@ -548,7 +548,7 @@ function translatePhraseToAdjective(phrase) {
         break;
       case "pi":
         translations = translations.flatMap((word) =>
-          translatePhraseToAdjective(modifier).map(
+          translatePhraseToSimpleAdjective(modifier).map(
             (adverb) => `${adverb} ${word}`
           )
         );
@@ -599,12 +599,58 @@ function translatePhraseToSimpleNoun(phrase) {
         break;
       case "pi":
         translations = translations.flatMap((word) =>
-          translatePhraseToAdjective(modifier).map(
+          translatePhraseToSimpleAdjective(modifier).map(
             (adjective) => `${adjective} ${word}`
           )
         );
         break;
     }
+  }
+  return translations;
+}
+/**
+ * translates phrase into adjective phrase with "in X way"
+ */
+function translatePhraseToAdjective(phrase) {
+  let translations = translatePhraseToSimpleAdjective(phrase);
+  for (const [i, item] of phrase.modifiers.entries()) {
+    const heads = translatePhraseToSimpleAdjective({
+      ...phrase,
+      modifiers: [
+        ...phrase.modifiers.slice(0, i),
+        ...phrase.modifiers.slice(i + 1),
+      ],
+    });
+    switch (item.type) {
+      case "proper word":
+        continue;
+      case "word":
+        if (item.emphasized) {
+          for (const head of heads) {
+            for (const adjective of ADJECTIVE[item.word]) {
+              translations.push(`${head} in (${adjective}) way`);
+            }
+          }
+        } else {
+          for (const head of heads) {
+            for (const adjective of ADJECTIVE[item.word]) {
+              translations.push(`${head} in ${adjective} way`);
+            }
+          }
+        }
+        break;
+      case "pi":
+        const phrases = translatePhraseToSimpleAdjective(item);
+        for (const head of heads) {
+          for (const phrase of phrases) {
+            translations.push(`${head} in ${phrase} way`);
+          }
+        }
+        break;
+    }
+  }
+  if (phrase.emphasis === "whole") {
+    translations = translations.map((translation) => `(${translation})`);
   }
   return translations;
 }
@@ -675,10 +721,14 @@ function translateLaClause(clause) {
 function translateFinalClause(clause) {
   switch (clause.type) {
     case "phrase":
-      return [
-        ...translatePhraseToNoun(clause),
+      const translations = [
         ...translatePhraseToAdjective(clause),
+        ...translatePhraseToNoun(clause),
       ];
+      if (translations.length === 0) {
+        throw new UntranslatableError("complicated phrase");
+      }
+      return translations;
     default:
       throw new Error("todo");
   }
