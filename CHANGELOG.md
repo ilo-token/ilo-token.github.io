@@ -2,10 +2,10 @@
 
 ## 0.1.0 (on development)
 
-- Add "(adjective) in (adjective) way" translation
-- Handle complicated phrase as error
-- Rearrange output to make adjective phrase appear first
-- Add basic "la" translation
+- Add "(adjective) in (adjective) way" translation.
+- Handle complicated phrase as error.
+- Rearrange output to make adjective phrase appear first.
+- Add basic "la" translation.
 
 ## 0.0.2
 
