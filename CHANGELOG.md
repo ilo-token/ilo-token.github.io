@@ -4,6 +4,7 @@
 
 - Add "(adjective) in (adjective) way" translation
 - Handle complicated phrase as error
+- Rearrange output to make adjective phrase appear first
 
 ## 0.0.2
 
