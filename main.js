@@ -706,7 +706,10 @@ function translatePhraseToNoun(phrase) {
 function translateLaClause(clause) {
   switch (clause.type) {
     case "phrase":
-      const translations = translatePhraseToNoun(clause);
+      const translations = [
+        ...translatePhraseToAdjective(clause),
+        ...translatePhraseToNoun(clause),
+      ];
       if (translations.length === 0) {
         throw new UntranslatableError("complicated phrase");
       }
@@ -736,11 +739,21 @@ function translateFinalClause(clause) {
 /**
  * translates sentence without a or taso
  */
-function translatePureSentence(sentence) {
-  if (sentence.beforeLa.length > 0) {
-    throw new Error("todo");
+function translatePureSentence(pureSentence) {
+  let translations = [""];
+  for (const beforeLa of pureSentence.beforeLa) {
+    translations = translations.flatMap((sentence) =>
+      translateLaClause(beforeLa).map(
+        (translation) => `${sentence}given ${translation}, `
+      )
+    );
   }
-  return translateFinalClause(sentence.sentence);
+  translations = translations.flatMap((sentence) =>
+    translateFinalClause(pureSentence.sentence).map(
+      (translation) => `${sentence}${translation}`
+    )
+  );
+  return translations;
 }
 function translateSentence(sentence) {
   let start;
