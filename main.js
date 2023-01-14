@@ -522,6 +522,8 @@ function translatePhraseToAdverb(phrase) {
 }
 /**
  * translates phrase into adjective without "in X way"
+ *
+ * this doesn't handle whole phrase emphasis
  */
 function translatePhraseToSimpleAdjective(phrase) {
   let translations = ADJECTIVE[phrase.headword].slice();
@@ -554,9 +556,6 @@ function translatePhraseToSimpleAdjective(phrase) {
         );
         break;
     }
-  }
-  if (phrase.emphasis === "whole") {
-    translations = translations.map((translation) => `(${translation})`);
   }
   return translations;
 }
