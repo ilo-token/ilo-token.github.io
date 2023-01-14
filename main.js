@@ -700,24 +700,24 @@ function translatePhraseToNoun(phrase) {
   }
   return translations;
 }
-/**
- * translates clauses before la
- */
-function translateLaClause(clause) {
-  switch (clause.type) {
-    case "phrase":
-      const translations = [
-        ...translatePhraseToAdjective(clause),
-        ...translatePhraseToNoun(clause),
-      ];
-      if (translations.length === 0) {
-        throw new UntranslatableError("complicated phrase");
-      }
-      return translations;
-    default:
-      throw new Error("todo");
-  }
-}
+// /**
+//  * translates clauses before la
+//  */
+// function translateLaClause(clause) {
+//   switch (clause.type) {
+//     case "phrase":
+//       const translations = [
+//         ...translatePhraseToAdjective(clause),
+//         ...translatePhraseToNoun(clause),
+//       ];
+//       if (translations.length === 0) {
+//         throw new UntranslatableError("complicated phrase");
+//       }
+//       return translations;
+//     default:
+//       throw new Error("todo");
+//   }
+// }
 /**
  * translates clauses after la or without la
  */
@@ -742,11 +742,21 @@ function translateFinalClause(clause) {
 function translatePureSentence(pureSentence) {
   let translations = [""];
   for (const beforeLa of pureSentence.beforeLa) {
-    translations = translations.flatMap((sentence) =>
-      translateLaClause(beforeLa).map(
-        (translation) => `${sentence}given ${translation}, `
-      )
-    );
+    translations = translations.flatMap((sentence) => {
+      switch (beforeLa.type) {
+        case "phrase":
+          return [
+            ...translatePhraseToAdjective(beforeLa).map(
+              (translation) => `${sentence}if ${translation}, then `
+            ),
+            ...translatePhraseToNoun(beforeLa).map(
+              (translation) => `${sentence}given ${translation}, `
+            ),
+          ];
+        default:
+          throw new Error("todo");
+      }
+    });
   }
   translations = translations.flatMap((sentence) =>
     translateFinalClause(pureSentence.sentence).map(
