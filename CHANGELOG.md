@@ -6,6 +6,8 @@
 - Handle complicated phrase as error.
 - Rearrange output to make adjective phrase appear first.
 - Add basic "la" translation: "given X, Y" and "if X, then Y".
+- Update translation list:
+  - _ante_ &ndash; change "other" into "different", "different" have broader meaning than "other".
 
 ## 0.0.2
 

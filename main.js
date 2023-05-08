@@ -268,7 +268,7 @@ const ADJECTIVE = {
   ale: ["all"],
   ali: ["all"],
   anpa: ["bottom"],
-  ante: ["other"],
+  ante: ["different", "other"],
   awen: ["staying"],
   esun: [],
   ijo: [],
