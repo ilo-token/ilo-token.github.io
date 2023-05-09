@@ -965,7 +965,7 @@ function parseClause(array) {
     }
     throw new Error("todo");
   } else if (array.includes("o")) {
-    if (array.slice(array.indexOf("o")).includes("o")) {
+    if (array.slice(array.indexOf("o") + 1).includes("o")) {
       throw new UnrecognizedError('Multiple "o"s');
     }
     throw new Error("todo");

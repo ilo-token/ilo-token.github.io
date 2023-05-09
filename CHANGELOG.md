@@ -6,6 +6,7 @@
 - Handle complicated phrase as error.
 - Rearrange output to make adjective phrase appear first.
 - Add basic "la" translation: "given X, Y" and "if X, then Y".
+- Fix multiple _o_ error being triggered when there's only one _o_.
 - Update translation list:
   - _ante_ &ndash; change "other" into "different", "different" have broader meaning than "other".
 
