@@ -36,6 +36,7 @@ These are the terminology used in [limitations]
 
 The following are currently unrecognized (non-definitive but pedantic).
 
+- Full sentences: It can only translate phrases for now. The following limitations pretends the translator can translate full sentences, this is because these are planned limitations.
 - Non-pu vocabulary with exception to "pu" ("tonsi" is included in the vocabulary)
 - Multiple sentences
 - Comma as sentence separator (commas are treated as decoration and ignored)
