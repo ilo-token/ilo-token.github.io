@@ -81,7 +81,7 @@ function choice(choices) {
   };
 }
 function optional(parser) {
-  return choice([nothing(), parser]);
+  return choice([parser, nothing()]);
 }
 function sequence(sequence) {
   if (sequence.length === 0) {
