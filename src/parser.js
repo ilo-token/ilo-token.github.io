@@ -65,16 +65,14 @@ function match(regex) {
     const match = src.match(newRegex);
     if (match) {
       return new Output([{ value: match, rest: src.slice(match[0].length) }]);
+    } else if (src === "") {
+      return new UnreachableError();
     } else {
-      if (src === "") {
+      const token = src.match(/(.*)(?:\s|$)/)[1];
+      if (token === "") {
         return new UnreachableError();
       } else {
-        const token = src.match(/(.*)(?:\s|$)/)[1];
-        if (token === "") {
-          return new UnreachableError();
-        } else {
-          return new Output(new UnrecognizedError(`"${token}"`));
-        }
+        return new Output(new UnrecognizedError(`"${token}"`));
       }
     }
   });
