@@ -22,12 +22,14 @@ Some of these may be lifted in the future.
 
 ## Terminology
 
-These are the terminology used in [limitations]
+These are the terminology used in [limitations]. **These are not official grammatical terms**.
 
 - Headword &ndash; A single part of speech that in English, can be a noun, a verb, or an adjective; what the phrase starts with.
 - Modifier &ndash; A part of speech that modifies headword or another modifier.
 - Phrase &ndash; Headword and its modifiers.
-- Clause &ndash; A part of sentence without "la" particle, "taso" particle in the beginning, "a" particles in the beginning and the end; found before and after "la", or the sentence itself without particles around it if it doesn't have "la".
+- Preclause &ndash; "taso" or "a" particle before clauses.
+- Postclause &ndash; "a" particle after clauses.
+- Clause &ndash; Phrase or sentence found before and after "la".
 - Proper Word &ndash; Proper name; Capitalized in Toki Pona.
 
 ## Limitations
@@ -64,3 +66,10 @@ The following are currently unrecognized (non-definitive but pedantic). ✏️ m
 - "o a"
 - "e a"
 - "pi a"
+
+## New Limitations
+
+The whole code is being rewritten and there will be new different limitations.
+
+- ✏️ a particle
+- nanpa particle not followed by number words (wan, tu, luka, mute, ale/ali) or pini
