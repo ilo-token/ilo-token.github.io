@@ -85,9 +85,7 @@ function eol() {
     if (src === "") {
       return new Output([{ value: null, rest: "" }]);
     } else {
-      return new Output(
-        new ParseError(`Expected end of phrase/sentence, found "${src}"`)
-      );
+      return new Output(new UnrecognizedError(`"${src}"`));
     }
   });
 }
