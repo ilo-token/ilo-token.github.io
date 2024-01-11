@@ -1,6 +1,7 @@
 import { HEADWORD } from "./vocabulary";
 
 class ParseError extends Error {}
+class UnreachableError extends ParseError {}
 class UnrecognizedError extends ParseError {}
 
 class Output {
@@ -58,20 +59,23 @@ class Parser {
     });
   }
 }
-function char() {
+function match(regex) {
+  const newRegex = new RegExp("^" + regex.source, regex.flags);
   return new Parser((src) => {
-    if (src.length === 0) {
-      return new Output(
-        new ParseError("Expected character, found end of phrase/sentence")
-      );
+    const match = src.match(newRegex);
+    if (match) {
+      return new Output([{ value: match, rest: src.slice(match[0].length) }]);
     } else {
-      let [first] = src;
-      return new Output([
-        {
-          value: first,
-          rest: src.slice(first.length),
-        },
-      ]);
+      if (src === "") {
+        return new UnreachableError();
+      } else {
+        const token = src.match(/(.*)(?:\s|$)/)[1];
+        if (token === "") {
+          return new UnreachableError();
+        } else {
+          return new Output(new UnrecognizedError(`"${token}"`));
+        }
+      }
     }
   });
 }
@@ -177,31 +181,8 @@ function allSpace() {
     }
   });
 }
-function wordOnly() {
-  return new ParseError((src) => {
-    const position = src.search(/\W/);
-    if (position === -1) {
-      if (src === "") {
-        return new Output(
-          new ParseError("Expected word, found end of phrase/sentence")
-        );
-      } else {
-        return new Output([{ value: src, rest: "" }]);
-      }
-    } else if (position === 0) {
-      return new Output(new ParseError(`Expected word, found space`));
-    } else {
-      return new Output([
-        {
-          value: src.slice(0, position),
-          rest: src.slice(position),
-        },
-      ]);
-    }
-  });
-}
 function word() {
-  return sequence(wordOnly(), allSpace()).map(([word, _]) => word);
+  return match(/([a-z])\s*/).map(([_, word]) => word);
 }
 function wordFrom(set) {
   return word().map((word) => {
