@@ -66,7 +66,7 @@ function choice(choices) {
           wholeError = error;
         }
       } else {
-        wholeOutput = wholeOutput.concat(output);
+        wholeOutput = [...wholeOutput, ...output];
       }
     }
     if (wholeOutput.length === 0) {
@@ -103,7 +103,7 @@ function sequence(sequence) {
         } else {
           for (const { value: newValue, rest } of output) {
             newOutput.push({
-              value: value.concat([newValue]),
+              value: [...value, ...newValue],
               rest,
             });
           }
@@ -139,7 +139,7 @@ function all(parser) {
         } else {
           for (const { value: newValue, rest } of output) {
             newOutput.push({
-              value: value.concat([newValue]),
+              value: [...value, ...newValue],
               rest,
             });
           }
