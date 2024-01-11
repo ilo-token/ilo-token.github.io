@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0 (On development)
+
+For this version. The whole code has been rewritten to be easier to modify.
+
+- Rewrite parser to be more declarative.
+- Rewrite whole code to be modular.
+
 ## 0.1.1
 
 - Update copyright notice
