@@ -165,7 +165,12 @@ function allSpace() {
   return new match(/\s*/);
 }
 function word() {
-  return match(/([a-z])\s*/).map(([_, word]) => word);
+  return match(/([a-z]+)\s*/).map(([_, word]) => word);
+}
+function properWord() {
+  return all(match(/([A-Z][a-z]*)\s*/).map(([_, word]) => word)).map((array) =>
+    array.join(" ")
+  );
 }
 function wordFrom(set) {
   return word().map((word) => {
