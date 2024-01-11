@@ -1,105 +1,120 @@
-import { HEADWORD, NUMBER } from "./vocabulary";
+import { HEADWORD } from "./vocabulary";
 
 class ParseError extends Error {}
 class UnrecognizedError extends ParseError {}
 
+class Output {
+  constructor(output) {
+    if (Array.isArray(output)) {
+      this.output = output;
+      this.error = null;
+    } else if (output instanceof Error) {
+      this.output = [];
+      this.error = output;
+    } else {
+      throw new Error("passed not array nor error");
+    }
+  }
+  push(output) {
+    this.output.push(output);
+    this.error = null;
+  }
+  append({ output, error }) {
+    this.output = [...this.output, ...output];
+    if (this.output.length > 0) {
+      this.error = null;
+    } else {
+      this.error = error;
+    }
+  }
+  setError(error) {
+    if (!this.error && this.output.length > 0) {
+      this.error = error;
+    }
+  }
+  isError() {
+    return this.output.length === 0;
+  }
+}
+class Parser {
+  constructor(parser) {
+    this.parser = parser;
+  }
+  map(mapper) {
+    return new Parser((src) => {
+      const result = this.parser(src);
+      if (result.error) {
+        return result;
+      }
+      const output = new Output([]);
+      for (const { value, rest } in result.output) {
+        try {
+          output.push({ value: mapper(value), rest });
+        } catch (error) {
+          output.setError(error);
+        }
+      }
+      return output;
+    });
+  }
+}
+function char() {
+  return new Parser((src) => {
+    if (src.length === 0) {
+      return new Output(
+        new ParseError("Expected character, found end of phrase/sentence")
+      );
+    } else {
+      let [first] = src;
+      return new Output([
+        {
+          value: first,
+          rest: src.slice(first.length),
+        },
+      ]);
+    }
+  });
+}
 function nothing() {
-  return function (src) {
-    return {
-      output: [{ value: null, rest: src }],
-      error: null,
-    };
-  };
+  return new Parser((src) => {
+    return new Output([{ value: null, rest: src }]);
+  });
 }
 function eol() {
-  return function (src) {
+  return new Parser((src) => {
     if (src === "") {
-      return { output: [{ value: null, rest: "" }], error: null };
+      return new Output([{ value: null, rest: "" }]);
     } else {
-      return {
-        output: [],
-        error: new ParseError(
-          `Expected end of phrase/sentence, found "${src}"`
-        ),
-      };
+      return new Output(
+        new ParseError(`Expected end of phrase/sentence, found "${src}"`)
+      );
     }
-  };
+  });
 }
-function map(parser, mapper) {
-  return function (src) {
-    const result = parser(src);
-    if (result.error) {
-      return result;
-    }
-    const wholeOutput = [];
-    let wholeError = null;
-    for (const { value, rest } in result.output) {
-      try {
-        wholeOutput.push({ value: mapper(value), rest });
-      } catch (error) {
-        if (!wholeError) {
-          wholeError = error;
-        }
-      }
-    }
-    if (wholeOutput.length === 0) {
-      return {
-        output: [],
-        error: wholeError ?? new ParseError("No error provided"),
-      };
-    } else {
-      return {
-        output: wholeOutput,
-        error: null,
-      };
-    }
-  };
-}
-function choice(choices) {
-  return function (src) {
-    let wholeOutput = [];
-    let wholeError = null;
+function choice(...choices) {
+  return new Parser((src) => {
+    let output = new Output([]);
     for (const parser of choices) {
-      const { output, error } = parser(src);
-      if (error) {
-        if (!wholeError) {
-          wholeError = error;
-        }
-      } else {
-        wholeOutput = [...wholeOutput, ...output];
-      }
+      output.append(parser.parser(src));
     }
-    if (wholeOutput.length === 0) {
-      return {
-        output: [],
-        error: wholeError ?? new ParseError("No error provided"),
-      };
-    } else {
-      return {
-        output: wholeOutput,
-        error: null,
-      };
-    }
-  };
+    return output;
+  });
 }
 function optional(parser) {
-  return choice([parser, nothing()]);
+  return choice(parser, nothing());
 }
-function sequence(sequence) {
+function sequence(...sequence) {
   if (sequence.length === 0) {
     throw new Error("sequences can't be empty");
   }
-  return function (src) {
-    let wholeOutput = [{ value: [], rest: src }];
-    let wholeError = null;
+  return new Parser((src) => {
+    let wholeOutput = new Output([{ value: [], rest: src }]);
     for (const parser of sequence) {
-      let newOutput = [];
-      for (const { value, rest } of wholeOutput) {
-        const { output, error } = parser(rest);
-        if (error) {
-          if (!wholeError) {
-            wholeError = error;
-          }
+      let newOutput = new Output([]);
+      for (const { value, rest } of wholeOutput.output) {
+        const { output, error } = parser.parser(rest);
+        if (output.length === 0) {
+          newOutput.setError(error);
         } else {
           for (const { value: newValue, rest } of output) {
             newOutput.push({
@@ -111,31 +126,18 @@ function sequence(sequence) {
       }
       wholeOutput = newOutput;
     }
-    if (wholeOutput.length === 0) {
-      return {
-        output: [],
-        error: wholeError ?? new ParseError("No error provided"),
-      };
-    } else {
-      return {
-        output: wholeOutput,
-        error: null,
-      };
-    }
-  };
+    return wholeOutput;
+  });
 }
 function all(parser) {
-  return function (src) {
-    let wholeOutput = [{ value: [], rest: src }];
-    let wholeError = null;
+  return new Parser((src) => {
+    let wholeOutput = new Output([{ value: [], rest: src }]);
     while (true) {
-      let newOutput = [];
-      for (const { value, rest } of wholeOutput) {
-        const { output, error } = parser(rest);
-        if (error) {
-          if (!wholeError) {
-            wholeError = error;
-          }
+      let newOutput = new Output([]);
+      for (const { value, rest } of wholeOutput.output) {
+        const { output, error } = parser.parser(rest);
+        if (output.length === 0) {
+          newOutput.setError(error);
         } else {
           for (const { value: newValue, rest } of output) {
             newOutput.push({
@@ -145,89 +147,66 @@ function all(parser) {
           }
         }
       }
-      if (newOutput.length === 0) {
+      if (newOutput.isError()) {
         break;
       } else {
         wholeOutput = newOutput;
       }
     }
-    if (wholeOutput.length === 0) {
-      return {
-        output: [],
-        error: wholeError ?? new ParseError("No error provided"),
-      };
-    } else {
-      return {
-        output: wholeOutput,
-        error: null,
-      };
-    }
-  };
+    return wholeOutput;
+  });
+}
+function allAtLeastOnce(parser) {
+  return sequence(parser, all(parser)).map(([first, rest]) => [first, ...rest]);
 }
 function allSpace() {
-  return function (src) {
+  return new Parser((src) => {
     const position = src.search(/\S/);
     if (position === -1) {
-      return {
-        output: [
-          {
-            value: "",
-            rest: src,
-          },
-        ],
-        error: null,
-      };
+      return new Output([
+        {
+          value: "",
+          rest: src,
+        },
+      ]);
     } else {
-      return {
-        output: [
-          {
-            value: src.slice(0, position),
-            rest: src.slice(position),
-          },
-        ],
-        error: null,
-      };
+      return new Output([
+        {
+          value: src.slice(0, position),
+          rest: src.slice(position),
+        },
+      ]);
     }
-  };
+  });
 }
 function wordOnly() {
-  return function (src) {
+  return new ParseError((src) => {
     const position = src.search(/\W/);
     if (position === -1) {
       if (src === "") {
-        return {
-          output: [],
-          error: new ParseError("Expected word, found end of phrase/sentence"),
-        };
+        return new Output(
+          new ParseError("Expected word, found end of phrase/sentence")
+        );
       } else {
-        return {
-          output: [[{ value: src, rest: "" }]],
-          error: null,
-        };
+        return new Output([{ value: src, rest: "" }]);
       }
     } else if (position === 0) {
-      return {
-        output: [],
-        error: new ParseError(`Expected word, found space`),
-      };
+      return new Output(new ParseError(`Expected word, found space`));
     } else {
-      return {
-        output: [
-          {
-            value: src.slice(0, position),
-            rest: src.slice(position),
-          },
-        ],
-        error: null,
-      };
+      return new Output([
+        {
+          value: src.slice(0, position),
+          rest: src.slice(position),
+        },
+      ]);
     }
-  };
+  });
 }
 function word() {
-  return map(sequence([wordOnly(), allSpace()]), ([word, _]) => word);
+  return sequence(wordOnly(), allSpace()).map(([word, _]) => word);
 }
 function wordFrom(set) {
-  return map(word(), (word) => {
+  return word().map((word) => {
     if (set.has(word)) {
       return word;
     } else {
@@ -236,7 +215,7 @@ function wordFrom(set) {
   });
 }
 function specificWord(word) {
-  return map(word(), (thisWord) => {
+  return word().map((thisWord) => {
     if (word === thisWord) {
       return thisWord;
     } else {
@@ -246,19 +225,4 @@ function specificWord(word) {
 }
 function headWord() {
   return wordFrom(HEADWORD);
-}
-function nanpa() {
-  return map(
-    sequence([
-      specificWord("nanpa"),
-      choice([
-        map(specificWord("pini"), (_) => ["pini"]),
-        map(
-          sequence([wordFrom(NUMBER), all(wordFrom(NUMBER))]),
-          ([first, rest]) => [first, ...rest]
-        ),
-      ]),
-    ]),
-    ([_, number]) => number
-  );
 }
