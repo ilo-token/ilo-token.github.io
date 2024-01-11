@@ -165,7 +165,7 @@ function allSpace() {
 function word() {
   return match(/([a-z]+)\s*/).map(([_, word]) => word);
 }
-function properWord() {
+function properWords() {
   return all(match(/([A-Z][a-z]*)\s*/).map(([_, word]) => word)).map((array) =>
     array.join(" ")
   );
