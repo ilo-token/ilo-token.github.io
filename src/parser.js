@@ -162,24 +162,7 @@ function allAtLeastOnce(parser) {
   return sequence(parser, all(parser)).map(([first, rest]) => [first, ...rest]);
 }
 function allSpace() {
-  return new Parser((src) => {
-    const position = src.search(/\S/);
-    if (position === -1) {
-      return new Output([
-        {
-          value: "",
-          rest: src,
-        },
-      ]);
-    } else {
-      return new Output([
-        {
-          value: src.slice(0, position),
-          rest: src.slice(position),
-        },
-      ]);
-    }
-  });
+  return new match(/\s*/);
 }
 function word() {
   return match(/([a-z])\s*/).map(([_, word]) => word);
