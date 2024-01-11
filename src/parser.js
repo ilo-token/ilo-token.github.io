@@ -1,3 +1,5 @@
+import { HEADWORD, NUMBER } from "./vocabulary";
+
 class ParseError extends Error {}
 class UnrecognizedError extends ParseError {}
 
@@ -122,6 +124,46 @@ function sequence(sequence) {
     }
   };
 }
+function all(parser) {
+  return function (src) {
+    let wholeOutput = [{ value: [], rest: src }];
+    let wholeError = null;
+    while (true) {
+      let newOutput = [];
+      for (const { value, rest } of wholeOutput) {
+        const { output, error } = parser(rest);
+        if (error) {
+          if (!wholeError) {
+            wholeError = error;
+          }
+        } else {
+          for (const { value: newValue, rest } of output) {
+            newOutput.push({
+              value: value.concat([newValue]),
+              rest,
+            });
+          }
+        }
+      }
+      if (newOutput.length === 0) {
+        break;
+      } else {
+        wholeOutput = newOutput;
+      }
+    }
+    if (wholeOutput.length === 0) {
+      return {
+        output: [],
+        error: wholeError ?? new ParseError("No error provided"),
+      };
+    } else {
+      return {
+        output: wholeOutput,
+        error: null,
+      };
+    }
+  };
+}
 function allSpace() {
   return function (src) {
     const position = src.search(/\S/);
@@ -201,4 +243,22 @@ function specificWord(word) {
       throw new UnrecognizedError(`"${thisWord}"`);
     }
   });
+}
+function headWord() {
+  return wordFrom(HEADWORD);
+}
+function nanpa() {
+  return map(
+    sequence([
+      specificWord("nanpa"),
+      choice([
+        map(specificWord("pini"), (_) => ["pini"]),
+        map(
+          sequence([wordFrom(NUMBER), all(wordFrom(NUMBER))]),
+          ([first, rest]) => [first, ...rest]
+        ),
+      ]),
+    ]),
+    ([_, number]) => number
+  );
 }
