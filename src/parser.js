@@ -170,12 +170,12 @@ function properWord() {
     array.join(" ")
   );
 }
-function wordFrom(set) {
+function wordFrom(set, description) {
   return word().map((word) => {
     if (set.has(word)) {
       return word;
     } else {
-      throw new UnrecognizedError(`"${word}"`);
+      throw new UnrecognizedError(`"${word}" as ${description}`);
     }
   });
 }
@@ -189,5 +189,5 @@ function specificWord(word) {
   });
 }
 function headWord() {
-  return wordFrom(HEADWORD);
+  return wordFrom(HEADWORD, "headword");
 }
