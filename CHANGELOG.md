@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1.0
+
+- Add "(adjective) in (adjective) way" translation.
+- Handle complicated phrase as error.
+- Rearrange output to make adjective phrase appear first.
+- Add basic "la" translation: "given X, Y" and "if X, then Y".
+- Fix multiple _o_ error being triggered when there's only one _o_.
+- Update translation list:
+  - _ante_ &ndash; change "other" into "different", "different" have broader meaning than "other".
+
 ## 0.0.2
 
 For this version. Major bugs related to phrase translation has been fixed. The translation lists has been updated as well.
