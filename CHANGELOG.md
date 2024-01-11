@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0 (on development)
+## 0.1.0
 
 - Add "(adjective) in (adjective) way" translation.
 - Handle complicated phrase as error.
