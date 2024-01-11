@@ -184,7 +184,7 @@ function specificWord(word) {
     if (word === thisWord) {
       return thisWord;
     } else {
-      throw new UnrecognizedError(`"${thisWord}"`);
+      throw new UnrecognizedError(`"${thisWord}" instead of "${word}"`);
     }
   });
 }
