@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1
+
+- Update copyright notice
+- Update version number on the page
+- Update contacts to discord (from `neverRare#1517` to `never_rare`)
+
 ## 0.1.0
 
 - Add "(adjective) in (adjective) way" translation.
