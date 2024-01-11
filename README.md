@@ -34,9 +34,9 @@ These are the terminology used in [limitations]
 
 [limitations]: #limitations
 
-The following are currently unrecognized (non-definitive but pedantic).
+The following are currently unrecognized (non-definitive but pedantic). ✏️ means it is a limitation due to being work in progress and it will be lifted soon. Other limitation may also be lifted.
 
-- Full sentences: It can only translate phrases for now. The following limitations pretends the translator can translate full sentences, this is because these are planned limitations.
+- ✏️ Full sentences: It can only translate phrases for now.
 - Non-pu vocabulary with exception to "pu" ("tonsi" is included in the vocabulary)
 - Multiple sentences
 - Comma as sentence separator (commas are treated as decoration and ignored)
@@ -64,5 +64,3 @@ The following are currently unrecognized (non-definitive but pedantic).
 - "o a"
 - "e a"
 - "pi a"
-
-Some of these may be lifted in the future.
