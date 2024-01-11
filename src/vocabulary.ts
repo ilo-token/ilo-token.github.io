@@ -125,7 +125,7 @@ export const HEADWORD = new Set([
   "wile",
 ]);
 export const MODIFIER = new Set([...HEADWORD, "taso"]);
-export const NUMBER = new Set([wan, tu, luka, mute, ale, ali]);
+export const NUMBER = new Set(["wan", "tu", "luka", "mute", "ale", "ali"]);
 export const PREVERB = new Set([
   "alasa",
   "awen",

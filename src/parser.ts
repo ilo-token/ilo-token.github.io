@@ -1,11 +1,13 @@
-import { HEADWORD } from "./vocabulary";
+import { HEADWORD } from "./vocabulary.ts";
 
 class ParseError extends Error {}
 class UnreachableError extends ParseError {}
 class UnrecognizedError extends ParseError {}
 
-class Output {
-  constructor(output) {
+class Output<T> {
+  output: Array<{ value: T; rest: string }>;
+  error: null | Error;
+  constructor(output: Array<{ value: T; rest: string }> | Error) {
     if (Array.isArray(output)) {
       this.output = output;
       this.error = null;
@@ -16,11 +18,11 @@ class Output {
       throw new Error("passed not array nor error");
     }
   }
-  push(output) {
+  push(output: { value: T; rest: string }): void {
     this.output.push(output);
     this.error = null;
   }
-  append({ output, error }) {
+  append({ output, error }: Output<T>): void {
     this.output = [...this.output, ...output];
     if (this.output.length > 0) {
       this.error = null;
@@ -28,61 +30,67 @@ class Output {
       this.error = error;
     }
   }
-  setError(error) {
+  setError(error: null | Error): void {
     if (!this.error && this.output.length > 0) {
       this.error = error;
     }
   }
-  isError() {
+  isError(): boolean {
     return this.output.length === 0;
   }
 }
-class Parser {
-  constructor(parser) {
-    this.parser = parser;
-  }
-  map(mapper) {
+class Parser<T> {
+  constructor(public readonly parser: (src: string) => Output<T>) {}
+  map<U>(mapper: (x: T) => U): Parser<U> {
     return new Parser((src) => {
       const result = this.parser(src);
-      if (result.error) {
-        return result;
+      if (result.isError()) {
+        if (result.error) {
+          return new Output<U>(result.error);
+        } else {
+          return new Output([]);
+        }
       }
-      const output = new Output([]);
-      for (const { value, rest } in result.output) {
+      const output = new Output<U>([]);
+      for (const { value, rest } of result.output) {
         try {
           output.push({ value: mapper(value), rest });
         } catch (error) {
-          output.setError(error);
+          if (error instanceof Error) {
+            output.setError(error);
+          } else {
+            throw error;
+          }
         }
       }
       return output;
     });
   }
 }
-function match(regex) {
+function match(regex: RegExp): Parser<RegExpMatchArray> {
   const newRegex = new RegExp("^" + regex.source, regex.flags);
   return new Parser((src) => {
     const match = src.match(newRegex);
     if (match) {
       return new Output([{ value: match, rest: src.slice(match[0].length) }]);
     } else if (src === "") {
-      return new UnreachableError();
+      return new Output(new UnreachableError());
     } else {
-      const token = src.match(/(.*)(?:\s|$)/)[1];
-      if (token === "") {
-        return new UnreachableError();
-      } else {
+      const token = src.match(/(.*)(?:\s|$)/)?.[1];
+      if (token) {
         return new Output(new UnrecognizedError(`"${token}"`));
+      } else {
+        return new Output(new UnreachableError());
       }
     }
   });
 }
-function nothing() {
+function nothing(): Parser<null> {
   return new Parser((src) => {
     return new Output([{ value: null, rest: src }]);
   });
 }
-function eol() {
+function eol(): Parser<null> {
   return new Parser((src) => {
     if (src === "") {
       return new Output([{ value: null, rest: "" }]);
@@ -91,26 +99,29 @@ function eol() {
     }
   });
 }
-function choice(...choices) {
+function choice<T>(...choices: Array<Parser<T>>): Parser<T> {
   return new Parser((src) => {
-    let output = new Output([]);
+    let output = new Output<T>([]);
     for (const parser of choices) {
       output.append(parser.parser(src));
     }
     return output;
   });
 }
-function optional(parser) {
+function optional<T>(parser: Parser<T>): Parser<null | T> {
   return choice(parser, nothing());
 }
-function sequence(...sequence) {
+function sequence<T extends Array<unknown>>(
+  ...sequence: { [I in keyof T]: Parser<T[I]> } & { length: T["length"] }
+): Parser<T> {
   if (sequence.length === 0) {
     throw new Error("sequences can't be empty");
   }
+  // We resorted to using `any` types here, make sure it works properly
   return new Parser((src) => {
-    let wholeOutput = new Output([{ value: [], rest: src }]);
+    let wholeOutput = new Output<any>([{ value: [], rest: src }]);
     for (const parser of sequence) {
-      let newOutput = new Output([]);
+      let newOutput = new Output<any>([]);
       for (const { value, rest } of wholeOutput.output) {
         const { output, error } = parser.parser(rest);
         if (output.length === 0) {
@@ -118,7 +129,7 @@ function sequence(...sequence) {
         } else {
           for (const { value: newValue, rest } of output) {
             newOutput.push({
-              value: [...value, ...newValue],
+              value: [...value, newValue],
               rest,
             });
           }
@@ -129,11 +140,11 @@ function sequence(...sequence) {
     return wholeOutput;
   });
 }
-function all(parser) {
+function all<T>(parser: Parser<T>): Parser<Array<T>> {
   return new Parser((src) => {
-    let wholeOutput = new Output([{ value: [], rest: src }]);
+    let wholeOutput = new Output<Array<T>>([{ value: [], rest: src }]);
     while (true) {
-      let newOutput = new Output([]);
+      let newOutput = new Output<Array<T>>([]);
       for (const { value, rest } of wholeOutput.output) {
         const { output, error } = parser.parser(rest);
         if (output.length === 0) {
@@ -141,7 +152,7 @@ function all(parser) {
         } else {
           for (const { value: newValue, rest } of output) {
             newOutput.push({
-              value: [...value, ...newValue],
+              value: [...value, newValue],
               rest,
             });
           }
@@ -156,21 +167,21 @@ function all(parser) {
     return wholeOutput;
   });
 }
-function allAtLeastOnce(parser) {
+function allAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
   return sequence(parser, all(parser)).map(([first, rest]) => [first, ...rest]);
 }
-function allSpace() {
-  return new match(/\s*/);
+function allSpace(): Parser<string> {
+  return match(/\s*/).map(([space]) => space);
 }
-function word() {
+function word(): Parser<string> {
   return match(/([a-z]+)\s*/).map(([_, word]) => word);
 }
-function properWords() {
+function properWords(): Parser<string> {
   return all(match(/([A-Z][a-z]*)\s*/).map(([_, word]) => word)).map((array) =>
     array.join(" ")
   );
 }
-function wordFrom(set, description) {
+function wordFrom(set: Set<string>, description: string): Parser<string> {
   return word().map((word) => {
     if (set.has(word)) {
       return word;
@@ -179,15 +190,15 @@ function wordFrom(set, description) {
     }
   });
 }
-function specificWord(word) {
+function specificWord(thatWord: string): Parser<string> {
   return word().map((thisWord) => {
-    if (word === thisWord) {
+    if (thatWord === thisWord) {
       return thisWord;
     } else {
       throw new UnrecognizedError(`"${thisWord}" instead of "${word}"`);
     }
   });
 }
-function headWord() {
+function headWord(): Parser<string> {
   return wordFrom(HEADWORD, "headword");
 }

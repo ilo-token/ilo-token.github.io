@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "lib": ["ES2022"],
+    "downlevelIteration": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+  }
+}
