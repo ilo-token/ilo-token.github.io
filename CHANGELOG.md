@@ -6,6 +6,7 @@ For this version. The whole code has been rewritten to be easier to modify.
 
 - Rewrite parser to be more declarative.
 - Rewrite whole code to be modular.
+- Dropped support for "a" particle.
 
 ## 0.1.1
 
