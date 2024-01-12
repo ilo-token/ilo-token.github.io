@@ -216,8 +216,8 @@ function word(): Parser<string> {
   return match(/([a-z]+)\s*/).map(([_, word]) => word);
 }
 function properWords(): Parser<string> {
-  return allAtLeastOnce(match(/([A-Z][a-z]*)\s*/).map(([_, word]) => word)).map((array) =>
-    array.join(" ")
+  return allAtLeastOnce(match(/([A-Z][a-z]*)\s*/).map(([_, word]) => word)).map(
+    (array) => array.join(" ")
   );
 }
 function wordFrom(set: Set<string>, description: string): Parser<string> {
