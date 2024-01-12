@@ -244,7 +244,7 @@ function modifier(): Parser<Modifier> {
       (word) =>
         ({
           type: "word",
-          word: word,
+          word,
         } as Modifier)
     ),
     properWords().map((words) => ({
