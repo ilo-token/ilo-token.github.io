@@ -340,19 +340,6 @@ function predicate(): Parser<Predicate> {
 }
 function clause(): Parser<Clause> {
   return choice(
-    enPhrases().map(
-      (phrases) =>
-        ({
-          type: "en phrases",
-          phrases,
-        } as Clause)
-    ),
-    enPhrases()
-      .skip(specificWord("o"))
-      .map((phrases) => ({
-        type: "o vocative",
-        phrases,
-      })),
     sequence(
       wordFrom(SPECIAL_SUBJECT, "mi/sina subject"),
       predicate(),
@@ -366,6 +353,19 @@ function clause(): Parser<Clause> {
       predicates: [predicate, ...morePredicates],
       prepositions,
     })),
+    enPhrases().map(
+      (phrases) =>
+        ({
+          type: "en phrases",
+          phrases,
+        } as Clause)
+    ),
+    enPhrases()
+      .skip(specificWord("o"))
+      .map((phrases) => ({
+        type: "o vocative",
+        phrases,
+      })),
     sequence(
       enPhrases(),
       manyAtLeastOnce(specificWord("li").with(predicate())),
@@ -414,5 +414,6 @@ function fullSentence(): Parser<Sentence> {
   return allSpace()
     .with(sentence())
     .skip(optional(match(/\./)))
-    .skip(allSpace());
+    .skip(allSpace())
+    .skip(eol());
 }
