@@ -7,21 +7,25 @@ export type Modifier =
 
 export type Phrase = { head: string; modifiers: Array<Modifier> };
 
-export type Preposition = { preposition: string; phrase: Phrase };
+export type FullPhrase =
+  | { type: "default"; phrase: Phrase }
+  | { type: "preverb"; preverb: string; phrase: Phrase };
+
+export type Preposition = { preposition: string; phrase: FullPhrase };
 
 export type Clause =
-  | { type: "en phrase"; phrases: Array<Phrase> }
-  | { type: "o vocative"; phrases: Array<Phrase> }
+  | { type: "en phrase"; phrases: Array<FullPhrase> }
+  | { type: "o vocative"; phrases: Array<FullPhrase> }
   | {
       type: "li clause";
-      subjects: Array<Phrase>;
-      predicates: Array<Phrase>;
+      subjects: Array<FullPhrase>;
+      predicates: Array<FullPhrase>;
       prepositions: Array<Preposition>;
     }
   | {
       type: "o clause";
-      subjects: Array<Phrase>;
-      predicates: Array<Phrase>;
+      subjects: Array<FullPhrase>;
+      predicates: Array<FullPhrase>;
       prepositions: Array<Preposition>;
     }
   | { type: "preposition"; prepositions: Array<Preposition> };
