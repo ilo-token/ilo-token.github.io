@@ -100,7 +100,7 @@ export const NOUN = {
   tenpo: ["time"],
   toki: ["communication", "communications", "language", "languages", "hello"],
   tomo: ["house", "houses"],
-  tonsi: ["transgender", "transgenders", "non-binary", "non-binaries"],
+  tonsi: ["transgender person", "transgender people", "non-binary person", "non-binary people"],
   tu: ["pair"],
   unpa: ["sex"],
   uta: ["mouth"],
