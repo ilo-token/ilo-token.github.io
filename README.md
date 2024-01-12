@@ -71,5 +71,5 @@ The following are currently unrecognized (non-definitive but pedantic). ✏️ m
 
 The whole code is being rewritten and there will be new different limitations.
 
-- ✏️ a particle
-- nanpa particle not followed by number words (wan, tu, luka, mute, ale/ali) or pini
+- ✏️ "a" particle
+- ✏️ "anu" particle
