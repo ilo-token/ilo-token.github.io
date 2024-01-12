@@ -1,3 +1,4 @@
+import { FullPhrase, Modifier, Phrase } from "./ast.ts";
 import { CONTENTWORD } from "./vocabulary.ts";
 
 class ParseError extends Error {}
@@ -65,6 +66,12 @@ class Parser<T> {
       }
       return output;
     });
+  }
+  with<U>(parser: Parser<U>): Parser<U> {
+    return sequence(this, parser).map(([_, output]) => output);
+  }
+  skip<U>(parser: Parser<U>): Parser<T> {
+    return sequence(this, parser).map(([output, _]) => output);
   }
 }
 function match(regex: RegExp): Parser<RegExpMatchArray> {
@@ -201,4 +208,38 @@ function specificWord(thatWord: string): Parser<string> {
 }
 function headWord(): Parser<string> {
   return wordFrom(CONTENTWORD, "headword");
+}
+function modifier(): Parser<Modifier> {
+  return choice(
+    wordFrom(CONTENTWORD, "modifier").map(
+      (word) =>
+        ({
+          type: "word",
+          word: word,
+        } as Modifier)
+    ),
+    properWords().map((words) => ({
+      type: "proper words",
+      words,
+    })),
+    specificWord("pi")
+      .with(fullPhrase())
+      .map((phrase) => ({
+        type: "pi",
+        phrase,
+      })),
+    specificWord("nanpa")
+      .with(fullPhrase())
+      .map((phrase) => ({
+        type: "nanpa ordinal",
+        phrase,
+      }))
+    // TODO: cardinal modifier
+  );
+}
+function phrase(): Parser<Phrase> {
+  throw new Error("TODO");
+}
+function fullPhrase(): Parser<FullPhrase> {
+  throw new Error("TODO");
 }
