@@ -216,7 +216,7 @@ function word(): Parser<string> {
   return match(/([a-z]+)\s*/).map(([_, word]) => word);
 }
 function properWords(): Parser<string> {
-  return all(match(/([A-Z][a-z]*)\s*/).map(([_, word]) => word)).map((array) =>
+  return allAtLeastOnce(match(/([A-Z][a-z]*)\s*/).map(([_, word]) => word)).map((array) =>
     array.join(" ")
   );
 }
