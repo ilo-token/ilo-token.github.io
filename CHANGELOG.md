@@ -6,6 +6,7 @@ For this version. The whole code has been rewritten. This makes the code a lot e
 
 - New limitation list.
 - Dropped support for "a" particle.
+- Error messages are now very inaccurate.
 
 Inside update (intended for developers):
 
