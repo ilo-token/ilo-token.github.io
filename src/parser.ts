@@ -406,7 +406,7 @@ function sentence(): Parser<Sentence> {
       (clause) => ({ type: "single clause", clause } as Sentence)
     ),
     sequence(fullClause().skip(specificWord("la")), recursive(sentence)).map(
-      ([left, right]) => ({ type: "la", left, right })
+      ([left, right]) => ({ type: "la clauses", left, right })
     )
   );
 }

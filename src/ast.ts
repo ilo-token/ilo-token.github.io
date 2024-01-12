@@ -38,4 +38,4 @@ export type FullClause = { taso: boolean; clause: Clause };
 
 export type Sentence =
   | { type: "single clause"; clause: FullClause }
-  | { type: "la"; left: FullClause; right: Sentence };
+  | { type: "la clauses"; left: FullClause; right: Sentence };
