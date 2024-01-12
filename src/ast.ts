@@ -32,7 +32,7 @@ export type Clause =
       predicates: Array<Predicate>;
       prepositions: Array<Preposition>;
     }
-  | { type: "preposition"; prepositions: Array<Preposition> };
+  | { type: "prepositions"; prepositions: Array<Preposition> };
 
 export type FullClause = { taso: boolean; clause: Clause };
 

@@ -350,6 +350,43 @@ function clause(): Parser<Clause> {
       .map((phrases) => ({
         type: "o vocative",
         phrases,
-      }))
+      })),
+    sequence(
+      wordFrom(SPECIAL_SUBJECT, "mi/sina subject"),
+      predicate(),
+      many(specificWord("li").with(predicate())),
+      many(preposition())
+    ).map(([subject, predicate, morePredicates, prepositions]) => ({
+      type: "li clause",
+      subjects: [
+        { type: "default", phrase: { headWord: subject, modifiers: [] } },
+      ],
+      predicates: [predicate, ...morePredicates],
+      prepositions,
+    })),
+    sequence(
+      enPhrases(),
+      manyAtLeastOnce(specificWord("li").with(predicate())),
+      many(preposition())
+    ).map(([subjects, predicates, prepositions]) => ({
+      type: "li clause",
+      subjects,
+      predicates,
+      prepositions,
+    })),
+    sequence(
+      enPhrases(),
+      manyAtLeastOnce(specificWord("o").with(predicate())),
+      many(preposition())
+    ).map(([subjects, predicates, prepositions]) => ({
+      type: "o clause",
+      subjects,
+      predicates,
+      prepositions,
+    })),
+    manyAtLeastOnce(preposition()).map((prepositions) => ({
+      type: "prepositions",
+      prepositions,
+    }))
   );
 }
