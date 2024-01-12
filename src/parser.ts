@@ -208,7 +208,7 @@ function word(): Parser<string> {
 }
 function properWords(): Parser<string> {
   return allAtLeastOnce(match(/([A-Z][a-z]*)\s*/).map(([_, word]) => word)).map(
-    (array) => array.join(" ")
+    (array) => array.join(" "),
   );
 }
 function wordFrom(set: Set<string>, description: string): Parser<string> {
@@ -241,11 +241,10 @@ function modifier(): Parser<Modifier> {
         phrase,
       })),
     wordFrom(CONTENT_WORD, "modifier").map(
-      (word) =>
-        ({
-          type: "word",
-          word,
-        } as Modifier)
+      (word) => ({
+        type: "word",
+        word,
+      } as Modifier),
     ),
     properWords().map((words) => ({
       type: "proper words",
@@ -256,7 +255,7 @@ function modifier(): Parser<Modifier> {
       .map((phrase) => ({
         type: "pi",
         phrase,
-      }))
+      })),
     // TODO: cardinal modifier
   );
 }
@@ -265,13 +264,13 @@ function phrase(): Parser<Phrase> {
     ([headWord, modifiers]) => ({
       headWord,
       modifiers,
-    })
+    }),
   );
 }
 function fullPhrase(): Parser<FullPhrase> {
   return sequence(
     optional(wordFrom(PREVERB, "preverb")),
-    recursive(phrase)
+    recursive(phrase),
   ).map(([preverb, phrase]) => {
     if (preverb) {
       return {
@@ -292,21 +291,21 @@ function preposition(): Parser<Preposition> {
     ([preposition, phrase]) => ({
       preposition,
       phrase,
-    })
+    }),
   );
 }
 function enPhrases(): Parser<Array<FullPhrase>> {
   return sequence(
     fullPhrase(),
-    many(specificWord("en").with(fullPhrase()))
+    many(specificWord("en").with(fullPhrase())),
   ).map(([first, rest]) => [first, ...rest]);
 }
 function predicate(): Parser<Predicate> {
   return choice(
     preposition().map((preposition) => ({ type: "preposition", preposition })),
     fullPhrase().map(
-      (predicate) => ({ type: "default", predicate } as Predicate)
-    )
+      (predicate) => ({ type: "default", predicate } as Predicate),
+    ),
   );
 }
 function clause(): Parser<Clause> {
@@ -315,7 +314,7 @@ function clause(): Parser<Clause> {
       wordFrom(SPECIAL_SUBJECT, "mi/sina subject"),
       predicate(),
       many(specificWord("li").with(predicate())),
-      many(preposition())
+      many(preposition()),
     ).map(([subject, predicate, morePredicates, prepositions]) => ({
       type: "li clause",
       subjects: [
@@ -325,11 +324,10 @@ function clause(): Parser<Clause> {
       prepositions,
     })),
     enPhrases().map(
-      (phrases) =>
-        ({
-          type: "en phrases",
-          phrases,
-        } as Clause)
+      (phrases) => ({
+        type: "en phrases",
+        phrases,
+      } as Clause),
     ),
     enPhrases()
       .skip(specificWord("o"))
@@ -340,7 +338,7 @@ function clause(): Parser<Clause> {
     sequence(
       enPhrases(),
       manyAtLeastOnce(specificWord("li").with(predicate())),
-      many(preposition())
+      many(preposition()),
     ).map(([subjects, predicates, prepositions]) => ({
       type: "li clause",
       subjects,
@@ -350,7 +348,7 @@ function clause(): Parser<Clause> {
     sequence(
       enPhrases(),
       manyAtLeastOnce(specificWord("o").with(predicate())),
-      many(preposition())
+      many(preposition()),
     ).map(([subjects, predicates, prepositions]) => ({
       type: "o clause",
       subjects,
@@ -360,7 +358,7 @@ function clause(): Parser<Clause> {
     manyAtLeastOnce(preposition()).map((prepositions) => ({
       type: "prepositions",
       prepositions,
-    }))
+    })),
   );
 }
 function fullClause(): Parser<FullClause> {
@@ -368,17 +366,17 @@ function fullClause(): Parser<FullClause> {
     ([taso, clause]) => ({
       taso: !!taso,
       clause,
-    })
+    }),
   );
 }
 function sentence(): Parser<Sentence> {
   return choice(
     fullClause().map(
-      (clause) => ({ type: "single clause", clause } as Sentence)
+      (clause) => ({ type: "single clause", clause } as Sentence),
     ),
     sequence(fullClause().skip(specificWord("la")), recursive(sentence)).map(
-      ([left, right]) => ({ type: "la clauses", left, right })
-    )
+      ([left, right]) => ({ type: "la clauses", left, right }),
+    ),
   );
 }
 function fullSentence(): Parser<Sentence> {

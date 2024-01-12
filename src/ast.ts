@@ -21,17 +21,17 @@ export type Clause =
   | { type: "en phrases"; phrases: Array<FullPhrase> }
   | { type: "o vocative"; phrases: Array<FullPhrase> }
   | {
-      type: "li clause";
-      subjects: Array<FullPhrase>;
-      predicates: Array<Predicate>;
-      prepositions: Array<Preposition>;
-    }
+    type: "li clause";
+    subjects: Array<FullPhrase>;
+    predicates: Array<Predicate>;
+    prepositions: Array<Preposition>;
+  }
   | {
-      type: "o clause";
-      subjects: Array<FullPhrase>;
-      predicates: Array<Predicate>;
-      prepositions: Array<Preposition>;
-    }
+    type: "o clause";
+    subjects: Array<FullPhrase>;
+    predicates: Array<Predicate>;
+    prepositions: Array<Preposition>;
+  }
   | { type: "prepositions"; prepositions: Array<Preposition> };
 
 export type FullClause = { taso: boolean; clause: Clause };
