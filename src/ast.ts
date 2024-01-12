@@ -13,19 +13,23 @@ export type FullPhrase =
 
 export type Preposition = { preposition: string; phrase: FullPhrase };
 
+export type Predicate =
+  | { type: "default"; predicate: FullPhrase }
+  | { type: "preposition"; preposition: Preposition };
+
 export type Clause =
   | { type: "en phrases"; phrases: Array<FullPhrase> }
   | { type: "o vocative"; phrases: Array<FullPhrase> }
   | {
       type: "li clause";
       subjects: Array<FullPhrase>;
-      predicates: Array<FullPhrase>;
+      predicates: Array<Predicate>;
       prepositions: Array<Preposition>;
     }
   | {
       type: "o clause";
       subjects: Array<FullPhrase>;
-      predicates: Array<FullPhrase>;
+      predicates: Array<Predicate>;
       prepositions: Array<Preposition>;
     }
   | { type: "preposition"; prepositions: Array<Preposition> };

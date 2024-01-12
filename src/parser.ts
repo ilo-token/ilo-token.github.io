@@ -1,4 +1,11 @@
-import { Clause, FullPhrase, Modifier, Phrase, Preposition } from "./ast.ts";
+import {
+  Clause,
+  FullPhrase,
+  Modifier,
+  Phrase,
+  Predicate,
+  Preposition,
+} from "./ast.ts";
 import {
   CONTENT_WORD,
   PREPOSITION,
@@ -320,6 +327,14 @@ function enPhrases(): Parser<Array<FullPhrase>> {
     fullPhrase(),
     many(specificWord("en").with(fullPhrase()))
   ).map(([first, rest]) => [first, ...rest]);
+}
+function predicate(): Parser<Predicate> {
+  return choice(
+    fullPhrase().map(
+      (predicate) => ({ type: "default", predicate } as Predicate)
+    ),
+    preposition().map((preposition) => ({ type: "preposition", preposition }))
+  );
 }
 function clause(): Parser<Clause> {
   return choice(
