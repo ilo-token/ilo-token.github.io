@@ -1,10 +1,12 @@
 import {
   Clause,
+  FullClause,
   FullPhrase,
   Modifier,
   Phrase,
   Predicate,
   Preposition,
+  Sentence,
 } from "./ast.ts";
 import {
   CONTENT_WORD,
@@ -389,4 +391,28 @@ function clause(): Parser<Clause> {
       prepositions,
     }))
   );
+}
+function fullClause(): Parser<FullClause> {
+  return sequence(optional(specificWord("taso")), clause()).map(
+    ([taso, clause]) => ({
+      taso: !!taso,
+      clause,
+    })
+  );
+}
+function sentence(): Parser<Sentence> {
+  return choice(
+    fullClause().map(
+      (clause) => ({ type: "single clause", clause } as Sentence)
+    ),
+    sequence(fullClause().skip(specificWord("la")), recursive(sentence)).map(
+      ([left, right]) => ({ type: "la", left, right })
+    )
+  );
+}
+function fullSentence(): Parser<Sentence> {
+  return allSpace()
+    .with(sentence())
+    .skip(optional(match(/\./)))
+    .skip(allSpace());
 }
