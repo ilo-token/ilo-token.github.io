@@ -32,7 +32,21 @@ export class Output<T> {
   isError(): boolean {
     return this.output.length === 0;
   }
-  map<U>(mapper: (x: T) => U): Output<U> {
+  map<U>(mapper: (value: T) => U): Output<U> {
     return new Output(this.output.map(mapper));
+  }
+  flatMap<U>(mapper: (value: T) => Output<U>): Output<U> {
+    if (this.isError()) {
+      if (this.error) {
+        return new Output(this.error);
+      } else {
+        return new Output([]);
+      }
+    }
+    const wholeOutput = new Output<U>([]);
+    for (const value of this.output) {
+      wholeOutput.append(mapper(value));
+    }
+    return wholeOutput;
   }
 }
