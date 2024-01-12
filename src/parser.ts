@@ -1,5 +1,10 @@
-import { FullPhrase, Modifier, Phrase } from "./ast.ts";
-import { CONTENTWORD, PREVERB } from "./vocabulary.ts";
+import { Clause, FullPhrase, Modifier, Phrase, Preposition } from "./ast.ts";
+import {
+  CONTENT_WORD,
+  PREPOSITION,
+  PREVERB,
+  SPECIAL_SUBJECT,
+} from "./vocabulary.ts";
 
 class ParseError extends Error {}
 class UnreachableError extends ParseError {}
@@ -206,6 +211,12 @@ function all<T>(parser: Parser<T>): Parser<Array<T>> {
     return wholeOutput;
   });
 }
+function manyAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
+  return sequence(parser, many(parser)).map(([first, rest]) => [
+    first,
+    ...rest,
+  ]);
+}
 function allAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
   return sequence(parser, all(parser)).map(([first, rest]) => [first, ...rest]);
 }
@@ -239,11 +250,11 @@ function specificWord(thatWord: string): Parser<string> {
   });
 }
 function headWord(): Parser<string> {
-  return wordFrom(CONTENTWORD, "headword");
+  return wordFrom(CONTENT_WORD, "headword");
 }
 function modifier(): Parser<Modifier> {
   return choice(
-    wordFrom(CONTENTWORD, "modifier").map(
+    wordFrom(CONTENT_WORD, "modifier").map(
       (word) =>
         ({
           type: "word",
@@ -295,4 +306,35 @@ function fullPhrase(): Parser<FullPhrase> {
       };
     }
   });
+}
+function preposition(): Parser<Preposition> {
+  return sequence(wordFrom(PREPOSITION, "preposition"), fullPhrase()).map(
+    ([preposition, phrase]) => ({
+      preposition,
+      phrase,
+    })
+  );
+}
+function enPhrases(): Parser<Array<FullPhrase>> {
+  return sequence(
+    fullPhrase(),
+    many(specificWord("en").with(fullPhrase()))
+  ).map(([first, rest]) => [first, ...rest]);
+}
+function clause(): Parser<Clause> {
+  return choice(
+    enPhrases().map(
+      (phrases) =>
+        ({
+          type: "en phrases",
+          phrases,
+        } as Clause)
+    ),
+    enPhrases()
+      .skip(specificWord("o"))
+      .map((phrases) => ({
+        type: "o vocative",
+        phrases,
+      }))
+  );
 }

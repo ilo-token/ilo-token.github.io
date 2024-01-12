@@ -14,7 +14,7 @@ export type FullPhrase =
 export type Preposition = { preposition: string; phrase: FullPhrase };
 
 export type Clause =
-  | { type: "en phrase"; phrases: Array<FullPhrase> }
+  | { type: "en phrases"; phrases: Array<FullPhrase> }
   | { type: "o vocative"; phrases: Array<FullPhrase> }
   | {
       type: "li clause";

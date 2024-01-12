@@ -11,7 +11,7 @@ export const PARTICLES = new Set([
   "pi",
   "taso",
 ]);
-export const CONTENTWORD = new Set([
+export const CONTENT_WORD = new Set([
   "akesi",
   "ala",
   "alasa",
@@ -125,6 +125,7 @@ export const CONTENTWORD = new Set([
   "weka",
   "wile",
 ]);
+export const SPECIAL_SUBJECT = new Set(["mi", "sina"]);
 export const NUMBER = new Set(["wan", "tu", "luka", "mute", "ale", "ali"]);
 export const PREVERB = new Set([
   "alasa",
@@ -140,6 +141,6 @@ export const PREVERB = new Set([
 export const PREPOSITION = new Set(["kepeken", "lon", "sama", "tan", "tawa"]);
 export const VOCABULARY = new Set([
   ...PARTICLES,
-  ...CONTENTWORD,
+  ...CONTENT_WORD,
   ...PREPOSITION,
 ]);
