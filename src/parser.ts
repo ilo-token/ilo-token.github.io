@@ -1,4 +1,4 @@
-import { HEADWORD } from "./vocabulary.ts";
+import { CONTENTWORD } from "./vocabulary.ts";
 
 class ParseError extends Error {}
 class UnreachableError extends ParseError {}
@@ -200,5 +200,5 @@ function specificWord(thatWord: string): Parser<string> {
   });
 }
 function headWord(): Parser<string> {
-  return wordFrom(HEADWORD, "headword");
+  return wordFrom(CONTENTWORD, "headword");
 }
