@@ -71,6 +71,12 @@ The following are currently unrecognized (non-definitive but pedantic). ✏️ m
 
 The whole code is being rewritten and there will be new different limitations.
 
+<!-- Don't over-complicate -->
+
 - ✏️ "a" particle
 - ✏️ "anu" particle
 - ✏️ "X ala X" constructions
+- ✏️ Extended numbering system
+- Multiple sentences
+- Clause with both "li" and "o"
+- "kepeken" as headword or modifier
