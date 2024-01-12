@@ -11,7 +11,7 @@ export const PARTICLES = new Set([
   "pi",
   "taso",
 ]);
-export const HEADWORD = new Set([
+export const CONTENTWORD = new Set([
   "akesi",
   "ala",
   "alasa",
@@ -107,6 +107,7 @@ export const HEADWORD = new Set([
   "supa",
   "suwi",
   "tan",
+  "taso",
   "tawa",
   "telo",
   "tenpo",
@@ -124,7 +125,6 @@ export const HEADWORD = new Set([
   "weka",
   "wile",
 ]);
-export const MODIFIER = new Set([...HEADWORD, "taso"]);
 export const NUMBER = new Set(["wan", "tu", "luka", "mute", "ale", "ali"]);
 export const PREVERB = new Set([
   "alasa",
