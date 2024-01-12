@@ -6,5 +6,6 @@
             "description": "Ku Suli words of Toki Pona",
             "addWords": true
         }
-    }
+    },
+    "deno.enable": true
 }
