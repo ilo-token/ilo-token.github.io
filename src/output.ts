@@ -32,4 +32,7 @@ export class Output<T> {
   isError(): boolean {
     return this.output.length === 0;
   }
+  map<U>(mapper: (x: T) => U): Output<U> {
+    return new Output(this.output.map(mapper));
+  }
 }

@@ -17,7 +17,7 @@ import {
   SPECIAL_SUBJECT,
 } from "./vocabulary.ts";
 
-type ValueRest<T> = {value: T; rest: string};
+type ValueRest<T> = { value: T; rest: string };
 type ParserOutput<T> = Output<ValueRest<T>>;
 class Parser<T> {
   constructor(public readonly parser: (src: string) => ParserOutput<T>) {}
@@ -58,9 +58,7 @@ function match(regex: RegExp): Parser<RegExpMatchArray> {
   return new Parser((src) => {
     const match = src.match(newRegex);
     if (match) {
-      return new Output([
-        { value: match, rest: src.slice(match[0].length) },
-      ]);
+      return new Output([{ value: match, rest: src.slice(match[0].length) }]);
     } else if (src === "") {
       return new Output(new UnreachableError());
     } else {
@@ -133,8 +131,12 @@ function sequence<T extends Array<unknown>>(
 }
 function many<T>(parser: Parser<T>): Parser<Array<T>> {
   return new Parser((src) => {
-    let wholeOutput = new Output<ValueRest<Array<T>>>([{ value: [], rest: src }]);
-    let currentOutput = new Output<ValueRest<Array<T>>>([{ value: [], rest: src }]);
+    let wholeOutput = new Output<ValueRest<Array<T>>>([
+      { value: [], rest: src },
+    ]);
+    let currentOutput = new Output<ValueRest<Array<T>>>([
+      { value: [], rest: src },
+    ]);
     while (true) {
       let newOutput = new Output<ValueRest<Array<T>>>([]);
       for (const { value, rest } of currentOutput.output) {
@@ -162,7 +164,9 @@ function many<T>(parser: Parser<T>): Parser<Array<T>> {
 }
 function all<T>(parser: Parser<T>): Parser<Array<T>> {
   return new Parser((src) => {
-    let wholeOutput = new Output<ValueRest<Array<T>>>([{ value: [], rest: src }]);
+    let wholeOutput = new Output<ValueRest<Array<T>>>([
+      { value: [], rest: src },
+    ]);
     while (true) {
       let newOutput = new Output<ValueRest<Array<T>>>([]);
       for (const { value, rest } of wholeOutput.output) {
@@ -383,4 +387,9 @@ function fullSentence(): Parser<Sentence> {
     .skip(optional(match(/\./)))
     .skip(allSpace())
     .skip(eol());
+}
+export function parser(src: string): Output<Sentence> {
+  return fullSentence()
+    .parser(src)
+    .map(({ value }) => value);
 }
