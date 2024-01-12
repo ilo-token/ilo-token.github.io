@@ -323,6 +323,10 @@ function clause(): Parser<Clause> {
       predicates: [predicate, ...morePredicates],
       prepositions,
     })),
+    manyAtLeastOnce(preposition()).map((prepositions) => ({
+      type: "prepositions",
+      prepositions,
+    })),
     enPhrases().map(
       (phrases) => ({
         type: "en phrases",
@@ -353,10 +357,6 @@ function clause(): Parser<Clause> {
       type: "o clause",
       subjects,
       predicates,
-      prepositions,
-    })),
-    manyAtLeastOnce(preposition()).map((prepositions) => ({
-      type: "prepositions",
       prepositions,
     })),
   );
