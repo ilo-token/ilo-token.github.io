@@ -1,5 +1,3 @@
-// TODO: X ala X constructions
-
 export type Modifier =
   | { type: "word"; word: string }
   | { type: "proper words"; words: string }
