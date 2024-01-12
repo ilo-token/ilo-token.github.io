@@ -73,3 +73,4 @@ The whole code is being rewritten and there will be new different limitations.
 
 - ✏️ "a" particle
 - ✏️ "anu" particle
+- ✏️ "X ala X" constructions
