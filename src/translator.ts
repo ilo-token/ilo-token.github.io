@@ -1,6 +1,6 @@
-import { Sentence } from "./ast";
-import { Output } from "./output";
-import { parser } from "./parser";
+import { Sentence } from "./ast.ts";
+import { Output } from "./output.ts";
+import { parser } from "./parser.ts";
 
 type TranslationOutput = Output<string>;
 
