@@ -8,16 +8,13 @@ import {
   Preposition,
   Sentence,
 } from "./ast.ts";
+import { UnreachableError, UnrecognizedError } from "./error.ts";
 import {
   CONTENT_WORD,
   PREPOSITION,
   PREVERB,
   SPECIAL_SUBJECT,
 } from "./vocabulary.ts";
-
-class ParseError extends Error {}
-class UnreachableError extends ParseError {}
-class UnrecognizedError extends ParseError {}
 
 class Output<T> {
   output: Array<{ value: T; rest: string }>;
