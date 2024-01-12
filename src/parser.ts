@@ -350,12 +350,12 @@ function clause(): Parser<Clause> {
       prepositions,
     })),
     sequence(
-      enPhrases(),
+      optional(enPhrases()),
       manyAtLeastOnce(specificWord("o").with(predicate())),
       many(preposition()),
     ).map(([subjects, predicates, prepositions]) => ({
       type: "o clause",
-      subjects,
+      subjects: subjects ?? [],
       predicates,
       prepositions,
     })),
