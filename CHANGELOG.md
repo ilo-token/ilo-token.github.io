@@ -5,8 +5,8 @@
 For this version. The whole code has been rewritten. This makes the code a lot easier to modify. Due to this, there are inevitable changes to the translator.
 
 - New limitation list.
-- Dropped support for "a" particle.
-- Error messages are now very inaccurate.
+- Drop support for "a" particle.
+- (Downgrade) Error messages are now very inaccurate.
 - Update translation list:
   - _tonsi_ &ndash; change nouns "transgender", "transgenders", "non-binary", and "non-binaries" into "transgender person", "transgender people", "non-binary person", and "non-binary people" (I DIDN'T MEAN TO OBJECTIFY THEM OMFG I'M SO SORRY 😭😭😭)
 
