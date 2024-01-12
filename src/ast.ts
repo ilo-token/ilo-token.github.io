@@ -1,8 +1,8 @@
 export type Modifier =
   | { type: "word"; word: string }
   | { type: "proper words"; words: string }
-  | { type: "pi"; phrase: Phrase }
-  | { type: "nanpa ordinal"; phrase: Phrase }
+  | { type: "pi"; phrase: FullPhrase }
+  | { type: "nanpa ordinal"; phrase: FullPhrase }
   | { type: "cardinal"; number: Array<string> };
 
 export type Phrase = { head: string; modifiers: Array<Modifier> };
