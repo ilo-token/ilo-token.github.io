@@ -140,7 +140,6 @@ export const PREVERB = new Set([
 export const PREPOSITION = new Set(["kepeken", "lon", "sama", "tan", "tawa"]);
 export const VOCABULARY = new Set([
   ...PARTICLES,
-  ...HEADWORD,
-  ...PREVERB,
+  ...CONTENTWORD,
   ...PREPOSITION,
 ]);
