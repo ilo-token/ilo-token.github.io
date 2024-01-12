@@ -71,7 +71,7 @@ The following are currently unrecognized (non-definitive but pedantic). ✏️ m
 
 The whole code is being rewritten and there will be new different limitations.
 
-<!-- Don't over-complicate -->
+<!-- Don't over-complicate, remove the obvious "no one will do this" limitations as well as nonstandard nasin's -->
 
 - ✏️ "a" particle
 - ✏️ "anu" particle
