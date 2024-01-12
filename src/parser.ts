@@ -43,7 +43,7 @@ class Output<T> {
     }
   }
   setError(error: null | Error): void {
-    if (!this.error && this.output.length > 0) {
+    if (!this.error && this.output.length === 0) {
       this.error = error;
     }
   }
