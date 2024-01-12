@@ -12,6 +12,7 @@ Inside update (intended for developers):
 
 - Rewritten whole code to use module and typescript.
 - Rewritten parser to use parser combinator.
+- Add language codes to html.
 
 ## 0.1.1
 
