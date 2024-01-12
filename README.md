@@ -77,6 +77,7 @@ The whole code is being rewritten and there will be new different limitations.
 - ✏️ "anu" particle
 - ✏️ "X ala X" constructions
 - ✏️ Extended numbering system
+- ✏️ Commas
 - Multiple sentences
 - Clause with both "li" and "o"
 - "kepeken" as headword or modifier
