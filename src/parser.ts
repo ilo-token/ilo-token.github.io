@@ -106,6 +106,9 @@ function eol(): Parser<null> {
     }
   });
 }
+function recursive<T>(parser: () => Parser<T>): Parser<T> {
+  return new Parser((src) => parser().parser(src));
+}
 function choice<T>(...choices: Array<Parser<T>>): Parser<T> {
   return new Parser((src) => {
     let output = new Output<T>([]);
@@ -275,20 +278,21 @@ function phrase(): Parser<Phrase> {
   );
 }
 function fullPhrase(): Parser<FullPhrase> {
-  return sequence(optional(wordFrom(PREVERB, "preverb")), phrase()).map(
-    ([preverb, phrase]) => {
-      if (preverb) {
-        return {
-          type: "preverb",
-          preverb,
-          phrase,
-        };
-      } else {
-        return {
-          type: "default",
-          phrase,
-        };
-      }
+  return sequence(
+    optional(wordFrom(PREVERB, "preverb")),
+    recursive(phrase)
+  ).map(([preverb, phrase]) => {
+    if (preverb) {
+      return {
+        type: "preverb",
+        preverb,
+        phrase,
+      };
+    } else {
+      return {
+        type: "default",
+        phrase,
+      };
     }
-  );
+  });
 }
