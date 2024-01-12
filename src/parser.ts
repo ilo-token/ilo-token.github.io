@@ -263,6 +263,12 @@ function headWord(): Parser<string> {
 }
 function modifier(): Parser<Modifier> {
   return choice(
+    specificWord("nanpa")
+      .with(fullPhrase())
+      .map((phrase) => ({
+        type: "nanpa ordinal",
+        phrase,
+      })),
     wordFrom(CONTENT_WORD, "modifier").map(
       (word) =>
         ({
@@ -278,12 +284,6 @@ function modifier(): Parser<Modifier> {
       .with(fullPhrase())
       .map((phrase) => ({
         type: "pi",
-        phrase,
-      })),
-    specificWord("nanpa")
-      .with(fullPhrase())
-      .map((phrase) => ({
-        type: "nanpa ordinal",
         phrase,
       }))
     // TODO: cardinal modifier
@@ -332,10 +332,10 @@ function enPhrases(): Parser<Array<FullPhrase>> {
 }
 function predicate(): Parser<Predicate> {
   return choice(
+    preposition().map((preposition) => ({ type: "preposition", preposition })),
     fullPhrase().map(
       (predicate) => ({ type: "default", predicate } as Predicate)
-    ),
-    preposition().map((preposition) => ({ type: "preposition", preposition }))
+    )
   );
 }
 function clause(): Parser<Clause> {
