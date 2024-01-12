@@ -5,6 +5,6 @@ export class UnreachableError extends Error {
 }
 export class UnrecognizedError extends Error {
   constructor(token: string) {
-    super(`${token} is unrecognized`);
+    super(`${token} is unrecognized.`);
   }
 }
