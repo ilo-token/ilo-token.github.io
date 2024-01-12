@@ -2,11 +2,15 @@
 
 ## 0.2.0 (On development)
 
-For this version. The whole code has been rewritten to be easier to modify.
+For this version. The whole code has been rewritten. This makes the code a lot easier to modify. Due to this, there are inevitable changes to the translator.
 
-- Rewrite parser to be more declarative.
-- Rewrite whole code to be modular.
+- New limitation list.
 - Dropped support for "a" particle.
+
+Inside update (intended for developers):
+
+- Rewritten whole code to use module and typescript.
+- Rewritten parser to use parser combinator.
 
 ## 0.1.1
 
