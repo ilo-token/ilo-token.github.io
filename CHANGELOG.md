@@ -14,9 +14,9 @@ Inside update (intended for developers):
 
 ## 0.1.1
 
-- Update copyright notice
-- Update version number on the page
-- Update contacts to discord (from `neverRare#1517` to `never_rare`)
+- Update copyright notice.
+- Update version number on the page.
+- Update contacts to Discord. (from `neverRare#1517` to `never_rare`)
 
 ## 0.1.0
 
