@@ -147,6 +147,35 @@ function sequence<T extends Array<unknown>>(
     return wholeOutput;
   });
 }
+function many<T>(parser: Parser<T>): Parser<Array<T>> {
+  return new Parser((src) => {
+    let wholeOutput = new Output<Array<T>>([{ value: [], rest: src }]);
+    let currentOutput = new Output<Array<T>>([{ value: [], rest: src }]);
+    while (true) {
+      let newOutput = new Output<Array<T>>([]);
+      for (const { value, rest } of currentOutput.output) {
+        const { output, error } = parser.parser(rest);
+        if (output.length === 0) {
+          newOutput.setError(error);
+        } else {
+          for (const { value: newValue, rest } of output) {
+            newOutput.push({
+              value: [...value, newValue],
+              rest,
+            });
+          }
+        }
+      }
+      if (newOutput.isError()) {
+        break;
+      } else {
+        wholeOutput.append(newOutput);
+        currentOutput = newOutput;
+      }
+    }
+    return wholeOutput;
+  });
+}
 function all<T>(parser: Parser<T>): Parser<Array<T>> {
   return new Parser((src) => {
     let wholeOutput = new Output<Array<T>>([{ value: [], rest: src }]);
