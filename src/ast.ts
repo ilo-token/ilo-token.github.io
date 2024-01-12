@@ -5,7 +5,7 @@ export type Modifier =
   | { type: "nanpa ordinal"; phrase: FullPhrase }
   | { type: "cardinal"; number: Array<string> };
 
-export type Phrase = { head: string; modifiers: Array<Modifier> };
+export type Phrase = { headWord: string; modifiers: Array<Modifier> };
 
 export type FullPhrase =
   | { type: "default"; phrase: Phrase }

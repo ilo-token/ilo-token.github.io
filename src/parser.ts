@@ -1,5 +1,5 @@
 import { FullPhrase, Modifier, Phrase } from "./ast.ts";
-import { CONTENTWORD } from "./vocabulary.ts";
+import { CONTENTWORD, PREVERB } from "./vocabulary.ts";
 
 class ParseError extends Error {}
 class UnreachableError extends ParseError {}
@@ -267,8 +267,28 @@ function modifier(): Parser<Modifier> {
   );
 }
 function phrase(): Parser<Phrase> {
-  throw new Error("TODO");
+  return sequence(headWord(), many(modifier())).map(
+    ([headWord, modifiers]) => ({
+      headWord,
+      modifiers,
+    })
+  );
 }
 function fullPhrase(): Parser<FullPhrase> {
-  throw new Error("TODO");
+  return sequence(optional(wordFrom(PREVERB, "preverb")), phrase()).map(
+    ([preverb, phrase]) => {
+      if (preverb) {
+        return {
+          type: "preverb",
+          preverb,
+          phrase,
+        };
+      } else {
+        return {
+          type: "default",
+          phrase,
+        };
+      }
+    }
+  );
 }
