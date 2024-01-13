@@ -102,31 +102,12 @@ function sequence<T extends Array<unknown>>(
   );
 }
 function many<T>(parser: Parser<T>): Parser<Array<T>> {
-  return new Parser((src) => {
-    const wholeOutput = new Output<ValueRest<Array<T>>>([
-      { value: [], rest: src },
-    ]);
-    let currentOutput = new Output<ValueRest<Array<T>>>([
-      { value: [], rest: src },
-    ]);
-    while (true) {
-      const newOutput = currentOutput.flatMap(({ value, rest }) =>
-        parser.parser(rest).map((
-          { value: newValue, rest },
-        ) => ({
-          value: [...value, newValue],
-          rest,
-        }))
-      );
-      if (newOutput.isError()) {
-        break;
-      } else {
-        wholeOutput.append(newOutput);
-        currentOutput = newOutput;
-      }
-    }
-    return wholeOutput;
-  });
+  return choice(
+    nothing().map(() => []),
+    sequence(parser, recursive(() => many(parser))).map((
+      [first, rest],
+    ) => [first, ...rest]),
+  );
 }
 function all<T>(parser: Parser<T>): Parser<Array<T>> {
   return new Parser((src) => {
