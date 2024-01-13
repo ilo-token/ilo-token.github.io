@@ -8,7 +8,7 @@ import {
   Preposition,
   Sentence,
 } from "./ast.ts";
-import { OutputError, UnreachableError, UnrecognizedError } from "./error.ts";
+import { UnreachableError, UnrecognizedError } from "./error.ts";
 import { Output } from "./output.ts";
 import {
   CONTENT_WORD,
