@@ -22,29 +22,19 @@ type ParserOutput<T> = Output<ValueRest<T>>;
 class Parser<T> {
   constructor(public readonly parser: (src: string) => ParserOutput<T>) {}
   map<U>(mapper: (x: T) => U): Parser<U> {
-    return new Parser((src) => {
-      const result = this.parser(src);
-      if (result.isError()) {
-        if (result.error) {
-          return new Output<ValueRest<U>>(result.error);
-        } else {
-          return new Output([]);
-        }
-      }
-      const output = new Output<ValueRest<U>>([]);
-      for (const { value, rest } of result.output) {
+    return new Parser((src) =>
+      this.parser(src).flatMap(({ value, rest }) => {
         try {
-          output.push({ value: mapper(value), rest });
+          return new Output([{ value: mapper(value), rest }]);
         } catch (error) {
           if (error instanceof Error) {
-            output.setError(error);
+            return new Output(error);
           } else {
             throw error;
           }
         }
-      }
-      return output;
-    });
+      })
+    );
   }
   with<U>(parser: Parser<U>): Parser<U> {
     return sequence(this, parser).map(([_, output]) => output);
@@ -72,9 +62,7 @@ function match(regex: RegExp): Parser<RegExpMatchArray> {
   });
 }
 function nothing(): Parser<null> {
-  return new Parser((src) => {
-    return new Output([{ value: null, rest: src }]);
-  });
+  return new Parser((src) => new Output([{ value: null, rest: src }]));
 }
 function eol(): Parser<null> {
   return new Parser((src) => {
@@ -89,13 +77,9 @@ function recursive<T>(parser: () => Parser<T>): Parser<T> {
   return new Parser((src) => parser().parser(src));
 }
 function choice<T>(...choices: Array<Parser<T>>): Parser<T> {
-  return new Parser((src) => {
-    let output = new Output<ValueRest<T>>([]);
-    for (const parser of choices) {
-      output.append(parser.parser(src));
-    }
-    return output;
-  });
+  return new Parser((src) =>
+    new Output(choices).flatMap((parser) => parser.parser(src))
+  );
 }
 function optional<T>(parser: Parser<T>): Parser<null | T> {
   return choice(parser, nothing());
@@ -103,55 +87,37 @@ function optional<T>(parser: Parser<T>): Parser<null | T> {
 function sequence<T extends Array<unknown>>(
   ...sequence: { [I in keyof T]: Parser<T[I]> } & { length: T["length"] }
 ): Parser<T> {
-  if (sequence.length === 0) {
-    throw new Error("sequences can't be empty");
-  }
   // We resorted to using `any` types here, make sure it works properly
-  return new Parser((src) => {
-    let wholeOutput = new Output<ValueRest<any>>([{ value: [], rest: src }]);
-    for (const parser of sequence) {
-      let newOutput = new Output<ValueRest<any>>([]);
-      for (const { value, rest } of wholeOutput.output) {
-        const { output, error } = parser.parser(rest);
-        if (output.length === 0) {
-          newOutput.setError(error);
-        } else {
-          for (const { value: newValue, rest } of output) {
-            newOutput.push({
-              value: [...value, newValue],
-              rest,
-            });
-          }
-        }
-      }
-      wholeOutput = newOutput;
-    }
-    return wholeOutput;
-  });
+  return new Parser((src) =>
+    sequence.reduce(
+      (output, parser) =>
+        output.flatMap(({ value, rest }) =>
+          parser.parser(rest).map(({ value: newValue, rest }) => ({
+            value: [...value, newValue],
+            rest,
+          }))
+        ),
+      new Output<ValueRest<any>>([{ value: [], rest: src }]),
+    )
+  );
 }
 function many<T>(parser: Parser<T>): Parser<Array<T>> {
   return new Parser((src) => {
-    let wholeOutput = new Output<ValueRest<Array<T>>>([
+    const wholeOutput = new Output<ValueRest<Array<T>>>([
       { value: [], rest: src },
     ]);
     let currentOutput = new Output<ValueRest<Array<T>>>([
       { value: [], rest: src },
     ]);
     while (true) {
-      let newOutput = new Output<ValueRest<Array<T>>>([]);
-      for (const { value, rest } of currentOutput.output) {
-        const { output, error } = parser.parser(rest);
-        if (output.length === 0) {
-          newOutput.setError(error);
-        } else {
-          for (const { value: newValue, rest } of output) {
-            newOutput.push({
-              value: [...value, newValue],
-              rest,
-            });
-          }
-        }
-      }
+      const newOutput = currentOutput.flatMap(({ value, rest }) =>
+        parser.parser(rest).map((
+          { value: newValue, rest },
+        ) => ({
+          value: [...value, newValue],
+          rest,
+        }))
+      );
       if (newOutput.isError()) {
         break;
       } else {
@@ -168,20 +134,14 @@ function all<T>(parser: Parser<T>): Parser<Array<T>> {
       { value: [], rest: src },
     ]);
     while (true) {
-      let newOutput = new Output<ValueRest<Array<T>>>([]);
-      for (const { value, rest } of wholeOutput.output) {
-        const { output, error } = parser.parser(rest);
-        if (output.length === 0) {
-          newOutput.setError(error);
-        } else {
-          for (const { value: newValue, rest } of output) {
-            newOutput.push({
-              value: [...value, newValue],
-              rest,
-            });
-          }
-        }
-      }
+      const newOutput = wholeOutput.flatMap(({ value, rest }) =>
+        parser.parser(rest).map((
+          { value: newValue, rest },
+        ) => ({
+          value: [...value, newValue],
+          rest,
+        }))
+      );
       if (newOutput.isError()) {
         break;
       } else {
