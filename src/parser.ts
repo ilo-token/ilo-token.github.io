@@ -109,37 +109,11 @@ function many<T>(parser: Parser<T>): Parser<Array<T>> {
     ) => [first, ...rest]),
   );
 }
-function all<T>(parser: Parser<T>): Parser<Array<T>> {
-  return new Parser((src) => {
-    let wholeOutput = new Output<ValueRest<Array<T>>>([
-      { value: [], rest: src },
-    ]);
-    while (true) {
-      const newOutput = wholeOutput.flatMap(({ value, rest }) =>
-        parser.parser(rest).map((
-          { value: newValue, rest },
-        ) => ({
-          value: [...value, newValue],
-          rest,
-        }))
-      );
-      if (newOutput.isError()) {
-        break;
-      } else {
-        wholeOutput = newOutput;
-      }
-    }
-    return wholeOutput;
-  });
-}
 function manyAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
   return sequence(parser, many(parser)).map(([first, rest]) => [
     first,
     ...rest,
   ]);
-}
-function allAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
-  return sequence(parser, all(parser)).map(([first, rest]) => [first, ...rest]);
 }
 function allSpace(): Parser<string> {
   return match(/\s*/).map(([space]) => space);
@@ -148,9 +122,10 @@ function word(): Parser<string> {
   return match(/([a-z]+)\s*/).map(([_, word]) => word);
 }
 function properWords(): Parser<string> {
-  return allAtLeastOnce(match(/([A-Z][a-z]*)\s*/).map(([_, word]) => word)).map(
-    (array) => array.join(" "),
-  );
+  return manyAtLeastOnce(match(/([A-Z][a-z]*)\s*/).map(([_, word]) => word))
+    .map(
+      (array) => array.join(" "),
+    );
 }
 function wordFrom(set: Set<string>, description: string): Parser<string> {
   return word().map((word) => {
