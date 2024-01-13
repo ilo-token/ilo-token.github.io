@@ -23,17 +23,10 @@ class Parser<T> {
   constructor(public readonly parser: (src: string) => ParserOutput<T>) {}
   map<U>(mapper: (x: T) => U): Parser<U> {
     return new Parser((src) =>
-      this.parser(src).flatMap(({ value, rest }) => {
-        try {
-          return new Output([{ value: mapper(value), rest }]);
-        } catch (error) {
-          if (error instanceof Error) {
-            return new Output(error);
-          } else {
-            throw error;
-          }
-        }
-      })
+      this.parser(src).map(({ value, rest }) => ({
+        value: mapper(value),
+        rest,
+      }))
     );
   }
   with<U>(parser: Parser<U>): Parser<U> {

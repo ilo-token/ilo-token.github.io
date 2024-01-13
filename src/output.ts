@@ -24,7 +24,17 @@ export class Output<T> {
     return this.output.length === 0;
   }
   map<U>(mapper: (value: T) => U): Output<U> {
-    return new Output(this.output.map(mapper));
+    return this.flatMap((value) => {
+      try {
+        return new Output([mapper(value)]);
+      } catch (error) {
+        if (error instanceof Error) {
+          return new Output(error);
+        } else {
+          throw error;
+        }
+      }
+    });
   }
   flatMap<U>(mapper: (value: T) => Output<U>): Output<U> {
     if (this.isError()) {
