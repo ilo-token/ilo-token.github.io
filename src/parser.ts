@@ -122,7 +122,7 @@ function manyAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
 }
 function all<T>(parser: Parser<T>): Parser<Array<T>> {
   return choiceOnlyOne(
-    sequence(parser, lazy(() => many(parser))).map((
+    sequence(parser, lazy(() => all(parser))).map((
       [first, rest],
     ) => [first, ...rest]),
     nothing().map(() => []),
