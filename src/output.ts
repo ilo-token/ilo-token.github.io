@@ -3,7 +3,7 @@ import { OutputError } from "./error.ts";
 export class Output<T> {
   output: Array<T>;
   error: null | OutputError;
-  constructor(output: Array<T> | OutputError) {
+  constructor(output?: Array<T> | OutputError) {
     if (Array.isArray(output)) {
       this.output = output;
       this.error = null;
@@ -11,7 +11,8 @@ export class Output<T> {
       this.output = [];
       this.error = output;
     } else {
-      throw new Error("passed not array nor error");
+      this.output = [];
+      this.error = new OutputError("no error provided");
     }
   }
   private append({ output, error }: Output<T>): void {
@@ -43,10 +44,10 @@ export class Output<T> {
       if (this.error) {
         return new Output(this.error);
       } else {
-        return new Output(new OutputError("no error provided"));
+        return new Output(new OutputError());
       }
     }
-    const wholeOutput = new Output<U>(new OutputError("no error provided"));
+    const wholeOutput = new Output<U>(new OutputError());
     for (const value of this.output) {
       wholeOutput.append(mapper(value));
     }

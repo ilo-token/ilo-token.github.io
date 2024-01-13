@@ -82,7 +82,7 @@ function choiceOnlyOne<T>(...choices: Array<Parser<T>>): Parser<T> {
       } else {
         return output;
       }
-    }, new Output<ValueRest<T>>(new OutputError("no error provided")))
+    }, new Output<ValueRest<T>>(new OutputError()))
   );
 }
 function optional<T>(parser: Parser<T>): Parser<null | T> {
