@@ -103,10 +103,10 @@ function sequence<T extends Array<unknown>>(
 }
 function many<T>(parser: Parser<T>): Parser<Array<T>> {
   return choice(
-    nothing().map(() => []),
     sequence(parser, lazy(() => many(parser))).map((
       [first, rest],
     ) => [first, ...rest]),
+    nothing().map(() => []),
   );
 }
 function manyAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
