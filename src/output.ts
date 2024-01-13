@@ -44,10 +44,10 @@ export class Output<T> {
       if (this.error) {
         return new Output(this.error);
       } else {
-        return new Output(new OutputError());
+        return new Output();
       }
     }
-    const wholeOutput = new Output<U>(new OutputError());
+    const wholeOutput = new Output<U>();
     for (const value of this.output) {
       wholeOutput.append(mapper(value));
     }
