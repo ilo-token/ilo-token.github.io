@@ -73,7 +73,7 @@ function eol(): Parser<null> {
     }
   });
 }
-function recursive<T>(parser: () => Parser<T>): Parser<T> {
+function lazy<T>(parser: () => Parser<T>): Parser<T> {
   return new Parser((src) => parser().parser(src));
 }
 function choice<T>(...choices: Array<Parser<T>>): Parser<T> {
@@ -104,7 +104,7 @@ function sequence<T extends Array<unknown>>(
 function many<T>(parser: Parser<T>): Parser<Array<T>> {
   return choice(
     nothing().map(() => []),
-    sequence(parser, recursive(() => many(parser))).map((
+    sequence(parser, lazy(() => many(parser))).map((
       [first, rest],
     ) => [first, ...rest]),
   );
@@ -186,7 +186,7 @@ function phrase(): Parser<Phrase> {
 function fullPhrase(): Parser<FullPhrase> {
   return sequence(
     optional(wordFrom(PREVERB, "preverb")),
-    recursive(phrase),
+    lazy(phrase),
   ).map(([preverb, phrase]) => {
     if (preverb) {
       return {
@@ -290,7 +290,7 @@ function sentence(): Parser<Sentence> {
     fullClause().map(
       (clause) => ({ type: "single clause", clause } as Sentence),
     ),
-    sequence(fullClause().skip(specificWord("la")), recursive(sentence)).map(
+    sequence(fullClause().skip(specificWord("la")), lazy(sentence)).map(
       ([left, right]) => ({ type: "la clauses", left, right }),
     ),
   );
