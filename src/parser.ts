@@ -81,6 +81,17 @@ function choice<T>(...choices: Array<Parser<T>>): Parser<T> {
     new Output(choices).flatMap((parser) => parser.parser(src))
   );
 }
+function choiceOnlyOne<T>(...choices: Array<Parser<T>>): Parser<T> {
+  return new Parser((src) =>
+    choices.reduce((output, parser) => {
+      if (output.isError()) {
+        return parser.parser(src);
+      } else {
+        return output;
+      }
+    }, new Output<ValueRest<T>>([]))
+  );
+}
 function optional<T>(parser: Parser<T>): Parser<null | T> {
   return choice(parser, nothing());
 }
@@ -115,6 +126,20 @@ function manyAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
     ...rest,
   ]);
 }
+function all<T>(parser: Parser<T>): Parser<Array<T>> {
+  return choiceOnlyOne(
+    sequence(parser, lazy(() => many(parser))).map((
+      [first, rest],
+    ) => [first, ...rest]),
+    nothing().map(() => []),
+  );
+}
+function allAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
+  return sequence(parser, all(parser)).map(([first, rest]) => [
+    first,
+    ...rest,
+  ]);
+}
 function allSpace(): Parser<string> {
   return match(/\s*/).map(([space]) => space);
 }
@@ -122,7 +147,7 @@ function word(): Parser<string> {
   return match(/([a-z]+)\s*/).map(([_, word]) => word);
 }
 function properWords(): Parser<string> {
-  return manyAtLeastOnce(match(/([A-Z][a-z]*)\s*/).map(([_, word]) => word))
+  return allAtLeastOnce(match(/([A-Z][a-z]*)\s*/).map(([_, word]) => word))
     .map(
       (array) => array.join(" "),
     );
