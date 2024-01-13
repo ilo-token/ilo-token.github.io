@@ -160,7 +160,7 @@ function specificWord(thatWord: string): Parser<string> {
     if (thatWord === thisWord) {
       return thisWord;
     } else {
-      throw new UnrecognizedError(`"${thisWord}" instead of "${word}"`);
+      throw new UnrecognizedError(`"${thisWord}" instead of "${thatWord}"`);
     }
   });
 }
