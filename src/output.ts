@@ -41,11 +41,7 @@ export class Output<T> {
   }
   flatMap<U>(mapper: (value: T) => Output<U>): Output<U> {
     if (this.isError()) {
-      if (this.error) {
-        return new Output(this.error);
-      } else {
-        return new Output();
-      }
+      return new Output(this.error);
     }
     const wholeOutput = new Output<U>();
     for (const value of this.output) {
