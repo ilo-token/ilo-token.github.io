@@ -41,10 +41,10 @@ export class Output<T> {
       if (this.error) {
         return new Output(this.error);
       } else {
-        return new Output([]);
+        return new Output(new Error("no error provided"));
       }
     }
-    const wholeOutput = new Output<U>([]);
+    const wholeOutput = new Output<U>(new Error("no error provided"));
     for (const value of this.output) {
       wholeOutput.append(mapper(value));
     }
