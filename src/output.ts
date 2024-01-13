@@ -3,7 +3,7 @@ import { OutputError } from "./error.ts";
 export class Output<T> {
   output: Array<T>;
   error: null | OutputError;
-  constructor(output?: Array<T> | OutputError) {
+  constructor(output?: undefined | null | Array<T> | OutputError) {
     if (Array.isArray(output)) {
       this.output = output;
       this.error = null;
