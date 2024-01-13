@@ -1,7 +1,9 @@
+import { OutputError } from "./error.ts";
+
 export class Output<T> {
   output: Array<T>;
-  error: null | Error;
-  constructor(output: Array<T> | Error) {
+  error: null | OutputError;
+  constructor(output: Array<T> | OutputError) {
     if (Array.isArray(output)) {
       this.output = output;
       this.error = null;
@@ -28,7 +30,7 @@ export class Output<T> {
       try {
         return new Output([mapper(value)]);
       } catch (error) {
-        if (error instanceof Error) {
+        if (error instanceof OutputError) {
           return new Output(error);
         } else {
           throw error;
@@ -41,10 +43,10 @@ export class Output<T> {
       if (this.error) {
         return new Output(this.error);
       } else {
-        return new Output(new Error("no error provided"));
+        return new Output(new OutputError("no error provided"));
       }
     }
-    const wholeOutput = new Output<U>(new Error("no error provided"));
+    const wholeOutput = new Output<U>(new OutputError("no error provided"));
     for (const value of this.output) {
       wholeOutput.append(mapper(value));
     }

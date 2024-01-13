@@ -8,7 +8,7 @@ import {
   Preposition,
   Sentence,
 } from "./ast.ts";
-import { UnreachableError, UnrecognizedError } from "./error.ts";
+import { OutputError, UnreachableError, UnrecognizedError } from "./error.ts";
 import { Output } from "./output.ts";
 import {
   CONTENT_WORD,
@@ -82,7 +82,7 @@ function choiceOnlyOne<T>(...choices: Array<Parser<T>>): Parser<T> {
       } else {
         return output;
       }
-    }, new Output<ValueRest<T>>(new Error("no error provided")))
+    }, new Output<ValueRest<T>>(new OutputError("no error provided")))
   );
 }
 function optional<T>(parser: Parser<T>): Parser<null | T> {
