@@ -7,7 +7,7 @@ export class Output<T> {
     if (Array.isArray(output)) {
       this.output = output;
       this.error = null;
-    } else if (output instanceof Error) {
+    } else if (output instanceof OutputError) {
       this.output = [];
       this.error = output;
     } else {
