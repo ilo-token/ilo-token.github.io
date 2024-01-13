@@ -108,6 +108,7 @@ function sequence<T extends Array<unknown>>(
             rest,
           }))
         ),
+      // deno-lint-ignore no-explicit-any
       new Output<ValueRest<any>>([{ value: [], rest: src }]),
     )
   );
