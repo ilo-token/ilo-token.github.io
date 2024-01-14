@@ -308,11 +308,16 @@ function phrase(): Parser<Phrase> {
 }
 /** Parses prepositional phrase. */
 function preposition(): Parser<Preposition> {
-  return sequence(alaQuestion(wordFrom(PREPOSITION, "preposition")), phrase())
+  return sequence(
+    alaQuestion(wordFrom(PREPOSITION, "preposition")),
+    many(modifier()),
+    phrase(),
+  )
     .map(
-      ([[preposition, alaQuestion], phrase]) => ({
+      ([[preposition, alaQuestion], modifiers, phrase]) => ({
         preposition,
         alaQuestion,
+        modifiers,
         phrase,
       }),
     );

@@ -28,6 +28,7 @@ export type Phrase =
 export type Preposition = {
   preposition: string;
   alaQuestion: boolean;
+  modifiers: Array<Modifier>;
   phrase: Phrase;
 };
 
