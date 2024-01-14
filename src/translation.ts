@@ -22,6 +22,7 @@ export const NOUN = {
   kama: ["arriving"],
   kasi: ["plant", "plants"],
   ken: ["ability", "abilities", "possibility", "possibilities"],
+  kepeken: [],
   kili: ["fruit", "fruits", "vegetable", "vegetables"],
   kiwen: ["hard thing", "hard things"],
   ko: ["soft thing", "soft things", "powder"],

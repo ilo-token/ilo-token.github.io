@@ -36,6 +36,7 @@ export const CONTENT_WORD = new Set([
   "kama",
   "kasi",
   "ken",
+  "kepeken",
   "kili",
   "kiwen",
   "ko",
@@ -147,5 +148,4 @@ export const PREPOSITION = new Set(["kepeken", "lon", "sama", "tan", "tawa"]);
 export const VOCABULARY = new Set([
   ...PARTICLES,
   ...CONTENT_WORD,
-  ...PREPOSITION,
 ]);
