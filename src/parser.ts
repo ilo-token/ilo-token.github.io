@@ -433,7 +433,7 @@ function sentence(): Parser<Sentence> {
 function fullSentence(): Parser<Sentence> {
   return allSpace()
     .with(sentence())
-    .skip(optional(match(/\./)))
+    .skip(optional(match(/[\.?!:]/)))
     .skip(allSpace())
     .skip(eol());
 }
