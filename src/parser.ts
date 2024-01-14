@@ -1,12 +1,12 @@
 import {
   Clause,
   FullClause,
-  FullPhrase,
   Modifier,
   Phrase,
   Predicate,
   Preposition,
   Sentence,
+  SimplePhrase,
 } from "./ast.ts";
 import { UnreachableError, UnrecognizedError } from "./error.ts";
 import { Output } from "./output.ts";
@@ -237,7 +237,7 @@ function number(): Parser<Array<string>> {
 function modifier(): Parser<Modifier> {
   return choice(
     specificWord("nanpa")
-      .with(fullPhrase())
+      .with(phrase())
       .map((phrase) => ({
         type: "nanpa ordinal",
         phrase,
@@ -253,7 +253,7 @@ function modifier(): Parser<Modifier> {
       words,
     })),
     specificWord("pi")
-      .with(fullPhrase())
+      .with(phrase())
       .map((phrase) => ({
         type: "pi",
         phrase,
@@ -262,19 +262,26 @@ function modifier(): Parser<Modifier> {
   );
 }
 /** Parses phrase. */
-function phrase(): Parser<Phrase> {
-  return sequence(headWord(), many(modifier())).map(
-    ([headWord, modifiers]) => ({
-      headWord,
-      modifiers,
-    }),
+function simplePhrase(): Parser<SimplePhrase> {
+  return choice(
+    number().map((number) => ({
+      type: "cardinal",
+      number,
+    } as SimplePhrase)),
+    sequence(headWord(), many(modifier())).map(
+      ([headWord, modifiers]) => ({
+        type: "default",
+        headWord,
+        modifiers,
+      }),
+    ),
   );
 }
 /** Parses phrases including preverbial phrases. */
-function fullPhrase(): Parser<FullPhrase> {
+function phrase(): Parser<Phrase> {
   return sequence(
     optional(wordFrom(PREVERB, "preverb")),
-    lazy(phrase),
+    lazy(simplePhrase),
   ).map(([preverb, phrase]) => {
     if (preverb) {
       return {
@@ -292,7 +299,7 @@ function fullPhrase(): Parser<FullPhrase> {
 }
 /** Parses prepositional phrase. */
 function preposition(): Parser<Preposition> {
-  return sequence(wordFrom(PREPOSITION, "preposition"), fullPhrase()).map(
+  return sequence(wordFrom(PREPOSITION, "preposition"), phrase()).map(
     ([preposition, phrase]) => ({
       preposition,
       phrase,
@@ -300,17 +307,17 @@ function preposition(): Parser<Preposition> {
   );
 }
 /** Parses phrases separated by _en_. */
-function enPhrases(): Parser<Array<FullPhrase>> {
+function enPhrases(): Parser<Array<Phrase>> {
   return sequence(
-    fullPhrase(),
-    many(specificWord("en").with(fullPhrase())),
+    phrase(),
+    many(specificWord("en").with(phrase())),
   ).map(([first, rest]) => [first, ...rest]);
 }
 /** Parses a single predicate. */
 function predicate(): Parser<Predicate> {
   return choice(
     preposition().map((preposition) => ({ type: "preposition", preposition })),
-    fullPhrase().map(
+    phrase().map(
       (predicate) => ({ type: "default", predicate } as Predicate),
     ),
   );
@@ -326,7 +333,10 @@ function clause(): Parser<Clause> {
     ).map(([subject, predicate, morePredicates, prepositions]) => ({
       type: "li clause",
       subjects: [
-        { type: "default", phrase: { headWord: subject, modifiers: [] } },
+        {
+          type: "default",
+          phrase: { type: "default", headWord: subject, modifiers: [] },
+        },
       ],
       predicates: [predicate, ...morePredicates],
       prepositions,

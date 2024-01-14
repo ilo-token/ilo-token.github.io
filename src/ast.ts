@@ -2,39 +2,43 @@
 export type Modifier =
   | { type: "word"; word: string }
   | { type: "proper words"; words: string }
-  | { type: "pi"; phrase: FullPhrase }
-  | { type: "nanpa ordinal"; phrase: FullPhrase }
+  | { type: "pi"; phrase: Phrase }
+  | { type: "nanpa ordinal"; phrase: Phrase }
   | { type: "cardinal"; number: Array<string> };
 
 /** Represents a simple phrase. */
-export type Phrase = { headWord: string; modifiers: Array<Modifier> };
+export type SimplePhrase = {
+  type: "default";
+  headWord: string;
+  modifiers: Array<Modifier>;
+} | { type: "cardinal"; number: Array<string> };
 
 /** Represents a phrase including preverbial phrases. */
-export type FullPhrase =
-  | { type: "default"; phrase: Phrase }
-  | { type: "preverb"; preverb: string; phrase: Phrase };
+export type Phrase =
+  | { type: "default"; phrase: SimplePhrase }
+  | { type: "preverb"; preverb: string; phrase: SimplePhrase };
 
 /** Represents a single prepositional phrase. */
-export type Preposition = { preposition: string; phrase: FullPhrase };
+export type Preposition = { preposition: string; phrase: Phrase };
 
 /** Represents a single predicate. */
 export type Predicate =
-  | { type: "default"; predicate: FullPhrase }
+  | { type: "default"; predicate: Phrase }
   | { type: "preposition"; preposition: Preposition };
 
 /** Represents a simple clause. */
 export type Clause =
-  | { type: "en phrases"; phrases: Array<FullPhrase> }
-  | { type: "o vocative"; phrases: Array<FullPhrase> }
+  | { type: "en phrases"; phrases: Array<Phrase> }
+  | { type: "o vocative"; phrases: Array<Phrase> }
   | {
     type: "li clause";
-    subjects: Array<FullPhrase>;
+    subjects: Array<Phrase>;
     predicates: Array<Predicate>;
     prepositions: Array<Preposition>;
   }
   | {
     type: "o clause";
-    subjects: Array<FullPhrase>;
+    subjects: Array<Phrase>;
     predicates: Array<Predicate>;
     prepositions: Array<Preposition>;
   }
