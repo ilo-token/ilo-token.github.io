@@ -437,7 +437,7 @@ function fullSentence(): Parser<Sentence> {
     .skip(allSpace())
     .skip(eol());
 }
-/** The full parser. */
+/** A Toki Pona sentence parser. */
 export function parser(src: string): Output<Sentence> {
   return fullSentence()
     .parser(src)
