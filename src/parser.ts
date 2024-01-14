@@ -443,5 +443,3 @@ export function parser(src: string): Output<Sentence> {
     .parser(src)
     .map(({ value }) => value);
 }
-console.log(predicate().parser("pona"));
-debugger;
