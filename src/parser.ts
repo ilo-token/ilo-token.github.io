@@ -216,6 +216,23 @@ function specificWord(thatWord: string): Parser<string> {
 function headWord(): Parser<string> {
   return wordFrom(CONTENT_WORD, "headword");
 }
+/** Parses number words in order. */
+function number(): Parser<Array<string>> {
+  return sequence(
+    all(specificWord("ale")),
+    all(specificWord("mute")),
+    all(specificWord("luka")),
+    all(specificWord("tu")),
+    all(specificWord("wan")),
+  ).map((array) => {
+    const output = array.flat();
+    if (output.length === 0) {
+      throw new UnreachableError();
+    } else {
+      return output;
+    }
+  });
+}
 /** Parses a single modifier. */
 function modifier(): Parser<Modifier> {
   return choice(
@@ -241,7 +258,7 @@ function modifier(): Parser<Modifier> {
         type: "pi",
         phrase,
       })),
-    // TODO: cardinal modifier
+    number().map((number) => ({ type: "cardinal", number })),
   );
 }
 /** Parses phrase. */
