@@ -6,7 +6,11 @@ export class Output<T> {
   constructor(output?: undefined | null | Array<T> | OutputError) {
     if (Array.isArray(output)) {
       this.output = output;
-      this.error = null;
+      if (output.length === 0) {
+        this.error = new OutputError("no error provided");
+      } else {
+        this.error = null;
+      }
     } else if (output instanceof OutputError) {
       this.output = [];
       this.error = output;
