@@ -1,3 +1,4 @@
+/** Particles. */
 export const PARTICLES = new Set([
   "a",
   "ala",
@@ -11,6 +12,7 @@ export const PARTICLES = new Set([
   "pi",
   "taso",
 ]);
+/** Content words. */
 export const CONTENT_WORD = new Set([
   "akesi",
   "ala",
@@ -125,6 +127,7 @@ export const CONTENT_WORD = new Set([
   "weka",
   "wile",
 ]);
+/** Special subjects that doesn't use _li_ */
 export const SPECIAL_SUBJECT = new Set(["mi", "sina"]);
 export const NUMBER = new Set(["wan", "tu", "luka", "mute", "ale", "ali"]);
 export const PREVERB = new Set([
@@ -138,7 +141,9 @@ export const PREVERB = new Set([
   "sona",
   "wile",
 ]);
+/** Prepositions. */
 export const PREPOSITION = new Set(["kepeken", "lon", "sama", "tan", "tawa"]);
+/** Full vocabulary. */
 export const VOCABULARY = new Set([
   ...PARTICLES,
   ...CONTENT_WORD,

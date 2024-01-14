@@ -1,7 +1,12 @@
 import { OutputError } from "./error.ts";
 
+/** Represents possibilities and error. */
 export class Output<T> {
+  /** Represents possibilities, considered error when the array is empty. */
   output: Array<T>;
+  /**
+   * An optional error, should be supplied if and only if the array is empty.
+   */
   error: null | OutputError;
   constructor(output?: undefined | null | Array<T> | OutputError) {
     if (Array.isArray(output)) {
@@ -30,6 +35,10 @@ export class Output<T> {
   isError(): boolean {
     return this.output.length === 0;
   }
+  /**
+   * Maps all values and returns new Output. For convenience, the mapper
+   * function can throw OutputError; Other kinds of errors will be ignored.
+   */
   map<U>(mapper: (value: T) => U): Output<U> {
     return this.flatMap((value) => {
       try {
@@ -43,6 +52,10 @@ export class Output<T> {
       }
     });
   }
+  /**
+   * Accepts mapper function that returns another Output. flatMap takes all
+   * values and flattens them into single array for Output.
+   */
   flatMap<U>(mapper: (value: T) => Output<U>): Output<U> {
     if (this.isError()) {
       return new Output(this.error);

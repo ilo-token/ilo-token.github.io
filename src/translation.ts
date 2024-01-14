@@ -1,3 +1,4 @@
+/** Noun translations. */
 export const NOUN = {
   akesi: ["reptile", "reptiles", "amphibian", "amphibians"],
   ala: ["nothing", "no"],
@@ -112,6 +113,7 @@ export const NOUN = {
   weka: ["leaving"],
   wile: ["want", "wants", "need", "needs"],
 };
+/** Adjective translations. */
 export const ADJECTIVE = {
   akesi: ["reptilian", "amphibian"],
   ala: ["not", "no"],
@@ -225,6 +227,7 @@ export const ADJECTIVE = {
   weka: ["leaving"],
   wile: [],
 };
+/** Adverb translations. */
 export const ADVERB = {
   akesi: [],
   ala: ["not"],

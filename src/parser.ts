@@ -17,10 +17,17 @@ import {
   SPECIAL_SUBJECT,
 } from "./vocabulary.ts";
 
+/** A single parsing result. */
 type ValueRest<T> = { value: T; rest: string };
+/** A special kind of Output that parsers returns. */
 type ParserOutput<T> = Output<ValueRest<T>>;
+/** Wrapper of parser function with added methods for convenience. */
 class Parser<T> {
   constructor(public readonly parser: (src: string) => ParserOutput<T>) {}
+  /**
+   * Maps the parsing result. For convenience, the mapper function can throw
+   * an OutputError; Other kinds of error are ignored.
+   */
   map<U>(mapper: (x: T) => U): Parser<U> {
     return new Parser((src) =>
       this.parser(src).map(({ value, rest }) => ({
@@ -29,13 +36,19 @@ class Parser<T> {
       }))
     );
   }
+  /** Takes another parser and discards the first parsing result. */
   with<U>(parser: Parser<U>): Parser<U> {
     return sequence(this, parser).map(([_, output]) => output);
   }
+  /** Takes another parser and discards its parsing result. */
   skip<U>(parser: Parser<U>): Parser<T> {
     return sequence(this, parser).map(([output, _]) => output);
   }
 }
+/**
+ * Uses Regular Expression to create parser. The parser outputs
+ * RegExpMatchArray, which is what `string.match( ... )` returns.
+ */
 function match(regex: RegExp): Parser<RegExpMatchArray> {
   const newRegex = new RegExp("^" + regex.source, regex.flags);
   return new Parser((src) => {
@@ -54,9 +67,11 @@ function match(regex: RegExp): Parser<RegExpMatchArray> {
     }
   });
 }
+/** Parses nothing and leaves the source string intact. */
 function nothing(): Parser<null> {
   return new Parser((src) => new Output([{ value: null, rest: src }]));
 }
+/** Parses the end of line (or the end of sentence in context of Toki Pona) */
 function eol(): Parser<null> {
   return new Parser((src) => {
     if (src === "") {
@@ -66,14 +81,26 @@ function eol(): Parser<null> {
     }
   });
 }
+/**
+ * Lazily evaluates the parser function only when needed. Useful for recursive
+ * parsers.
+ */
 function lazy<T>(parser: () => Parser<T>): Parser<T> {
   return new Parser((src) => parser().parser(src));
 }
+/**
+ * Evaluates all parsers on the same source string and sums it all on a single
+ * Output.
+ */
 function choice<T>(...choices: Array<Parser<T>>): Parser<T> {
   return new Parser((src) =>
     new Output(choices).flatMap((parser) => parser.parser(src))
   );
 }
+/**
+ * Tries to evaluate each parsers one at a time and only returns the first
+ * Output without error.
+ */
 function choiceOnlyOne<T>(...choices: Array<Parser<T>>): Parser<T> {
   return new Parser((src) =>
     choices.reduce((output, parser) => {
@@ -85,9 +112,11 @@ function choiceOnlyOne<T>(...choices: Array<Parser<T>>): Parser<T> {
     }, new Output<ValueRest<T>>())
   );
 }
+/** Combines `parser` and the `nothing` parser, and output `null | T`. */
 function optional<T>(parser: Parser<T>): Parser<null | T> {
   return choice(parser, nothing());
 }
+/** Takes all parsers and applies them one after another. */
 function sequence<T extends Array<unknown>>(
   ...sequence: { [I in keyof T]: Parser<T[I]> } & { length: T["length"] }
 ): Parser<T> {
@@ -106,6 +135,11 @@ function sequence<T extends Array<unknown>>(
     )
   );
 }
+/**
+ * Parses `parser` multiple times and returns an `Array<T>`. The resulting
+ * output includes all outputs from parsing nothing to parsing as many as
+ * possible.
+ */
 function many<T>(parser: Parser<T>): Parser<Array<T>> {
   return choice(
     sequence(parser, lazy(() => many(parser))).map((
@@ -114,12 +148,17 @@ function many<T>(parser: Parser<T>): Parser<Array<T>> {
     nothing().map(() => []),
   );
 }
+/** Like `many` but parses at least once. */
 function manyAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
   return sequence(parser, many(parser)).map(([first, rest]) => [
     first,
     ...rest,
   ]);
 }
+/**
+ * Parses `parser` multiple times and returns an `Array<T>`. This function is
+ * exhaustive.
+ */
 function all<T>(parser: Parser<T>): Parser<Array<T>> {
   return choiceOnlyOne(
     sequence(parser, lazy(() => all(parser))).map((
@@ -128,24 +167,32 @@ function all<T>(parser: Parser<T>): Parser<Array<T>> {
     nothing().map(() => []),
   );
 }
+/** Like `all` but parses at least once. */
 function allAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
   return sequence(parser, all(parser)).map(([first, rest]) => [
     first,
     ...rest,
   ]);
 }
+/** Parses whitespaces. */
 function allSpace(): Parser<string> {
   return match(/\s*/).map(([space]) => space);
 }
+/** Parses lowercase word. */
 function word(): Parser<string> {
   return match(/([a-z]+)\s*/).map(([_, word]) => word);
 }
+/**
+ * Parses all at least one uppercase words and combines them all into single
+ * string. This function is exhaustive like `all`.
+ */
 function properWords(): Parser<string> {
   return allAtLeastOnce(match(/([A-Z][a-z]*)\s*/).map(([_, word]) => word))
     .map(
       (array) => array.join(" "),
     );
 }
+/** Parses word only from `set`. */
 function wordFrom(set: Set<string>, description: string): Parser<string> {
   return word().map((word) => {
     if (set.has(word)) {
@@ -155,6 +202,7 @@ function wordFrom(set: Set<string>, description: string): Parser<string> {
     }
   });
 }
+/** Parses a specific word. */
 function specificWord(thatWord: string): Parser<string> {
   return word().map((thisWord) => {
     if (thatWord === thisWord) {
@@ -164,9 +212,11 @@ function specificWord(thatWord: string): Parser<string> {
     }
   });
 }
+/** Parses headword. */
 function headWord(): Parser<string> {
   return wordFrom(CONTENT_WORD, "headword");
 }
+/** Parses a single modifier. */
 function modifier(): Parser<Modifier> {
   return choice(
     specificWord("nanpa")
@@ -194,6 +244,7 @@ function modifier(): Parser<Modifier> {
     // TODO: cardinal modifier
   );
 }
+/** Parses phrase. */
 function phrase(): Parser<Phrase> {
   return sequence(headWord(), many(modifier())).map(
     ([headWord, modifiers]) => ({
@@ -202,6 +253,7 @@ function phrase(): Parser<Phrase> {
     }),
   );
 }
+/** Parses phrases including preverbial phrases. */
 function fullPhrase(): Parser<FullPhrase> {
   return sequence(
     optional(wordFrom(PREVERB, "preverb")),
@@ -221,6 +273,7 @@ function fullPhrase(): Parser<FullPhrase> {
     }
   });
 }
+/** Parses prepositional phrase. */
 function preposition(): Parser<Preposition> {
   return sequence(wordFrom(PREPOSITION, "preposition"), fullPhrase()).map(
     ([preposition, phrase]) => ({
@@ -229,12 +282,14 @@ function preposition(): Parser<Preposition> {
     }),
   );
 }
+/** Parses phrases separated by _en_. */
 function enPhrases(): Parser<Array<FullPhrase>> {
   return sequence(
     fullPhrase(),
     many(specificWord("en").with(fullPhrase())),
   ).map(([first, rest]) => [first, ...rest]);
 }
+/** Parses a single predicate. */
 function predicate(): Parser<Predicate> {
   return choice(
     preposition().map((preposition) => ({ type: "preposition", preposition })),
@@ -243,6 +298,7 @@ function predicate(): Parser<Predicate> {
     ),
   );
 }
+/** Parses a single clause. */
 function clause(): Parser<Clause> {
   return choice(
     sequence(
@@ -296,6 +352,7 @@ function clause(): Parser<Clause> {
     })),
   );
 }
+/** Parses a single clause including precaluse and postclause. */
 function fullClause(): Parser<FullClause> {
   return sequence(optional(specificWord("taso")), clause()).map(
     ([taso, clause]) => ({
@@ -304,6 +361,7 @@ function fullClause(): Parser<FullClause> {
     }),
   );
 }
+/** Parses a single full sentence without punctuations. */
 function sentence(): Parser<Sentence> {
   return choice(
     fullClause().map(
@@ -314,6 +372,7 @@ function sentence(): Parser<Sentence> {
     ),
   );
 }
+/** The full parser. */
 function fullSentence(): Parser<Sentence> {
   return allSpace()
     .with(sentence())
@@ -321,6 +380,7 @@ function fullSentence(): Parser<Sentence> {
     .skip(allSpace())
     .skip(eol());
 }
+/** The full parser. */
 export function parser(src: string): Output<Sentence> {
   return fullSentence()
     .parser(src)
