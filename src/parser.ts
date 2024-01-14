@@ -325,7 +325,7 @@ function enPhrases(): Parser<Array<Phrase>> {
   ).map(([first, rest]) => [first, ...rest]);
 }
 function objects(): Parser<Array<Phrase>> {
-  return manyAtLeastOnce(specificWord("e").with(phrase()));
+  return many(specificWord("e").with(phrase()));
 }
 /** Parses a single predicate without _li_ nor _o_. */
 function predicate(): Parser<Predicate> {
@@ -443,3 +443,5 @@ export function parser(src: string): Output<Sentence> {
     .parser(src)
     .map(({ value }) => value);
 }
+console.log(predicate().parser("pona"));
+debugger;
