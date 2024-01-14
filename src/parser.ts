@@ -213,7 +213,9 @@ function specificWord(thatWord: string): Parser<string> {
   });
 }
 /** Parses X ala X construction as well as just X */
-function alaQuestion(parser: Parser<string>): Parser<[string, boolean]> {
+function optionalAlaQuestion(
+  parser: Parser<string>,
+): Parser<[string, boolean]> {
   return choice(
     sequence(parser.skip(specificWord("ala")), parser).map(([left, right]) => {
       if (left === right) {
@@ -277,7 +279,10 @@ function simplePhrase(): Parser<SimplePhrase> {
       type: "cardinal",
       number,
     } as SimplePhrase)),
-    sequence(alaQuestion(wordFrom(CONTENT_WORD, "headword")), many(modifier()))
+    sequence(
+      optionalAlaQuestion(wordFrom(CONTENT_WORD, "headword")),
+      many(modifier()),
+    )
       .map(
         ([[headWord, alaQuestion], modifiers]) => ({
           type: "default",
@@ -292,7 +297,7 @@ function simplePhrase(): Parser<SimplePhrase> {
 function phrase(): Parser<Phrase> {
   return choice(
     sequence(
-      alaQuestion(wordFrom(PREVERB, "preverb")),
+      optionalAlaQuestion(wordFrom(PREVERB, "preverb")),
       lazy(simplePhrase),
     ).map(([[preverb, alaQuestion], phrase]) => ({
       type: "preverb",
@@ -309,7 +314,7 @@ function phrase(): Parser<Phrase> {
 /** Parses prepositional phrase. */
 function preposition(): Parser<Preposition> {
   return sequence(
-    alaQuestion(wordFrom(PREPOSITION, "preposition")),
+    optionalAlaQuestion(wordFrom(PREPOSITION, "preposition")),
     many(modifier()),
     phrase(),
   )
