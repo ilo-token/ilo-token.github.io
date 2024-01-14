@@ -313,12 +313,21 @@ function enPhrases(): Parser<Array<Phrase>> {
     many(specificWord("en").with(phrase())),
   ).map(([first, rest]) => [first, ...rest]);
 }
+function objects(): Parser<Array<Phrase>> {
+  return manyAtLeastOnce(specificWord("e").with(phrase()));
+}
 /** Parses a single predicate. */
 function predicate(): Parser<Predicate> {
   return choice(
-    preposition().map((preposition) => ({ type: "preposition", preposition })),
-    phrase().map(
-      (predicate) => ({ type: "default", predicate } as Predicate),
+    sequence(preposition(), objects()).map(([preposition, objects]) => ({
+      type: "preposition",
+      preposition,
+      objects,
+    })),
+    sequence(phrase(), objects()).map(
+      (
+        [predicate, objects],
+      ) => ({ type: "default", predicate, objects } as Predicate),
     ),
   );
 }

@@ -23,8 +23,8 @@ export type Preposition = { preposition: string; phrase: Phrase };
 
 /** Represents a single predicate. */
 export type Predicate =
-  | { type: "default"; predicate: Phrase }
-  | { type: "preposition"; preposition: Preposition };
+  | { type: "default"; predicate: Phrase; objects: Array<Phrase> }
+  | { type: "preposition"; preposition: Preposition; objects: Array<Phrase> };
 
 /** Represents a simple clause. */
 export type Clause =
