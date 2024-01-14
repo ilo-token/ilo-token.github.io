@@ -381,9 +381,14 @@ function clause(): Parser<Clause> {
 }
 /** Parses a single clause including precaluse and postclause. */
 function fullClause(): Parser<FullClause> {
-  return sequence(optional(specificWord("taso")), clause()).map(
-    ([taso, clause]) => ({
+  return sequence(
+    optional(specificWord("taso")),
+    clause(),
+    optional(sequence(specificWord("anu"), specificWord("seme"))),
+  ).map(
+    ([taso, clause, anuSeme]) => ({
       taso: !!taso,
+      anuSeme: !!anuSeme,
       clause,
     }),
   );

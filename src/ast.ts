@@ -45,7 +45,7 @@ export type Clause =
   | { type: "prepositions"; prepositions: Array<Preposition> };
 
 /** Represents a clause including preclause and postclause. */
-export type FullClause = { taso: boolean; clause: Clause };
+export type FullClause = { taso: boolean; anuSeme: boolean; clause: Clause };
 
 /** Represents a single full sentence. */
 export type Sentence =
