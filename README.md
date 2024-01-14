@@ -78,6 +78,8 @@ The whole code is being rewritten and there will be new different limitations.
 - ✏️ "X ala X" constructions
 - ✏️ Extended numbering system
 - ✏️ Commas
+- Non-pu vocabulary minus "pu" plus "tonsi"
 - Multiple sentences
 - Clause with both "li" and "o"
 - "kepeken" as headword or modifier
+- "taso" as headword (it can be used as modifier)
