@@ -24,6 +24,15 @@ export class Output<T> {
       this.error = new OutputError("no error provided");
     }
   }
+  private setError(error: OutputError) {
+    if (this.output.length === 0 && !this.error) {
+      this.error = error;
+    }
+  }
+  private push(value: T): void {
+    this.output.push(value);
+    this.error = null;
+  }
   private append({ output, error }: Output<T>): void {
     this.output = [...this.output, ...output];
     if (this.output.length > 0) {
@@ -40,17 +49,22 @@ export class Output<T> {
    * function can throw OutputError; Other kinds of errors will be ignored.
    */
   map<U>(mapper: (value: T) => U): Output<U> {
-    return this.flatMap((value) => {
+    if (this.isError()) {
+      return new Output(this.error);
+    }
+    const wholeOutput = new Output<U>();
+    for (const value of this.output) {
       try {
-        return new Output([mapper(value)]);
+        wholeOutput.push(mapper(value));
       } catch (error) {
         if (error instanceof OutputError) {
-          return new Output(error);
+          this.setError(error);
         } else {
           throw error;
         }
       }
-    });
+    }
+    return wholeOutput;
   }
   /**
    * Accepts mapper function that returns another Output. flatMap takes all
