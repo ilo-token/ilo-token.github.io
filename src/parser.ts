@@ -157,7 +157,7 @@ function manyAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
 }
 /**
  * Parses `parser` multiple times and returns an `Array<T>`. This function is
- * exhaustive.
+ * exhaustive unlike `many`.
  */
 function all<T>(parser: Parser<T>): Parser<Array<T>> {
   return choiceOnlyOne(
