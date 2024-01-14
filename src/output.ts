@@ -41,6 +41,7 @@ export class Output<T> {
       this.error = error;
     }
   }
+  /** Returns true when the output array is empty */
   isError(): boolean {
     return this.output.length === 0;
   }
