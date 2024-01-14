@@ -12,7 +12,7 @@ For this version. The whole code has been rewritten. This makes the code a lot e
 
 Inside update (intended for developers):
 
-- Rewritten whole code to use module and TypeScript.
+- Rewritten whole code to use TypeScript, module, and functional programming.
 - Rewritten parser to use parser combinator.
 - Add language codes to html.
 
