@@ -28,7 +28,7 @@ These are the terminology used in [limitations]. **These are not official gramma
 - Modifier &ndash; A part of speech that modifies headword or another modifier.
 - Phrase &ndash; Headword and its modifiers.
 - Preclause &ndash; "taso" or "a" particle before clauses.
-- Postclause &ndash; "a" particle after clauses.
+- Postclause &ndash; "a" particle or "anu seme" phrase after clauses.
 - Clause &ndash; Phrase or sentence found before and after "la".
 - Proper Word &ndash; Proper name; Capitalized in Toki Pona.
 
