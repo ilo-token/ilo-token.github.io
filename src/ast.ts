@@ -1,6 +1,6 @@
 /** Represents a single modifier. */
 export type Modifier =
-  | { type: "word"; word: string }
+  | { type: "word"; word: string; alaQuestion: boolean }
   | { type: "proper words"; words: string }
   | { type: "pi"; phrase: Phrase }
   | { type: "nanpa ordinal"; phrase: Phrase }
@@ -10,21 +10,35 @@ export type Modifier =
 export type SimplePhrase = {
   type: "default";
   headWord: string;
+  alaQuestion: boolean;
   modifiers: Array<Modifier>;
 } | { type: "cardinal"; number: Array<string> };
 
 /** Represents a phrase including preverbial phrases. */
 export type Phrase =
   | { type: "default"; phrase: SimplePhrase }
-  | { type: "preverb"; preverb: string; phrase: SimplePhrase };
+  | {
+    type: "preverb";
+    preverb: string;
+    alaQuestion: boolean;
+    phrase: SimplePhrase;
+  };
 
 /** Represents a single prepositional phrase. */
-export type Preposition = { preposition: string; phrase: Phrase };
+export type Preposition = {
+  preposition: string;
+  alaQuestion: boolean;
+  phrase: Phrase;
+};
 
 /** Represents a single predicate. */
 export type Predicate =
   | { type: "default"; predicate: Phrase; objects: Array<Phrase> }
-  | { type: "preposition"; preposition: Preposition; objects: Array<Phrase> };
+  | {
+    type: "preposition";
+    preposition: Preposition;
+    objects: Array<Phrase>;
+  };
 
 /** Represents a simple clause. */
 export type Clause =

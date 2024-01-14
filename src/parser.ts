@@ -212,9 +212,18 @@ function specificWord(thatWord: string): Parser<string> {
     }
   });
 }
-/** Parses headword. */
-function headWord(): Parser<string> {
-  return wordFrom(CONTENT_WORD, "headword");
+/** Parses X ala X construction as well as just X */
+function alaQuestion(parser: Parser<string>): Parser<[string, boolean]> {
+  return choice(
+    sequence(parser.skip(specificWord("ala")), parser).map(([left, right]) => {
+      if (left === right) {
+        return [left, true] as [string, boolean];
+      } else {
+        throw new UnreachableError();
+      }
+    }),
+    parser.map((word) => [word, false]),
+  );
 }
 /** Parses number words in order. */
 function number(): Parser<Array<string>> {
@@ -268,43 +277,45 @@ function simplePhrase(): Parser<SimplePhrase> {
       type: "cardinal",
       number,
     } as SimplePhrase)),
-    sequence(headWord(), many(modifier())).map(
-      ([headWord, modifiers]) => ({
-        type: "default",
-        headWord,
-        modifiers,
-      }),
-    ),
+    sequence(alaQuestion(wordFrom(CONTENT_WORD, "headword")), many(modifier()))
+      .map(
+        ([[headWord, alaQuestion], modifiers]) => ({
+          type: "default",
+          headWord,
+          alaQuestion,
+          modifiers,
+        }),
+      ),
   );
 }
 /** Parses phrases including preverbial phrases. */
 function phrase(): Parser<Phrase> {
-  return sequence(
-    optional(wordFrom(PREVERB, "preverb")),
-    lazy(simplePhrase),
-  ).map(([preverb, phrase]) => {
-    if (preverb) {
-      return {
-        type: "preverb",
-        preverb,
-        phrase,
-      };
-    } else {
-      return {
-        type: "default",
-        phrase,
-      };
-    }
-  });
+  return choice(
+    sequence(
+      alaQuestion(wordFrom(PREVERB, "preverb")),
+      lazy(simplePhrase),
+    ).map(([[preverb, alaQuestion], phrase]) => ({
+      type: "preverb",
+      preverb,
+      alaQuestion,
+      phrase,
+    } as Phrase)),
+    lazy(simplePhrase).map((phrase) => ({
+      type: "default",
+      phrase,
+    })),
+  );
 }
 /** Parses prepositional phrase. */
 function preposition(): Parser<Preposition> {
-  return sequence(wordFrom(PREPOSITION, "preposition"), phrase()).map(
-    ([preposition, phrase]) => ({
-      preposition,
-      phrase,
-    }),
-  );
+  return sequence(alaQuestion(wordFrom(PREPOSITION, "preposition")), phrase())
+    .map(
+      ([[preposition, alaQuestion], phrase]) => ({
+        preposition,
+        alaQuestion,
+        phrase,
+      }),
+    );
 }
 /** Parses phrases separated by _en_. */
 function enPhrases(): Parser<Array<Phrase>> {
@@ -344,7 +355,12 @@ function clause(): Parser<Clause> {
       subjects: [
         {
           type: "default",
-          phrase: { type: "default", headWord: subject, modifiers: [] },
+          phrase: {
+            type: "default",
+            headWord: subject,
+            alaQuestion: false,
+            modifiers: [],
+          },
         },
       ],
       predicates: [predicate, ...morePredicates],
