@@ -316,7 +316,7 @@ function enPhrases(): Parser<Array<Phrase>> {
 function objects(): Parser<Array<Phrase>> {
   return manyAtLeastOnce(specificWord("e").with(phrase()));
 }
-/** Parses a single predicate. */
+/** Parses a single predicate without _li_ nor _o_. */
 function predicate(): Parser<Predicate> {
   return choice(
     sequence(preposition(), objects()).map(([preposition, objects]) => ({
