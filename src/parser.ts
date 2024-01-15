@@ -496,7 +496,7 @@ function sentence(): Parser<Sentence> {
 }
 /** Parses multiple sentences inside quotation mark */
 function quotation(): Parser<Array<Sentence>> {
-  return quotationMark().with(many(sentence())).skip(quotationMark());
+  return quotationMark().with(many(lazy(sentence))).skip(quotationMark());
 }
 /** A multiple Toki Pona sentence parser. */
 export function parser(src: string): Output<Array<Sentence>> {
