@@ -56,6 +56,7 @@ function match(regex: RegExp): Parser<RegExpMatchArray> {
     if (match) {
       return new Output([{ value: match, rest: src.slice(match[0].length) }]);
     } else if (src === "") {
+      // TODO: replace this error, this isn't exactly unreachable
       return new Output(new UnreachableError());
     } else {
       const token = src.match(/(.*)(?:\s|$)/)?.[1];
