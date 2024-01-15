@@ -82,6 +82,12 @@ function eol(): Parser<null> {
     }
   });
 }
+/** Parses without consuming the source string */
+function lookAhead<T>(parser: Parser<T>): Parser<T> {
+  return new Parser((src) =>
+    parser.parser(src).map(({ value }) => ({ value, rest: src }))
+  );
+}
 /**
  * Lazily evaluates the parser function only when needed. Useful for recursive
  * parsers.
@@ -183,6 +189,9 @@ function comma(): Parser<string> {
 function optionalComma(): Parser<null | string> {
   return optional(comma());
 }
+function quotationMark(): Parser<string> {
+  return match(/"\s*/).map(() => '"');
+}
 /** Parses lowercase word. */
 function word(): Parser<string> {
   return match(/([a-z]+)\s*/).map(([_, word]) => word);
@@ -280,6 +289,7 @@ function modifier(): Parser<Modifier> {
         phrase,
       })),
     number().map((number) => ({ type: "cardinal", number })),
+    quotation().map((quotation) => ({ type: "quotation", quotation })),
   );
 }
 /** Parses phrase. */
@@ -321,6 +331,7 @@ function phrase(): Parser<Phrase> {
       type: "default",
       phrase,
     })),
+    quotation().map((quotation) => ({ type: "quotation", quotation })),
   );
 }
 /** Parses prepositional phrase. */
@@ -475,12 +486,17 @@ function sentence(): Parser<Sentence> {
     many(la().with(fullClause())),
     choice(
       eol().map(() => ""),
+      lookAhead(quotationMark()).map(() => ""),
       match(/([.,:;?!])\s*/).map(([_, punctuation]) => punctuation),
     ),
   ).map(([clause, moreClauses, punctuation]) => ({
     laClauses: [clause, ...moreClauses],
     punctuation,
   }));
+}
+/** Parses multiple sentences inside quotation mark */
+function quotation(): Parser<Array<Sentence>> {
+  return quotationMark().with(many(sentence())).skip(quotationMark());
 }
 /** A multiple Toki Pona sentence parser. */
 export function parser(src: string): Output<Array<Sentence>> {

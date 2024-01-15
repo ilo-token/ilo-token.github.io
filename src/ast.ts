@@ -4,7 +4,8 @@ export type Modifier =
   | { type: "proper words"; words: string }
   | { type: "pi"; phrase: Phrase }
   | { type: "nanpa ordinal"; phrase: Phrase }
-  | { type: "cardinal"; number: Array<string> };
+  | { type: "cardinal"; number: Array<string> }
+  | { type: "quotation"; quotation: Array<Sentence> };
 
 /** Represents a simple phrase. */
 export type SimplePhrase = {
@@ -14,7 +15,7 @@ export type SimplePhrase = {
   modifiers: Array<Modifier>;
 } | { type: "cardinal"; number: Array<string> };
 
-/** Represents a phrase including preverbial phrases. */
+/** Represents a phrase including preverbial phrases and quotations. */
 export type Phrase =
   | { type: "default"; phrase: SimplePhrase }
   | {
@@ -23,7 +24,8 @@ export type Phrase =
     alaQuestion: boolean;
     modifiers: Array<Modifier>;
     phrase: SimplePhrase;
-  };
+  }
+  | { type: "quotation"; quotation: Array<Sentence> };
 
 /** Represents a single prepositional phrase. */
 export type Preposition = {
