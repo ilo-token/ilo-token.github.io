@@ -449,7 +449,7 @@ function clause(): Parser<Clause> {
       many(optionalComma().with(preposition())),
     ).map(([subjects, predicates, prepositions]) => ({
       type: "o clause",
-      subjects: subjects ?? [],
+      subjects: subjects,
       predicates,
       prepositions,
     })),
