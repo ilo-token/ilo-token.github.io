@@ -244,16 +244,16 @@ function optionalAlaQuestion(
 /** Parses number words in order. */
 function number(): Parser<Array<string>> {
   return sequence(
-    all(choice(
+    many(choice(
       specificWord("ale"),
       specificWord(
         "ali",
       ),
     )),
-    all(specificWord("mute")),
-    all(specificWord("luka")),
-    all(specificWord("tu")),
-    all(specificWord("wan")),
+    many(specificWord("mute")),
+    many(specificWord("luka")),
+    many(specificWord("tu")),
+    many(specificWord("wan")),
   ).map((array) => {
     const output = array.flat();
     if (output.length >= 2) {
