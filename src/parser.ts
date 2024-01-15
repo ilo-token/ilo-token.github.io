@@ -437,7 +437,7 @@ function sentence(): Parser<Sentence> {
     fullClause(),
     many(specificWord("la").with(fullClause())),
     choice(
-      eol().map((_) => ""),
+      eol().map(() => ""),
       match(/([.,:?!])\s*/).map(([_, punctuation]) => punctuation),
     ),
   ).map(([clause, moreClauses, punctuation]) => ({
