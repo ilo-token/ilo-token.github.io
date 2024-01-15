@@ -442,7 +442,7 @@ function clause(): Parser<Clause> {
       prepositions,
     })),
     sequence(
-      optional(enPhrases()),
+      enPhrases(),
       manyAtLeastOnce(
         optionalComma().with(specificWord("o")).with(predicate()),
       ),
