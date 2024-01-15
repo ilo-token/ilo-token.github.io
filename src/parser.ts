@@ -230,7 +230,12 @@ function optionalAlaQuestion(
 /** Parses number words in order. */
 function number(): Parser<Array<string>> {
   return sequence(
-    all(specificWord("ale")),
+    all(choice(
+      specificWord("ale"),
+      specificWord(
+        "ali",
+      ),
+    )),
     all(specificWord("mute")),
     all(specificWord("luka")),
     all(specificWord("tu")),
