@@ -478,7 +478,7 @@ function sentence(): Parser<Sentence> {
 }
 /** A multiple Toki Pona sentence parser. */
 export function parser(src: string): Output<Array<Sentence>> {
-  return match(/\s*/).with(allAtLeastOnce(sentence()))
+  return match(/\s*/).with(allAtLeastOnce(sentence())).skip(eol())
     .parser(src)
     .map(({ value }) => value);
 }
