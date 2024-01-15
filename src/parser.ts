@@ -174,10 +174,6 @@ function allAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
     ...rest,
   ]);
 }
-/** Parses whitespaces. */
-function allSpace(): Parser<string> {
-  return match(/\s*/).map(([space]) => space);
-}
 /** Parses lowercase word. */
 function word(): Parser<string> {
   return match(/([a-z]+)\s*/).map(([_, word]) => word);
@@ -435,28 +431,23 @@ function fullClause(): Parser<FullClause> {
     }),
   );
 }
-/** Parses a single full sentence without punctuations. */
+/** Parses a single full sentence with optional punctuations. */
 function sentence(): Parser<Sentence> {
-  return choice(
-    fullClause().map(
-      (clause) => ({ type: "single clause", clause } as Sentence),
+  return sequence(
+    fullClause(),
+    many(specificWord("la").with(fullClause())),
+    choice(
+      eol().map((_) => ""),
+      match(/([\.,:?!])\s*/).map(([_, punctuation]) => punctuation),
     ),
-    sequence(fullClause().skip(specificWord("la")), lazy(sentence)).map(
-      ([left, right]) => ({ type: "la clauses", left, right }),
-    ),
-  );
+  ).map(([clause, moreClauses, punctuation]) => ({
+    laClauses: [clause, ...moreClauses],
+    punctuation,
+  }));
 }
-/** The full parser. */
-function fullSentence(): Parser<Sentence> {
-  return allSpace()
-    .with(sentence())
-    .skip(optional(match(/[\.?!:]/)))
-    .skip(allSpace())
-    .skip(eol());
-}
-/** A Toki Pona sentence parser. */
-export function parser(src: string): Output<Sentence> {
-  return fullSentence()
+/** A multiple Toki Pona sentence parser. */
+export function parser(src: string): Output<Array<Sentence>> {
+  return match(/\s*/).with(allAtLeastOnce(sentence()))
     .parser(src)
     .map(({ value }) => value);
 }

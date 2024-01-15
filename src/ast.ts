@@ -64,6 +64,7 @@ export type Clause =
 export type FullClause = { taso: boolean; anuSeme: boolean; clause: Clause };
 
 /** Represents a single full sentence. */
-export type Sentence =
-  | { type: "single clause"; clause: FullClause }
-  | { type: "la clauses"; left: FullClause; right: Sentence };
+export type Sentence = {
+  laClauses: Array<FullClause>;
+  punctuation: string;
+};
