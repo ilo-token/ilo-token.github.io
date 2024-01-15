@@ -256,10 +256,10 @@ function number(): Parser<Array<string>> {
     all(specificWord("wan")),
   ).map((array) => {
     const output = array.flat();
-    if (output.length === 0) {
-      throw new UnreachableError();
-    } else {
+    if (output.length >= 2) {
       return output;
+    } else {
+      throw new UnreachableError();
     }
   });
 }
