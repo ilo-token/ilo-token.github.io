@@ -174,6 +174,10 @@ function allAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
     ...rest,
   ]);
 }
+/** Parses comma. */
+function optionalComma(): Parser<null | string> {
+  return optional(match(/,\s*/).map(() => ","));
+}
 /** Parses lowercase word. */
 function word(): Parser<string> {
   return match(/([a-z]+)\s*/).map(([_, word]) => word);
@@ -334,11 +338,11 @@ function preposition(): Parser<Preposition> {
 function enPhrases(): Parser<Array<Phrase>> {
   return sequence(
     phrase(),
-    many(specificWord("en").with(phrase())),
+    many(optionalComma().with(specificWord("en")).with(phrase())),
   ).map(([first, rest]) => [first, ...rest]);
 }
 function objects(): Parser<Array<Phrase>> {
-  return many(specificWord("e").with(phrase()));
+  return many(optionalComma().with(specificWord("e")).with(phrase()));
 }
 /** Parses a single predicate without _li_ nor _o_. */
 function predicate(): Parser<Predicate> {
@@ -361,8 +365,8 @@ function clause(): Parser<Clause> {
     sequence(
       wordFrom(SPECIAL_SUBJECT, "mi/sina subject"),
       predicate(),
-      many(specificWord("li").with(predicate())),
-      many(preposition()),
+      many(optionalComma().with(specificWord("li")).with(predicate())),
+      many(optionalComma().with(preposition())),
     ).map(([subject, predicate, morePredicates, prepositions]) => ({
       type: "li clause",
       subjects: [
@@ -379,7 +383,9 @@ function clause(): Parser<Clause> {
       predicates: [predicate, ...morePredicates],
       prepositions,
     })),
-    manyAtLeastOnce(preposition()).map((prepositions) => ({
+    manyAtLeastOnce(optionalComma().with(preposition())).map((
+      prepositions,
+    ) => ({
       type: "prepositions",
       prepositions,
     })),
@@ -397,8 +403,10 @@ function clause(): Parser<Clause> {
       })),
     sequence(
       enPhrases(),
-      manyAtLeastOnce(specificWord("li").with(predicate())),
-      many(preposition()),
+      manyAtLeastOnce(
+        optionalComma().with(specificWord("li")).with(predicate()),
+      ),
+      many(optionalComma().with(preposition())),
     ).map(([subjects, predicates, prepositions]) => ({
       type: "li clause",
       subjects,
@@ -406,9 +414,23 @@ function clause(): Parser<Clause> {
       prepositions,
     })),
     sequence(
+      specificWord("o").with(predicate()),
+      manyAtLeastOnce(
+        optionalComma().with(specificWord("o")).with(predicate()),
+      ),
+      many(optionalComma().with(preposition())),
+    ).map(([predicate, morePredicates, prepositions]) => ({
+      type: "o clause",
+      subjects: [],
+      predicates: [predicate, ...morePredicates],
+      prepositions,
+    })),
+    sequence(
       optional(enPhrases()),
-      manyAtLeastOnce(specificWord("o").with(predicate())),
-      many(preposition()),
+      manyAtLeastOnce(
+        optionalComma().with(specificWord("o")).with(predicate()),
+      ),
+      many(optionalComma().with(preposition())),
     ).map(([subjects, predicates, prepositions]) => ({
       type: "o clause",
       subjects: subjects ?? [],
@@ -420,9 +442,11 @@ function clause(): Parser<Clause> {
 /** Parses a single clause including precaluse and postclause. */
 function fullClause(): Parser<FullClause> {
   return sequence(
-    optional(specificWord("taso")),
+    optional(specificWord("taso").skip(optionalComma())),
     clause(),
-    optional(sequence(specificWord("anu"), specificWord("seme"))),
+    optional(
+      sequence(optionalComma(), specificWord("anu"), specificWord("seme")),
+    ),
   ).map(
     ([taso, clause, anuSeme]) => ({
       taso: !!taso,
@@ -431,11 +455,18 @@ function fullClause(): Parser<FullClause> {
     }),
   );
 }
+// parses _la_ with optional comma around
+function la(): Parser<string> {
+  return choice(
+    optionalComma().with(specificWord("la")),
+    specificWord("la").skip(optionalComma()),
+  );
+}
 /** Parses a single full sentence with optional punctuations. */
 function sentence(): Parser<Sentence> {
   return sequence(
     fullClause(),
-    many(specificWord("la").with(fullClause())),
+    many(la().with(fullClause())),
     choice(
       eol().map(() => ""),
       match(/([.,:;?!])\s*/).map(([_, punctuation]) => punctuation),
