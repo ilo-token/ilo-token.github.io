@@ -295,9 +295,10 @@ function modifier(): Parser<Modifier> {
 /** Parses phrase. */
 function simplePhrase(): Parser<SimplePhrase> {
   return choice(
-    number().map((number) => ({
+    sequence(number(), many(modifier())).map(([number, modifiers]) => ({
       type: "cardinal",
       number,
+      modifiers,
     } as SimplePhrase)),
     sequence(
       optionalAlaQuestion(wordFrom(CONTENT_WORD, "headword")),

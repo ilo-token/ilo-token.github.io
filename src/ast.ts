@@ -13,7 +13,7 @@ export type SimplePhrase = {
   headWord: string;
   alaQuestion: boolean;
   modifiers: Array<Modifier>;
-} | { type: "cardinal"; number: Array<string> };
+} | { type: "cardinal"; number: Array<string>; modifiers: Array<Modifier> };
 
 /** Represents a phrase including preverbial phrases and quotations. */
 export type Phrase =
