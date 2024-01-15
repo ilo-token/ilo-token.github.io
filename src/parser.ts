@@ -298,11 +298,13 @@ function phrase(): Parser<Phrase> {
   return choice(
     sequence(
       optionalAlaQuestion(wordFrom(PREVERB, "preverb")),
+      many(lazy(modifier)),
       lazy(simplePhrase),
-    ).map(([[preverb, alaQuestion], phrase]) => ({
+    ).map(([[preverb, alaQuestion], modifiers, phrase]) => ({
       type: "preverb",
       preverb,
       alaQuestion,
+      modifiers,
       phrase,
     } as Phrase)),
     lazy(simplePhrase).map((phrase) => ({

@@ -21,6 +21,7 @@ export type Phrase =
     type: "preverb";
     preverb: string;
     alaQuestion: boolean;
+    modifiers: Array<Modifier>;
     phrase: SimplePhrase;
   };
 
