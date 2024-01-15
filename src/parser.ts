@@ -176,8 +176,12 @@ function allAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
   ]);
 }
 /** Parses comma. */
+function comma(): Parser<string> {
+  return match(/,\s*/).map(() => ",");
+}
+/** Parses an optional comma. */
 function optionalComma(): Parser<null | string> {
-  return optional(match(/,\s*/).map(() => ","));
+  return optional(comma());
 }
 /** Parses lowercase word. */
 function word(): Parser<string> {
@@ -459,8 +463,9 @@ function fullClause(): Parser<FullClause> {
 // parses _la_ with optional comma around
 function la(): Parser<string> {
   return choice(
-    optionalComma().with(specificWord("la")),
-    specificWord("la").skip(optionalComma()),
+    comma().with(specificWord("la")),
+    specificWord("la").skip(comma()),
+    specificWord("la"),
   );
 }
 /** Parses a single full sentence with optional punctuations. */
