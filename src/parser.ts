@@ -5,6 +5,7 @@ import {
   Phrase,
   Predicate,
   Preposition,
+  Quotation,
   Sentence,
   SimplePhrase,
 } from "./ast.ts";
@@ -188,9 +189,6 @@ function comma(): Parser<string> {
 /** Parses an optional comma. */
 function optionalComma(): Parser<null | string> {
   return optional(comma());
-}
-function quotationMark(): Parser<string> {
-  return match(/"\s*/).map(() => '"');
 }
 /** Parses lowercase word. */
 function word(): Parser<string> {
@@ -487,7 +485,7 @@ function sentence(): Parser<Sentence> {
     many(la().with(fullClause())),
     choice(
       eol().map(() => ""),
-      lookAhead(quotationMark()).map(() => ""),
+      lookAhead(closeQuotationMark()).map(() => ""),
       match(/([.,:;?!])\s*/).map(([_, punctuation]) => punctuation),
     ),
   ).map(([clause, moreClauses, punctuation]) => ({
@@ -495,9 +493,42 @@ function sentence(): Parser<Sentence> {
     punctuation,
   }));
 }
+/** Parses opening quotation mark */
+function openQuotationMark(): Parser<string> {
+  return match(/(["“«「])\s*/).map(([_, mark]) => mark);
+}
+/** Parses closing quotation mark */
+function closeQuotationMark(): Parser<string> {
+  return match(/(["”»」])\s*/).map(([_, mark]) => mark);
+}
 /** Parses multiple sentences inside quotation mark */
-function quotation(): Parser<Array<Sentence>> {
-  return quotationMark().with(many(lazy(sentence))).skip(quotationMark());
+function quotation(): Parser<Quotation> {
+  return sequence(
+    openQuotationMark(),
+    many(lazy(sentence)),
+    closeQuotationMark(),
+  ).map(([leftMark, sentences, rightMark]) => {
+    if (leftMark === '"' || leftMark === "“") {
+      if (rightMark !== '"' && rightMark !== "”") {
+        throw new UnrecognizedError("Mismatched quotation marks");
+      }
+    } else if (leftMark === "«") {
+      if (rightMark !== "»") {
+        throw new UnrecognizedError("Mismatched quotation marks");
+      }
+    } else if (leftMark === "「") {
+      if (rightMark !== "」") {
+        throw new UnrecognizedError("Mismatched quotation marks");
+      }
+    } else {
+      throw new UnreachableError();
+    }
+    return {
+      sentences,
+      leftMark,
+      rightMark,
+    };
+  });
 }
 /** A multiple Toki Pona sentence parser. */
 export function parser(src: string): Output<Array<Sentence>> {

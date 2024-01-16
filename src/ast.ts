@@ -5,7 +5,17 @@ export type Modifier =
   | { type: "pi"; phrase: Phrase }
   | { type: "nanpa ordinal"; phrase: Phrase }
   | { type: "cardinal"; number: Array<string> }
-  | { type: "quotation"; quotation: Array<Sentence> };
+  | {
+    type: "quotation";
+    quotation: Quotation;
+  };
+
+/** Represents quotation. */
+export type Quotation = {
+  sentences: Array<Sentence>;
+  leftMark: string;
+  rightMark: string;
+};
 
 /** Represents a simple phrase. */
 export type SimplePhrase = {
@@ -25,7 +35,7 @@ export type Phrase =
     modifiers: Array<Modifier>;
     phrase: SimplePhrase;
   }
-  | { type: "quotation"; quotation: Array<Sentence> };
+  | { type: "quotation"; quotation: Quotation };
 
 /** Represents a single prepositional phrase. */
 export type Preposition = {
