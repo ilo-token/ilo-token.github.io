@@ -22,6 +22,7 @@ import {
 type ValueRest<T> = { value: T; rest: string };
 /** A special kind of Output that parsers returns. */
 type ParserOutput<T> = Output<ValueRest<T>>;
+
 /** Wrapper of parser function with added methods for convenience. */
 class Parser<T> {
   constructor(public readonly parser: (src: string) => ParserOutput<T>) {}
@@ -60,11 +61,8 @@ function match(regex: RegExp): Parser<RegExpMatchArray> {
       return new Output(new UnrecognizedError("Unexpected end of sentence"));
     } else {
       const token = src.match(/(.*)(?:\s|$)/)?.[1];
-      if (token) {
-        return new Output(new UnrecognizedError(`"${token}"`));
-      } else {
-        return new Output(new UnreachableError());
-      }
+      if (token) return new Output(new UnrecognizedError(`"${token}"`));
+      else return new Output(new UnreachableError());
     }
   });
 }
@@ -75,11 +73,8 @@ function nothing(): Parser<null> {
 /** Parses the end of line (or the end of sentence in context of Toki Pona) */
 function eol(): Parser<null> {
   return new Parser((src) => {
-    if (src === "") {
-      return new Output([{ value: null, rest: "" }]);
-    } else {
-      return new Output(new UnrecognizedError(`"${src}"`));
-    }
+    if (src === "") return new Output([{ value: null, rest: "" }]);
+    else return new Output(new UnrecognizedError(`"${src}"`));
   });
 }
 /** Parses without consuming the source string */
@@ -111,11 +106,8 @@ function choice<T>(...choices: Array<Parser<T>>): Parser<T> {
 function choiceOnlyOne<T>(...choices: Array<Parser<T>>): Parser<T> {
   return new Parser((src) =>
     choices.reduce((output, parser) => {
-      if (output.isError()) {
-        return parser.parser(src);
-      } else {
-        return output;
-      }
+      if (output.isError()) return parser.parser(src);
+      else return output;
     }, new Output<ValueRest<T>>())
   );
 }
@@ -157,10 +149,9 @@ function many<T>(parser: Parser<T>): Parser<Array<T>> {
 }
 /** Like `many` but parses at least once. */
 function manyAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
-  return sequence(parser, many(parser)).map(([first, rest]) => [
-    first,
-    ...rest,
-  ]);
+  return sequence(parser, many(parser)).map((
+    [first, rest],
+  ) => [first, ...rest]);
 }
 /**
  * Parses `parser` multiple times and returns an `Array<T>`. This function is
@@ -176,10 +167,7 @@ function all<T>(parser: Parser<T>): Parser<Array<T>> {
 }
 /** Like `all` but parses at least once. */
 function allAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
-  return sequence(parser, all(parser)).map(([first, rest]) => [
-    first,
-    ...rest,
-  ]);
+  return sequence(parser, all(parser)).map(([first, rest]) => [first, ...rest]);
 }
 /** Parses comma. */
 function comma(): Parser<string> {
@@ -198,29 +186,22 @@ function word(): Parser<string> {
  * string. This function is exhaustive like `all`.
  */
 function properWords(): Parser<string> {
-  return allAtLeastOnce(match(/([A-Z][a-z]*)\s*/).map(([_, word]) => word))
-    .map(
-      (array) => array.join(" "),
-    );
+  return allAtLeastOnce(match(/([A-Z][a-z]*)\s*/).map(([_, word]) => word)).map(
+    (array) => array.join(" "),
+  );
 }
 /** Parses word only from `set`. */
 function wordFrom(set: Set<string>, description: string): Parser<string> {
   return word().map((word) => {
-    if (set.has(word)) {
-      return word;
-    } else {
-      throw new UnrecognizedError(`"${word}" as ${description}`);
-    }
+    if (set.has(word)) return word;
+    else throw new UnrecognizedError(`"${word}" as ${description}`);
   });
 }
 /** Parses a specific word. */
 function specificWord(thatWord: string): Parser<string> {
   return word().map((thisWord) => {
-    if (thatWord === thisWord) {
-      return thisWord;
-    } else {
-      throw new UnrecognizedError(`"${thisWord}" instead of "${thatWord}"`);
-    }
+    if (thatWord === thisWord) return thisWord;
+    else throw new UnrecognizedError(`"${thisWord}" instead of "${thatWord}"`);
   });
 }
 /** Parses X ala X construction as well as just X */
@@ -229,11 +210,8 @@ function optionalAlaQuestion(
 ): Parser<[string, boolean]> {
   return choice(
     sequence(parser.skip(specificWord("ala")), parser).map(([left, right]) => {
-      if (left === right) {
-        return [left, true] as [string, boolean];
-      } else {
-        throw new UnreachableError();
-      }
+      if (left === right) return [left, true] as [string, boolean];
+      else throw new UnreachableError();
     }),
     parser.map((word) => [word, false]),
   );
@@ -241,50 +219,29 @@ function optionalAlaQuestion(
 /** Parses number words in order. */
 function number(): Parser<Array<string>> {
   return sequence(
-    many(choice(
-      specificWord("ale"),
-      specificWord(
-        "ali",
-      ),
-    )),
+    many(choice(specificWord("ale"), specificWord("ali"))),
     many(specificWord("mute")),
     many(specificWord("luka")),
     many(specificWord("tu")),
     many(specificWord("wan")),
   ).map((array) => {
     const output = array.flat();
-    if (output.length >= 2) {
-      return output;
-    } else {
-      throw new UnreachableError();
-    }
+    if (output.length >= 2) return output;
+    else throw new UnreachableError();
   });
 }
 /** Parses a single modifier. */
 function modifier(): Parser<Modifier> {
   return choice(
-    specificWord("nanpa")
-      .with(phrase())
-      .map((phrase) => ({
-        type: "nanpa ordinal",
-        phrase,
-      })),
-    wordFrom(CONTENT_WORD, "modifier").map(
-      (word) => ({
-        type: "word",
-        word,
-      } as Modifier),
-    ),
-    properWords().map((words) => ({
-      type: "proper words",
-      words,
+    specificWord("nanpa").with(phrase()).map((phrase) => ({
+      type: "nanpa ordinal",
+      phrase,
     })),
-    specificWord("pi")
-      .with(phrase())
-      .map((phrase) => ({
-        type: "pi",
-        phrase,
-      })),
+    wordFrom(CONTENT_WORD, "modifier").map((
+      word,
+    ) => ({ type: "word", word } as Modifier)),
+    properWords().map((words) => ({ type: "proper words", words })),
+    specificWord("pi").with(phrase()).map((phrase) => ({ type: "pi", phrase })),
     number().map((number) => ({ type: "cardinal", number })),
     quotation().map((quotation) => ({ type: "quotation", quotation })),
   );
@@ -292,23 +249,18 @@ function modifier(): Parser<Modifier> {
 /** Parses phrase. */
 function simplePhrase(): Parser<SimplePhrase> {
   return choice(
-    sequence(number(), many(modifier())).map(([number, modifiers]) => ({
-      type: "cardinal",
-      number,
-      modifiers,
-    } as SimplePhrase)),
+    sequence(number(), many(modifier())).map((
+      [number, modifiers],
+    ) => ({ type: "cardinal", number, modifiers } as SimplePhrase)),
     sequence(
       optionalAlaQuestion(wordFrom(CONTENT_WORD, "headword")),
       many(modifier()),
-    )
-      .map(
-        ([[headWord, alaQuestion], modifiers]) => ({
-          type: "default",
-          headWord,
-          alaQuestion,
-          modifiers,
-        }),
-      ),
+    ).map(([[headWord, alaQuestion], modifiers]) => ({
+      type: "default",
+      headWord,
+      alaQuestion,
+      modifiers,
+    })),
   );
 }
 /** Parses phrases including preverbial phrases. */
@@ -318,17 +270,16 @@ function phrase(): Parser<Phrase> {
       optionalAlaQuestion(wordFrom(PREVERB, "preverb")),
       many(lazy(modifier)),
       lazy(simplePhrase),
-    ).map(([[preverb, alaQuestion], modifiers, phrase]) => ({
+    ).map((
+      [[preverb, alaQuestion], modifiers, phrase],
+    ) => ({
       type: "preverb",
       preverb,
       alaQuestion,
       modifiers,
       phrase,
     } as Phrase)),
-    lazy(simplePhrase).map((phrase) => ({
-      type: "default",
-      phrase,
-    })),
+    lazy(simplePhrase).map((phrase) => ({ type: "default", phrase })),
     quotation().map((quotation) => ({ type: "quotation", quotation })),
   );
 }
@@ -338,15 +289,12 @@ function preposition(): Parser<Preposition> {
     optionalAlaQuestion(wordFrom(PREPOSITION, "preposition")),
     many(modifier()),
     phrase(),
-  )
-    .map(
-      ([[preposition, alaQuestion], modifiers, phrase]) => ({
-        preposition,
-        alaQuestion,
-        modifiers,
-        phrase,
-      }),
-    );
+  ).map(([[preposition, alaQuestion], modifiers, phrase]) => ({
+    preposition,
+    alaQuestion,
+    modifiers,
+    phrase,
+  }));
 }
 /** Parses phrases separated by _en_. */
 function enPhrases(): Parser<Array<Phrase>> {
@@ -366,11 +314,9 @@ function predicate(): Parser<Predicate> {
       preposition,
       objects,
     })),
-    sequence(phrase(), objects()).map(
-      (
-        [predicate, objects],
-      ) => ({ type: "default", predicate, objects } as Predicate),
-    ),
+    sequence(phrase(), objects()).map((
+      [predicate, objects],
+    ) => ({ type: "default", predicate, objects } as Predicate)),
   );
 }
 /** Parses a single clause. */
@@ -383,38 +329,26 @@ function clause(): Parser<Clause> {
       many(optionalComma().with(preposition())),
     ).map(([subject, predicate, morePredicates, prepositions]) => ({
       type: "li clause",
-      subjects: [
-        {
+      subjects: [{
+        type: "default",
+        phrase: {
           type: "default",
-          phrase: {
-            type: "default",
-            headWord: subject,
-            alaQuestion: false,
-            modifiers: [],
-          },
+          headWord: subject,
+          alaQuestion: false,
+          modifiers: [],
         },
-      ],
+      }],
       predicates: [predicate, ...morePredicates],
       prepositions,
     })),
     manyAtLeastOnce(optionalComma().with(preposition())).map((
       prepositions,
-    ) => ({
-      type: "prepositions",
-      prepositions,
+    ) => ({ type: "prepositions", prepositions })),
+    enPhrases().map((phrases) => ({ type: "en phrases", phrases } as Clause)),
+    enPhrases().skip(specificWord("o")).map((phrases) => ({
+      type: "o vocative",
+      phrases,
     })),
-    enPhrases().map(
-      (phrases) => ({
-        type: "en phrases",
-        phrases,
-      } as Clause),
-    ),
-    enPhrases()
-      .skip(specificWord("o"))
-      .map((phrases) => ({
-        type: "o vocative",
-        phrases,
-      })),
     sequence(
       enPhrases(),
       manyAtLeastOnce(
@@ -461,15 +395,13 @@ function fullClause(): Parser<FullClause> {
     optional(
       sequence(optionalComma(), specificWord("anu"), specificWord("seme")),
     ),
-  ).map(
-    ([taso, clause, anuSeme]) => ({
-      taso: !!taso,
-      anuSeme: !!anuSeme,
-      clause,
-    }),
-  );
+  ).map(([taso, clause, anuSeme]) => ({
+    taso: !!taso,
+    anuSeme: !!anuSeme,
+    clause,
+  }));
 }
-// parses _la_ with optional comma around
+/** parses _la_ with optional comma around. */
 function la(): Parser<string> {
   return choice(
     comma().with(specificWord("la")),
@@ -519,19 +451,12 @@ function quotation(): Parser<Quotation> {
       if (rightMark !== "」") {
         throw new UnrecognizedError("Mismatched quotation marks");
       }
-    } else {
-      throw new UnreachableError();
-    }
-    return {
-      sentences,
-      leftMark,
-      rightMark,
-    };
+    } else throw new UnreachableError();
+    return { sentences, leftMark, rightMark };
   });
 }
 /** A multiple Toki Pona sentence parser. */
 export function parser(src: string): Output<Array<Sentence>> {
-  return match(/\s*/).with(allAtLeastOnce(sentence())).skip(eol())
-    .parser(src)
+  return match(/\s*/).with(allAtLeastOnce(sentence())).skip(eol()).parser(src)
     .map(({ value }) => value);
 }

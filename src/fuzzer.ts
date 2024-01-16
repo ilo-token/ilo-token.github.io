@@ -5,9 +5,7 @@ const CONSONANTS = "p t k s m n l j w".split(" ");
 const VOWELS = "a e i o u".split(" ");
 
 function randomIn<T>(...items: Array<T>): T {
-  if (items.length === 0) {
-    throw new Error("passed empty arguments");
-  }
+  if (items.length === 0) throw new Error("passed empty arguments");
   return items[randomNumber(items.length - 1)];
 }
 function randomNumber(max: number): number {
@@ -20,8 +18,7 @@ function fill<T>(number: number, mapper: () => T): Array<T> {
   return new Array(number).fill(undefined).map(mapper);
 }
 function randomName(): string {
-  const first = randomIn(...CONSONANTS).toUpperCase() +
-    randomIn(...VOWELS);
+  const first = randomIn(...CONSONANTS).toUpperCase() + randomIn(...VOWELS);
   const more = fill(
     randomNumber(2),
     () => randomIn(...CONSONANTS) + randomIn(...VOWELS),
@@ -66,16 +63,13 @@ function randomNumberWords(): Array<string> {
 }
 function randomPhrase(): Array<string> {
   const modifiers = fill(randomNumber(2), randomModifier).flat();
-  const phrase = randomIn(
-    () => {
-      const headWord = randomIn(
-        () => [randomWord(CONTENT_WORD)],
-        () => asAlaQuestion(randomWord(CONTENT_WORD)),
-      )();
-      return [...headWord, ...modifiers];
-    },
-    () => [...randomNumberWords(), ...modifiers],
-  )();
+  const phrase = randomIn(() => {
+    const headWord = randomIn(
+      () => [randomWord(CONTENT_WORD)],
+      () => asAlaQuestion(randomWord(CONTENT_WORD)),
+    )();
+    return [...headWord, ...modifiers];
+  }, () => [...randomNumberWords(), ...modifiers])();
   return randomIn(
     () => phrase,
     () => [...asAlaQuestion(randomWord(PREVERB)), ...phrase],

@@ -143,9 +143,12 @@ export const PREVERB = new Set([
   "wile",
 ]);
 /** Prepositions. */
-export const PREPOSITION = new Set(["kepeken", "lon", "sama", "tan", "tawa"]);
-/** Full vocabulary. */
-export const VOCABULARY = new Set([
-  ...PARTICLES,
-  ...CONTENT_WORD,
+export const PREPOSITION = new Set([
+  "kepeken",
+  "lon",
+  "sama",
+  "tan",
+  "tawa",
 ]);
+/** Full vocabulary. */
+export const VOCABULARY = new Set([...PARTICLES, ...CONTENT_WORD]);
