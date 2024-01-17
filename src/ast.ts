@@ -70,7 +70,8 @@ export type Clause = { type: "en phrases"; phrases: Array<Phrase> } | {
 } | {
   type: "prepositions";
   prepositions: Array<Preposition>;
-}; /** Represents a clause including preclause and postclause. */
+};
+/** Represents a clause including preclause and postclause. */
 export type FullClause = {
   taso: boolean;
   anuSeme: boolean;
