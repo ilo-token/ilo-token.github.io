@@ -45,10 +45,15 @@ export type Preposition = {
   modifiers: Array<Modifier>;
   phrase: Phrase;
 };
-/** Represents a single predicate and multiple objects. */
-export type PredicateObjects = {
-  predicate: Phrase;
+/**
+ * Represents a single simple predicate or multiple predicates associated with
+ * the same objects or prepositions.
+ */
+export type AssociatedPredicates = { type: "simple"; predicate: Phrase } | {
+  type: "associated";
+  predicates: Array<Phrase>;
   objects: Array<Phrase>;
+  prepositions: Array<Preposition>;
 };
 /** Represents a simple clause. */
 export type Clause = { type: "en phrases"; phrases: Array<Phrase> } | {
@@ -57,13 +62,11 @@ export type Clause = { type: "en phrases"; phrases: Array<Phrase> } | {
 } | {
   type: "li clause";
   subjects: Array<Phrase>;
-  predicates: Array<PredicateObjects>;
-  prepositions: Array<Preposition>;
+  predicates: Array<AssociatedPredicates>;
 } | {
   type: "o clause";
   subjects: Array<Phrase>;
-  predicates: Array<PredicateObjects>;
-  prepositions: Array<Preposition>;
+  predicates: Array<AssociatedPredicates>;
 } | {
   type: "prepositions";
   prepositions: Array<Preposition>;
