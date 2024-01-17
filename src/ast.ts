@@ -12,8 +12,8 @@ export type Quotation = {
   leftMark: string;
   rightMark: string;
 };
-/** Represents a simple phrase. */
-export type SimplePhrase = {
+/** Represents a phrase including preverbial phrases and quotations. */
+export type Phrase = {
   type: "default";
   headWord: string;
   alaQuestion: boolean;
@@ -22,14 +22,12 @@ export type SimplePhrase = {
   type: "cardinal";
   number: Array<string>;
   modifiers: Array<Modifier>;
-};
-/** Represents a phrase including preverbial phrases and quotations. */
-export type Phrase = { type: "default"; phrase: SimplePhrase } | {
+} | {
   type: "preverb";
   preverb: string;
   alaQuestion: boolean;
   modifiers: Array<Modifier>;
-  phrase: SimplePhrase;
+  phrase: Phrase;
 } | {
   type: "quotation";
   quotation: Quotation;

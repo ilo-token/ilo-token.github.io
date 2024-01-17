@@ -7,7 +7,6 @@ import {
   Preposition,
   Quotation,
   Sentence,
-  SimplePhrase,
 } from "./ast.ts";
 import { UnreachableError, UnrecognizedError } from "./error.ts";
 import { Output } from "./output.ts";
@@ -246,30 +245,16 @@ function modifier(): Parser<Modifier> {
     quotation().map((quotation) => ({ type: "quotation", quotation })),
   );
 }
-/** Parses phrase. */
-function simplePhrase(): Parser<SimplePhrase> {
-  return choice(
-    sequence(number(), many(modifier())).map((
-      [number, modifiers],
-    ) => ({ type: "cardinal", number, modifiers } as SimplePhrase)),
-    sequence(
-      optionalAlaQuestion(wordFrom(CONTENT_WORD, "headword")),
-      many(modifier()),
-    ).map(([[headWord, alaQuestion], modifiers]) => ({
-      type: "default",
-      headWord,
-      alaQuestion,
-      modifiers,
-    })),
-  );
-}
 /** Parses phrases including preverbial phrases. */
 function phrase(): Parser<Phrase> {
   return choice(
+    sequence(number(), many(modifier())).map((
+      [number, modifiers],
+    ) => ({ type: "cardinal", number, modifiers } as Phrase)),
     sequence(
       optionalAlaQuestion(wordFrom(PREVERB, "preverb")),
       many(lazy(modifier)),
-      lazy(simplePhrase),
+      lazy(phrase),
     ).map((
       [[preverb, alaQuestion], modifiers, phrase],
     ) => ({
@@ -279,7 +264,15 @@ function phrase(): Parser<Phrase> {
       modifiers,
       phrase,
     } as Phrase)),
-    lazy(simplePhrase).map((phrase) => ({ type: "default", phrase })),
+    sequence(
+      optionalAlaQuestion(wordFrom(CONTENT_WORD, "headword")),
+      many(modifier()),
+    ).map(([[headWord, alaQuestion], modifiers]) => ({
+      type: "default",
+      headWord,
+      alaQuestion,
+      modifiers,
+    })),
     quotation().map((quotation) => ({ type: "quotation", quotation })),
   );
 }
@@ -331,16 +324,13 @@ function clause(): Parser<Clause> {
       type: "li clause",
       subjects: [{
         type: "default",
-        phrase: {
-          type: "default",
-          headWord: subject,
-          alaQuestion: false,
-          modifiers: [],
-        },
+        headWord: subject,
+        alaQuestion: false,
+        modifiers: [],
       }],
       predicates: [predicate, ...morePredicates],
       prepositions,
-    })),
+    } as Clause)),
     manyAtLeastOnce(optionalComma().with(preposition())).map((
       prepositions,
     ) => ({ type: "prepositions", prepositions })),
