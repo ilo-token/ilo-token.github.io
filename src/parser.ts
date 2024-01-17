@@ -264,10 +264,9 @@ function phrase(): Parser<Phrase> {
       modifiers,
       phrase,
     } as Phrase)),
-    sequence(preposition(), objects()).map(([preposition, objects]) => ({
+    preposition().map((preposition) => ({
       type: "preposition",
       preposition,
-      objects,
     })),
     sequence(
       optionalAlaQuestion(wordFrom(CONTENT_WORD, "headword")),
@@ -301,9 +300,6 @@ function enPhrases(): Parser<Array<Phrase>> {
     many(optionalComma().with(specificWord("en")).with(phrase())),
   ).map(([first, rest]) => [first, ...rest]);
 }
-function objects(): Parser<Array<Phrase>> {
-  return many(optionalComma().with(specificWord("e")).with(phrase()));
-}
 /** Parses a single associated predicates without _li_ nor _o_ at first. */
 function associatedPredicates(particle: string): Parser<AssociatedPredicates> {
   return choice(
@@ -313,7 +309,7 @@ function associatedPredicates(particle: string): Parser<AssociatedPredicates> {
     sequence(
       phrase(),
       many(optionalComma().with(specificWord(particle)).with(phrase())),
-      objects(),
+      many(optionalComma().with(specificWord("e")).with(phrase())),
       many(preposition()),
     ).map(([predicate, morePredicates, objects, prepositions]) => {
       if (objects.length === 0 && prepositions.length === 0) {
@@ -340,8 +336,7 @@ function clause(): Parser<Clause> {
           associatedPredicates("li"),
         ),
       ),
-      many(optionalComma().with(preposition())),
-    ).map(([subject, predicate, morePredicates, prepositions]) => ({
+    ).map(([subject, predicate, morePredicates]) => ({
       type: "li clause",
       subjects: [{
         type: "default",
@@ -350,7 +345,6 @@ function clause(): Parser<Clause> {
         modifiers: [],
       }],
       predicates: [predicate, ...morePredicates],
-      prepositions,
     } as Clause)),
     manyAtLeastOnce(optionalComma().with(preposition())).map((
       prepositions,
@@ -377,24 +371,20 @@ function clause(): Parser<Clause> {
       manyAtLeastOnce(
         optionalComma().with(specificWord("o")).with(associatedPredicates("o")),
       ),
-      many(optionalComma().with(preposition())),
-    ).map(([predicate, morePredicates, prepositions]) => ({
+    ).map(([predicate, morePredicates]) => ({
       type: "o clause",
       subjects: [],
       predicates: [predicate, ...morePredicates],
-      prepositions,
     })),
     sequence(
       enPhrases(),
       manyAtLeastOnce(
         optionalComma().with(specificWord("o")).with(associatedPredicates("o")),
       ),
-      many(optionalComma().with(preposition())),
-    ).map(([subjects, predicates, prepositions]) => ({
+    ).map(([subjects, predicates]) => ({
       type: "o clause",
       subjects: subjects,
       predicates,
-      prepositions,
     })),
   );
 }
