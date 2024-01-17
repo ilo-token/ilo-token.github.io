@@ -248,7 +248,7 @@ function modifier(): Parser<Modifier> {
 /** Parses phrases including preverbial phrases. */
 function phrase(): Parser<Phrase> {
   return choice(
-    sequence(number(), many(modifier())).map((
+    sequence(number(), many(lazy(modifier))).map((
       [number, modifiers],
     ) => ({ type: "cardinal", number, modifiers } as Phrase)),
     sequence(
@@ -264,13 +264,13 @@ function phrase(): Parser<Phrase> {
       modifiers,
       phrase,
     } as Phrase)),
-    preposition().map((preposition) => ({
+    lazy(preposition).map((preposition) => ({
       type: "preposition",
       preposition,
     })),
     sequence(
       optionalAlaQuestion(wordFrom(CONTENT_WORD, "headword")),
-      many(modifier()),
+      many(lazy(modifier)),
     ).map(([[headWord, alaQuestion], modifiers]) => ({
       type: "default",
       headWord,
