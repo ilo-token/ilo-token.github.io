@@ -12,7 +12,10 @@ export type Quotation = {
   leftMark: string;
   rightMark: string;
 };
-/** Represents a phrase including preverbial phrases and quotations. */
+/**
+ * Represents a phrase including preverbial phrases, quotations, and
+ * prepositional phrases intended for predicate.
+ */
 export type Phrase = {
   type: "default";
   headWord: string;
@@ -29,6 +32,9 @@ export type Phrase = {
   modifiers: Array<Modifier>;
   phrase: Phrase;
 } | {
+  type: "preposition";
+  preposition: Preposition;
+} | {
   type: "quotation";
   quotation: Quotation;
 };
@@ -39,14 +45,9 @@ export type Preposition = {
   modifiers: Array<Modifier>;
   phrase: Phrase;
 };
-/** Represents a single predicate. */
-export type Predicate = {
-  type: "default";
+/** Represents a single predicate and multiple objects. */
+export type PredicateObjects = {
   predicate: Phrase;
-  objects: Array<Phrase>;
-} | {
-  type: "preposition";
-  preposition: Preposition;
   objects: Array<Phrase>;
 };
 /** Represents a simple clause. */
@@ -56,12 +57,12 @@ export type Clause = { type: "en phrases"; phrases: Array<Phrase> } | {
 } | {
   type: "li clause";
   subjects: Array<Phrase>;
-  predicates: Array<Predicate>;
+  predicates: Array<PredicateObjects>;
   prepositions: Array<Preposition>;
 } | {
   type: "o clause";
   subjects: Array<Phrase>;
-  predicates: Array<Predicate>;
+  predicates: Array<PredicateObjects>;
   prepositions: Array<Preposition>;
 } | {
   type: "prepositions";

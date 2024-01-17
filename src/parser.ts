@@ -3,7 +3,7 @@ import {
   FullClause,
   Modifier,
   Phrase,
-  Predicate,
+  PredicateObjects,
   Preposition,
   Quotation,
   Sentence,
@@ -264,6 +264,11 @@ function phrase(): Parser<Phrase> {
       modifiers,
       phrase,
     } as Phrase)),
+    sequence(preposition(), objects()).map(([preposition, objects]) => ({
+      type: "preposition",
+      preposition,
+      objects,
+    })),
     sequence(
       optionalAlaQuestion(wordFrom(CONTENT_WORD, "headword")),
       many(modifier()),
@@ -300,17 +305,10 @@ function objects(): Parser<Array<Phrase>> {
   return many(optionalComma().with(specificWord("e")).with(phrase()));
 }
 /** Parses a single predicate without _li_ nor _o_. */
-function predicate(): Parser<Predicate> {
-  return choice(
-    sequence(preposition(), objects()).map(([preposition, objects]) => ({
-      type: "preposition",
-      preposition,
-      objects,
-    })),
-    sequence(phrase(), objects()).map((
-      [predicate, objects],
-    ) => ({ type: "default", predicate, objects } as Predicate)),
-  );
+function predicate(): Parser<PredicateObjects> {
+  return sequence(phrase(), objects()).map((
+    [predicate, objects],
+  ) => ({ predicate, objects } as PredicateObjects));
 }
 /** Parses a single clause. */
 function clause(): Parser<Clause> {
