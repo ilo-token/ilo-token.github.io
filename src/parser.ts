@@ -404,9 +404,7 @@ function multiplePredicates(
         type,
         predicates: [group, ...moreGroups],
       } as MultiplePredicates)),
-      lazy(() => multiplePredicates(rest)).filter((predicate) =>
-        predicate.type !== "single" && predicate.type !== "associated"
-      ),
+      lazy(() => multiplePredicates(rest)),
     );
   }
 }
