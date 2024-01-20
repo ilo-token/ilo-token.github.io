@@ -380,6 +380,7 @@ function associatedPredicates(
 }
 /** Parses multiple predicates without _li_, _o_, nor _anu_ at the beginning. */
 // TODO: ensure there's no duplicates
+// FIXME: This always outputs 3 AST's
 function multiplePredicates(
   nestingRule: Array<"li" | "o" | "anu">,
 ): Parser<MultiplePredicates> {
