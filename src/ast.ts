@@ -38,35 +38,42 @@ export type Phrase = {
   type: "quotation";
   quotation: Quotation;
 };
+/** Represents multiple phrases separated by repeated particle or _anu_. */
+export type MultiplePhrases = { type: "single"; phrase: Phrase } | {
+  type: "and conjunction";
+  phrases: Array<MultiplePhrases>;
+} | { type: "anu"; phrases: Array<MultiplePhrases> };
 /** Represents a single prepositional phrase. */
 export type Preposition = {
   preposition: string;
   alaQuestion: boolean;
   modifiers: Array<Modifier>;
-  phrase: Phrase;
+  /** This cannot be an "and conjunction": only "anu" or "single". */
+  phrases: MultiplePhrases;
 };
-/**
- * Represents a single simple predicate or multiple predicates associated with
- * the same objects or prepositions.
- */
-export type AssociatedPredicates = { type: "simple"; predicate: Phrase } | {
-  type: "associated";
-  predicates: Array<Phrase>;
-  objects: Array<Phrase>;
-  prepositions: Array<Preposition>;
-};
+/** Represents multiple predicates. */
+export type MultiplePredicates =
+  | { type: "single"; predicate: Phrase }
+  | {
+    type: "associated";
+    predicates: MultiplePhrases;
+    objects: null | MultiplePhrases;
+    prepositions: Array<Preposition>;
+  }
+  | { type: "and conjunction"; predicates: Array<MultiplePredicates> }
+  | { type: "anu"; predicates: Array<MultiplePredicates> };
 /** Represents a simple clause. */
-export type Clause = { type: "en phrases"; phrases: Array<Phrase> } | {
+export type Clause = { type: "en phrases"; phrases: MultiplePhrases } | {
   type: "o vocative";
-  phrases: Array<Phrase>;
+  phrases: MultiplePhrases;
 } | {
   type: "li clause";
-  subjects: Array<Phrase>;
-  predicates: Array<AssociatedPredicates>;
+  subjects: MultiplePhrases;
+  predicates: MultiplePredicates;
 } | {
   type: "o clause";
-  subjects: Array<Phrase>;
-  predicates: Array<AssociatedPredicates>;
+  subjects: null | MultiplePhrases;
+  predicates: MultiplePredicates;
 } | {
   type: "prepositions";
   prepositions: Array<Preposition>;
