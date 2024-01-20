@@ -314,7 +314,7 @@ function nestedPhrases(
   } else {
     const [first, ...rest] = nestingRule;
     let type: "and conjunction" | "anu";
-    if (["en", "li", "o", "e"].indexOf(first) !== 0) {
+    if (["en", "li", "o", "e"].indexOf(first) !== -1) {
       type = "and conjunction";
     } else {
       type = "anu";
