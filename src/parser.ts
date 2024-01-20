@@ -359,9 +359,6 @@ function singlePredicate(
   nestingRule: Array<"li" | "o" | "anu">,
 ): Parser<MultiplePredicates> {
   return choice(
-    phrase().map((
-      predicate,
-    ) => ({ type: "single", predicate } as MultiplePredicates)),
     sequence(
       nestedPhrases(nestingRule),
       optional(
@@ -382,6 +379,9 @@ function singlePredicate(
         };
       }
     }),
+    phrase().map((
+      predicate,
+    ) => ({ type: "single", predicate } as MultiplePredicates)),
   );
 }
 /** Parses multiple predicates without _li_, _o_, nor _anu_ at the beginning. */
