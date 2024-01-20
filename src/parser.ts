@@ -307,7 +307,7 @@ function phrase(): Parser<Phrase> {
 function nestedPhrases(
   nestingRule: Array<"en" | "li" | "o" | "e" | "anu">,
 ): Parser<MultiplePhrases> {
-  if (nestedPhrases.length === 0) {
+  if (nestingRule.length === 0) {
     return phrase().map(
       (phrase) => ({ type: "single", phrase } as MultiplePhrases),
     );
