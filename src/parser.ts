@@ -37,6 +37,11 @@ class Parser<T> {
       }))
     );
   }
+  filter(mapper: (x: T) => boolean): Parser<T> {
+    return new Parser((src) =>
+      this.parser(src).filter(({ value }) => mapper(value))
+    );
+  }
   /** Takes another parser and discards the first parsing result. */
   with<U>(parser: Parser<U>): Parser<U> {
     return sequence(this, parser).map(([_, output]) => output);
@@ -245,15 +250,37 @@ function modifier(): Parser<Modifier> {
     quotation().map((quotation) => ({ type: "quotation", quotation })),
   );
 }
+function modifiers(): Parser<Array<Modifier>> {
+  return many(modifier()).filter((modifiers) => {
+    // Filter out malformed nesting with nanpa or pi
+    const noPi = modifiers.reduceRight((array, modifier) => {
+      if (array.length === 0 && modifier.type === "pi") {
+        return [];
+      } else {
+        return [modifier, ...array];
+      }
+    }, [] as Array<Modifier>);
+    const noNanpa = noPi.reduceRight((array, modifier) => {
+      if (array.length === 0 && modifier.type === "nanpa ordinal") {
+        return [];
+      } else {
+        return [modifier, ...array];
+      }
+    }, [] as Array<Modifier>);
+    return noNanpa.every((modifier) =>
+      modifier.type !== "pi" && modifier.type !== "nanpa ordinal"
+    );
+  });
+}
 /** Parses phrases including preverbial phrases. */
 function phrase(): Parser<Phrase> {
   return choice(
-    sequence(number(), many(lazy(modifier))).map((
+    sequence(number(), lazy(modifiers)).map((
       [number, modifiers],
     ) => ({ type: "cardinal", number, modifiers } as Phrase)),
     sequence(
       optionalAlaQuestion(wordFrom(PREVERB, "preverb")),
-      many(lazy(modifier)),
+      lazy(modifiers),
       lazy(phrase),
     ).map((
       [[preverb, alaQuestion], modifiers, phrase],
@@ -270,7 +297,7 @@ function phrase(): Parser<Phrase> {
     })),
     sequence(
       optionalAlaQuestion(wordFrom(CONTENT_WORD, "headword")),
-      many(lazy(modifier)),
+      lazy(modifiers),
     ).map(([[headWord, alaQuestion], modifiers]) => ({
       type: "default",
       headWord,
@@ -284,7 +311,7 @@ function phrase(): Parser<Phrase> {
 function preposition(): Parser<Preposition> {
   return sequence(
     optionalAlaQuestion(wordFrom(PREPOSITION, "preposition")),
-    many(modifier()),
+    modifiers(),
     phrase(),
   ).map(([[preposition, alaQuestion], modifiers, phrase]) => ({
     preposition,

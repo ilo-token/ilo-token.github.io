@@ -37,6 +37,15 @@ export class Output<T> {
   isError(): boolean {
     return this.output.length === 0;
   }
+  filter(mapper: (value: T) => boolean): Output<T> {
+    return this.map((value) => {
+      if (mapper(value)) {
+        return value;
+      } else {
+        throw new OutputError("no error provided");
+      }
+    });
+  }
   /**
    * Maps all values and returns new Output. For convenience, the mapper
    * function can throw OutputError; Other kinds of errors will be ignored.
@@ -54,8 +63,8 @@ export class Output<T> {
     }
     return wholeOutput;
   }
-  /** 
-   * Accepts mapper function that returns another Output. flatMap takes all 
+  /**
+   * Accepts mapper function that returns another Output. flatMap takes all
    * values and flattens them into single array for Output.
    */
   flatMap<U>(mapper: (value: T) => Output<U>): Output<U> {
