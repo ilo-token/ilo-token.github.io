@@ -331,7 +331,7 @@ function nestedPhrases(
         type,
         phrases: [group, ...moreGroups],
       })),
-      phrase().map((phrase) => ({ type: "single", phrase } as MultiplePhrases)),
+      lazy(() => nestedPhrases(rest)),
     );
   }
 }
@@ -354,42 +354,36 @@ function preposition(): Parser<Preposition> {
     phrases,
   }));
 }
-/** Parses a single predicate or a single associated predicates */
-function singlePredicate(
-  nestingRule: Array<"li" | "o" | "anu">,
-): Parser<MultiplePredicates> {
-  return choice(
-    sequence(
-      nestedPhrases(nestingRule),
-      optional(
-        optionalComma().with(specificWord("e")).with(
-          nestedPhrases(["e", "anu"]),
-        ),
-      ),
-      many(preposition()),
-    ).map(([predicates, objects, prepositions]) => {
-      if (!objects && prepositions.length === 0) {
-        throw new UnreachableError();
-      } else {
-        return {
-          type: "associated",
-          predicates,
-          objects,
-          prepositions,
-        };
-      }
-    }),
-    phrase().map((
-      predicate,
-    ) => ({ type: "single", predicate } as MultiplePredicates)),
-  );
-}
 /** Parses multiple predicates without _li_, _o_, nor _anu_ at the beginning. */
 function multiplePredicates(
   nestingRule: Array<"li" | "o" | "anu">,
 ): Parser<MultiplePredicates> {
   if (nestingRule.length === 0) {
-    return singlePredicate([]);
+    return choice(
+      sequence(
+        nestedPhrases([]),
+        optional(
+          optionalComma().with(specificWord("e")).with(
+            nestedPhrases(["e", "anu"]),
+          ),
+        ),
+        many(preposition()),
+      ).map(([predicates, objects, prepositions]) => {
+        if (!objects && prepositions.length === 0) {
+          throw new UnreachableError();
+        } else {
+          return {
+            type: "associated",
+            predicates,
+            objects,
+            prepositions,
+          };
+        }
+      }),
+      phrase().map((
+        predicate,
+      ) => ({ type: "single", predicate } as MultiplePredicates)),
+    );
   } else {
     const [first, ...rest] = nestingRule;
     let type: "and conjunction" | "anu";
@@ -410,7 +404,9 @@ function multiplePredicates(
         type,
         predicates: [group, ...moreGroups],
       } as MultiplePredicates)),
-      singlePredicate(nestingRule),
+      lazy(() => multiplePredicates(rest)).filter((predicate) =>
+        predicate.type !== "single" && predicate.type !== "associated"
+      ),
     );
   }
 }
