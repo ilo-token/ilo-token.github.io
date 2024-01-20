@@ -354,32 +354,38 @@ function preposition(): Parser<Preposition> {
     phrases,
   }));
 }
+function associatedPredicates(
+  nestingRule: Array<"li" | "o" | "anu">,
+): Parser<MultiplePredicates> {
+  return sequence(
+    nestedPhrases(nestingRule),
+    optional(
+      optionalComma().with(specificWord("e")).with(
+        nestedPhrases(["e", "anu"]),
+      ),
+    ),
+    many(preposition()),
+  ).map(([predicates, objects, prepositions]) => {
+    if (!objects && prepositions.length === 0) {
+      throw new UnreachableError();
+    } else {
+      return {
+        type: "associated",
+        predicates,
+        objects,
+        prepositions,
+      };
+    }
+  });
+}
 /** Parses multiple predicates without _li_, _o_, nor _anu_ at the beginning. */
+// TODO: ensure there's no duplicates
 function multiplePredicates(
   nestingRule: Array<"li" | "o" | "anu">,
 ): Parser<MultiplePredicates> {
   if (nestingRule.length === 0) {
     return choice(
-      sequence(
-        nestedPhrases([]),
-        optional(
-          optionalComma().with(specificWord("e")).with(
-            nestedPhrases(["e", "anu"]),
-          ),
-        ),
-        many(preposition()),
-      ).map(([predicates, objects, prepositions]) => {
-        if (!objects && prepositions.length === 0) {
-          throw new UnreachableError();
-        } else {
-          return {
-            type: "associated",
-            predicates,
-            objects,
-            prepositions,
-          };
-        }
-      }),
+      associatedPredicates([]),
       phrase().map((
         predicate,
       ) => ({ type: "single", predicate } as MultiplePredicates)),
@@ -404,6 +410,7 @@ function multiplePredicates(
         type,
         predicates: [group, ...moreGroups],
       } as MultiplePredicates)),
+      associatedPredicates(nestingRule),
       lazy(() => multiplePredicates(rest)),
     );
   }
