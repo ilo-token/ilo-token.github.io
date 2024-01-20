@@ -354,29 +354,11 @@ function preposition(): Parser<Preposition> {
     phrases,
   }));
 }
-/** Parses multiple predicates without _li_, _o_, nor _anu_ at the beginning. */
-function multiplePredicates(
+/** Parses a single predicate or a single associated predicates */
+function singlePredicate(
   nestingRule: Array<"li" | "o" | "anu">,
 ): Parser<MultiplePredicates> {
-  const [first, ...rest] = nestingRule;
-  let type: "and conjunction" | "anu";
-  if (first === "li" || first === "o") {
-    type = "and conjunction";
-  } else {
-    type = "anu";
-  }
   return choice(
-    sequence(
-      lazy(() => multiplePredicates(rest)),
-      manyAtLeastOnce(
-        optionalComma().with(specificWord(first)).with(
-          lazy(() => multiplePredicates(rest)),
-        ),
-      ),
-    ).map(([group, moreGroups]) => ({
-      type,
-      predicates: [group, ...moreGroups],
-    } as MultiplePredicates)),
     phrase().map((
       predicate,
     ) => ({ type: "single", predicate } as MultiplePredicates)),
@@ -401,6 +383,36 @@ function multiplePredicates(
       }
     }),
   );
+}
+/** Parses multiple predicates without _li_, _o_, nor _anu_ at the beginning. */
+function multiplePredicates(
+  nestingRule: Array<"li" | "o" | "anu">,
+): Parser<MultiplePredicates> {
+  if (nestingRule.length === 0) {
+    return singlePredicate([]);
+  } else {
+    const [first, ...rest] = nestingRule;
+    let type: "and conjunction" | "anu";
+    if (first === "li" || first === "o") {
+      type = "and conjunction";
+    } else {
+      type = "anu";
+    }
+    return choice(
+      sequence(
+        lazy(() => multiplePredicates(rest)),
+        manyAtLeastOnce(
+          optionalComma().with(specificWord(first)).with(
+            lazy(() => multiplePredicates(rest)),
+          ),
+        ),
+      ).map(([group, moreGroups]) => ({
+        type,
+        predicates: [group, ...moreGroups],
+      } as MultiplePredicates)),
+      singlePredicate(nestingRule),
+    );
+  }
 }
 /** Parses a single clause. */
 function clause(): Parser<Clause> {
