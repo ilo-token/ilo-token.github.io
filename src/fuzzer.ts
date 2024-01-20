@@ -61,7 +61,9 @@ function randomNumberWords(): Array<string> {
   }
   return words;
 }
-function randomPhrase(): Array<string> {
+// TODO: nested preverbs and preposition
+// TODO: remove export when randomSentence is defined
+export function randomPhrase(): Array<string> {
   const modifiers = fill(randomNumber(2), randomModifier).flat();
   const phrase = randomIn(() => {
     const headWord = randomIn(
