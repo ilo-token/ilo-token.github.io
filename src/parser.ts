@@ -196,15 +196,15 @@ function properWords(): Parser<string> {
 }
 /** Parses word only from `set`. */
 function wordFrom(set: Set<string>, description: string): Parser<string> {
-  return word().map((word) => {
-    if (set.has(word)) return word;
+  return word().filter((word) => {
+    if (set.has(word)) return true;
     else throw new UnrecognizedError(`"${word}" as ${description}`);
   });
 }
 /** Parses a specific word. */
 function specificWord(thatWord: string): Parser<string> {
-  return word().map((thisWord) => {
-    if (thatWord === thisWord) return thisWord;
+  return word().filter((thisWord) => {
+    if (thatWord === thisWord) return true;
     else throw new UnrecognizedError(`"${thisWord}" instead of "${thatWord}"`);
   });
 }
