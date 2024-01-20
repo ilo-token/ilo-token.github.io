@@ -234,43 +234,38 @@ function number(): Parser<Array<string>> {
     else throw new UnreachableError();
   });
 }
-/** Parses a single modifier. */
-function modifier(): Parser<Modifier> {
-  return choice(
-    specificWord("nanpa").with(phrase()).map((phrase) => ({
-      type: "nanpa ordinal",
-      phrase,
-    })),
-    wordFrom(CONTENT_WORD, "modifier").map((
-      word,
-    ) => ({ type: "word", word } as Modifier)),
-    properWords().map((words) => ({ type: "proper words", words })),
-    specificWord("pi").with(phrase()).map((phrase) => ({ type: "pi", phrase })),
-    number().map((number) => ({ type: "cardinal", number })),
-    quotation().map((quotation) => ({ type: "quotation", quotation })),
-  );
-}
+/** Parses multiple modifiers */
 function modifiers(): Parser<Array<Modifier>> {
-  return many(modifier()).filter((modifiers) => {
-    // Filter out malformed nesting with nanpa or pi
-    const noPi = modifiers.reduceRight((array, modifier) => {
-      if (array.length === 0 && modifier.type === "pi") {
-        return [];
-      } else {
-        return [modifier, ...array];
-      }
-    }, [] as Array<Modifier>);
-    const noNanpa = noPi.reduceRight((array, modifier) => {
-      if (array.length === 0 && modifier.type === "nanpa ordinal") {
-        return [];
-      } else {
-        return [modifier, ...array];
-      }
-    }, [] as Array<Modifier>);
-    return noNanpa.every((modifier) =>
-      modifier.type !== "pi" && modifier.type !== "nanpa ordinal"
-    );
-  });
+  return sequence(
+    many(
+      choice(
+        wordFrom(CONTENT_WORD, "modifier").map((
+          word,
+        ) => ({ type: "word", word } as Modifier)),
+        properWords().map((
+          words,
+        ) => ({ type: "proper words", words } as Modifier)),
+        number().map((number) => ({ type: "cardinal", number } as Modifier)),
+        quotation().map((
+          quotation,
+        ) => ({ type: "quotation", quotation } as Modifier)),
+      ),
+    ),
+    many(
+      specificWord("nanpa").with(phrase()).map((phrase) => ({
+        type: "nanpa ordinal",
+        phrase,
+      } as Modifier)),
+    ),
+    many(
+      specificWord("pi").with(phrase()).map((phrase) => ({
+        type: "pi",
+        phrase,
+      } as Modifier)),
+    ),
+  ).map((
+    [modifiers, nanpaModifiers, piModifiers],
+  ) => [...modifiers, ...nanpaModifiers, ...piModifiers]);
 }
 /** Parses phrases including preverbial phrases. */
 function phrase(): Parser<Phrase> {
