@@ -63,7 +63,7 @@ export type MultiplePredicates =
   | { type: "and conjunction"; predicates: Array<MultiplePredicates> }
   | { type: "anu"; predicates: Array<MultiplePredicates> };
 /** Represents a simple clause. */
-export type Clause = { type: "en phrases"; phrases: MultiplePhrases } | {
+export type Clause = { type: "phrases"; phrases: MultiplePhrases } | {
   type: "o vocative";
   phrases: MultiplePhrases;
 } | {
@@ -77,6 +77,9 @@ export type Clause = { type: "en phrases"; phrases: MultiplePhrases } | {
 } | {
   type: "prepositions";
   prepositions: Array<Preposition>;
+} | {
+  type: "quotation";
+  quotation: Quotation;
 };
 /** Represents a clause including preclause and postclause. */
 export type FullClause = {

@@ -430,9 +430,17 @@ function clause(): Parser<Clause> {
     manyAtLeastOnce(optionalComma().with(preposition())).map((
       prepositions,
     ) => ({ type: "prepositions", prepositions })),
-    subjectPhrases().map((
-      phrases,
-    ) => ({ type: "en phrases", phrases } as Clause)),
+    subjectPhrases().map((phrases) => {
+      if (
+        phrases.type === "single" &&
+        (phrases.phrase.type === "preposition" ||
+          phrases.phrase.type === "quotation")
+      ) {
+        throw new UnreachableError();
+      } else {
+        return { type: "phrases", phrases } as Clause;
+      }
+    }),
     subjectPhrases().skip(specificWord("o")).map((phrases) => ({
       type: "o vocative",
       phrases,
@@ -463,6 +471,10 @@ function clause(): Parser<Clause> {
       type: "o clause",
       subjects: subjects,
       predicates,
+    })),
+    quotation().map((quotation) => ({
+      type: "quotation",
+      quotation,
     })),
   );
 }
