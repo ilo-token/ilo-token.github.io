@@ -6,12 +6,6 @@ export type Modifier =
   | { type: "nanpa ordinal"; phrase: Phrase }
   | { type: "cardinal"; number: Array<string> }
   | { type: "quotation"; quotation: Quotation };
-/** Represents quotation. */
-export type Quotation = {
-  sentences: Array<Sentence>;
-  leftMark: string;
-  rightMark: string;
-};
 /**
  * Represents a phrase including preverbial phrases, quotations, and
  * prepositional phrases intended for predicate.
@@ -89,3 +83,9 @@ export type FullClause = {
 };
 /** Represents a single full sentence. */
 export type Sentence = { laClauses: Array<FullClause>; punctuation: string };
+/** Represents quotation. */
+export type Quotation = {
+  sentences: Array<Sentence>;
+  leftMark: string;
+  rightMark: string;
+};
