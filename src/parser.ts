@@ -371,7 +371,7 @@ function singlePredicate(
       ),
       many(preposition()),
     ).map(([predicates, objects, prepositions]) => {
-      if (prepositions.length === 0) {
+      if (!objects && prepositions.length === 0) {
         throw new UnreachableError();
       } else {
         return {
