@@ -1,4 +1,5 @@
 import {
+  FullClause,
   Modifier,
   MultiplePhrases,
   Phrase,
@@ -181,6 +182,15 @@ export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
   (preposition) => {
     if (!modifiersIsAlaOrNone(preposition.modifiers)) {
       throw new UnrecognizedError('preverb with modifiers other than "ala"');
+    }
+    return true;
+  },
+];
+export const FULL_CLAUSE_RULE: Array<(fullClase: FullClause) => boolean> = [
+  // Prevent "taso ala taso"
+  (fullClause) => {
+    if (fullClause.taso && fullClause.taso.type === "x ala x") {
+      throw new UnrecognizedError('"taso ala taso"');
     }
     return true;
   },

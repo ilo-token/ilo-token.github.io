@@ -20,6 +20,7 @@ import {
 } from "./vocabulary.ts";
 import {
   filter,
+  FULL_CLAUSE_RULE,
   MODIFIER_RULES,
   MODIFIERS_RULES,
   PHRASE_RULE,
@@ -592,7 +593,7 @@ function fullClause(): Parser<FullClause> {
     taso,
     anuSeme,
     clause,
-  }));
+  })).filter(filter(FULL_CLAUSE_RULE));
 }
 /** parses _la_ with optional comma around. */
 function la(): Parser<string> {
