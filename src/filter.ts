@@ -1,6 +1,16 @@
-import { Modifier, MultiplePhrases, Phrase } from "./ast.ts";
+import { Modifier, MultiplePhrases, Phrase, WordUnit } from "./ast.ts";
 import { UnrecognizedError } from "./error.ts";
 
+/** Array of filter rules for a word unit. */
+export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
+  // avoid "seme ala seme"
+  (wordUnit) => {
+    if (wordUnit.type === "x ala x" && wordUnit.word === "seme") {
+      throw new UnrecognizedError('"seme ala seme"');
+    }
+    return true;
+  },
+];
 /** Array of filter rules for a single modifier. */
 export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
   // quotation modifier cannot exist

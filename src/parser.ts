@@ -19,6 +19,7 @@ import {
   SPECIAL_SUBJECT,
 } from "./vocabulary.ts";
 import { filter, MODIFIER_RULES } from "./filter.ts";
+import { WORD_UNIT_RULES } from "./filter.ts";
 
 /** A single parsing result. */
 type ValueRest<T> = { value: T; rest: string };
@@ -252,13 +253,13 @@ function wordUnit(word: Parser<string>): Parser<WordUnit> {
         type: "reduplication",
         word,
         count: words.length + 1,
-      }))
+      } as WordUnit))
     ),
     word.then((word) => specificWord("ala").with(specificWord(word))).map((
       word,
-    ) => ({ type: "x ala x", word })),
+    ) => ({ type: "x ala x", word } as WordUnit)),
     word.map((word) => ({ type: "default", word } as WordUnit)),
-  );
+  ).filter(filter(WORD_UNIT_RULES));
 }
 /** Parses number words in order. */
 function number(): Parser<Array<string>> {
