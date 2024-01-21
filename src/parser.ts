@@ -18,6 +18,7 @@ import {
   PREVERB,
   SPECIAL_SUBJECT,
 } from "./vocabulary.ts";
+import { filter, MODIFIER_RULES } from "./filter.ts";
 
 /** A single parsing result. */
 type ValueRest<T> = { value: T; rest: string };
@@ -281,19 +282,23 @@ function modifiers(): Parser<Array<Modifier>> {
         wordUnit(wordFrom(CONTENT_WORD, "modifier")).map((word) => ({
           type: "default",
           word,
-        } as Modifier)),
+        } as Modifier)).filter(filter(MODIFIER_RULES)),
         properWords().map((
           words,
-        ) => ({ type: "proper words", words } as Modifier)),
+        ) => ({ type: "proper words", words } as Modifier)).filter(
+          filter(MODIFIER_RULES),
+        ),
         number().map((
           numbers,
         ) => ({
           type: "default",
           word: { type: "numbers", numbers },
-        } as Modifier)),
+        } as Modifier)).filter(filter(MODIFIER_RULES)),
         quotation().map((
           quotation,
-        ) => ({ type: "quotation", quotation } as Modifier)),
+        ) => ({ type: "quotation", quotation } as Modifier)).filter(
+          filter(MODIFIER_RULES),
+        ),
       ),
     ),
     many(
@@ -303,13 +308,13 @@ function modifiers(): Parser<Array<Modifier>> {
         type: "nanpa",
         nanpa,
         phrase,
-      } as Modifier)),
+      } as Modifier)).filter(filter(MODIFIER_RULES)),
     ),
     many(
       specificWord("pi").with(phrase()).map((phrase) => ({
         type: "pi",
         phrase,
-      } as Modifier)),
+      } as Modifier)).filter(filter(MODIFIER_RULES)),
     ),
   ).map((
     [modifiers, nanpaModifiers, piModifiers],
