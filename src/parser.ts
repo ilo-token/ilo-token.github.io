@@ -448,7 +448,7 @@ function associatedPredicates(
         nestedPhrases(["e", "anu"]),
       ),
     ),
-    many(preposition()),
+    many(optionalComma().with(preposition())),
   ).map(([predicates, objects, prepositions]) => {
     if (!objects && prepositions.length === 0) {
       throw new UnreachableError();
@@ -523,9 +523,13 @@ function clause(): Parser<Clause> {
       },
       predicates,
     } as Clause)),
-    manyAtLeastOnce(optionalComma().with(preposition())).map((
-      prepositions,
-    ) => ({ type: "prepositions", prepositions })),
+    sequence(
+      preposition(),
+      many(optionalComma().with(preposition())),
+    ).map(([preposition, morePreposition]) => ({
+      type: "prepositions",
+      prepositions: [preposition, ...morePreposition],
+    })),
     subjectPhrases().map((phrases) => {
       if (
         phrases.type === "single" &&
