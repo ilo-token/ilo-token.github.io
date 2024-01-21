@@ -20,7 +20,7 @@ export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
   // avoid reduplication of "wan" and "tu"
   (wordUnit) => {
     if (
-      wordUnit.type === "x ala x" &&
+      wordUnit.type === "reduplication" &&
       (wordUnit.word === "wan" || wordUnit.word === "tu")
     ) {
       throw new UnrecognizedError(`reduplication of ${wordUnit.word}`);
