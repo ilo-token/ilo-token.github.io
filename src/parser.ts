@@ -246,10 +246,6 @@ function specificWord(thatWord: string): Parser<string> {
 /** Parses word unit without numbers. */
 function wordUnit(word: Parser<string>): Parser<WordUnit> {
   return choice(
-    word.map((word) => ({ type: "default", word } as WordUnit)),
-    word.then((word) => specificWord("ala").with(specificWord(word))).map((
-      word,
-    ) => ({ type: "x ala x", word })),
     word.then((word) =>
       allAtLeastOnce(specificWord(word)).map((words) => ({
         type: "reduplication",
@@ -257,6 +253,10 @@ function wordUnit(word: Parser<string>): Parser<WordUnit> {
         count: words.length + 1,
       }))
     ),
+    word.then((word) => specificWord("ala").with(specificWord(word))).map((
+      word,
+    ) => ({ type: "x ala x", word })),
+    word.map((word) => ({ type: "default", word } as WordUnit)),
   );
 }
 /** Parses number words in order. */
