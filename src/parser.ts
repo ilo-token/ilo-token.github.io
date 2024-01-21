@@ -143,6 +143,10 @@ function sequence<T extends Array<unknown>>(
  * Parses `parser` multiple times and returns an `Array<T>`. The resulting
  * output includes all outputs from parsing nothing to parsing as many as
  * possible.
+ *
+ * ## ⚠️ Warning
+ *
+ * Will cause infinite recursion if the parser can parse nothing.
  */
 function many<T>(parser: Parser<T>): Parser<Array<T>> {
   return choice(
@@ -152,7 +156,13 @@ function many<T>(parser: Parser<T>): Parser<Array<T>> {
     nothing().map(() => []),
   );
 }
-/** Like `many` but parses at least once. */
+/**
+ * Like `many` but parses at least once.
+ *
+ * ## ⚠️ Warning
+ *
+ * Will cause infinite recursion if the parser can parse nothing.
+ */
 function manyAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
   return sequence(parser, many(parser)).map((
     [first, rest],
@@ -161,6 +171,10 @@ function manyAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
 /**
  * Parses `parser` multiple times and returns an `Array<T>`. This function is
  * exhaustive unlike `many`.
+ *
+ * ## ⚠️ Warning
+ *
+ * Will cause infinite recursion if the parser can parse nothing.
  */
 function all<T>(parser: Parser<T>): Parser<Array<T>> {
   return choiceOnlyOne(
@@ -170,7 +184,13 @@ function all<T>(parser: Parser<T>): Parser<Array<T>> {
     nothing().map(() => []),
   );
 }
-/** Like `all` but parses at least once. */
+/**
+ * Like `all` but parses at least once.
+ *
+ * ## ⚠️ Warning
+ *
+ * Will cause infinite recursion if the parser can parse nothing.
+ */
 function allAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
   return sequence(parser, all(parser)).map(([first, rest]) => [first, ...rest]);
 }
