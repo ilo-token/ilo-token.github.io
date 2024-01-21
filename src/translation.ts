@@ -369,7 +369,12 @@ export const TRANSLATION: { [key: string]: Translation } = {
   },
   tomo: { noun: ["house", "houses"], adjective: [], adverb: [] },
   tonsi: {
-    noun: ["transgender", "transgenders", "non-binary", "non-binaries"],
+    noun: [
+      "transgender person",
+      "transgender people",
+      "non-binary person",
+      "non-binary people",
+    ],
     adjective: ["transgender", "non-binary"],
     adverb: [],
   },
