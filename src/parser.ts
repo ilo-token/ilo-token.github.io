@@ -414,7 +414,7 @@ function associatedPredicates(
     }
   });
 }
-/** Parses multiple predicates without _li_, _o_, nor _anu_ at the beginning. */
+/** Parses multiple predicates without _li_ nor _o_ at the beginning. */
 function multiplePredicates(
   nestingRule: Array<"li" | "o" | "anu">,
 ): Parser<MultiplePredicates> {
