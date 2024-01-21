@@ -31,7 +31,7 @@ class Parser<T> {
    * Maps the parsing result. For convenience, the mapper function can throw
    * an OutputError; Other kinds of error are ignored.
    */
-  map<U>(mapper: (x: T) => U): Parser<U> {
+  map<U>(mapper: (value: T) => U): Parser<U> {
     return new Parser((src) =>
       this.parser(src).map(({ value, rest }) => ({
         value: mapper(value),
@@ -43,7 +43,7 @@ class Parser<T> {
    * Filters outputs. The mapper may throw OutputError as well in place of
    * returning false.
    */
-  filter(mapper: (x: T) => boolean): Parser<T> {
+  filter(mapper: (value: T) => boolean): Parser<T> {
     return new Parser((src) =>
       this.parser(src).filter(({ value }) => mapper(value))
     );
@@ -52,7 +52,7 @@ class Parser<T> {
    * Parses `this` then passes the parsing result in the mapper. The resulting
    * parser is then also parsed.
    */
-  then<U>(mapper: (x: T) => Parser<U>): Parser<U> {
+  then<U>(mapper: (value: T) => Parser<U>): Parser<U> {
     return new Parser((src) =>
       this.parser(src).flatMap(({ value, rest }) => mapper(value).parser(rest))
     );
