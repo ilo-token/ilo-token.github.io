@@ -247,7 +247,7 @@ function specificWord(thatWord: string): Parser<string> {
 function wordUnit(word: Parser<string>): Parser<WordUnit> {
   return choice(
     word.then((word) =>
-      allAtLeastOnce(specificWord(word)).map((words) => ({
+      manyAtLeastOnce(specificWord(word)).map((words) => ({
         type: "reduplication",
         word,
         count: words.length + 1,
