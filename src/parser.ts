@@ -57,7 +57,7 @@ class Parser<T> {
       this.parser(src).flatMap(({ value, rest }) => mapper(value).parser(rest))
     );
   }
-  /** Takes another parser and discards the first parsing result. */
+  /** Takes another parser and discards the parsing result of `this`. */
   with<U>(parser: Parser<U>): Parser<U> {
     return sequence(this, parser).map(([_, output]) => output);
   }
