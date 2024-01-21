@@ -22,6 +22,8 @@ import {
   filter,
   MODIFIER_RULES,
   MODIFIERS_RULES,
+  PHRASE_RULE,
+  PREPOSITION_RULE,
   WORD_UNIT_RULES,
 } from "./filter.ts";
 
@@ -352,7 +354,7 @@ function phrase(): Parser<Phrase> {
     lazy(preposition).map((preposition) => ({
       type: "preposition",
       preposition,
-    })),
+    } as Phrase)),
     sequence(
       wordUnit(wordFrom(CONTENT_WORD, "headword")),
       lazy(modifiers),
@@ -360,9 +362,11 @@ function phrase(): Parser<Phrase> {
       type: "default",
       headWord,
       modifiers,
-    })),
-    quotation().map((quotation) => ({ type: "quotation", quotation })),
-  );
+    } as Phrase)),
+    quotation().map((
+      quotation,
+    ) => ({ type: "quotation", quotation } as Phrase)),
+  ).filter(filter(PHRASE_RULE));
 }
 /**
  * Parses nested phrases with given nesting rule, only accepting the top level
@@ -428,7 +432,7 @@ function preposition(): Parser<Preposition> {
     preposition,
     modifiers,
     phrases,
-  }));
+  })).filter(filter(PREPOSITION_RULE));
 }
 /**
  * Parses associated predicates whose predicates only uses top level operator.

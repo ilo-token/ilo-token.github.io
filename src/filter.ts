@@ -1,4 +1,10 @@
-import { Modifier, MultiplePhrases, Phrase, WordUnit } from "./ast.ts";
+import {
+  Modifier,
+  MultiplePhrases,
+  Phrase,
+  Preposition,
+  WordUnit,
+} from "./ast.ts";
 import { UnrecognizedError } from "./error.ts";
 
 /** Array of filter rules for a word unit. */
@@ -128,17 +134,45 @@ export const MODIFIERS_RULES: Array<(modifier: Array<Modifier>) => boolean> = [
   },
   // no multiple number words
   (modifiers) => {
-    function filter(modifier: Modifier): boolean {
-      if (modifier.type === "default") {
-        const word = modifier.word;
-        return word.type === "numbers" ||
-          (word.type === "default" &&
-            (word.word === "wan" || word.word === "tu"));
-      }
-      return false;
-    }
-    if (modifiers.filter(filter).length > 1) {
+    if (modifiers.filter(modifierIsNumeric).length > 1) {
       throw new UnrecognizedError("multiple number words");
+    }
+    return true;
+  },
+];
+/** Array of filter rules for a single phrase. */
+export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
+  // Disallow preverb modifiers other than _ala_
+  (phrase) => {
+    if (phrase.type === "preverb") {
+      if (!modifiersIsAla(phrase.modifiers)) {
+        throw new UnrecognizedError('preverb with modifiers other than "ala"');
+      }
+    }
+    return true;
+  },
+  // No multiple number words
+  (phrase) => {
+    if (phrase.type === "default") {
+      if (
+        phrase.headWord.type === "numbers" ||
+        (phrase.headWord.type === "default" &&
+          (phrase.headWord.word === "wan" || phrase.headWord.word === "tu"))
+      ) {
+        if (phrase.modifiers.some(modifierIsNumeric)) {
+          throw new UnrecognizedError("Multiple number words");
+        }
+      }
+    }
+    return true;
+  },
+];
+/** Array of filter rules for a single phrase. */
+export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
+  // Disallow preverb modifiers other than _ala_
+  (preposition) => {
+    if (!modifiersIsAla(preposition.modifiers)) {
+      throw new UnrecognizedError('preverb with modifiers other than "ala"');
     }
     return true;
   },
@@ -148,6 +182,27 @@ export function filter<T>(
   rules: Array<(value: T) => boolean>,
 ): (value: T) => boolean {
   return (value) => rules.every((rule) => rule(value));
+}
+/** Helper function for checking whether a modifier is numeric. */
+function modifierIsNumeric(modifier: Modifier): boolean {
+  if (modifier.type === "default") {
+    const word = modifier.word;
+    return word.type === "numbers" ||
+      (word.type === "default" &&
+        (word.word === "wan" || word.word === "tu"));
+  }
+  return false;
+}
+/** Helper function for checking if the modifiers is exactly just _ala_. */
+function modifiersIsAla(modifiers: Array<Modifier>): boolean {
+  if (modifiers.length > 1) {
+    return false;
+  } else if (modifiers.length === 1) {
+    const [modifier] = modifiers;
+    return modifier.type === "default" && modifier.word.type === "default" &&
+      modifier.word.word === "ala";
+  }
+  return false;
 }
 /** Checks if modifiers has _pi_. */
 function modifiersHasPi(modifiers: Array<Modifier>): boolean {
