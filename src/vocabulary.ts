@@ -92,6 +92,7 @@ export const CONTENT_WORD = new Set([
   "poka",
   "poki",
   "pona",
+  "pu",
   "sama",
   "seli",
   "selo",

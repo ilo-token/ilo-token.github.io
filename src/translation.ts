@@ -279,6 +279,11 @@ export const TRANSLATION: { [key: string]: Translation } = {
     adjective: ["good", "simple"],
     adverb: ["nicely"],
   },
+  pu: {
+    noun: [],
+    adjective: [],
+    adverb: [],
+  },
   sama: { noun: ["similarity"], adjective: [], adverb: ["equally"] },
   seli: {
     noun: ["fire", "heat", "chemical reaction", "chemical reactions"],
