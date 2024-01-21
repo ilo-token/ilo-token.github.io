@@ -8,6 +8,7 @@ import {
   Preposition,
   Quotation,
   Sentence,
+  WordUnit,
 } from "./ast.ts";
 import { UnreachableError, UnrecognizedError } from "./error.ts";
 import { Output } from "./output.ts";
@@ -41,6 +42,11 @@ class Parser<T> {
   filter(mapper: (x: T) => boolean): Parser<T> {
     return new Parser((src) =>
       this.parser(src).filter(({ value }) => mapper(value))
+    );
+  }
+  then<U>(mapper: (x: T) => Parser<U>): Parser<U> {
+    return new Parser((src) =>
+      this.parser(src).flatMap(({ value, rest }) => mapper(value).parser(rest))
     );
   }
   /** Takes another parser and discards the first parsing result. */
@@ -229,16 +235,20 @@ function specificWord(thatWord: string): Parser<string> {
     else throw new UnrecognizedError(`"${thisWord}" instead of "${thatWord}"`);
   });
 }
-/** Parses X ala X construction as well as just X */
-function optionalAlaQuestion(
-  parser: Parser<string>,
-): Parser<[string, boolean]> {
+/** Parses word unit without numbers. */
+function wordUnit(word: Parser<string>): Parser<WordUnit> {
   return choice(
-    sequence(parser.skip(specificWord("ala")), parser).map(([left, right]) => {
-      if (left === right) return [left, true] as [string, boolean];
-      else throw new UnreachableError();
-    }),
-    parser.map((word) => [word, false]),
+    word.map((word) => ({ type: "default", word } as WordUnit)),
+    word.then((word) => specificWord("ala").with(specificWord(word))).map((
+      word,
+    ) => ({ type: "x ala x", word })),
+    word.then((word) =>
+      all(specificWord(word)).map((words) => ({
+        type: "reduplication",
+        word,
+        count: words.length + 1,
+      }))
+    ),
   );
 }
 /** Parses number words in order. */
@@ -260,13 +270,19 @@ function modifiers(): Parser<Array<Modifier>> {
   return sequence(
     many(
       choice(
-        wordFrom(CONTENT_WORD, "modifier").map((
+        wordUnit(wordFrom(CONTENT_WORD, "modifier")).map((word) => ({
+          type: "default",
           word,
-        ) => ({ type: "word", word } as Modifier)),
+        } as Modifier)),
         properWords().map((
           words,
         ) => ({ type: "proper words", words } as Modifier)),
-        number().map((number) => ({ type: "cardinal", number } as Modifier)),
+        number().map((
+          numbers,
+        ) => ({
+          type: "default",
+          word: { type: "numbers", numbers },
+        } as Modifier)),
         quotation().map((
           quotation,
         ) => ({ type: "quotation", quotation } as Modifier)),
@@ -274,7 +290,7 @@ function modifiers(): Parser<Array<Modifier>> {
     ),
     many(
       specificWord("nanpa").with(phrase()).map((phrase) => ({
-        type: "nanpa ordinal",
+        type: "nanpa",
         phrase,
       } as Modifier)),
     ),
@@ -292,18 +308,21 @@ function modifiers(): Parser<Array<Modifier>> {
 function phrase(): Parser<Phrase> {
   return choice(
     sequence(number(), lazy(modifiers)).map((
-      [number, modifiers],
-    ) => ({ type: "cardinal", number, modifiers } as Phrase)),
+      [numbers, modifiers],
+    ) => ({
+      type: "default",
+      headWord: { type: "numbers", numbers },
+      modifiers,
+    } as Phrase)),
     sequence(
-      optionalAlaQuestion(wordFrom(PREVERB, "preverb")),
+      wordUnit(wordFrom(PREVERB, "preverb")),
       lazy(modifiers),
       lazy(phrase),
     ).map((
-      [[preverb, alaQuestion], modifiers, phrase],
+      [preverb, modifiers, phrase],
     ) => ({
       type: "preverb",
       preverb,
-      alaQuestion,
       modifiers,
       phrase,
     } as Phrase)),
@@ -312,12 +331,11 @@ function phrase(): Parser<Phrase> {
       preposition,
     })),
     sequence(
-      optionalAlaQuestion(wordFrom(CONTENT_WORD, "headword")),
+      wordUnit(wordFrom(CONTENT_WORD, "headword")),
       lazy(modifiers),
-    ).map(([[headWord, alaQuestion], modifiers]) => ({
+    ).map(([headWord, modifiers]) => ({
       type: "default",
       headWord,
-      alaQuestion,
       modifiers,
     })),
     quotation().map((quotation) => ({ type: "quotation", quotation })),
@@ -380,12 +398,11 @@ function subjectPhrases(): Parser<MultiplePhrases> {
 /** Parses prepositional phrase. */
 function preposition(): Parser<Preposition> {
   return sequence(
-    optionalAlaQuestion(wordFrom(PREPOSITION, "preposition")),
+    wordUnit(wordFrom(PREPOSITION, "preposition")),
     modifiers(),
     nestedPhrases(["anu"]),
-  ).map(([[preposition, alaQuestion], modifiers, phrases]) => ({
+  ).map(([preposition, modifiers, phrases]) => ({
     preposition,
-    alaQuestion,
     modifiers,
     phrases,
   }));
@@ -471,7 +488,7 @@ function clause(): Parser<Clause> {
         type: "single",
         phrase: {
           type: "default",
-          headWord: subject,
+          headWord: { type: "default", word: subject },
           alaQuestion: false,
           modifiers: [],
         },

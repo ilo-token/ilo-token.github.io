@@ -1,10 +1,33 @@
+/** Represents a word unit. */
+export type WordUnit =
+  | {
+    type: "default";
+    word: string;
+    // emphasis: Array<string>;
+  }
+  | {
+    type: "x ala x";
+    word: string;
+    // firstEmphasis: Array<string>;
+    // secondEmphasis: Array<string>;
+  }
+  | {
+    type: "reduplication";
+    word: string;
+    count: number;
+    // emphasis: Array<string>;
+  }
+  | {
+    type: "numbers";
+    numbers: Array<string>;
+    // emphasis: Array<string>;
+  };
 /** Represents a single modifier. */
 export type Modifier =
-  | { type: "word"; word: string; alaQuestion: boolean }
+  | { type: "default"; word: WordUnit }
   | { type: "proper words"; words: string }
   | { type: "pi"; phrase: Phrase }
-  | { type: "nanpa ordinal"; phrase: Phrase }
-  | { type: "cardinal"; number: Array<string> }
+  | { type: "nanpa"; phrase: Phrase }
   | { type: "quotation"; quotation: Quotation };
 /**
  * Represents a phrase including preverbial phrases, quotations, and
@@ -13,19 +36,12 @@ export type Modifier =
 export type Phrase =
   | {
     type: "default";
-    headWord: string;
-    alaQuestion: boolean;
-    modifiers: Array<Modifier>;
-  }
-  | {
-    type: "cardinal";
-    number: Array<string>;
+    headWord: WordUnit;
     modifiers: Array<Modifier>;
   }
   | {
     type: "preverb";
-    preverb: string;
-    alaQuestion: boolean;
+    preverb: WordUnit;
     modifiers: Array<Modifier>;
     phrase: Phrase;
   }
@@ -47,8 +63,7 @@ export type MultiplePhrases =
   | { type: "anu"; phrases: Array<MultiplePhrases> };
 /** Represents a single prepositional phrase. */
 export type Preposition = {
-  preposition: string;
-  alaQuestion: boolean;
+  preposition: WordUnit;
   modifiers: Array<Modifier>;
   /** This cannot be an "and conjunction": only "anu" or "single". */
   phrases: MultiplePhrases;
