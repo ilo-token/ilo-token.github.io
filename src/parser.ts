@@ -364,10 +364,9 @@ function nestedPhrases(
       (phrase) => ({ type: "single", phrase } as MultiplePhrases),
     );
   } else {
-    const [_, ...rest] = nestingRule;
     return choice(
       nestedPhrasesOnly(nestingRule),
-      lazy(() => nestedPhrases(rest)),
+      lazy(() => nestedPhrases(nestingRule.slice(1))),
     );
   }
 }
