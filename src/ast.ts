@@ -1,27 +1,9 @@
 /** Represents a word unit. */
 export type WordUnit =
-  | {
-    type: "default";
-    word: string;
-    // emphasis: Array<string>;
-  }
-  | {
-    type: "x ala x";
-    word: string;
-    // firstEmphasis: Array<string>;
-    // secondEmphasis: Array<string>;
-  }
-  | {
-    type: "reduplication";
-    word: string;
-    count: number;
-    // emphasis: Array<string>;
-  }
-  | {
-    type: "numbers";
-    numbers: Array<string>;
-    // emphasis: Array<string>;
-  };
+  | { type: "default"; word: string }
+  | { type: "x ala x"; word: string }
+  | { type: "reduplication"; word: string; count: number }
+  | { type: "numbers"; numbers: Array<string> };
 /** Represents a single modifier. */
 export type Modifier =
   | { type: "default"; word: WordUnit }
