@@ -145,7 +145,7 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
   // Disallow preverb modifiers other than _ala_
   (phrase) => {
     if (phrase.type === "preverb") {
-      if (!modifiersIsAla(phrase.modifiers)) {
+      if (!modifiersIsAlaOrNone(phrase.modifiers)) {
         throw new UnrecognizedError('preverb with modifiers other than "ala"');
       }
     }
@@ -171,7 +171,7 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
 export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
   // Disallow preverb modifiers other than _ala_
   (preposition) => {
-    if (!modifiersIsAla(preposition.modifiers)) {
+    if (!modifiersIsAlaOrNone(preposition.modifiers)) {
       throw new UnrecognizedError('preverb with modifiers other than "ala"');
     }
     return true;
@@ -193,8 +193,8 @@ function modifierIsNumeric(modifier: Modifier): boolean {
   }
   return false;
 }
-/** Helper function for checking if the modifiers is exactly just _ala_. */
-function modifiersIsAla(modifiers: Array<Modifier>): boolean {
+/** Helper function for checking if the modifiers is exactly just _ala_ or nothing. */
+function modifiersIsAlaOrNone(modifiers: Array<Modifier>): boolean {
   if (modifiers.length > 1) {
     return false;
   } else if (modifiers.length === 1) {
@@ -202,7 +202,7 @@ function modifiersIsAla(modifiers: Array<Modifier>): boolean {
     return modifier.type === "default" && modifier.word.type === "default" &&
       modifier.word.word === "ala";
   }
-  return false;
+  return true;
 }
 /** Checks if modifiers has _pi_. */
 function modifiersHasPi(modifiers: Array<Modifier>): boolean {
