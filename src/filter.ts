@@ -143,6 +143,13 @@ export const MODIFIERS_RULES: Array<(modifier: Array<Modifier>) => boolean> = [
 ];
 /** Array of filter rules for a single phrase. */
 export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
+  // Disallow quotation
+  (phrase) => {
+    if (phrase.type === "quotation") {
+      throw new UnrecognizedError("quotation as phrase");
+    }
+    return true;
+  },
   // Disallow preverb modifiers other than _ala_
   (phrase) => {
     if (phrase.type === "preverb") {
