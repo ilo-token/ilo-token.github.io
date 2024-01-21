@@ -251,7 +251,7 @@ function wordUnit(word: Parser<string>): Parser<WordUnit> {
       word,
     ) => ({ type: "x ala x", word })),
     word.then((word) =>
-      all(specificWord(word)).map((words) => ({
+      allAtLeastOnce(specificWord(word)).map((words) => ({
         type: "reduplication",
         word,
         count: words.length + 1,
