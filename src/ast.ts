@@ -27,7 +27,7 @@ export type Modifier =
   | { type: "default"; word: WordUnit }
   | { type: "proper words"; words: string }
   | { type: "pi"; phrase: Phrase }
-  | { type: "nanpa"; phrase: Phrase }
+  | { type: "nanpa"; nanpa: WordUnit; phrase: Phrase }
   | { type: "quotation"; quotation: Quotation };
 /**
  * Represents a phrase including preverbial phrases, quotations, and

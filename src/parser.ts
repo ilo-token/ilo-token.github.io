@@ -297,8 +297,11 @@ function modifiers(): Parser<Array<Modifier>> {
       ),
     ),
     many(
-      specificWord("nanpa").with(phrase()).map((phrase) => ({
+      sequence(wordUnit(specificWord("nanpa")), phrase()).map((
+        [nanpa, phrase],
+      ) => ({
         type: "nanpa",
+        nanpa,
         phrase,
       } as Modifier)),
     ),
