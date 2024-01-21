@@ -265,8 +265,8 @@ function number(): Parser<Array<string>> {
     many(choice(specificWord("ale"), specificWord("ali"))),
     many(specificWord("mute")),
     many(specificWord("luka")),
-    all(specificWord("tu")),
-    all(specificWord("wan")),
+    many(specificWord("tu")),
+    many(specificWord("wan")),
   ).map((array) => {
     const output = array.flat();
     if (output.length >= 2) return output;
