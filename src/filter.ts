@@ -100,6 +100,7 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
     return true;
   },
 ];
+/** Array of filter rules for multiple modifiers. */
 export const MODIFIERS_RULES: Array<(modifier: Array<Modifier>) => boolean> = [
   // no multiple pi
   (modifiers) => {
