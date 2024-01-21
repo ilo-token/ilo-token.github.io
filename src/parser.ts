@@ -24,6 +24,7 @@ import {
   MODIFIERS_RULES,
   PHRASE_RULE,
   PREPOSITION_RULE,
+  SENTENCES_RULE,
   WORD_UNIT_RULES,
 } from "./filter.ts";
 
@@ -624,7 +625,7 @@ function closeQuotationMark(): Parser<string> {
 function quotation(): Parser<Quotation> {
   return sequence(
     openQuotationMark(),
-    many(lazy(sentence)),
+    many(lazy(sentence)).filter(filter(SENTENCES_RULE)),
     closeQuotationMark(),
   ).map(([leftMark, sentences, rightMark]) => {
     if (leftMark === '"' || leftMark === "“") {
@@ -645,6 +646,8 @@ function quotation(): Parser<Quotation> {
 }
 /** A multiple Toki Pona sentence parser. */
 export function parser(src: string): Output<Array<Sentence>> {
-  return match(/\s*/).with(allAtLeastOnce(sentence())).skip(eol()).parser(src)
+  return match(/\s*/).with(allAtLeastOnce(sentence())).skip(eol()).filter(
+    filter(SENTENCES_RULE),
+  ).parser(src)
     .map(({ value }) => value);
 }

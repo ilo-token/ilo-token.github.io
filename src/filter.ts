@@ -3,6 +3,7 @@ import {
   MultiplePhrases,
   Phrase,
   Preposition,
+  Sentence,
   WordUnit,
 } from "./ast.ts";
 import { UnrecognizedError } from "./error.ts";
@@ -173,6 +174,16 @@ export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
   (preposition) => {
     if (!modifiersIsAlaOrNone(preposition.modifiers)) {
       throw new UnrecognizedError('preverb with modifiers other than "ala"');
+    }
+    return true;
+  },
+];
+/** Array of filter rules for multiple sentences. */
+export const SENTENCES_RULE: Array<(sentences: Array<Sentence>) => boolean> = [
+  // Only allow at most 2 sentences
+  (sentences) => {
+    if (sentences.length > 2) {
+      throw new UnrecognizedError("Multiple sentences");
     }
     return true;
   },
