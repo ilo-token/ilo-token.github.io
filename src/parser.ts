@@ -371,6 +371,7 @@ function nestedPhrases(
     );
   }
 }
+/** Parses phrases separated by _en_ or _anu_. */
 function subjectPhrases(): Parser<MultiplePhrases> {
   return choice(
     nestedPhrases(["en", "anu"]),
@@ -390,6 +391,9 @@ function preposition(): Parser<Preposition> {
     phrases,
   }));
 }
+/**
+ * Parses associated predicates whose predicates only uses top level operator.
+ */
 function associatedPredicates(
   nestingRule: Array<"li" | "o" | "anu">,
 ): Parser<MultiplePredicates> {
