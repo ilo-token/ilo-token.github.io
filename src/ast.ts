@@ -106,8 +106,8 @@ export type Clause =
   };
 /** Represents a clause including preclause and postclause. */
 export type FullClause = {
-  taso: boolean;
-  anuSeme: boolean;
+  taso: null | WordUnit;
+  anuSeme: null | WordUnit;
   clause: Clause;
 };
 /** Represents a single full sentence. */
