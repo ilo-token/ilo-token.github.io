@@ -365,7 +365,7 @@ function nestedPhrases(
     );
   } else {
     return choice(
-      nestedPhrasesOnly(nestingRule),
+      lazy(() => nestedPhrasesOnly(nestingRule)),
       lazy(() => nestedPhrases(nestingRule.slice(1))),
     );
   }
