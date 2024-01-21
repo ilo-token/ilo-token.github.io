@@ -74,7 +74,7 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
   (modifier) => {
     if (modifier.type === "pi") {
       if (phraseHasPi(modifier.phrase)) {
-        throw new UnrecognizedError("nested pi");
+        throw new UnrecognizedError("pi inside pi");
       }
     }
     return true;
