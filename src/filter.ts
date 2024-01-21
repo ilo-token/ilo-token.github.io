@@ -10,6 +10,49 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
     }
     return true;
   },
+  // nanpa construction cannot contain preposition
+  (modifier) => {
+    if (modifier.type === "nanpa" && modifier.phrase.type === "preposition") {
+      throw new UnrecognizedError("preposition inside nanpa");
+    }
+    return true;
+  },
+  // nanpa construction cannot contain preverb
+  (modifier) => {
+    if (modifier.type === "nanpa" && modifier.phrase.type === "preverb") {
+      throw new UnrecognizedError("preverb inside nanpa");
+    }
+    return true;
+  },
+  // nanpa construction cannot contain quotation
+  (modifier) => {
+    if (modifier.type === "nanpa" && modifier.phrase.type === "quotation") {
+      throw new UnrecognizedError("quotation inside nanpa");
+    }
+    return true;
+  },
+  // nanpa construction cannot contain pi
+  (modifier) => {
+    if (modifier.type === "nanpa" && modifier.phrase.type === "default") {
+      if (
+        modifier.phrase.modifiers.some((modifier) => modifier.type === "pi")
+      ) {
+        throw new UnrecognizedError("pi inside nanpa");
+      }
+    }
+    return true;
+  },
+  // nanpa construction cannot contain nanpa
+  (modifier) => {
+    if (modifier.type === "nanpa" && modifier.phrase.type === "default") {
+      if (
+        modifier.phrase.modifiers.some((modifier) => modifier.type === "nanpa")
+      ) {
+        throw new UnrecognizedError("nanpa inside nanpa");
+      }
+    }
+    return true;
+  },
   // pi cannot contain preposition
   (modifier) => {
     if (modifier.type === "pi" && modifier.phrase.type === "preposition") {
