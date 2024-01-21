@@ -18,8 +18,12 @@ import {
   PREVERB,
   SPECIAL_SUBJECT,
 } from "./vocabulary.ts";
-import { filter, MODIFIER_RULES } from "./filter.ts";
-import { WORD_UNIT_RULES } from "./filter.ts";
+import {
+  filter,
+  MODIFIER_RULES,
+  MODIFIERS_RULES,
+  WORD_UNIT_RULES,
+} from "./filter.ts";
 
 /** A single parsing result. */
 type ValueRest<T> = { value: T; rest: string };
@@ -319,7 +323,9 @@ function modifiers(): Parser<Array<Modifier>> {
     ),
   ).map((
     [modifiers, nanpaModifiers, piModifiers],
-  ) => [...modifiers, ...nanpaModifiers, ...piModifiers]);
+  ) => [...modifiers, ...nanpaModifiers, ...piModifiers]).filter(
+    filter(MODIFIERS_RULES),
+  );
 }
 /** Parses phrases including preverbial phrases. */
 function phrase(): Parser<Phrase> {

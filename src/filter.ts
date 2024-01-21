@@ -100,6 +100,48 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
     return true;
   },
 ];
+export const MODIFIERS_RULES: Array<(modifier: Array<Modifier>) => boolean> = [
+  // no multiple pi
+  (modifiers) => {
+    if (modifiers.filter((modifier) => modifier.type === "pi").length > 1) {
+      throw new UnrecognizedError("multiple pi");
+    }
+    return true;
+  },
+  // no multiple nanpa
+  (modifiers) => {
+    if (modifiers.filter((modifier) => modifier.type === "nanpa").length > 1) {
+      throw new UnrecognizedError("multiple nanpa");
+    }
+    return true;
+  },
+  // no multiple proper words
+  (modifiers) => {
+    if (
+      modifiers.filter((modifier) => modifier.type === "proper words").length >
+        1
+    ) {
+      throw new UnrecognizedError("multiple proper words");
+    }
+    return true;
+  },
+  // no multiple number words
+  (modifiers) => {
+    function filter(modifier: Modifier): boolean {
+      if (modifier.type === "default") {
+        const word = modifier.word;
+        return word.type === "numbers" ||
+          (word.type === "default" &&
+            (word.word === "wan" || word.word === "tu"));
+      }
+      return false;
+    }
+    if (modifiers.filter(filter).length > 1) {
+      throw new UnrecognizedError("multiple number words");
+    }
+    return true;
+  },
+];
 /** Helper function for generating filter function. */
 export function filter<T>(
   rules: Array<(value: T) => boolean>,
