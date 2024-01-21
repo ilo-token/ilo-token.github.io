@@ -10,6 +10,16 @@ export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
     }
     return true;
   },
+  // avoid reduplication of "wan" and "tu"
+  (wordUnit) => {
+    if (
+      wordUnit.type === "x ala x" &&
+      (wordUnit.word === "wan" || wordUnit.word === "tu")
+    ) {
+      throw new UnrecognizedError(`reduplication of ${wordUnit.word}`);
+    }
+    return true;
+  },
 ];
 /** Array of filter rules for a single modifier. */
 export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
