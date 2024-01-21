@@ -323,8 +323,11 @@ function phrase(): Parser<Phrase> {
     quotation().map((quotation) => ({ type: "quotation", quotation })),
   );
 }
-/** Parses nested phrases with given nesting rule. */
-function nestedPhrases(
+/**
+ * Parses nested phrases with given nesting rule, only accepting the top level
+ * operation.
+ */
+function nestedPhrasesOnly(
   nestingRule: Array<"en" | "li" | "o" | "e" | "anu">,
 ): Parser<MultiplePhrases> {
   if (nestingRule.length === 0) {
@@ -339,18 +342,31 @@ function nestedPhrases(
     } else {
       type = "anu";
     }
-    return choice(
-      sequence(
-        lazy(() => nestedPhrases(rest)),
-        manyAtLeastOnce(
-          optionalComma().with(specificWord(first)).with(
-            lazy(() => nestedPhrases(rest)),
-          ),
+    return sequence(
+      nestedPhrases(rest),
+      manyAtLeastOnce(
+        optionalComma().with(specificWord(first)).with(
+          nestedPhrases(rest),
         ),
-      ).map(([group, moreGroups]) => ({
-        type,
-        phrases: [group, ...moreGroups],
-      })),
+      ),
+    ).map(([group, moreGroups]) => ({
+      type,
+      phrases: [group, ...moreGroups],
+    }));
+  }
+}
+/** Parses nested phrases with given nesting rule. */
+function nestedPhrases(
+  nestingRule: Array<"en" | "li" | "o" | "e" | "anu">,
+): Parser<MultiplePhrases> {
+  if (nestingRule.length === 0) {
+    return phrase().map(
+      (phrase) => ({ type: "single", phrase } as MultiplePhrases),
+    );
+  } else {
+    const [_, ...rest] = nestingRule;
+    return choice(
+      nestedPhrasesOnly(nestingRule),
       lazy(() => nestedPhrases(rest)),
     );
   }
@@ -378,7 +394,7 @@ function associatedPredicates(
   nestingRule: Array<"li" | "o" | "anu">,
 ): Parser<MultiplePredicates> {
   return sequence(
-    nestedPhrases(nestingRule),
+    nestedPhrasesOnly(nestingRule),
     optional(
       optionalComma().with(specificWord("e")).with(
         nestedPhrases(["e", "anu"]),
@@ -399,8 +415,6 @@ function associatedPredicates(
   });
 }
 /** Parses multiple predicates without _li_, _o_, nor _anu_ at the beginning. */
-// TODO: ensure there's no duplicates
-// FIXME: This always outputs 3 AST's
 function multiplePredicates(
   nestingRule: Array<"li" | "o" | "anu">,
 ): Parser<MultiplePredicates> {
@@ -420,18 +434,24 @@ function multiplePredicates(
       type = "anu";
     }
     return choice(
+      associatedPredicates(nestingRule),
       sequence(
-        lazy(() => multiplePredicates(rest)),
+        choice(
+          associatedPredicates(nestingRule),
+          lazy(() => multiplePredicates(rest)),
+        ),
         manyAtLeastOnce(
           optionalComma().with(specificWord(first)).with(
-            lazy(() => multiplePredicates(rest)),
+            choice(
+              associatedPredicates(nestingRule),
+              lazy(() => multiplePredicates(rest)),
+            ),
           ),
         ),
       ).map(([group, moreGroups]) => ({
         type,
         predicates: [group, ...moreGroups],
       } as MultiplePredicates)),
-      associatedPredicates(nestingRule),
       lazy(() => multiplePredicates(rest)),
     );
   }
