@@ -38,6 +38,13 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
     }
     return true;
   },
+  // disallow _nanpa ala nanpa_
+  (modifier) => {
+    if (modifier.type === "nanpa" && modifier.nanpa.type === "x ala x") {
+      throw new UnrecognizedError('"nanpa ala nanpa"');
+    }
+    return true;
+  },
   // nanpa construction cannot contain preposition
   (modifier) => {
     if (modifier.type === "nanpa" && modifier.phrase.type === "preposition") {
