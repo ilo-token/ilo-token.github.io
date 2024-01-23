@@ -37,8 +37,6 @@ function translateFullClause(fullClause: FullClause): TranslationOutput {
       but = "but ";
     } else if (taso.type === "reduplication") {
       but = new Array(taso.count).fill("but ").join();
-    } else {
-      throw new UnreachableError();
     }
   }
   let isntIt = "";
