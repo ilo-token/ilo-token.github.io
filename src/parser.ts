@@ -418,11 +418,11 @@ function nestedPhrases(
   }
 }
 /** Parses phrases separated by _en_ or _anu_. */
-// TODO: avoid duplicates
 function subjectPhrases(): Parser<MultiplePhrases> {
   return choice(
-    nestedPhrases(["en", "anu"]),
-    nestedPhrases(["anu", "en"]).filter((phrase) => phrase.type !== "single"),
+    nestedPhrasesOnly(["en", "anu"]),
+    nestedPhrasesOnly(["anu", "en"]),
+    phrase().map((phrase) => ({ type: "single", phrase })),
   );
 }
 /** Parses prepositional phrase. */
