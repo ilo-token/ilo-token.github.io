@@ -36,3 +36,6 @@ a:visited {
     color: #ff5e5e;
   }
 }
+summary {
+  cursor: pointer;
+}
