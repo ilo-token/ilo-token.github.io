@@ -49,9 +49,9 @@ function translateFullClause(fullClause: FullClause): TranslationOutput {
       isntIt = new Array(anuSeme.count).fill(", isn't it").join();
     }
   }
-  return translateClause(fullClause.clause).map((clause) => {
-    return [but, clause, isntIt].join("");
-  });
+  return translateClause(fullClause.clause).map((clause) =>
+    [but, clause, isntIt].join("")
+  );
 }
 /** Translates a single sentence. */
 function translateSentence(sentence: Sentence): TranslationOutput {
