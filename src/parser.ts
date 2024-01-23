@@ -412,8 +412,8 @@ function nestedPhrases(
     );
   } else {
     return choice(
-      lazy(() => nestedPhrasesOnly(nestingRule)),
-      lazy(() => nestedPhrases(nestingRule.slice(1))),
+      nestedPhrasesOnly(nestingRule),
+      nestedPhrases(nestingRule.slice(1)),
     );
   }
 }
@@ -487,13 +487,13 @@ function multiplePredicates(
       sequence(
         choice(
           associatedPredicates(nestingRule),
-          lazy(() => multiplePredicates(rest)),
+          multiplePredicates(rest),
         ),
         manyAtLeastOnce(
           optionalComma().with(specificWord(first)).with(
             choice(
               associatedPredicates(nestingRule),
-              lazy(() => multiplePredicates(rest)),
+              multiplePredicates(rest),
             ),
           ),
         ),
@@ -501,7 +501,7 @@ function multiplePredicates(
         type,
         predicates: [group, ...moreGroups],
       } as MultiplePredicates)),
-      lazy(() => multiplePredicates(rest)),
+      multiplePredicates(rest),
     );
   }
 }
