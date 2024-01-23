@@ -10,8 +10,6 @@ TODO
 
 ## Limitations
 
-[limitations]: #limitations
-
 The following are currently unrecognized (non-definitive but pedantic). ✏️ means it is a limitation due to being work in progress and it will be lifted soon. Other limitation may also be lifted.
 
 - ✏️ Full sentences: It can only translate phrases for now.
