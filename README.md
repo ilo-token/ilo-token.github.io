@@ -4,33 +4,9 @@ An imperfect Toki Pona to English translator that translates into multiple sente
 
 [Try it](https://neverrare.github.io/toki-pona-translator/)
 
-## Goals
+## Building
 
-The goals for this projects are:
-
-- Provide translation that covers most of semantics and meaning of a Toki Pona sentence, but it doesn't have to be complete. This gives translations for users to scan into to give them a feel of how broad a Toki Pona sentence can mean.
-- As much as possible, provide translations that are grammatically sound: not just correct but also feels right. For example, "one red thing" sounds better than "red one thing". Due to the difference of English and Toki Pona and nuances of English, the translator may fall severely short for this goal, but we can try!
-
-## Non-goals
-
-- Provide every possible translations.
-- Handle every edge cases of Toki Pona grammar. Some edge cases are listed in [limitations] along with others.
-- Handle compounds such as translating "tomo tawa" into "vehicle"
-- Translate Tokiponized proper word into Untokiponized word such as translating "Manka" into "Minecraft"
-
-Some of these may be lifted in the future.
-
-## Terminology
-
-These are the terminology used in [limitations]. **These are not official grammatical terms**.
-
-- Headword &ndash; A single part of speech that in English, can be a noun, a verb, or an adjective; what the phrase starts with.
-- Modifier &ndash; A part of speech that modifies headword or another modifier.
-- Phrase &ndash; Headword and its modifiers.
-- Preclause &ndash; "taso" or "a" particle before clauses.
-- Postclause &ndash; "a" particle or "anu seme" phrase after clauses.
-- Clause &ndash; Phrase or sentence found before and after "la".
-- Proper Word &ndash; Proper name; Capitalized in Toki Pona.
+TODO
 
 ## Limitations
 
