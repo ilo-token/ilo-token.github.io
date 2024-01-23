@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
   button.addEventListener("click", translate);
   input.addEventListener("keydown", (event) => {
-    if (event.code === "enter") {
+    if (event.code === "Enter") {
       translate();
       event.preventDefault();
     }
