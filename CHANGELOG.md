@@ -5,8 +5,10 @@
 For this version. The whole code has been rewritten. This makes the code a lot easier to modify. Due to this, there are inevitable changes to the translator.
 
 - New limitation list.
-- Drop support for "a" particle.
+- Add button for translating, replacing auto-translate when typing.
+- (Downgrade) Drop support for "a" particle.
 - (Downgrade) Error messages are now very unreliable.
+- (Downgrade) Translator is somewhat slower.
 - Remove Discord DM as contact option.
 - Update translation list:
   - _tonsi_ &ndash; change nouns "transgender", "transgenders", "non-binary", and "non-binaries" into "transgender person", "transgender people", "non-binary person", and "non-binary people" (I DIDN'T MEAN TO OBJECTIFY THEM OMFG I'M SO SORRY 😭😭😭)
@@ -16,6 +18,8 @@ Inside update (intended for developers):
 - Rewritten whole code to use TypeScript, module, and functional programming.
 - Rewritten parser to use parser combinator.
 - Add language codes to html.
+- New wiki for contributors and thinkerers.
+- Overhaul `README.md`, only including build instruction. Information about the translator is now moved to wiki.
 
 ## 0.1.1
 
