@@ -1,4 +1,6 @@
+import { Clause } from "./ast.ts";
 import { FullClause, Sentence } from "./ast.ts";
+import { UnreachableError } from "./error.ts";
 import { Output } from "./output.ts";
 import { parser } from "./parser.ts";
 
@@ -22,8 +24,36 @@ function rotate<T extends Array<unknown>>(
     new Output<any>([[]]),
   ) as Output<T>;
 }
-function translateFullClause(fullClause: FullClause): TranslationOutput {
+/** Translates a clause. */
+function translateClause(clause: Clause): TranslationOutput {
   throw new Error("todo");
+}
+/** Translates a full clause. */
+function translateFullClause(fullClause: FullClause): TranslationOutput {
+  return translateClause(fullClause.clause).map((clause) => {
+    let but = "";
+    const taso = fullClause.taso;
+    if (taso) {
+      if (taso.type === "default") {
+        but = "but ";
+      } else if (taso.type === "reduplication") {
+        but = new Array(taso.count).fill("but ").join();
+      } else {
+        throw new UnreachableError();
+      }
+    }
+    let isntIt = "";
+    const anuSeme = fullClause.anuSeme;
+    if (anuSeme) {
+      if (anuSeme.type === "default") {
+        isntIt = ", isn't it";
+      } else if (anuSeme.type === "reduplication") {
+        // TODO: better translation
+        isntIt = new Array(anuSeme.count).fill(", isn't it").join();
+      }
+    }
+    return [but, clause, isntIt].join("");
+  });
 }
 /** Translates a single sentence. */
 function translateSentence(sentence: Sentence): TranslationOutput {
