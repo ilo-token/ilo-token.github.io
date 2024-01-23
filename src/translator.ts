@@ -1,6 +1,5 @@
 import { Clause } from "./ast.ts";
 import { FullClause, Sentence } from "./ast.ts";
-import { UnreachableError } from "./error.ts";
 import { Output } from "./output.ts";
 import { parser } from "./parser.ts";
 
