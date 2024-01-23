@@ -1,5 +1,7 @@
 "use strict";
 
+// This code is no longer needed and being replaced by `src/`
+
 class UnrecognizedError extends Error {}
 class UntranslatableError extends Error {}
 
