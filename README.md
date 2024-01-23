@@ -16,7 +16,7 @@ deno task build
 
 Then open `./index.html` using your favorite browser.
 
-Whenever you made changes to `./src/**.ts`, you'll need to run `deno task build` again and refresh the browser. Later I'll make a script to automate this.
+Whenever you made changes to `./src/*.ts`, you'll need to run `deno task build` again and refresh the browser. Later I'll make a script to automate this.
 
 ## Limitations
 
