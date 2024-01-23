@@ -1,5 +1,6 @@
 import { translate } from "./translator.ts";
 
+// TODO: maybe use worker
 document.addEventListener("DOMContentLoaded", () => {
   const input = document.getElementById("input") as HTMLTextAreaElement;
   const output = document.getElementById("output") as HTMLUListElement;
