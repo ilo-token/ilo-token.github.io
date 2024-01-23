@@ -1,0 +1,16 @@
+{
+  "lock": false,
+  "compilerOptions": {
+    "target": "esnext",
+    "lib": ["dom", "dom.iterable", "dom.asynciterable", "deno.ns"]
+  },
+  "tasks": {
+    "build": "deno run --allow-read --allow-write --allow-env ./bundle.ts"
+  },
+  "fmt": {
+    "include": ["./src/**.*", "./bundle.ts", "./test-parser.ts"]
+  },
+  "lint": {
+    "include": ["./src/**.*", "./bundle.ts", "./test-parser.ts"]
+  }
+}
