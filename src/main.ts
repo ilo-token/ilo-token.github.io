@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const button = document.getElementById(
     "translate-button",
   ) as HTMLButtonElement;
-  const translate = () => {
+  const output = () => {
     while (output.children.length > 0) {
       output.removeChild(output.children[0]);
     }
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
   button.addEventListener("click", translate);
   input.addEventListener("keydown", (event) => {
     if (event.code === "Enter") {
-      translate();
+      output();
       event.preventDefault();
     }
   });
