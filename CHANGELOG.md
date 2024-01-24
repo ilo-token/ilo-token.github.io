@@ -2,7 +2,7 @@
 
 ## 0.2.0 (On development)
 
-For this version. The whole code has been rewritten. This makes the code a lot easier to modify. Due to this, there are inevitable changes to the translator. The translator can now translate many things! Although it's still not capable of translating full sentences.
+For this version. The whole code has been rewritten. This makes the code a lot easier to modify. Due to this, there are inevitable changes to the translator. The translator can now translate few more things! Although it's still not capable of translating full sentences.
 
 - Implement translator for:
   - Extended numbering system
