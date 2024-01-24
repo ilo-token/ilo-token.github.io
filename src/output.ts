@@ -73,4 +73,11 @@ export class Output<T> {
     for (const value of this.output) wholeOutput.append(mapper(value));
     return wholeOutput;
   }
+  static concat<U>(...outputs: Array<Output<U>>): Output<U> {
+    const wholeOutput = new Output<U>();
+    for (const output of outputs) {
+      wholeOutput.append(output);
+    }
+    return wholeOutput;
+  }
 }
