@@ -17,10 +17,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (translations.isError()) {
       error.innerText = translations.error?.message ?? "No error provided";
     } else {
+      const set = new Set<string>();
       for (const translation of translations.output) {
-        const list = document.createElement("li");
-        list.innerText = translation;
-        output.appendChild(list);
+        if (!set.has(translation)) {
+          const list = document.createElement("li");
+          list.innerText = translation;
+          output.appendChild(list);
+          set.add(translation);
+        }
       }
     }
   };
