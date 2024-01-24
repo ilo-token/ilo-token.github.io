@@ -34,9 +34,45 @@ function phraseAsNoun(
 function translateMultiplePhrases(
   phrases: MultiplePhrases,
   translator: (phrase: Phrase) => TranslationOutput,
-  level: 1 | 2 = 2,
+  level = 2,
 ): TranslationOutput {
-  throw new Error("todo");
+  if (phrases.type === "single") {
+    return translator(phrases.phrase);
+  } else if (phrases.type === "and conjunction" || phrases.type === "anu") {
+    let conjunction: string;
+    if (phrases.type === "and conjunction") {
+      conjunction = "and";
+    } else {
+      conjunction = "or";
+    }
+    const translations = rotate(
+      phrases.phrases.map((phrases) =>
+        translateMultiplePhrases(phrases, translator, level - 1)
+      ),
+    );
+    if (level === 2) {
+      return translations.map((phrases) => {
+        if (phrases.length === 2) {
+          return [phrases[0], conjunction, phrases[1]].join(" ");
+        } else {
+          const comma = phrases.slice(0, phrases.length - 1);
+          const last = phrases[phrases.length - 1];
+          return [
+            comma.map((translation) => [translation, ", "].join()).join(),
+            conjunction,
+            " ",
+            last,
+          ].join("");
+        }
+      });
+    } else {
+      return translations.map((phrases) =>
+        phrases.join([" ", conjunction, " "].join())
+      );
+    }
+  } else {
+    throw new Error("unreachable");
+  }
 }
 /** Translates a clause. */
 function translateClause(clause: Clause): TranslationOutput {
