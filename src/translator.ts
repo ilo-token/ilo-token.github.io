@@ -3,6 +3,8 @@ import { FullClause, MultiplePhrases, Phrase, Sentence } from "./ast.ts";
 import { Output } from "./output.ts";
 import { parser } from "./parser.ts";
 import { TodoError } from "./error.ts";
+import { DEFINITION } from "./definition.ts";
+import { OutputError } from "./error.ts";
 
 /** A special kind of Output that translators returns. */
 export type TranslationOutput = Output<string>;
@@ -24,12 +26,47 @@ function rotate<T extends Array<unknown>>(
     new Output<any>([[]]),
   ) as Output<T>;
 }
+function definition(
+  kind: "noun" | "adjective" | "adverb",
+  word: string,
+): TranslationOutput {
+  return Output.concat(
+    new Output(new OutputError(`No ${kind} translation found for ${word}.`)),
+    new Output(DEFINITION[word][kind]),
+  );
+}
+function nounDefinition(word: string): TranslationOutput {
+  return definition("noun", word);
+}
+function adjectiveDefinition(word: string): TranslationOutput {
+  return definition("adjective", word);
+}
+function adverbDefinition(word: string): TranslationOutput {
+  return definition("adverb", word);
+}
+function defaultPhraseAsNoun(
+  phrase: Phrase & { type: "default" },
+  options?: {
+    named?: boolean;
+    suffix?: boolean;
+  },
+): TranslationOutput {
+  const named = options?.named ?? true;
+  const suffix = options?.suffix ?? true;
+  throw new Error("todo");
+}
 function phraseAsNoun(
   phrase: Phrase,
-  named = true,
-  of = true,
+  options?: {
+    named?: boolean;
+    suffix?: boolean;
+  },
 ): TranslationOutput {
-  throw new Error("todo");
+  if (phrase.type === "default") {
+    return defaultPhraseAsNoun(phrase, options);
+  } else {
+    return new Output(new TodoError(`translation of ${phrase.type}`));
+  }
 }
 function translateMultiplePhrases(
   phrases: MultiplePhrases,

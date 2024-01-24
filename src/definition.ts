@@ -5,7 +5,7 @@ export type Translation = {
   adverb: Array<string>;
 };
 /** Record of word translations. */
-export const TRANSLATION: { [key: string]: Translation } = {
+export const DEFINITION: { [key: string]: Translation } = {
   akesi: {
     noun: ["reptile", "reptiles", "amphibian", "amphibians"],
     adjective: ["reptilian", "amphibian"],
