@@ -65,10 +65,12 @@ function translateMultiplePhrases(
           ].join("");
         }
       });
-    } else {
+    } else if (level === 1) {
       return translations.map((phrases) =>
         phrases.join([" ", conjunction, " "].join())
       );
+    } else {
+      throw new Error("unreachable");
     }
   } else {
     throw new Error("unreachable");
