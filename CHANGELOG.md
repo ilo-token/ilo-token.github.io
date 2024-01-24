@@ -1,5 +1,7 @@
 # Changelog
 
+You may need to force restart the page in order to use the latest version: shift + click the restart button; or ctrl + shift + R.
+
 ## 0.2.0
 
 For this version. The whole code has been rewritten. The translator can now translate few more things! Although it's still not capable of translating full sentences.
