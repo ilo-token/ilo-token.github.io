@@ -26,8 +26,8 @@ function rotate<T extends Array<unknown>>(
 }
 function phraseAsNoun(
   phrase: Phrase,
-  named: boolean,
-  of: boolean,
+  named = true,
+  of = true,
 ): TranslationOutput {
   throw new Error("todo");
 }
@@ -79,15 +79,11 @@ function translateMultiplePhrases(
 /** Translates a clause. */
 function translateClause(clause: Clause): TranslationOutput {
   if (clause.type === "phrases") {
-    return translateMultiplePhrases(
-      clause.phrases,
-      (phrase) => phraseAsNoun(phrase, true, true),
-    );
+    return translateMultiplePhrases(clause.phrases, phraseAsNoun);
   } else if (clause.type === "o vocative") {
     return translateMultiplePhrases(
       clause.phrases,
-      (phrase) =>
-        phraseAsNoun(phrase, true, true).map((phrase) => `hey ${phrase}`),
+      (phrase) => phraseAsNoun(phrase).map((phrase) => `hey ${phrase}`),
     );
   } else {
     return new Output(new TodoError(`translation for ${clause.type}`));
