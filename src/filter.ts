@@ -1,5 +1,7 @@
 import { somePhraseInMultiplePhrases } from "./ast.ts";
+import { MultiplePhrases } from "./ast.ts";
 import {
+  Clause,
   FullClause,
   Modifier,
   Phrase,
@@ -211,21 +213,32 @@ export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
   },
   // Disallow nested preposition
   (preposition) => {
-    const checker = (phrase: Phrase): boolean => {
-      if (phrase.type === "default") {
-        return false;
-      } else if (phrase.type === "preposition") {
-        return true;
-      } else if (phrase.type === "preverb") {
-        return checker(phrase.phrase);
-      } else if (phrase.type === "quotation") {
-        return false;
-      } else {
-        throw new Error("unreachable");
-      }
-    };
-    if (somePhraseInMultiplePhrases(preposition.phrases, checker)) {
+    if (
+      somePhraseInMultiplePhrases(preposition.phrases, hasPrepositionInPhrase)
+    ) {
       throw new UnrecognizedError("Preposition inside preposition");
+    }
+    return true;
+  },
+];
+/** Array of filter rules for clauses. */
+export const CLAUSE_RULE: Array<(clause: Clause) => boolean> = [
+  // disallow preposition in subject
+  (clause) => {
+    let phrases: MultiplePhrases;
+    if (clause.type === "phrases" || clause.type === "o vocative") {
+      phrases = clause.phrases;
+    } else if (clause.type === "li clause" || clause.type === "o clause") {
+      if (clause.subjects) {
+        phrases = clause.subjects;
+      } else {
+        return true;
+      }
+    } else {
+      return true;
+    }
+    if (somePhraseInMultiplePhrases(phrases, hasPrepositionInPhrase)) {
+      throw new UnrecognizedError("Preposition in subject");
     }
     return true;
   },
@@ -275,4 +288,17 @@ function modifiersIsAlaOrNone(modifiers: Array<Modifier>): boolean {
       modifier.word.word === "ala";
   }
   return true;
+}
+function hasPrepositionInPhrase(phrase: Phrase): boolean {
+  if (phrase.type === "default") {
+    return false;
+  } else if (phrase.type === "preposition") {
+    return true;
+  } else if (phrase.type === "preverb") {
+    return hasPrepositionInPhrase(phrase.phrase);
+  } else if (phrase.type === "quotation") {
+    return false;
+  } else {
+    throw new Error("unreachable");
+  }
 }
