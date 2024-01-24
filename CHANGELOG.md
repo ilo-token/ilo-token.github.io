@@ -2,9 +2,13 @@
 
 ## 0.2.0 (On development)
 
-For this version. The whole code has been rewritten. This makes the code a lot easier to modify. Due to this, there are inevitable changes to the translator.
+For this version. The whole code has been rewritten. This makes the code a lot easier to modify. Due to this, there are inevitable changes to the translator. The translator can now translate many things! Although it's still not capable of translating full sentences.
 
-- New limitation list.
+- Implement translator for:
+  - Extended numbering system
+  - Reduplication
+  - _nanpa_ particle
+  - _en_ and _anu_
 - Add button for translating, replacing auto-translate when typing.
 - (Downgrade) Drop support for "a" particle.
 - (Downgrade) Error messages are now very unreliable.
