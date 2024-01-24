@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.0 (On development)
+## 0.2.0
 
 For this version. The whole code has been rewritten. The translator can now translate few more things! Although it's still not capable of translating full sentences.
 
