@@ -100,3 +100,42 @@ export type Quotation = {
   leftMark: string;
   rightMark: string;
 };
+export function someModifierInPhrase(
+  phrase: Phrase,
+  whenQuotation: boolean,
+  checker: (modifier: Modifier) => boolean,
+): boolean {
+  if (phrase.type === "default") {
+    return phrase.modifiers.some(checker);
+  } else if (phrase.type === "preverb") {
+    return phrase.modifiers.some(checker) ||
+      someModifierInPhrase(phrase.phrase, whenQuotation, checker);
+  } else if (phrase.type === "preposition") {
+    const preposition = phrase.preposition;
+    return preposition.modifiers.some(checker) ||
+      someModifierInMultiplePhrases(
+        preposition.phrases,
+        whenQuotation,
+        checker,
+      );
+  } else if (phrase.type === "quotation") {
+    return whenQuotation;
+  } else {
+    throw new Error("unreachable");
+  }
+}
+export function someModifierInMultiplePhrases(
+  phrases: MultiplePhrases,
+  whenQuotation: boolean,
+  checker: (modifier: Modifier) => boolean,
+): boolean {
+  if (phrases.type === "single") {
+    return someModifierInPhrase(phrases.phrase, whenQuotation, checker);
+  } else if (phrases.type === "and conjunction" || phrases.type === "anu") {
+    return phrases.phrases.some((phrases) =>
+      someModifierInMultiplePhrases(phrases, whenQuotation, checker)
+    );
+  } else {
+    throw new Error("unreachable");
+  }
+}

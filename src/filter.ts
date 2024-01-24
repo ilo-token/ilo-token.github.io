@@ -5,6 +5,7 @@ import {
   Phrase,
   Preposition,
   Sentence,
+  someModifierInPhrase,
   WordUnit,
 } from "./ast.ts";
 import { UnrecognizedError } from "./error.ts";
@@ -111,8 +112,22 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
   },
   // pi cannot be nested
   (modifier) => {
+    const checker = (modifier: Modifier) => {
+      if (
+        modifier.type === "default" || modifier.type === "proper words" ||
+        modifier.type === "quotation"
+      ) {
+        return false;
+      } else if (modifier.type === "nanpa") {
+        return someModifierInPhrase(modifier.phrase, false, checker);
+      } else if (modifier.type === "pi") {
+        return true;
+      } else {
+        throw new Error("unreachable error");
+      }
+    };
     if (modifier.type === "pi") {
-      if (phraseHasPi(modifier.phrase)) {
+      if (someModifierInPhrase(modifier.phrase, false, checker)) {
         throw new UnrecognizedError("pi inside pi");
       }
     }
@@ -242,47 +257,4 @@ function modifiersIsAlaOrNone(modifiers: Array<Modifier>): boolean {
       modifier.word.word === "ala";
   }
   return true;
-}
-/** Checks if modifiers has _pi_. */
-function modifiersHasPi(modifiers: Array<Modifier>): boolean {
-  return modifiers.some((modifier) => {
-    if (
-      modifier.type === "default" || modifier.type === "proper words" ||
-      modifier.type === "quotation"
-    ) {
-      return false;
-    } else if (modifier.type === "nanpa") {
-      return phraseHasPi(modifier.phrase);
-    } else if (modifier.type === "pi") {
-      return true;
-    } else {
-      throw new Error("unreachable error");
-    }
-  });
-}
-/** Checks if a single phrase has _pi_. */
-function phraseHasPi(phrase: Phrase): boolean {
-  if (phrase.type === "default") {
-    return modifiersHasPi(phrase.modifiers);
-  } else if (phrase.type === "preverb") {
-    return modifiersHasPi(phrase.modifiers) || phraseHasPi(phrase.phrase);
-  } else if (phrase.type === "preposition") {
-    const preposition = phrase.preposition;
-    return modifiersHasPi(preposition.modifiers) ||
-      multiplePhrasesHasPi(preposition.phrases);
-  } else if (phrase.type === "quotation") {
-    return false;
-  } else {
-    throw new Error("unreachable error");
-  }
-}
-/** Checks if multiple phrases has _pi_. */
-function multiplePhrasesHasPi(phrases: MultiplePhrases): boolean {
-  if (phrases.type === "single") {
-    return phraseHasPi(phrases.phrase);
-  } else if (phrases.type === "and conjunction" || phrases.type === "anu") {
-    return phrases.phrases.some(multiplePhrasesHasPi);
-  } else {
-    throw new Error("unreachable error");
-  }
 }
