@@ -18,7 +18,7 @@ export class Output<T> {
       this.error = output;
     } else {
       this.output = [];
-      this.error = new OutputError("no error provided");
+      this.error = new OutputError();
     }
   }
   private setError(error: OutputError) {
