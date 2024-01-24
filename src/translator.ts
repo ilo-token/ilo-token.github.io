@@ -75,6 +75,19 @@ function wordUnitAsNoun(word: WordUnit): TranslationOutput {
     return new Output(new UnreachableError());
   }
 }
+function wordUnitAsAdjective(word: WordUnit): TranslationOutput {
+  if (word.type === "default") {
+    return adjectiveDefinition(word.word);
+  } else if (word.type === "numbers") {
+    return new Output([number(word.numbers).toString()]);
+  } else if (word.type === "reduplication") {
+    return adjectiveDefinition(word.word).map((noun) =>
+      new Array(word.count).fill(noun).join(" ")
+    );
+  } else {
+    return new Output(new UnreachableError());
+  }
+}
 function defaultPhraseAsNoun(
   phrase: Phrase & { type: "default" },
   options?: {
