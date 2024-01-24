@@ -1,10 +1,11 @@
 {
-    "cSpell.customDictionaries": {
-        "ku-suli": {
-            "name": "ku-suli",
-            "path": "${workspaceRoot}/nimi-ku-suli.txt",
-            "description": "Ku Suli words of Toki Pona",
-            "addWords": true
-        }
+  "cSpell.customDictionaries": {
+    "ku-suli": {
+      "name": "ku-suli",
+      "path": "${workspaceRoot}/nimi-ku-suli.txt",
+      "description": "Ku Suli words of Toki Pona",
+      "addWords": true
     }
+  },
+  "deno.enable": true
 }

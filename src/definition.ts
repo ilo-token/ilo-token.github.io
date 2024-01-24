@@ -1,0 +1,416 @@
+/** Represents possible translations of words. */
+export type Translation = {
+  noun: Array<string>;
+  adjective: Array<string>;
+  adverb: Array<string>;
+};
+/** Record of word translations. */
+export const DEFINITION: { [key: string]: Translation } = {
+  akesi: {
+    noun: ["reptile", "reptiles", "amphibian", "amphibians"],
+    adjective: ["reptilian", "amphibian"],
+    adverb: [],
+  },
+  ala: {
+    noun: ["nothing", "no"],
+    adjective: ["not", "no"],
+    adverb: ["not"],
+  },
+  alasa: { noun: ["searching"], adjective: [], adverb: [] },
+  ale: {
+    noun: ["everything"],
+    adjective: ["all"],
+    adverb: ["completely"],
+  },
+  ali: {
+    noun: ["everything"],
+    adjective: ["all"],
+    adverb: ["completely"],
+  },
+  anpa: {
+    noun: ["bottom", "bottoms", "under"],
+    adjective: ["bottom"],
+    adverb: [],
+  },
+  ante: {
+    noun: ["changing"],
+    adjective: ["different", "other"],
+    adverb: ["differently"],
+  },
+  awen: { noun: ["staying"], adjective: ["staying"], adverb: [] },
+  esun: { noun: ["shop", "shops"], adjective: [], adverb: [] },
+  ijo: { noun: ["thing", "things"], adjective: [], adverb: [] },
+  ike: { noun: ["badness"], adjective: ["bad"], adverb: ["badly"] },
+  ilo: { noun: ["tool", "tools"], adjective: [], adverb: [] },
+  insa: { noun: ["inside", "insides"], adjective: [], adverb: [] },
+  jaki: {
+    noun: ["obscenity", "obscenities"],
+    adjective: ["gross"],
+    adverb: ["disgustingly"],
+  },
+  jan: {
+    noun: ["person", "people", "human", "humans", "humanity"],
+    adjective: ["person-like"],
+    adverb: [],
+  },
+  jelo: { noun: ["yellowness"], adjective: ["yellow"], adverb: [] },
+  jo: {
+    noun: ["possession", "possessions"],
+    adjective: [],
+    adverb: [],
+  },
+  kala: {
+    noun: ["fish", "fishes"],
+    adjective: ["fish-like"],
+    adverb: [],
+  },
+  kalama: {
+    noun: ["sound", "sounds"],
+    adjective: ["sounding"],
+    adverb: [],
+  },
+  kama: { noun: ["arriving"], adjective: ["arriving"], adverb: [] },
+  kasi: {
+    noun: ["plant", "plants"],
+    adjective: ["plant-like"],
+    adverb: [],
+  },
+  ken: {
+    noun: ["ability", "abilities", "possibility", "possibilities"],
+    adjective: [],
+    adverb: [],
+  },
+  kili: {
+    noun: ["fruit", "fruits", "vegetable", "vegetables"],
+    adjective: [],
+    adverb: [],
+  },
+  kiwen: {
+    noun: ["hard thing", "hard things"],
+    adjective: ["hard"],
+    adverb: [],
+  },
+  ko: {
+    noun: ["soft thing", "soft things", "powder"],
+    adjective: ["soft"],
+    adverb: [],
+  },
+  kon: { noun: ["air", "essence"], adjective: [], adverb: [] },
+  kule: {
+    noun: ["color", "colors"],
+    adjective: ["colorful"],
+    adverb: ["colorfully"],
+  },
+  kulupu: { noun: ["group", "groups"], adjective: [], adverb: [] },
+  kute: {
+    noun: ["ear", "ears", "listening"],
+    adjective: [],
+    adverb: [],
+  },
+  lape: {
+    noun: ["sleep", "rest"],
+    adjective: ["sleeping"],
+    adverb: [],
+  },
+  laso: {
+    noun: ["blueness", "greenness"],
+    adjective: ["blue", "green"],
+    adverb: [],
+  },
+  lawa: {
+    noun: ["head", "heads", "control", "controls"],
+    adjective: ["controlling"],
+    adverb: [],
+  },
+  len: {
+    noun: ["cloth", "clothes", "hiding"],
+    adjective: ["hidden"],
+    adverb: [],
+  },
+  lete: {
+    noun: ["coldness"],
+    adjective: ["cold", "uncooked"],
+    adverb: [],
+  },
+  lili: {
+    noun: ["smallness"],
+    adjective: ["small"],
+    adverb: ["slightly"],
+  },
+  linja: {
+    noun: ["long flexible thing", "long flexible things"],
+    adjective: ["long flexible"],
+    adverb: [],
+  },
+  lipu: {
+    noun: ["book", "books", "paper", "paper-like thing", "paper-like things"],
+    adjective: ["paper-like"],
+    adverb: [],
+  },
+  loje: { noun: ["redness"], adjective: ["red"], adverb: [] },
+  lon: {
+    noun: ["truth", "true"],
+    adjective: ["truthful"],
+    adverb: ["truthfully"],
+  },
+  luka: {
+    noun: ["hand", "hands", "arm", "arms"],
+    adjective: [],
+    adverb: [],
+  },
+  lukin: { noun: ["eye", "eyes", "sight"], adjective: [], adverb: [] },
+  lupa: { noun: ["hole", "holes"], adjective: [], adverb: [] },
+  ma: {
+    noun: ["place", "places", "earth"],
+    adjective: ["earthy"],
+    adverb: [],
+  },
+  mama: {
+    noun: ["parent", "parents", "creator", "creators"],
+    adjective: [],
+    adverb: [],
+  },
+  mani: {
+    noun: ["money", "large domestic animal", "large domestic animals"],
+    adjective: [],
+    adverb: [],
+  },
+  meli: {
+    noun: ["woman", "women", "feminity"],
+    adjective: ["woman", "feminine"],
+    adverb: [],
+  },
+  mi: {
+    noun: ["I", "me", "we", "us"],
+    adjective: ["my", "our"],
+    adverb: [],
+  },
+  mije: {
+    noun: ["man", "men", "masculinity"],
+    adjective: ["man", "masculine"],
+    adverb: [],
+  },
+  moku: {
+    noun: ["food", "foods", "drink", "drinks"],
+    adjective: [],
+    adverb: [],
+  },
+  moli: { noun: ["death"], adjective: ["dead", "deadly"], adverb: [] },
+  monsi: { noun: ["back"], adjective: [], adverb: [] },
+  mu: { noun: ["moo"], adjective: ["mooing"], adverb: [] },
+  mun: {
+    noun: ["celestial object", "celestial objects", "glowing thing"],
+    adjective: ["glowing"],
+    adverb: [],
+  },
+  musi: {
+    noun: ["entertainment", "entertainments"],
+    adjective: ["entertaining"],
+    adverb: ["entertainingly"],
+  },
+  mute: { noun: ["many"], adjective: ["many"], adverb: ["very"] },
+  nanpa: {
+    noun: ["number", "numbers"],
+    adjective: ["numeric"],
+    adverb: ["numerically"],
+  },
+  nasa: {
+    noun: ["silliness", "strangeness"],
+    adjective: ["silly", "strange"],
+    adverb: ["strangely"],
+  },
+  nasin: { noun: ["way"], adjective: [], adverb: [] },
+  nena: { noun: ["bump"], adjective: [], adverb: [] },
+  ni: {
+    noun: ["this", "that"],
+    adjective: ["this", "that"],
+    adverb: [],
+  },
+  nimi: {
+    noun: ["name", "names", "word", "words"],
+    adjective: [],
+    adverb: [],
+  },
+  noka: {
+    noun: ["foot", "feet", "leg", "legs"],
+    adjective: [],
+    adverb: [],
+  },
+  olin: { noun: ["love"], adjective: [], adverb: [] },
+  ona: {
+    noun: ["they", "them", "it"],
+    adjective: ["their", "its"],
+    adverb: [],
+  },
+  open: {
+    noun: ["beginning", "beginnings"],
+    adjective: [],
+    adverb: [],
+  },
+  pakala: {
+    noun: ["mistake", "mistakes"],
+    adjective: ["broken"],
+    adverb: [],
+  },
+  pan: { noun: ["grain", "grains"], adjective: [], adverb: [] },
+  pana: { noun: ["giving"], adjective: [], adverb: [] },
+  pali: { noun: ["work"], adjective: ["working"], adverb: [] },
+  palisa: {
+    noun: ["long hard thing", "long hard things"],
+    adjective: ["long hard"],
+    adverb: [],
+  },
+  pilin: { noun: ["emotion", "emotions"], adjective: [], adverb: [] },
+  pimeja: {
+    noun: ["blackness", "brownness", "grayness"],
+    adjective: ["black", "brown", "gray"],
+    adverb: [],
+  },
+  pini: { noun: ["end", "ends"], adjective: ["ended"], adverb: [] },
+  pipi: {
+    noun: ["insect", "insects", "bug", "bugs"],
+    adjective: ["bug-like", "insect-like"],
+    adverb: [],
+  },
+  poka: { noun: ["side", "sides", "hips"], adjective: [], adverb: [] },
+  poki: { noun: ["container"], adjective: [], adverb: [] },
+  pona: {
+    noun: ["goodness", "simplicity"],
+    adjective: ["good", "simple"],
+    adverb: ["nicely"],
+  },
+  pu: {
+    noun: [],
+    adjective: [],
+    adverb: [],
+  },
+  sama: { noun: ["similarity"], adjective: [], adverb: ["equally"] },
+  seli: {
+    noun: ["fire", "heat", "chemical reaction", "chemical reactions"],
+    adjective: ["hot"],
+    adverb: [],
+  },
+  selo: {
+    noun: ["outer form", "skin", "boundary", "boundaries"],
+    adjective: [],
+    adverb: [],
+  },
+  seme: {
+    noun: ["what", "which"],
+    adjective: ["what", "which"],
+    adverb: [],
+  },
+  sewi: {
+    noun: ["above", "divinity"],
+    adjective: ["divine"],
+    adverb: ["divinely"],
+  },
+  sijelo: { noun: ["body", "bodies"], adjective: [], adverb: [] },
+  sike: {
+    noun: ["round thing", "round things", "cycle"],
+    adjective: ["round"],
+    adverb: ["repeatedly"],
+  },
+  sin: {
+    noun: ["new thing", "new things"],
+    adjective: ["new"],
+    adverb: ["newly"],
+  },
+  sina: { noun: ["you", "you all"], adjective: ["your"], adverb: [] },
+  sinpin: {
+    noun: ["face", "faces", "wall", "walls"],
+    adjective: [],
+    adverb: [],
+  },
+  sitelen: {
+    noun: ["writing", "writings", "image", "images"],
+    adjective: [],
+    adverb: [],
+  },
+  sona: {
+    noun: ["knowledge"],
+    adjective: ["knowledgeable"],
+    adverb: [],
+  },
+  soweli: {
+    noun: ["animal", "animals"],
+    adjective: ["animal-like"],
+    adverb: [],
+  },
+  suli: {
+    noun: ["hugeness", "importance"],
+    adjective: ["huge", "important"],
+    adverb: ["hugely", "importantly"],
+  },
+  suno: {
+    noun: ["light source", "light sources", "sun"],
+    adjective: ["shining"],
+    adverb: [],
+  },
+  supa: {
+    noun: ["horizontal surface", "horizontal surfaces"],
+    adjective: [],
+    adverb: [],
+  },
+  suwi: {
+    noun: ["sweetness", "cuteness", "innocence"],
+    adjective: ["sweet", "cute", "innocent"],
+    adverb: ["sweetly"],
+  },
+  tan: { noun: ["reason", "origin"], adjective: [], adverb: [] },
+  tawa: { noun: ["movement"], adjective: ["moving"], adverb: [] },
+  telo: { noun: ["liquid"], adjective: ["liquid"], adverb: [] },
+  tenpo: { noun: ["time"], adjective: [], adverb: [] },
+  toki: {
+    noun: [
+      "communication",
+      "communications",
+      "language",
+      "languages",
+      "hello",
+    ],
+    adjective: ["communicating"],
+    adverb: [],
+  },
+  tomo: { noun: ["house", "houses"], adjective: [], adverb: [] },
+  tonsi: {
+    noun: [
+      "transgender person",
+      "transgender people",
+      "non-binary person",
+      "non-binary people",
+    ],
+    adjective: ["transgender", "non-binary"],
+    adverb: [],
+  },
+  tu: { noun: ["pair"], adjective: ["two"], adverb: [] },
+  unpa: { noun: ["sex"], adjective: ["sexual"], adverb: ["sexually"] },
+  uta: { noun: ["mouth"], adjective: [], adverb: [] },
+  utala: {
+    noun: ["conflict", "difficulty"],
+    adjective: ["conflicting", "difficult"],
+    adverb: ["conflictingly", "difficultly"],
+  },
+  walo: {
+    noun: ["whiteness", "paleness"],
+    adjective: ["white", "pale"],
+    adverb: [],
+  },
+  wan: { noun: ["one"], adjective: ["one"], adverb: [] },
+  waso: {
+    noun: ["bird", "birds"],
+    adjective: ["bird-like"],
+    adverb: [],
+  },
+  wawa: {
+    noun: ["power", "powers"],
+    adjective: ["powerful"],
+    adverb: ["powerfully"],
+  },
+  weka: { noun: ["leaving"], adjective: ["leaving"], adverb: [] },
+  wile: {
+    noun: ["want", "wants", "need", "needs"],
+    adjective: [],
+    adverb: [],
+  },
+};
