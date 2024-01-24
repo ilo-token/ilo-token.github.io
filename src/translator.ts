@@ -1,14 +1,29 @@
 import { Clause } from "./ast.ts";
-import { FullClause, MultiplePhrases, Phrase, Sentence } from "./ast.ts";
+import {
+  FullClause,
+  MultiplePhrases,
+  Phrase,
+  Sentence,
+  WordUnit,
+} from "./ast.ts";
 import { Output } from "./output.ts";
 import { parser } from "./parser.ts";
 import { TodoError } from "./error.ts";
 import { DEFINITION } from "./definition.ts";
 import { OutputError } from "./error.ts";
+import { UnreachableError } from "./error.ts";
 
 /** A special kind of Output that translators returns. */
 export type TranslationOutput = Output<string>;
 
+const WORD_TO_NUMBER: { [word: string]: number } = {
+  ale: 100,
+  ali: 100,
+  mute: 20,
+  luka: 5,
+  tu: 2,
+  wan: 1,
+};
 /**
  * Helper function for turning array or tuple of Output into Output of array or
  * tuple.
@@ -43,6 +58,22 @@ function adjectiveDefinition(word: string): TranslationOutput {
 }
 function adverbDefinition(word: string): TranslationOutput {
   return definition("adverb", word);
+}
+function number(words: Array<string>): number {
+  return words.reduce((number, word) => number + WORD_TO_NUMBER[word], 0);
+}
+function wordUnitAsNoun(word: WordUnit): TranslationOutput {
+  if (word.type === "default") {
+    return nounDefinition(word.word);
+  } else if (word.type === "numbers") {
+    return new Output([number(word.numbers).toString()]);
+  } else if (word.type === "reduplication") {
+    return nounDefinition(word.word).map((noun) =>
+      new Array(word.count).fill(noun).join(" ")
+    );
+  } else {
+    return new Output(new UnreachableError());
+  }
 }
 function defaultPhraseAsNoun(
   phrase: Phrase & { type: "default" },
