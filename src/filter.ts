@@ -2,7 +2,6 @@ import { somePhraseInMultiplePhrases } from "./ast.ts";
 import {
   FullClause,
   Modifier,
-  MultiplePhrases,
   Phrase,
   Preposition,
   Sentence,
