@@ -185,7 +185,7 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
     return true;
   },
 ];
-/** Array of filter rules for a single phrase. */
+/** Array of filter rules for preposition. */
 export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
   // Disallow preverb modifiers other than _ala_
   (preposition) => {
