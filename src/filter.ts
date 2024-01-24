@@ -10,6 +10,8 @@ import {
 import { UnrecognizedError } from "./error.ts";
 
 // TODO: AST walker
+// TODO: filter nested prepositions
+// TODO: filter preposition in subject and object
 
 /** Array of filter rules for a word unit. */
 export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
