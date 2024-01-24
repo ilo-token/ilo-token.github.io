@@ -50,38 +50,19 @@ function definition(
     new Output(DEFINITION[word][kind]),
   );
 }
-function nounDefinition(word: string): TranslationOutput {
-  return definition("noun", word);
-}
-function adjectiveDefinition(word: string): TranslationOutput {
-  return definition("adjective", word);
-}
-function adverbDefinition(word: string): TranslationOutput {
-  return definition("adverb", word);
-}
 function number(words: Array<string>): number {
   return words.reduce((number, word) => number + WORD_TO_NUMBER[word], 0);
 }
-function wordUnitAsNoun(word: WordUnit): TranslationOutput {
+function wordUnitAs(
+  kind: "noun" | "adjective" | "adverb",
+  word: WordUnit,
+): TranslationOutput {
   if (word.type === "default") {
-    return nounDefinition(word.word);
+    return definition(kind, word.word);
   } else if (word.type === "numbers") {
     return new Output([number(word.numbers).toString()]);
   } else if (word.type === "reduplication") {
-    return nounDefinition(word.word).map((noun) =>
-      new Array(word.count).fill(noun).join(" ")
-    );
-  } else {
-    return new Output(new UnreachableError());
-  }
-}
-function wordUnitAsAdjective(word: WordUnit): TranslationOutput {
-  if (word.type === "default") {
-    return adjectiveDefinition(word.word);
-  } else if (word.type === "numbers") {
-    return new Output([number(word.numbers).toString()]);
-  } else if (word.type === "reduplication") {
-    return adjectiveDefinition(word.word).map((noun) =>
+    return definition(kind, word.word).map((noun) =>
       new Array(word.count).fill(noun).join(" ")
     );
   } else {
