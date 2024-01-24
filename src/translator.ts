@@ -104,12 +104,17 @@ function modifierAsSuffix(
       construction.replace("X", translation)
     );
   } else if (suffix.type === "nanpa") {
-    const named = kind === "noun";
-    return phraseAs(kind, suffix.phrase, { named, suffix: false }).map(
+    return phraseAs(kind, suffix.phrase, {
+      named: kind === "noun",
+      suffix: false,
+    }).map(
       (translation) => `in position ${translation}`,
     );
   } else if (suffix.type === "pi") {
-    return phraseAs(kind, suffix.phrase, { named: false, suffix: false }).map((
+    return phraseAs(kind, suffix.phrase, {
+      named: kind === "noun",
+      suffix: false,
+    }).map((
       translation,
     ) => construction.replace("X", translation));
   } else if (suffix.type === "proper words") {
