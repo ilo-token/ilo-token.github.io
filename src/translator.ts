@@ -1,7 +1,8 @@
 import { Clause } from "./ast.ts";
-import { FullClause, Sentence } from "./ast.ts";
+import { FullClause, MultiplePhrases, Phrase, Sentence } from "./ast.ts";
 import { Output } from "./output.ts";
 import { parser } from "./parser.ts";
+import { TodoError } from "./error.ts";
 
 /** A special kind of Output that translators returns. */
 export type TranslationOutput = Output<string>;
@@ -23,9 +24,38 @@ function rotate<T extends Array<unknown>>(
     new Output<any>([[]]),
   ) as Output<T>;
 }
+function phraseAsNoun(
+  phrase: Phrase,
+  named: boolean,
+  of: boolean,
+): TranslationOutput {
+  throw new Error("todo");
+}
+function translateMultiplePhrases(
+  phrases: MultiplePhrases,
+  level: 1 | 2,
+  translator: (phrase: Phrase) => TranslationOutput,
+): TranslationOutput {
+  throw new Error("todo");
+}
 /** Translates a clause. */
 function translateClause(clause: Clause): TranslationOutput {
-  throw new Error("todo");
+  if (clause.type === "phrases") {
+    return translateMultiplePhrases(
+      clause.phrases,
+      2,
+      (phrase) => phraseAsNoun(phrase, true, true),
+    );
+  } else if (clause.type === "o vocative") {
+    return translateMultiplePhrases(
+      clause.phrases,
+      2,
+      (phrase) =>
+        phraseAsNoun(phrase, true, true).map((phrase) => `hey ${phrase}`),
+    );
+  } else {
+    return new Output(new TodoError(`translation for ${clause.type}`));
+  }
 }
 /** Translates a full clause. */
 function translateFullClause(fullClause: FullClause): TranslationOutput {
