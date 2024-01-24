@@ -10,7 +10,6 @@ import {
 } from "./ast.ts";
 import { UnrecognizedError } from "./error.ts";
 
-// TODO: AST walker
 // TODO: filter nested prepositions
 // TODO: filter preposition in subject and object
 
