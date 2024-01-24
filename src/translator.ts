@@ -77,7 +77,7 @@ function defaultPhraseAsAdjective(
   },
 ): TranslationOutput {
   const suffix = options?.suffix ?? true;
-  throw new Error("todo");
+  return new Output(new TodoError(`translation to adjective`));
 }
 function modifierAsAdjective(modifier: Modifier): TranslationOutput {
   if (modifier.type === "default") {
