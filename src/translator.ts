@@ -253,10 +253,33 @@ function translateMultiplePhrases(
 /** Translates a clause. */
 function translateClause(clause: Clause): TranslationOutput {
   if (clause.type === "phrases") {
-    return translateMultiplePhrases(
-      clause.phrases,
+    const hasEn = (phrases: MultiplePhrases): boolean => {
+      if (phrases.type === "single") {
+        return false;
+      } else if (phrases.type === "and conjunction") {
+        return true;
+      } else if (phrases.type === "anu") {
+        return phrases.phrases.some(hasEn);
+      } else {
+        throw new Error("unreachable");
+      }
+    };
+    const phrases = clause.phrases;
+    const translations = translateMultiplePhrases(
+      phrases,
       (phrase) => phraseAs("noun", phrase),
     );
+    if (hasEn(phrases)) {
+      return translations;
+    } else {
+      return Output.concat(
+        translateMultiplePhrases(
+          phrases,
+          (phrase) => phraseAs("adjective", phrase),
+        ),
+        translations,
+      );
+    }
   } else if (clause.type === "o vocative") {
     return translateMultiplePhrases(
       clause.phrases,
