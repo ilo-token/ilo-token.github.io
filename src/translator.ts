@@ -33,8 +33,8 @@ function phraseAsNoun(
 }
 function translateMultiplePhrases(
   phrases: MultiplePhrases,
-  level: 1 | 2,
   translator: (phrase: Phrase) => TranslationOutput,
+  level: 1 | 2 = 2,
 ): TranslationOutput {
   throw new Error("todo");
 }
@@ -43,13 +43,11 @@ function translateClause(clause: Clause): TranslationOutput {
   if (clause.type === "phrases") {
     return translateMultiplePhrases(
       clause.phrases,
-      2,
       (phrase) => phraseAsNoun(phrase, true, true),
     );
   } else if (clause.type === "o vocative") {
     return translateMultiplePhrases(
       clause.phrases,
-      2,
       (phrase) =>
         phraseAsNoun(phrase, true, true).map((phrase) => `hey ${phrase}`),
     );
