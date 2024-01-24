@@ -153,3 +153,23 @@ export function somePhraseInMultiplePhrases(
     throw new Error("unreachable");
   }
 }
+export function someObjectInMultiplePredicate(
+  predicate: MultiplePredicates,
+  checker: (object: Phrase) => boolean,
+): boolean {
+  if (predicate.type === "single") {
+    return false;
+  } else if (predicate.type === "associated") {
+    if (predicate.objects) {
+      return somePhraseInMultiplePhrases(predicate.objects, checker);
+    } else {
+      return false;
+    }
+  } else if (predicate.type === "and conjunction" || predicate.type === "anu") {
+    return predicate.predicates.some((predicates) =>
+      someObjectInMultiplePredicate(predicates, checker)
+    );
+  } else {
+    throw new Error("unreachable");
+  }
+}

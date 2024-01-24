@@ -8,11 +8,10 @@ import {
   Preposition,
   Sentence,
   someModifierInPhrase,
+  someObjectInMultiplePredicate,
   WordUnit,
 } from "./ast.ts";
 import { UnrecognizedError } from "./error.ts";
-
-// TODO: filter preposition in subject and object
 
 /** Array of filter rules for a word unit. */
 export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
@@ -239,6 +238,17 @@ export const CLAUSE_RULE: Array<(clause: Clause) => boolean> = [
     }
     if (somePhraseInMultiplePhrases(phrases, hasPrepositionInPhrase)) {
       throw new UnrecognizedError("Preposition in subject");
+    }
+    return true;
+  },
+  // disallow preposition in object
+  (clause) => {
+    if (clause.type === "li clause" || clause.type === "o clause") {
+      if (
+        someObjectInMultiplePredicate(clause.predicates, hasPrepositionInPhrase)
+      ) {
+        throw new UnrecognizedError("Preposition in object");
+      }
     }
     return true;
   },
