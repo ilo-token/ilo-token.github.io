@@ -1,3 +1,4 @@
+import { somePhraseInMultiplePhrases } from "./ast.ts";
 import {
   FullClause,
   Modifier,
@@ -10,7 +11,6 @@ import {
 } from "./ast.ts";
 import { UnrecognizedError } from "./error.ts";
 
-// TODO: filter nested prepositions
 // TODO: filter preposition in subject and object
 
 /** Array of filter rules for a word unit. */
@@ -207,6 +207,26 @@ export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
   (preposition) => {
     if (!modifiersIsAlaOrNone(preposition.modifiers)) {
       throw new UnrecognizedError('preverb with modifiers other than "ala"');
+    }
+    return true;
+  },
+  // Disallow nested preposition
+  (preposition) => {
+    const checker = (phrase: Phrase): boolean => {
+      if (phrase.type === "default") {
+        return false;
+      } else if (phrase.type === "preposition") {
+        return true;
+      } else if (phrase.type === "preverb") {
+        return checker(phrase.phrase);
+      } else if (phrase.type === "quotation") {
+        return false;
+      } else {
+        throw new Error("unreachable");
+      }
+    };
+    if (somePhraseInMultiplePhrases(preposition.phrases, checker)) {
+      throw new UnrecognizedError("Preposition inside preposition");
     }
     return true;
   },

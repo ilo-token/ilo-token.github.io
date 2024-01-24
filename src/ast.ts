@@ -139,3 +139,17 @@ export function someModifierInMultiplePhrases(
     throw new Error("unreachable");
   }
 }
+export function somePhraseInMultiplePhrases(
+  phrases: MultiplePhrases,
+  checker: (modifier: Phrase) => boolean,
+): boolean {
+  if (phrases.type === "single") {
+    return checker(phrases.phrase);
+  } else if (phrases.type === "and conjunction" || phrases.type === "anu") {
+    return phrases.phrases.some((phrases) =>
+      somePhraseInMultiplePhrases(phrases, checker)
+    );
+  } else {
+    throw new Error("unreachable");
+  }
+}
