@@ -19,6 +19,7 @@ import {
   SPECIAL_SUBJECT,
 } from "./vocabulary.ts";
 import {
+  CLAUSE_RULE,
   filter,
   FULL_CLAUSE_RULE,
   MODIFIER_RULES,
@@ -531,7 +532,7 @@ function clause(): Parser<Clause> {
     ).map(([preposition, morePreposition]) => ({
       type: "prepositions",
       prepositions: [preposition, ...morePreposition],
-    })),
+    } as Clause)),
     subjectPhrases().map((phrases) => {
       if (
         phrases.type === "single" &&
@@ -546,7 +547,7 @@ function clause(): Parser<Clause> {
     subjectPhrases().skip(specificWord("o")).map((phrases) => ({
       type: "o vocative",
       phrases,
-    })),
+    } as Clause)),
     sequence(
       subjectPhrases(),
       optionalComma().with(specificWord("li")).with(
@@ -556,14 +557,14 @@ function clause(): Parser<Clause> {
       type: "li clause",
       subjects,
       predicates,
-    })),
+    } as Clause)),
     sequence(
       specificWord("o").with(multiplePredicates(["o", "anu"])),
     ).map(([predicates]) => ({
       type: "o clause",
       subjects: null,
       predicates,
-    })),
+    } as Clause)),
     sequence(
       subjectPhrases(),
       optionalComma().with(specificWord("o")).with(
@@ -573,12 +574,12 @@ function clause(): Parser<Clause> {
       type: "o clause",
       subjects: subjects,
       predicates,
-    })),
+    } as Clause)),
     quotation().map((quotation) => ({
       type: "quotation",
       quotation,
-    })),
-  );
+    } as Clause)),
+  ).filter(filter(CLAUSE_RULE));
 }
 /** Parses a single clause including precaluse and postclause. */
 function fullClause(): Parser<FullClause> {
