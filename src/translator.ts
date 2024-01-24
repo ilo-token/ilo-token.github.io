@@ -186,7 +186,7 @@ function phraseAsAdjective(
   },
 ): TranslationOutput {
   if (phrase.type === "default") {
-    return defaultPhraseAsNoun(phrase, options);
+    return defaultPhraseAsAdjective(phrase, options);
   } else {
     return new Output(new TodoError(`translation of ${phrase.type}`));
   }
