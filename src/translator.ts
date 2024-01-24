@@ -70,29 +70,58 @@ function wordUnitAs(
     return new Output(new UnreachableError());
   }
 }
-function defaultPhraseAsAdjective(
-  phrase: Phrase & { type: "default" },
-  options?: {
-    suffix?: boolean;
-  },
+function modifierAs(
+  kind: "noun" | "adjective" | "adverb",
+  modifier: Modifier,
 ): TranslationOutput {
-  const suffix = options?.suffix ?? true;
-  return new Output(new TodoError(`translation to adjective`));
-}
-function modifierAsAdjective(modifier: Modifier): TranslationOutput {
   if (modifier.type === "default") {
-    return wordUnitAs("adjective", modifier.word);
+    return wordUnitAs(kind, modifier.word);
   } else if (modifier.type === "nanpa" || modifier.type === "proper words") {
-    return new Output<string>();
+    return new Output();
   } else if (modifier.type === "pi") {
-    return phraseAsAdjective(modifier.phrase, { suffix: false });
+    if (kind === "adverb") {
+      return new Output();
+    }
+    return phraseAs(kind, modifier.phrase, { named: false, suffix: false });
   } else {
-    return new Output<string>(
+    return new Output(
       new TodoError(`translating ${modifier.type} as adjective`),
     );
   }
 }
-function defaultPhraseAsNoun(
+function modifierAsSuffix(
+  kind: "noun" | "adjective",
+  suffix: Modifier,
+): TranslationOutput {
+  let construction: string;
+  if (kind === "noun") {
+    construction = "of X";
+  } else {
+    construction = "in X way";
+  }
+  if (suffix.type === "default") {
+    return wordUnitAs(kind, suffix.word).map((translation) =>
+      construction.replace("X", translation)
+    );
+  } else if (suffix.type === "nanpa") {
+    const named = kind === "noun";
+    return phraseAs(kind, suffix.phrase, { named, suffix: false }).map(
+      (translation) => `in position ${translation}`,
+    );
+  } else if (suffix.type === "pi") {
+    return phraseAs(kind, suffix.phrase, { named: false, suffix: false }).map((
+      translation,
+    ) => construction.replace("X", translation));
+  } else if (suffix.type === "proper words") {
+    return new Output([`named ${suffix.words}`]);
+  } else {
+    return new Output(
+      new TodoError(`translation of ${suffix.type} as noun`),
+    );
+  }
+}
+function defaultPhraseAs(
+  kind: "noun" | "adjective",
   phrase: Phrase & { type: "default" },
   options?: {
     named?: boolean;
@@ -109,56 +138,43 @@ function defaultPhraseAsNoun(
   if (name && !named) {
     return new Output();
   }
-  const headWord = wordUnitAs("noun", phrase.headWord);
+  let modifierKind: "adjective" | "adverb";
+  if (kind === "noun") {
+    modifierKind = "adjective";
+  } else if (kind === "adjective") {
+    modifierKind = "adverb";
+  }
+  const headWord = wordUnitAs(kind, phrase.headWord);
   const modifierNoName = phrase.modifiers.filter((
     modifier,
   ) => modifier.type !== "proper words");
-  const modifiers: Array<TranslationOutput> = modifierNoName.map(
-    modifierAsAdjective,
+  const modifierTranslation: Array<TranslationOutput> = modifierNoName.map(
+    (modifier) => modifierAs(modifierKind, modifier),
   );
-  const translations = rotate([headWord, rotate(modifiers)] as const).map(
-    ([headWord, modifiers]) =>
-      [...modifiers.slice().reverse(), headWord].join(" "),
-  ).map(
-    (translation) => {
-      if (name) {
-        return `${translation} named ${name}`;
-      } else {
-        return translation;
-      }
-    },
-  );
+  const translations = rotate([headWord, rotate(modifierTranslation)] as const)
+    .map(
+      ([headWord, modifiers]) =>
+        [...modifiers.slice().reverse(), headWord].join(" "),
+    ).map(
+      (translation) => {
+        if (name) {
+          return `${translation} named ${name}`;
+        } else {
+          return translation;
+        }
+      },
+    );
   if (suffix) {
     const extraTranslations: Array<TranslationOutput> = [
       ...modifierNoName.keys(),
     ].map(
       (i) => {
-        const suffix = modifierNoName[i];
-        let suffixOutput: TranslationOutput;
-        if (suffix.type === "default") {
-          suffixOutput = wordUnitAs("noun", suffix.word).map((translation) =>
-            `of ${translation}`
-          );
-        } else if (suffix.type === "nanpa") {
-          suffixOutput = phraseAsNoun(suffix.phrase, { suffix: false }).map(
-            (translation) => `in position ${translation}`,
-          );
-        } else if (suffix.type === "pi") {
-          suffixOutput = phraseAsNoun(suffix.phrase, { suffix: false }).map(
-            (translation) => `of ${translation}`,
-          );
-        } else if (suffix.type === "proper words") {
-          throw new Error("unreachable");
-        } else {
-          return new Output(
-            new TodoError(`translation of ${suffix.type} as noun`),
-          );
-        }
-        const modifiers = [
+        const suffixTranslation = modifierAsSuffix(kind, modifierNoName[i]);
+        const modifierTranslation = [
           ...modifierNoName.slice(0, i),
           ...modifierNoName.slice(i + 1),
-        ].map(modifierAsAdjective);
-        return rotate([headWord, rotate(modifiers)] as const).map(
+        ].map((modifier) => modifierAs(modifierKind, modifier));
+        return rotate([headWord, rotate(modifierTranslation)] as const).map(
           ([headWord, modifiers]) =>
             [...modifiers.slice().reverse(), headWord].join(" "),
         ).map(
@@ -170,7 +186,7 @@ function defaultPhraseAsNoun(
             }
           },
         ).flatMap((left) =>
-          suffixOutput.map((right) => [left, right].join(" "))
+          suffixTranslation.map((right) => [left, right].join(" "))
         );
       },
     );
@@ -179,27 +195,12 @@ function defaultPhraseAsNoun(
     return translations;
   }
 }
-function phraseAsAdjective(
-  phrase: Phrase,
-  options?: {
-    suffix?: boolean;
-  },
-): TranslationOutput {
+function phraseAs(kind: "noun" | "adjective", phrase: Phrase, options?: {
+  named?: boolean;
+  suffix?: boolean;
+}): TranslationOutput {
   if (phrase.type === "default") {
-    return defaultPhraseAsAdjective(phrase, options);
-  } else {
-    return new Output(new TodoError(`translation of ${phrase.type}`));
-  }
-}
-function phraseAsNoun(
-  phrase: Phrase,
-  options?: {
-    named?: boolean;
-    suffix?: boolean;
-  },
-): TranslationOutput {
-  if (phrase.type === "default") {
-    return defaultPhraseAsNoun(phrase, options);
+    return defaultPhraseAs(kind, phrase, options);
   } else {
     return new Output(new TodoError(`translation of ${phrase.type}`));
   }
@@ -252,11 +253,14 @@ function translateMultiplePhrases(
 /** Translates a clause. */
 function translateClause(clause: Clause): TranslationOutput {
   if (clause.type === "phrases") {
-    return translateMultiplePhrases(clause.phrases, phraseAsNoun);
+    return translateMultiplePhrases(
+      clause.phrases,
+      (phrase) => phraseAs("noun", phrase),
+    );
   } else if (clause.type === "o vocative") {
     return translateMultiplePhrases(
       clause.phrases,
-      (phrase) => phraseAsNoun(phrase).map((phrase) => `hey ${phrase}`),
+      (phrase) => phraseAs("noun", phrase).map((phrase) => `hey ${phrase}`),
     );
   } else {
     return new Output(new TodoError(`translation for ${clause.type}`));
