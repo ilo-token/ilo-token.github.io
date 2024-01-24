@@ -11,6 +11,7 @@ For this version. The whole code has been rewritten. The translator can now tran
   - Reduplication
   - _nanpa_ particle
   - _en_ and _anu_
+  - _o_ vocative like "jan Koko o"
 - Add button for translating, replacing auto-translate when typing.
 - (Downgrade) Drop support for "a" particle.
 - (Downgrade) Error messages are now very unreliable.
