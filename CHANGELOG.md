@@ -7,7 +7,7 @@ You may need to force restart the page in order to use the latest version: shift
 The definition list has been given a huge overhaul.
 
 - Update definition list:
-  - It now uses latest Linku definition as a base.
+  - It now uses latest Linku definition as the base.
   - Include verbs for later use.
   - Include interjection for later use.
 
