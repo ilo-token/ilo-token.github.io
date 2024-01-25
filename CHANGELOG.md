@@ -2,6 +2,15 @@
 
 You may need to force restart the page in order to use the latest version: shift + click the restart button; or ctrl + shift + R.
 
+## 0.2.1
+
+The definition list has been given a huge overhaul.
+
+- Update definition list:
+  - It now uses latest Linku definition as a base.
+  - Include verbs for later use.
+  - Include interjection for later use.
+
 ## 0.2.0
 
 For this version. The whole code has been rewritten. The translator can now translate few more things! Although it's still not capable of translating full sentences.
