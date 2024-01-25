@@ -27,7 +27,7 @@ const WORD_TO_NUMBER: { [word: string]: number } = {
 };
 /**
  * Helper function for turning array or tuple of Output into Output of array or
- * tuple.
+ * tuple. Make use of `as const` to infer array as tuple.
  */
 // TODO: maybe there's a better name
 function rotate<T extends Array<unknown>>(
