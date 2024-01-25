@@ -1515,7 +1515,7 @@ export const DEFINITION: { [key: string]: Translation } = {
   taso: {
     noun: [],
     adjective: ["only"],
-    adverb: [],
+    adverb: ["only"],
     gerundVerb: [],
     pastTransitive: [],
     presentTransitive: [],
