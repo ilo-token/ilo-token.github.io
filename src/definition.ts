@@ -14,6 +14,8 @@ export type Translation = {
   // Intransitive means there's nothing done to anything but the subject itself
   pastIntransitive: Array<string>;
   presentIntransitive: Array<string>;
+
+  interjection?: Array<string>;
 };
 /** Record of word translations. */
 export const DEFINITION: { [key: string]: Translation } = {
@@ -23,7 +25,6 @@ export const DEFINITION: { [key: string]: Translation } = {
 
   // TODO: preverb
   // TODO: preposition
-  // TODO: interjection
 
   // akesi
   // Linku: reptile, amphibian
@@ -1088,6 +1089,7 @@ export const DEFINITION: { [key: string]: Translation } = {
     presentTransitive: ["botch", "break", "damage", "harm", "mess up"],
     pastIntransitive: [],
     presentIntransitive: [],
+    interjection: ["pakala"],
   },
   // pan
   // Linku: grains, starchy foods, baked goods; e.g. rice, sorghum, bread, noodles, masa, porridge, injera
@@ -1577,6 +1579,7 @@ export const DEFINITION: { [key: string]: Translation } = {
     presentTransitive: ["communicate"],
     pastIntransitive: [],
     presentIntransitive: [],
+    interjection: ["hello"],
   },
   // tomo
   // Linku: indoor space; building, home, house, room
