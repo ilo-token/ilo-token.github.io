@@ -7,6 +7,7 @@ You may need to force restart the page in order to use the latest version: shift
 The definition list has been given a huge overhaul.
 
 - Remove unintended commas, these were found when translating "en" with more than 3 phrases.
+- Remove copyright and license footer.
 - Update definition list:
   - It now uses latest Linku definition as the base.
   - Include verbs for later use.
