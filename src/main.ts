@@ -1,6 +1,10 @@
 import { translate } from "./translator.ts";
 
-const VERSION = "v0.2.1 (On development)";
+// Set to false when releasing, set to true when developing
+const DEVELOPMENT = true;
+// Don't forget these two when releasing
+const DATE_RELEASED = new Date("2024-1-26");
+const VERSION = "v0.2.1";
 
 // TODO: maybe use worker
 document.addEventListener("DOMContentLoaded", () => {
@@ -11,7 +15,14 @@ document.addEventListener("DOMContentLoaded", () => {
     "translate-button",
   ) as HTMLButtonElement;
   const version = document.getElementById("version") as HTMLAnchorElement;
-  version.innerText = VERSION;
+  if (DEVELOPMENT) {
+    version.innerText = `${VERSION} (On development)`;
+  } else {
+    const date = DATE_RELEASED.toLocaleDateString(undefined, {
+      dateStyle: "short",
+    });
+    version.innerText = `${VERSION} - Released ${date}`;
+  }
   const listener = () => {
     while (output.children.length > 0) {
       output.removeChild(output.children[0]);
