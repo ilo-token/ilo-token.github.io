@@ -2,7 +2,7 @@
 
 You may need to force restart the page in order to use the latest version: shift + click the restart button; or ctrl + shift + R.
 
-## 0.2.1
+## 0.2.1 (On development)
 
 The definition list has been given a huge overhaul.
 
