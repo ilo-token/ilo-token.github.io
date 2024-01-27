@@ -14,6 +14,6 @@ cd toki-pona-translator
 deno task build
 ```
 
-Then open `./index.html` using your favorite browser.
+This builds `./main.js`. Then open `./index.html` using your favorite browser.
 
 Whenever you made changes to `./src/*.ts`, you'll need to run `deno task build` again and refresh the browser. Later I'll make a script to automate this.
