@@ -25,6 +25,9 @@ const WORD_TO_NUMBER: { [word: string]: number } = {
   tu: 2,
   wan: 1,
 };
+// TODO: -like and -related suffixes for nouns as adjectives
+// TODO: "and" in "of" and "in X way"
+
 /**
  * Helper function for turning array or tuple of Output into Output of array or
  * tuple. Make use of `as const` to infer array as tuple.
