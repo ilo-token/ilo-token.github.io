@@ -1,3 +1,6 @@
+// TODO: avoid certain adjectives to be modified by adverb: this applies to
+// possessive adjectives: my, our, your, etc.
+
 /** Represents possible translations of words. */
 export type Translation = {
   noun: Array<string>;
