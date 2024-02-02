@@ -1,5 +1,7 @@
 # Toki Pona Translator
 
+> This project will be renamed to "ilo Token" within the next update.
+
 An imperfect Toki Pona to English translator that translates into multiple sentences. This emphasizes how broad Toki Pona can be. Everything is hardcoded, no machine learning involved.
 
 [Try it](https://neverrare.github.io/toki-pona-translator/)
