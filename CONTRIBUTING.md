@@ -4,4 +4,4 @@ You can do the usual github stuff: Open issue if there's an issue or you have a 
 
 ## The wiki
 
-The wiki provides useful information for contributors, although it's not complete yet. Check it out: [Visit wiki](https://github.com/neverRare/toki-pona-translator/wiki).
+The wiki provides useful information for contributors, although it's not complete yet. Check it out: [Visit wiki](https://github.com/neverRare/ilo-token/wiki).
