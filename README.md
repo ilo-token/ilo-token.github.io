@@ -18,6 +18,8 @@ deno task build
 
 This builds `./main.js` as a non-minified file with source mapping, intended for testing and debugging. This command also watches the source codes in `./src/` path and rebuilds `./main.js`.
 
+You'll need [Deno](https://deno.com/). Run the following command.
+
 ```
 deno task watch
 ```
