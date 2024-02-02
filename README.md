@@ -1,6 +1,6 @@
 # ilo Token
 
-> The repository uses to old name, it will be renamed on the next update.
+> The repository and the website uses to old name, it will be renamed on the next update.
 
 A rule-based Toki Pona to English translator that translates into multiple sentences. This emphasizes how broad Toki Pona can be. Everything is hardcoded, no machine learning involved.
 
