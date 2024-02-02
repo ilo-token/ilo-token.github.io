@@ -4,7 +4,7 @@ import { translate } from "./translator.ts";
 const DEVELOPMENT = true;
 // Don't forget these two when releasing
 const DATE_RELEASED = new Date("2024-2-1");
-const VERSION = "v0.2.2";
+const VERSION = "v0.2.3";
 
 // TODO: maybe use worker
 document.addEventListener("DOMContentLoaded", () => {

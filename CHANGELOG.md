@@ -2,6 +2,10 @@
 
 You may need to force restart the page in order to use the latest version: shift + click the restart button; or ctrl + shift + R.
 
+## 0.2.3
+
+- Add icons.
+
 ## 0.2.2
 
 Update missed links.
