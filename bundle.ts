@@ -6,18 +6,17 @@ const DESTINATION = "./main.js";
 
 const url = new URL(SOURCE, import.meta.url);
 
-if (Deno.args[0] === "build") {
-  const result = await emit.bundle(url, { minify: true });
+async function build(options: emit.BundleOptions): Promise<void> {
+  const result = await emit.bundle(url, options);
   const { code } = result;
   await Deno.writeTextFile(DESTINATION, code);
+}
+if (Deno.args[0] === "build") {
+  await build({ minify: true });
 } else if (Deno.args[0] === "watch") {
   const builder = debounce.debounce(async () => {
     console.log("Starting to build...");
-    const result = await emit.bundle(url, {
-      compilerOptions: { inlineSourceMap: true },
-    });
-    const { code } = result;
-    await Deno.writeTextFile(DESTINATION, code);
+    await build({ compilerOptions: { inlineSourceMap: true } });
     console.log("Building done!");
   }, 500);
   const watcher = Deno.watchFs("./src/");
