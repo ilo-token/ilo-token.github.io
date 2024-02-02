@@ -2,6 +2,10 @@
 
 You may need to force restart the page in order to use the latest version: shift + click the restart button; or ctrl + shift + R.
 
+## 0.2.2
+
+Update missed links.
+
 ## 0.2.1
 
 The project has been renamed to ilo Token. The definition list has been given a huge overhaul.
