@@ -2,10 +2,11 @@
 
 You may need to force restart the page in order to use the latest version: shift + click the restart button; or ctrl + shift + R.
 
-## 0.2.1 (On development)
+## 0.2.1
 
-The definition list has been given a huge overhaul.
+The project has been renamed to ilo Token. The definition list has been given a huge overhaul.
 
+- Change name to ilo Token.
 - Remove unintended commas, these were found when translating "en" with more than 3 phrases.
 - Remove copyright and license footer.
 - Update definition list:
