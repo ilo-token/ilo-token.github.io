@@ -1,6 +1,6 @@
-# Toki Pona Translator
+# ilo Token
 
-> This project will be renamed to "ilo Token" within the next update.
+> The repository uses to old name, it will be renamed on the next update.
 
 An imperfect Toki Pona to English translator that translates into multiple sentences. This emphasizes how broad Toki Pona can be. Everything is hardcoded, no machine learning involved.
 
