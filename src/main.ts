@@ -1,7 +1,7 @@
 import { translate } from "./translator.ts";
 
 // Set to false when releasing, set to true when developing
-const DEVELOPMENT = false;
+const DEVELOPMENT = true;
 // Don't forget these two when releasing
 const DATE_RELEASED = new Date("2024-2-1");
 const VERSION = "v0.2.2";
