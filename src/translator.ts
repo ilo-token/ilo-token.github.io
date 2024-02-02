@@ -25,9 +25,12 @@ const WORD_TO_NUMBER: { [word: string]: number } = {
   tu: 2,
   wan: 1,
 };
+// TODO: -like and -related suffixes for nouns as adjectives
+// TODO: "and" in "of" and "in X way"
+
 /**
  * Helper function for turning array or tuple of Output into Output of array or
- * tuple.
+ * tuple. Make use of `as const` to infer array as tuple.
  */
 // TODO: maybe there's a better name
 function rotate<T extends Array<unknown>>(
@@ -237,7 +240,7 @@ function translateMultiplePhrases(
           const comma = phrases.slice(0, phrases.length - 1);
           const last = phrases[phrases.length - 1];
           return [
-            comma.map((translation) => [translation, ", "].join()).join(),
+            comma.map((translation) => [translation, ", "].join("")).join(""),
             conjunction,
             " ",
             last,
@@ -246,7 +249,7 @@ function translateMultiplePhrases(
       });
     } else if (level === 1) {
       return translations.map((phrases) =>
-        phrases.join([" ", conjunction, " "].join())
+        phrases.join([" ", conjunction, " "].join(""))
       );
     } else {
       throw new Error("unreachable");
@@ -302,7 +305,7 @@ function translateFullClause(fullClause: FullClause): TranslationOutput {
     if (taso.type === "default") {
       but = "but ";
     } else if (taso.type === "reduplication") {
-      but = new Array(taso.count).fill("but ").join();
+      but = new Array(taso.count).fill("but ").join("");
     }
   }
   let isntIt = "";
@@ -312,7 +315,7 @@ function translateFullClause(fullClause: FullClause): TranslationOutput {
       isntIt = ", isn't it";
     } else if (anuSeme.type === "reduplication") {
       // TODO: better translation
-      isntIt = new Array(anuSeme.count).fill(", isn't it").join();
+      isntIt = new Array(anuSeme.count).fill(", isn't it").join("");
     }
   }
   return translateClause(fullClause.clause).map((clause) =>

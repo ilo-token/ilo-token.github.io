@@ -5,7 +5,7 @@
     <meta name="author" content="neverRare" />
     <meta
       name="description"
-      content="Toki Pona sentence to multi English sentence translator"
+      content="A rule-based Toki Pona to English translator"
     />
     <link
       rel="stylesheet"
@@ -13,17 +13,16 @@
     />
     <link rel="stylesheet" href="./style.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Toki Pona Translator</title>
+    <title lang="tok">ilo Token</title>
   </head>
   <body>
-    <h1>Toki Pona Translator</h1>
+    <h1 lang="tok">ilo Token</h1>
     <p>
       <strong>⚠ WARNING:</strong> Work in progress; Some things may not work
       properly.
     </p>
     <p>
-      An imperfect Toki Pona to English translator that translates into multiple
-      sentences.
+      A rule-based Toki Pona to English translator.
       <a
         href="https://github.com/neverRare/toki-pona-translator/wiki/Limitations"
         >Limitations</a
@@ -32,6 +31,7 @@
     <textarea id="input" placeholder="o toki tawa ni" lang="tok"></textarea>
     <div>
       <button id="translate-button">Translate</button>
+      <button id="settings-button">Settings</button>
     </div>
     <ul id="output"></ul>
     <p id="error"></p>
@@ -47,7 +47,7 @@
         <li>
           Join
           <a href="https://discord.gg/Byqn5z9"
-            ><i>ma pona pi toki pona</i> Discord Server</a
+            ><i lang="tok">ma pona pi toki pona</i> Discord Server</a
           >
           and ping me (never_rare) at dedicated forum channel:
           <a
@@ -67,13 +67,8 @@
       <p>
         <a
           href="https://github.com/neverRare/toki-pona-translator/blob/master/CHANGELOG.md"
-          >v0.2.0</a
-        >
-        - &copy; 2024 neverRare -
-        <a
-          href="https://github.com/neverRare/toki-pona-translator/blob/master/LICENSE"
-          >MIT License</a
-        >
+          id="version"
+        ></a>
       </p>
     </footer>
   </body>

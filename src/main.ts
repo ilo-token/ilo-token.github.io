@@ -1,5 +1,11 @@
 import { translate } from "./translator.ts";
 
+// Set to false when releasing, set to true when developing
+const DEVELOPMENT = false;
+// Don't forget these two when releasing
+const DATE_RELEASED = new Date("2024-2-1");
+const VERSION = "v0.2.1";
+
 // TODO: maybe use worker
 document.addEventListener("DOMContentLoaded", () => {
   const input = document.getElementById("input") as HTMLTextAreaElement;
@@ -8,6 +14,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const button = document.getElementById(
     "translate-button",
   ) as HTMLButtonElement;
+  const version = document.getElementById("version") as HTMLAnchorElement;
+  if (DEVELOPMENT) {
+    version.innerText = `${VERSION} (On development)`;
+  } else {
+    const date = DATE_RELEASED.toLocaleDateString(undefined, {
+      dateStyle: "short",
+    });
+    version.innerText = `${VERSION} - Released ${date}`;
+  }
   const listener = () => {
     while (output.children.length > 0) {
       output.removeChild(output.children[0]);

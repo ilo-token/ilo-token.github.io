@@ -1,19 +1,33 @@
-# Toki Pona Translator
+# ilo Token
 
-An imperfect Toki Pona to English translator that translates into multiple sentences. This emphasizes how broad Toki Pona can be. Everything is hardcoded, no machine learning involved.
+> The repository and the website uses to old name, it will be renamed on the next update.
+
+A rule-based Toki Pona to English translator that translates into multiple sentences. This emphasizes how broad Toki Pona can be. Everything is hardcoded, no machine learning involved.
 
 [Try it](https://neverrare.github.io/toki-pona-translator/)
 
 ## Building
 
+This builds `./main.js` as a minified file ready for production use.
+
 You'll need [Deno](https://deno.com/). Run the following command.
 
 ```
-git clone https://github.com/neverRare/toki-pona-translator.git
-cd toki-pona-translator
 deno task build
 ```
 
-Then open `./index.html` using your favorite browser.
+## Watching
 
-Whenever you made changes to `./src/*.ts`, you'll need to run `deno task build` again and refresh the browser. Later I'll make a script to automate this.
+This builds `./main.js` as a non-minified file with source mapping, intended for testing and debugging. This command also watches the source codes in `./src/` path and rebuilds `./main.js` whenever there are changes.
+
+You'll need [Deno](https://deno.com/). Run the following command.
+
+```
+deno task watch
+```
+
+To stop this command, simply press Ctrl + C.
+
+## About the source codes
+
+With exception to `./src/main.ts`, every source codes in `./src/` are environment agnostic. Meaning it can be run on Deno as well. This makes it convenient to directly test codes by using `deno run`.

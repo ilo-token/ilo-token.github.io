@@ -5,7 +5,8 @@
     "lib": ["dom", "dom.iterable", "dom.asynciterable", "deno.ns"]
   },
   "tasks": {
-    "build": "deno run --allow-read --allow-write --allow-env --allow-net ./bundle.ts"
+    "build": "deno run --allow-read --allow-write --allow-env --allow-net ./bundle.ts build",
+    "watch": "deno run --allow-read --allow-write --allow-env --allow-net ./bundle.ts watch"
   },
   "fmt": {
     "include": ["./src/**/*.ts", "./bundle.ts", "./test-parser.ts"]
