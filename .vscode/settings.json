@@ -3,7 +3,7 @@
     "nimi-ku-suli": {
       "name": "ku-suli",
       "path": "${workspaceRoot}/nimi-ku-suli.txt",
-      "description": "nimi ku sili",
+      "description": "nimi ku suli",
       "addWords": false
     }
   },
