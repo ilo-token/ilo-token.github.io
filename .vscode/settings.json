@@ -4,7 +4,7 @@
       "name": "ku-suli",
       "path": "${workspaceRoot}/nimi-ku-suli.txt",
       "description": "nimi ku sili",
-      "addWords": true
+      "addWords": false
     }
   },
   "deno.enable": true
