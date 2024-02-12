@@ -1,13 +1,11 @@
 import { emit } from "./dev-deps.ts";
 import { debounce } from "./dev-deps.ts";
 
-const SOURCE = "./src/main.ts";
-const DESTINATION = "./main.js";
-
-const url = new URL(SOURCE, import.meta.url);
+const SOURCE = new URL("./src/main.ts", import.meta.url);
+const DESTINATION = new URL("./main.js", import.meta.url);
 
 async function build(options: emit.BundleOptions): Promise<void> {
-  const result = await emit.bundle(url, options);
+  const result = await emit.bundle(SOURCE, options);
   const { code } = result;
   await Deno.writeTextFile(DESTINATION, code);
 }
