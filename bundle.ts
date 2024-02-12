@@ -1,5 +1,4 @@
-import { emit } from "./dev-deps.ts";
-import { debounce } from "./dev-deps.ts";
+import { debounce, emit } from "./dev-deps.ts";
 
 const SOURCE = new URL("./src/main.ts", import.meta.url);
 const DESTINATION = new URL("./main.js", import.meta.url);
