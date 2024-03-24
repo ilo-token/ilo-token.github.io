@@ -32,7 +32,9 @@ export class Output<T> {
     this.errors.length = 0;
   }
   private append({ output, errors }: Output<T>): void {
-    this.output = [...this.output, ...output];
+    for (const item of output) {
+      this.push(item);
+    }
     if (this.output.length > 0) {
       this.errors.length = 0;
     } else {
