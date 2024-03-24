@@ -6,6 +6,8 @@ export class UnreachableError extends Error {
     super("Reached unreachable error.");
   }
 }
+/** Represents errors expected to be covered by other errors. */
+export class CoveredError extends OutputError {}
 /** Represents Error due to things not implemented yet. */
 export class TodoError extends OutputError {
   constructor(token: string) {

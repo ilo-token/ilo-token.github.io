@@ -29,6 +29,7 @@ import {
   SENTENCES_RULE,
   WORD_UNIT_RULES,
 } from "./filter.ts";
+import { CoveredError } from "./error.ts";
 
 /** A single parsing result. */
 type ValueRest<T> = { value: T; rest: string };
@@ -282,8 +283,11 @@ function number(): Parser<Array<string>> {
     many(specificWord("wan")),
   ).map((array) => {
     const output = array.flat();
-    if (output.length >= 2) return output;
-    else throw new UnreachableError();
+    if (output.length >= 2) {
+      return output;
+    } else {
+      throw new CoveredError();
+    }
   });
 }
 /** Parses multiple modifiers */
