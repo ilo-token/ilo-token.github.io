@@ -1,3 +1,5 @@
+import { UnreachableError } from "./error.ts";
+
 /** Represents a word unit. */
 export type WordUnit =
   | { type: "default"; word: string }
@@ -121,7 +123,7 @@ export function someModifierInPhrase(
   } else if (phrase.type === "quotation") {
     return whenQuotation;
   } else {
-    throw new Error("unreachable");
+    throw new UnreachableError();
   }
 }
 export function someModifierInMultiplePhrases(
@@ -136,7 +138,7 @@ export function someModifierInMultiplePhrases(
       someModifierInMultiplePhrases(phrases, whenQuotation, checker)
     );
   } else {
-    throw new Error("unreachable");
+    throw new UnreachableError();
   }
 }
 export function somePhraseInMultiplePhrases(
@@ -150,7 +152,7 @@ export function somePhraseInMultiplePhrases(
       somePhraseInMultiplePhrases(phrases, checker)
     );
   } else {
-    throw new Error("unreachable");
+    throw new UnreachableError();
   }
 }
 export function someObjectInMultiplePredicate(
@@ -170,6 +172,6 @@ export function someObjectInMultiplePredicate(
       someObjectInMultiplePredicate(predicates, checker)
     );
   } else {
-    throw new Error("unreachable");
+    throw new UnreachableError();
   }
 }

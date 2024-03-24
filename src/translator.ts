@@ -11,7 +11,7 @@ import { Output } from "./output.ts";
 import { parser } from "./parser.ts";
 import { TodoError } from "./error.ts";
 import { DEFINITION } from "./definition.ts";
-import { CoveredError, OutputError } from "./error.ts";
+import { CoveredError, OutputError, UnreachableError } from "./error.ts";
 
 /** A special kind of Output that translators returns. */
 export type TranslationOutput = Output<string>;
@@ -251,10 +251,10 @@ function translateMultiplePhrases(
         phrases.join([" ", conjunction, " "].join(""))
       );
     } else {
-      throw new Error("unreachable");
+      throw new UnreachableError();
     }
   } else {
-    throw new Error("unreachable");
+    throw new UnreachableError();
   }
 }
 /** Translates a clause. */
@@ -268,7 +268,7 @@ function translateClause(clause: Clause): TranslationOutput {
       } else if (phrases.type === "anu") {
         return phrases.phrases.some(hasEn);
       } else {
-        throw new Error("unreachable");
+        throw new UnreachableError();
       }
     };
     const phrases = clause.phrases;

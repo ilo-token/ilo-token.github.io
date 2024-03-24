@@ -100,7 +100,7 @@ function match(regex: RegExp, description: string): Parser<RegExpMatchArray> {
       if (token) {
         return new Output(new UnexpectedError(`"${token}"`, description));
       } else {
-        throw new Error("unreachable");
+        throw new UnreachableError();
       }
     }
   });

@@ -309,6 +309,6 @@ function hasPrepositionInPhrase(phrase: Phrase): boolean {
   } else if (phrase.type === "quotation") {
     return false;
   } else {
-    throw new Error("unreachable");
+    throw new UnreachableError();
   }
 }
