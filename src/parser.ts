@@ -91,7 +91,7 @@ function match(regex: RegExp): Parser<RegExpMatchArray> {
     } else if (src === "") {
       return new Output(new UnrecognizedError("Unexpected end of sentence"));
     } else {
-      const token = src.match(/([^\s]*)/)?.[1];
+      const token = src.match(/[^\s]*/)?.[0];
       if (token) return new Output(new UnrecognizedError(`"${token}"`));
       else {
         throw new Error("unreachable");
