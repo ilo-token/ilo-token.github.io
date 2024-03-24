@@ -113,7 +113,7 @@ function nothing(): Parser<null> {
 function eol(): Parser<null> {
   return new Parser((src) => {
     if (src === "") return new Output([{ value: null, rest: "" }]);
-    else return new Output(new UnrecognizedError(`"${src}"`));
+    else return new Output(new UnexpectedError(`"${src}"`, "end of sentence"));
   });
 }
 /** Parses without consuming the source string */
@@ -262,7 +262,7 @@ function wordFrom(set: Set<string>, description: string): Parser<string> {
 function specificWord(thatWord: string): Parser<string> {
   return word().filter((thisWord) => {
     if (thatWord === thisWord) return true;
-    else throw new UnrecognizedError(`"${thisWord}" instead of "${thatWord}"`);
+    else throw new UnexpectedError(`"${thisWord}"`, `"${thatWord}"`);
   });
 }
 /** Parses word unit without numbers. */
