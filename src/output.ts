@@ -4,34 +4,42 @@ export class Output<T> {
   /** Represents possibilities, considered error when the array is empty. */
   output: Array<T>;
   /**
-   * An optional error, should be supplied if and only if the array is empty.
+   * A list of errors
    */
-  error: null | OutputError;
+  errors: Array<OutputError> = [];
   constructor(output?: undefined | null | Array<T> | OutputError) {
     if (Array.isArray(output)) {
       this.output = output;
-      if (output.length === 0) {
-        this.error = new OutputError("no error provided");
-      } else this.error = null;
     } else if (output instanceof OutputError) {
       this.output = [];
-      this.error = output;
+      this.errors.push(output);
     } else {
       this.output = [];
-      this.error = new OutputError();
     }
   }
-  private setError(error: OutputError) {
-    if (this.output.length === 0 && !this.error) this.error = error;
+  private static newErrors<T>(errors: Array<OutputError>): Output<T> {
+    const output = new Output<T>();
+    output.errors = errors;
+    return output;
+  }
+  private pushError(error: OutputError): void {
+    if (this.isError()) {
+      this.errors.push(error);
+    }
   }
   private push(value: T): void {
     this.output.push(value);
-    this.error = null;
+    this.errors.length = 0;
   }
-  private append({ output, error }: Output<T>): void {
+  private append({ output, errors }: Output<T>): void {
     this.output = [...this.output, ...output];
-    if (this.output.length > 0) this.error = null;
-    else this.error = error;
+    if (this.output.length > 0) {
+      this.errors.length = 0;
+    } else {
+      for (const item of errors) {
+        this.errors.push(item);
+      }
+    }
   }
   /** Returns true when the output array is empty */
   isError(): boolean {
@@ -51,14 +59,19 @@ export class Output<T> {
    * function can throw OutputError; Other kinds of errors will be ignored.
    */
   map<U>(mapper: (value: T) => U): Output<U> {
-    if (this.isError()) return new Output(this.error);
+    if (this.isError()) {
+      return Output.newErrors(this.errors);
+    }
     const wholeOutput = new Output<U>();
     for (const value of this.output) {
       try {
         wholeOutput.push(mapper(value));
       } catch (error) {
-        if (error instanceof OutputError) this.setError(error);
-        else throw error;
+        if (error instanceof OutputError) {
+          this.pushError(error);
+        } else {
+          throw error;
+        }
       }
     }
     return wholeOutput;
@@ -68,7 +81,9 @@ export class Output<T> {
    * values and flattens them into single array for Output.
    */
   flatMap<U>(mapper: (value: T) => Output<U>): Output<U> {
-    if (this.isError()) return new Output(this.error);
+    if (this.isError()) {
+      return Output.newErrors(this.errors);
+    }
     const wholeOutput = new Output<U>();
     for (const value of this.output) wholeOutput.append(mapper(value));
     return wholeOutput;

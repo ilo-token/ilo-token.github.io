@@ -11,6 +11,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const input = document.getElementById("input") as HTMLTextAreaElement;
   const output = document.getElementById("output") as HTMLUListElement;
   const error = document.getElementById("error") as HTMLParagraphElement;
+  const errorList = document.getElementById(
+    "error-list",
+  ) as HTMLParagraphElement;
   const button = document.getElementById(
     "translate-button",
   ) as HTMLButtonElement;
@@ -27,10 +30,27 @@ document.addEventListener("DOMContentLoaded", () => {
     while (output.children.length > 0) {
       output.removeChild(output.children[0]);
     }
+    while (errorList.children.length > 0) {
+      errorList.removeChild(errorList.children[0]);
+    }
     error.innerText = "";
     const translations = translate(input.value);
     if (translations.isError()) {
-      error.innerText = translations.error?.message ?? "No error provided";
+      const errors = translations.errors;
+      if (errors.length === 0) {
+        error.innerText =
+          "An unknown error has occurred (Errors should be known, please report this)";
+      } else if (errors.length === 1) {
+        error.innerText = errors[0].message;
+      } else {
+        error.innerText =
+          "Multiple errors has been found, but only at least one could be helpful:";
+        for (const errorMessage of errors) {
+          const list = document.createElement("li");
+          list.innerText = errorMessage.message;
+          output.appendChild(list);
+        }
+      }
     } else {
       const set = new Set<string>();
       for (const translation of translations.output) {
