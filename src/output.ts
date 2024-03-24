@@ -103,7 +103,7 @@ export class Output<T> {
 }
 if (Deno) {
   Deno.test("use all error", () => {
-    let errors = new Output(["1", "2", "3"]).flatMap((number) =>
+    const errors = new Output(["1", "2", "3"]).flatMap((number) =>
       new Output(new OutputError(number))
     ).errors.map((error) => error.message);
     assert(errors.length === 3);
