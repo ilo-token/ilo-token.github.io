@@ -11,6 +11,7 @@ import {
   someObjectInMultiplePredicate,
   WordUnit,
 } from "./ast.ts";
+import { UnreachableError } from "./error.ts";
 import { UnrecognizedError } from "./error.ts";
 
 /** Array of filter rules for a word unit. */
@@ -122,7 +123,7 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
       } else if (modifier.type === "pi") {
         return true;
       } else {
-        throw new Error("unreachable error");
+        throw new UnreachableError();
       }
     };
     if (modifier.type === "pi") {
