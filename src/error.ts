@@ -3,7 +3,7 @@ export class OutputError extends Error {}
 /** Represents errors that cannot be reached. */
 export class UnreachableError extends Error {
   constructor() {
-    super("This is an error you shouldn't see... Please report this error.");
+    super("Reached unreachable error.");
   }
 }
 /** Represents Error due to things not implemented yet. */

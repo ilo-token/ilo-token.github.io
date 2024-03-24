@@ -1,3 +1,4 @@
+import { UnreachableError } from "./error.ts";
 import { translate } from "./translator.ts";
 
 // Set to false when releasing, set to true when developing
@@ -34,33 +35,42 @@ document.addEventListener("DOMContentLoaded", () => {
       errorList.removeChild(errorList.children[0]);
     }
     error.innerText = "";
-    const translations = translate(input.value);
-    if (translations.isError()) {
-      const errors = translations.errors;
-      if (errors.length === 0) {
-        error.innerText =
-          "An unknown error has occurred (Errors should be known, please report this)";
-      } else if (errors.length === 1) {
-        error.innerText = errors[0].message;
+    try {
+      const translations = translate(input.value);
+      if (translations.isError()) {
+        const errors = translations.errors;
+        if (errors.length === 0) {
+          error.innerText =
+            "An unknown error has occurred (Errors should be known, please report this)";
+        } else if (errors.length === 1) {
+          error.innerText = errors[0].message;
+        } else {
+          error.innerText =
+            "Multiple errors has been found, but only at least one could be helpful:";
+          for (const errorMessage of errors) {
+            const list = document.createElement("li");
+            list.innerText = errorMessage.message;
+            output.appendChild(list);
+          }
+        }
       } else {
-        error.innerText =
-          "Multiple errors has been found, but only at least one could be helpful:";
-        for (const errorMessage of errors) {
-          const list = document.createElement("li");
-          list.innerText = errorMessage.message;
-          output.appendChild(list);
+        const set = new Set<string>();
+        for (const translation of translations.output) {
+          if (!set.has(translation)) {
+            const list = document.createElement("li");
+            list.innerText = translation;
+            output.appendChild(list);
+            set.add(translation);
+          }
         }
       }
-    } else {
-      const set = new Set<string>();
-      for (const translation of translations.output) {
-        if (!set.has(translation)) {
-          const list = document.createElement("li");
-          list.innerText = translation;
-          output.appendChild(list);
-          set.add(translation);
-        }
+    } catch (unreachableError) {
+      if (unreachableError instanceof Error) {
+        error.innerText = unreachableError.message;
+      } else {
+        error.innerText = unreachableError.toString();
       }
+      error.innerText += " (This is bad, please report this)";
     }
   };
   button.addEventListener("click", listener);
