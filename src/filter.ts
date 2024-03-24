@@ -286,12 +286,12 @@ function modifierIsNumeric(modifier: Modifier): boolean {
       (word.type === "default" &&
         (word.word === "wan" || word.word === "tu"));
   }
-  throw new CoveredError();
+  return false;
 }
 /** Helper function for checking if the modifiers is exactly just _ala_ or nothing. */
 function modifiersIsAlaOrNone(modifiers: Array<Modifier>): boolean {
   if (modifiers.length > 1) {
-    throw new CoveredError();
+    return false;
   } else if (modifiers.length === 1) {
     const [modifier] = modifiers;
     return modifier.type === "default" && modifier.word.type === "default" &&
