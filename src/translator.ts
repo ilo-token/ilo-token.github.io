@@ -11,8 +11,7 @@ import { Output } from "./output.ts";
 import { parser } from "./parser.ts";
 import { TodoError } from "./error.ts";
 import { DEFINITION } from "./definition.ts";
-import { OutputError } from "./error.ts";
-import { UnreachableError } from "./error.ts";
+import { CoveredError, OutputError } from "./error.ts";
 
 /** A special kind of Output that translators returns. */
 export type TranslationOutput = Output<string>;
@@ -70,7 +69,7 @@ function wordUnitAs(
       new Array(word.count).fill(noun).join(" ")
     );
   } else {
-    throw new UnreachableError();
+    return new Output(new CoveredError());
   }
 }
 function modifierAs(

@@ -1,5 +1,4 @@
 import { CoveredError } from "./error.ts";
-import { UnreachableError } from "./error.ts";
 import { translate } from "./translator.ts";
 
 // Set to false when releasing, set to true when developing
@@ -47,7 +46,9 @@ document.addEventListener("DOMContentLoaded", () => {
             error.innerText =
               "An unknown error has occurred (Errors should be known, please report this)";
           } else {
-            error.innerText = "TODO better error message";
+            error.innerText =
+              "Found errors not supposed to appear (please report this)";
+            throw translations.errors[0];
           }
         } else if (errors.length === 1) {
           error.innerText = errors[0].message;

@@ -460,7 +460,7 @@ function associatedPredicates(
     many(optionalComma().with(preposition())),
   ).map(([predicates, objects, prepositions]) => {
     if (!objects && prepositions.length === 0) {
-      throw new UnreachableError();
+      throw new CoveredError();
     } else {
       return {
         type: "associated",
@@ -541,7 +541,7 @@ function clause(): Parser<Clause> {
     } as Clause)),
     subjectPhrases().map((phrases) => {
       if (phrases.type === "single" && phrases.phrase.type === "quotation") {
-        throw new UnreachableError();
+        throw new CoveredError();
       } else {
         return { type: "phrases", phrases } as Clause;
       }
