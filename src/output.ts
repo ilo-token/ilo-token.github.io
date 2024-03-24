@@ -35,9 +35,7 @@ export class Output<T> {
     for (const item of output) {
       this.push(item);
     }
-    if (this.output.length > 0) {
-      this.errors.length = 0;
-    } else {
+    if (this.isError()) {
       for (const item of errors) {
         this.errors.push(item);
       }
