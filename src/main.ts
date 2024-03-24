@@ -38,9 +38,13 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const translations = translate(input.value);
       if (translations.isError()) {
-        const errors = translations.errors.filter((x) =>
-          !(x instanceof CoveredError)
-        );
+        const errors = [
+          ...new Set(
+            translations.errors.filter((x) => !(x instanceof CoveredError)).map(
+              (x) => x.message,
+            ),
+          ),
+        ];
         if (errors.length === 0) {
           if (translations.errors.length === 0) {
             error.innerText =
@@ -51,28 +55,21 @@ document.addEventListener("DOMContentLoaded", () => {
             throw translations.errors[0];
           }
         } else if (errors.length === 1) {
-          error.innerText = errors[0].message;
+          error.innerText = errors[0];
         } else {
           error.innerText =
             "Multiple errors has been found, but only at least one could be helpful:";
-          const set = new Set<string>();
           for (const errorMessage of errors) {
-            if (!set.has(errorMessage.message)) {
-              const list = document.createElement("li");
-              list.innerText = errorMessage.message;
-              errorList.appendChild(list);
-            }
+            const list = document.createElement("li");
+            list.innerText = errorMessage;
+            errorList.appendChild(list);
           }
         }
       } else {
-        const set = new Set<string>();
-        for (const translation of translations.output) {
-          if (!set.has(translation)) {
-            const list = document.createElement("li");
-            list.innerText = translation;
-            output.appendChild(list);
-            set.add(translation);
-          }
+        for (const translation of [...new Set(translations.output)]) {
+          const list = document.createElement("li");
+          list.innerText = translation;
+          output.appendChild(list);
         }
       }
     } catch (unreachableError) {
