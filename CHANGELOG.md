@@ -5,6 +5,7 @@ You may need to force restart the page in order to use the latest version: shift
 ## 0.2.3 (On development)
 
 - Add icons.
+- All possible errors will now be listed.
 
 ## 0.2.2
 
