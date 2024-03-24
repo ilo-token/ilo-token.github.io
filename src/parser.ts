@@ -52,8 +52,8 @@ class Parser<T> {
     );
   }
   /**
-   * Filters outputs. The mapper may throw OutputError as well in place of
-   * returning false.
+   * Filters outputs. Instead of returning false, OutputError must be thrown
+   * instead.
    */
   filter(mapper: (value: T) => boolean): Parser<T> {
     return new Parser((src) =>

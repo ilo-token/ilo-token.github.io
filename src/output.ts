@@ -45,6 +45,10 @@ export class Output<T> {
   isError(): boolean {
     return this.output.length === 0;
   }
+  /**
+   * Filters outputs. Instead of returning false, OutputError must be thrown
+   * instead.
+   */
   filter(mapper: (value: T) => boolean): Output<T> {
     return this.map((value) => {
       if (mapper(value)) {
