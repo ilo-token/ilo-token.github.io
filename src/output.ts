@@ -101,7 +101,7 @@ export class Output<T> {
     return wholeOutput;
   }
 }
-if (Deno) {
+if (typeof Deno !== "undefined") {
   Deno.test("use all error", () => {
     const errors = new Output(["1", "2", "3"]).flatMap((number) =>
       new Output(new OutputError(number))
