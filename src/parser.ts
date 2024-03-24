@@ -11,7 +11,6 @@ import {
   WordUnit,
 } from "./ast.ts";
 import {
-  OutputError,
   UnexpectedError,
   UnreachableError,
   UnrecognizedError,
