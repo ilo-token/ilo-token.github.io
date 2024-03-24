@@ -13,8 +13,12 @@ if (Deno.args[0] === "build") {
 } else if (Deno.args[0] === "watch") {
   const builder = debounce.debounce(async () => {
     console.log("Starting to build...");
-    await build({ compilerOptions: { inlineSourceMap: true } });
-    console.log("Building done!");
+    try {
+      await build({ compilerOptions: { inlineSourceMap: true } });
+      console.log("Building done!");
+    } catch (error) {
+      console.error(error);
+    }
   }, 500);
   const watcher = Deno.watchFs("./src/");
   builder();
