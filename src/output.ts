@@ -60,7 +60,7 @@ export class Output<T> {
    */
   map<U>(mapper: (value: T) => U): Output<U> {
     if (this.isError()) {
-      return Output.newErrors(this.errors);
+      return Output.newErrors(this.errors.slice());
     }
     const wholeOutput = new Output<U>();
     for (const value of this.output) {
@@ -82,7 +82,7 @@ export class Output<T> {
    */
   flatMap<U>(mapper: (value: T) => Output<U>): Output<U> {
     if (this.isError()) {
-      return Output.newErrors(this.errors);
+      return Output.newErrors(this.errors.slice());
     }
     const wholeOutput = new Output<U>();
     for (const value of this.output) wholeOutput.append(mapper(value));
