@@ -11,8 +11,7 @@ import {
   someObjectInMultiplePredicate,
   WordUnit,
 } from "./ast.ts";
-import { UnreachableError } from "./error.ts";
-import { UnrecognizedError } from "./error.ts";
+import { CoveredError, UnreachableError, UnrecognizedError } from "./error.ts";
 
 /** Array of filter rules for a word unit. */
 export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
@@ -117,7 +116,7 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
         modifier.type === "default" || modifier.type === "proper words" ||
         modifier.type === "quotation"
       ) {
-        return false;
+        throw new CoveredError();
       } else if (modifier.type === "nanpa") {
         return someModifierInPhrase(modifier.phrase, false, checker);
       } else if (modifier.type === "pi") {
@@ -287,12 +286,12 @@ function modifierIsNumeric(modifier: Modifier): boolean {
       (word.type === "default" &&
         (word.word === "wan" || word.word === "tu"));
   }
-  return false;
+  throw new CoveredError();
 }
 /** Helper function for checking if the modifiers is exactly just _ala_ or nothing. */
 function modifiersIsAlaOrNone(modifiers: Array<Modifier>): boolean {
   if (modifiers.length > 1) {
-    return false;
+    throw new CoveredError();
   } else if (modifiers.length === 1) {
     const [modifier] = modifiers;
     return modifier.type === "default" && modifier.word.type === "default" &&
@@ -302,13 +301,13 @@ function modifiersIsAlaOrNone(modifiers: Array<Modifier>): boolean {
 }
 function hasPrepositionInPhrase(phrase: Phrase): boolean {
   if (phrase.type === "default") {
-    return false;
+    throw new CoveredError();
   } else if (phrase.type === "preposition") {
     return true;
   } else if (phrase.type === "preverb") {
     return hasPrepositionInPhrase(phrase.phrase);
   } else if (phrase.type === "quotation") {
-    return false;
+    throw new CoveredError();
   } else {
     throw new Error("unreachable");
   }
