@@ -70,7 +70,7 @@ function wordUnitAs(
       new Array(word.count).fill(noun).join(" ")
     );
   } else {
-    return new Output(new UnreachableError());
+    throw new UnreachableError();
   }
 }
 function modifierAs(

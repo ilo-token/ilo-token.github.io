@@ -92,7 +92,9 @@ function match(regex: RegExp): Parser<RegExpMatchArray> {
     } else {
       const token = src.match(/(.*)(?:\s|$)/)?.[1];
       if (token) return new Output(new UnrecognizedError(`"${token}"`));
-      else return new Output(new UnreachableError());
+      else {
+        throw new Error("unreachable");
+      }
     }
   });
 }
