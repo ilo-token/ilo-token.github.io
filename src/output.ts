@@ -106,6 +106,9 @@ if (typeof Deno !== "undefined") {
     const errors = new Output(["1", "2", "3"]).flatMap((number) =>
       new Output(new OutputError(number))
     ).errors.map((error) => error.message);
-    assert.assertEquals (errors.length, 3);
+    assert.assertEquals(errors.length, 3);
+    assert.assertEquals(errors[0], "1");
+    assert.assertEquals(errors[1], "2");
+    assert.assertEquals(errors[2], "3");
   });
 }

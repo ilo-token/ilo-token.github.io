@@ -674,10 +674,13 @@ if (typeof Deno !== "undefined") {
   Deno.test("choice considers all error", () => {
     const parser = choice(
       match(/a/, "a").map(() => "a"),
-      match(/a/, "a").map(() => "a"),
-      match(/a/, "a").map(() => "a"),
+      match(/b/, "b").map(() => "b"),
+      match(/c/, "c").map(() => "c"),
     );
     const errors = parser.parser("").errors.map((error) => error.message);
     assert.assertEquals(errors.length, 3);
+    assert.assertEquals(errors[0], new UnexpectedError("end of sentence", "a").message);
+    assert.assertEquals(errors[1], new UnexpectedError("end of sentence", "b").message);
+    assert.assertEquals(errors[2], new UnexpectedError("end of sentence", "c").message);
   });
 }
