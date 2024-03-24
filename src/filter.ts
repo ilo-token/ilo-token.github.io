@@ -11,7 +11,7 @@ import {
   someObjectInMultiplePredicate,
   WordUnit,
 } from "./ast.ts";
-import { CoveredError, UnreachableError, UnrecognizedError } from "./error.ts";
+import { UnreachableError, UnrecognizedError } from "./error.ts";
 
 /** Array of filter rules for a word unit. */
 export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [

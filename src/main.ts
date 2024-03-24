@@ -50,7 +50,8 @@ document.addEventListener("DOMContentLoaded", () => {
             error.innerText =
               "An unknown error has occurred (Errors should be known, please report this)";
           } else {
-            error.innerText = "Found errors expected to be covered by another error (please report this)";
+            error.innerText =
+              "Found errors expected to be covered by another error (please report this)";
             throw translations.errors[0];
           }
         } else if (errors.length === 1) {
