@@ -13,5 +13,9 @@
   },
   "lint": {
     "include": ["./src/**/*.ts", "./bundle.ts", "./test-parser.ts"]
+  },
+  "test": {
+    "include": ["./src/**/*.ts"],
+    "exclude": ["./src/main.ts"]
   }
 }

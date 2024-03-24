@@ -1,3 +1,4 @@
+import { assert } from "https://deno.land/std@0.140.0/_util/assert.ts";
 import { OutputError } from "./error.ts";
 /** Represents possibilities and error. */
 export class Output<T> {
@@ -99,4 +100,12 @@ export class Output<T> {
     }
     return wholeOutput;
   }
+}
+if (Deno) {
+  Deno.test("use all error", () => {
+    let errors = new Output(["1", "2", "3"]).flatMap((number) =>
+      new Output(new OutputError(number))
+    ).errors.map((error) => error.message);
+    assert(errors.length === 3);
+  });
 }
