@@ -37,7 +37,7 @@ export class Output<T> {
     }
     if (this.isError()) {
       for (const item of errors) {
-        this.errors.push(item);
+        this.pushError(item);
       }
     }
   }
