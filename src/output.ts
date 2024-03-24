@@ -31,12 +31,12 @@ export class Output<T> {
     this.output.push(value);
     this.errors.length = 0;
   }
-  private append({ output, errors }: Output<T>): void {
-    for (const item of output) {
+  private append(output: Output<T>): void {
+    for (const item of output.output) {
       this.push(item);
     }
-    if (this.isError()) {
-      for (const item of errors) {
+    if (this.isError() && output.isError()) {
+      for (const item of output.errors) {
         this.pushError(item);
       }
     }
