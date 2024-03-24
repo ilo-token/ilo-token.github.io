@@ -301,13 +301,13 @@ function modifiersIsAlaOrNone(modifiers: Array<Modifier>): boolean {
 }
 function hasPrepositionInPhrase(phrase: Phrase): boolean {
   if (phrase.type === "default") {
-    throw new CoveredError();
+    return false;
   } else if (phrase.type === "preposition") {
     return true;
   } else if (phrase.type === "preverb") {
     return hasPrepositionInPhrase(phrase.phrase);
   } else if (phrase.type === "quotation") {
-    throw new CoveredError();
+    return false;
   } else {
     throw new Error("unreachable");
   }
