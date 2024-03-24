@@ -55,10 +55,13 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
           error.innerText =
             "Multiple errors has been found, but only at least one could be helpful:";
+          const set = new Set<string>();
           for (const errorMessage of errors) {
-            const list = document.createElement("li");
-            list.innerText = errorMessage.message;
-            output.appendChild(list);
+            if (!set.has(errorMessage.message)) {
+              const list = document.createElement("li");
+              list.innerText = errorMessage.message;
+              errorList.appendChild(list);
+            }
           }
         }
       } else {
