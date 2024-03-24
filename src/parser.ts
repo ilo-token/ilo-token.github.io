@@ -10,7 +10,12 @@ import {
   Sentence,
   WordUnit,
 } from "./ast.ts";
-import { UnreachableError, UnrecognizedError } from "./error.ts";
+import {
+  OutputError,
+  UnexpectedError,
+  UnreachableError,
+  UnrecognizedError,
+} from "./error.ts";
 import { Output } from "./output.ts";
 import {
   CONTENT_WORD,
@@ -82,18 +87,19 @@ class Parser<T> {
  * Uses Regular Expression to create parser. The parser outputs
  * RegExpMatchArray, which is what `string.match( ... )` returns.
  */
-function match(regex: RegExp): Parser<RegExpMatchArray> {
+function match(regex: RegExp, description: string): Parser<RegExpMatchArray> {
   const newRegex = new RegExp("^" + regex.source, regex.flags);
   return new Parser((src) => {
     const match = src.match(newRegex);
     if (match) {
       return new Output([{ value: match, rest: src.slice(match[0].length) }]);
     } else if (src === "") {
-      return new Output(new UnrecognizedError("Unexpected end of sentence"));
+      return new Output(new UnexpectedError("end of sentence", description));
     } else {
       const token = src.match(/[^\s]*/)?.[0];
-      if (token) return new Output(new UnrecognizedError(`"${token}"`));
-      else {
+      if (token) {
+        return new Output(new UnexpectedError(`"${token}"`, description));
+      } else {
         throw new Error("unreachable");
       }
     }
@@ -224,7 +230,7 @@ function allAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
 }
 /** Parses comma. */
 function comma(): Parser<string> {
-  return match(/,\s*/).map(() => ",");
+  return match(/,\s*/, "comma").map(() => ",");
 }
 /** Parses an optional comma. */
 function optionalComma(): Parser<null | string> {
@@ -232,14 +238,16 @@ function optionalComma(): Parser<null | string> {
 }
 /** Parses lowercase word. */
 function word(): Parser<string> {
-  return match(/([a-z]+)\s*/).map(([_, word]) => word);
+  return match(/([a-z]+)\s*/, "word").map(([_, word]) => word);
 }
 /**
  * Parses all at least one uppercase words and combines them all into single
  * string. This function is exhaustive like `all`.
  */
 function properWords(): Parser<string> {
-  return allAtLeastOnce(match(/([A-Z][a-z]*)\s*/).map(([_, word]) => word)).map(
+  return allAtLeastOnce(
+    match(/([A-Z][a-z]*)\s*/, "proper word").map(([_, word]) => word),
+  ).map(
     (array) => array.join(" "),
   );
 }
@@ -614,7 +622,9 @@ function sentence(): Parser<Sentence> {
     choice(
       eol().map(() => ""),
       lookAhead(closeQuotationMark()).map(() => ""),
-      match(/([.,:;?!])\s*/).map(([_, punctuation]) => punctuation),
+      match(/([.,:;?!])\s*/, "punctuation").map(([_, punctuation]) =>
+        punctuation
+      ),
     ),
   ).map(([clause, moreClauses, punctuation]) => ({
     laClauses: [clause, ...moreClauses],
@@ -623,11 +633,11 @@ function sentence(): Parser<Sentence> {
 }
 /** Parses opening quotation mark */
 function openQuotationMark(): Parser<string> {
-  return match(/(["“«「])\s*/).map(([_, mark]) => mark);
+  return match(/(["“«「])\s*/, "open quotation mark").map(([_, mark]) => mark);
 }
 /** Parses closing quotation mark */
 function closeQuotationMark(): Parser<string> {
-  return match(/(["”»」])\s*/).map(([_, mark]) => mark);
+  return match(/(["”»」])\s*/, "close quotation mark").map(([_, mark]) => mark);
 }
 /** Parses multiple sentences inside quotation mark */
 function quotation(): Parser<Quotation> {
@@ -654,8 +664,9 @@ function quotation(): Parser<Quotation> {
 }
 /** A multiple Toki Pona sentence parser. */
 export function parser(src: string): Output<Array<Sentence>> {
-  return match(/\s*/).with(allAtLeastOnce(sentence())).skip(eol()).filter(
-    filter(SENTENCES_RULE),
-  ).parser(src)
+  return match(/\s*/, "space").with(allAtLeastOnce(sentence())).skip(eol())
+    .filter(
+      filter(SENTENCES_RULE),
+    ).parser(src)
     .map(({ value }) => value);
 }
