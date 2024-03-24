@@ -116,7 +116,7 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
         modifier.type === "default" || modifier.type === "proper words" ||
         modifier.type === "quotation"
       ) {
-        throw new CoveredError();
+        return false;
       } else if (modifier.type === "nanpa") {
         return someModifierInPhrase(modifier.phrase, false, checker);
       } else if (modifier.type === "pi") {
