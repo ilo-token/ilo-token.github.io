@@ -71,6 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
         error.innerText = unreachableError.toString();
       }
       error.innerText += " (This is bad, please report this)";
+      throw error;
     }
   };
   button.addEventListener("click", listener);
