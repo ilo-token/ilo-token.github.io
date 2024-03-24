@@ -34,6 +34,7 @@ import {
   WORD_UNIT_RULES,
 } from "./filter.ts";
 import { CoveredError } from "./error.ts";
+import { assert } from "../dev-deps.ts";
 
 /** A single parsing result. */
 type ValueRest<T> = { value: T; rest: string };
@@ -668,4 +669,15 @@ export function parser(src: string): Output<Array<Sentence>> {
       filter(SENTENCES_RULE),
     ).parser(src)
     .map(({ value }) => value);
+}
+if (typeof Deno !== "undefined") {
+  Deno.test("choice considers all error", () => {
+    const parser = choice(
+      match(/a/, "a").map(() => "a"),
+      match(/a/, "a").map(() => "a"),
+      match(/a/, "a").map(() => "a"),
+    );
+    const errors = parser.parser("").errors.map((error) => error.message);
+    assert.assertEquals(errors.length, 3);
+  });
 }
