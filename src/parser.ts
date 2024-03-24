@@ -560,13 +560,12 @@ function clause(): Parser<Clause> {
       subjects,
       predicates,
     } as Clause)),
-    sequence(
-      specificWord("o").with(multiplePredicates(["o", "anu"])),
-    ).map(([predicates]) => ({
-      type: "o clause",
-      subjects: null,
-      predicates,
-    } as Clause)),
+    specificWord("o").with(multiplePredicates(["o", "anu"]))
+      .map((predicates) => ({
+        type: "o clause",
+        subjects: null,
+        predicates,
+      } as Clause)),
     sequence(
       subjectPhrases(),
       optionalComma().with(specificWord("o")).with(
