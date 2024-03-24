@@ -50,7 +50,7 @@ export class Output<T> {
       if (mapper(value)) {
         return value;
       } else {
-        throw new OutputError("no error provided");
+        throw new Error("no error provided");
       }
     });
   }
