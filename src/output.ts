@@ -73,7 +73,7 @@ export class Output<T> {
         wholeOutput.push(mapper(value));
       } catch (error) {
         if (error instanceof OutputError) {
-          this.pushError(error);
+          wholeOutput.pushError(error);
         } else {
           throw error;
         }

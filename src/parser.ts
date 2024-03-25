@@ -91,13 +91,13 @@ function match(regex: RegExp, description: string): Parser<RegExpMatchArray> {
   const newRegex = new RegExp("^" + regex.source, regex.flags);
   return new Parser((src) => {
     const match = src.match(newRegex);
-    if (match) {
+    if (match !== null) {
       return new Output([{ value: match, rest: src.slice(match[0].length) }]);
     } else if (src === "") {
       return new Output(new UnexpectedError("end of sentence", description));
     } else {
       const token = src.match(/[^\s]*/)?.[0];
-      if (token) {
+      if (token !== undefined) {
         return new Output(new UnexpectedError(`"${token}"`, description));
       } else {
         throw new UnreachableError();
@@ -254,8 +254,11 @@ function properWords(): Parser<string> {
 /** Parses word only from `set`. */
 function wordFrom(set: Set<string>, description: string): Parser<string> {
   return word().filter((word) => {
-    if (set.has(word)) return true;
-    else throw new UnrecognizedError(`"${word}" as ${description}`);
+    if (set.has(word)) {
+      return true;
+    } else {
+      throw new UnrecognizedError(`"${word}" as ${description}`);
+    }
   });
 }
 /** Parses a specific word. */
@@ -679,8 +682,17 @@ if (typeof Deno !== "undefined") {
     );
     const errors = parser.parser("").errors.map((error) => error.message);
     assert.assertEquals(errors.length, 3);
-    assert.assertEquals(errors[0], new UnexpectedError("end of sentence", "a").message);
-    assert.assertEquals(errors[1], new UnexpectedError("end of sentence", "b").message);
-    assert.assertEquals(errors[2], new UnexpectedError("end of sentence", "c").message);
+    assert.assertEquals(
+      errors[0],
+      new UnexpectedError("end of sentence", "a").message,
+    );
+    assert.assertEquals(
+      errors[1],
+      new UnexpectedError("end of sentence", "b").message,
+    );
+    assert.assertEquals(
+      errors[2],
+      new UnexpectedError("end of sentence", "c").message,
+    );
   });
 }
