@@ -19,8 +19,12 @@ a:visited {
   resize: vertical;
   width: 100%;
 }
-#error, #error-list {
+#error,
+#error-list {
   color: #b60000;
+}
+summary {
+  cursor: pointer;
 }
 @media (min-width: 800px) {
   body {
@@ -38,10 +42,8 @@ a:visited {
   a:visited {
     color: #b47de7;
   }
-  #error, #error-list {
+  #error,
+  #error-list {
     color: #ff5e5e;
   }
-}
-summary {
-  cursor: pointer;
 }

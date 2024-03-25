@@ -18,6 +18,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const button = document.getElementById(
     "translate-button",
   ) as HTMLButtonElement;
+  const settingsButton = document.getElementById(
+    "settings-button",
+  ) as HTMLButtonElement;
+  const dialogBox = document.getElementById(
+    "dialog-box",
+  ) as HTMLDialogElement;
+  const confirmButton = document.getElementById(
+    "confirm-button",
+  ) as HTMLButtonElement;
   const version = document.getElementById("version") as HTMLAnchorElement;
   if (DEVELOPMENT) {
     version.innerText = `${VERSION} (On development)`;
@@ -27,6 +36,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     version.innerText = `${VERSION} - Released ${date}`;
   }
+  settingsButton.addEventListener("click", () => {
+    dialogBox.showModal();
+  });
+  confirmButton.addEventListener("click", () => {
+    dialogBox.close();
+  });
   const listener = () => {
     while (output.children.length > 0) {
       output.removeChild(output.children[0]);
