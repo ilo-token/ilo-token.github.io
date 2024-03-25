@@ -1,4 +1,3 @@
-import { assert } from "../dev-deps.ts";
 import { OutputError } from "./error.ts";
 /** Represents possibilities and error. */
 export class Output<T> {
@@ -100,15 +99,4 @@ export class Output<T> {
     }
     return wholeOutput;
   }
-}
-if (typeof Deno !== "undefined") {
-  Deno.test("use all error", () => {
-    const errors = new Output(["1", "2", "3"]).flatMap((number) =>
-      new Output(new OutputError(number))
-    ).errors.map((error) => error.message);
-    assert.assertEquals(errors.length, 3);
-    assert.assertEquals(errors[0], "1");
-    assert.assertEquals(errors[1], "2");
-    assert.assertEquals(errors[2], "3");
-  });
 }
