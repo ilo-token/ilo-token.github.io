@@ -81,6 +81,14 @@ class Parser<T> {
   skip<U>(parser: Parser<U>): Parser<T> {
     return sequence(this, parser).map(([output, _]) => output);
   }
+  /** Suppresses all error. */
+  silent(): Parser<T> {
+    return new Parser((src) => {
+      const output = this.parser(src);
+      output.errors.length = 0;
+      return output;
+    });
+  }
 }
 /**
  * Uses Regular Expression to create parser. The parser outputs
@@ -623,7 +631,7 @@ function sentence(): Parser<Sentence> {
     many(la().with(fullClause())),
     choice(
       eol().map(() => ""),
-      lookAhead(closeQuotationMark()).map(() => ""),
+      lookAhead(closeQuotationMark()).map(() => "").silent(),
       match(/([.,:;?!])\s*/, "punctuation").map(([_, punctuation]) =>
         punctuation
       ),
