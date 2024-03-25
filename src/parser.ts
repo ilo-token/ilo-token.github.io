@@ -83,11 +83,7 @@ class Parser<T> {
   }
   /** Suppresses all error. */
   silent(): Parser<T> {
-    return new Parser((src) => {
-      const output = this.parser(src);
-      output.errors.length = 0;
-      return output;
-    });
+    return new Parser((src) => new Output(this.parser(src).output));
   }
 }
 /**
