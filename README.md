@@ -26,6 +26,15 @@ deno task watch
 
 To stop this command, simply press Ctrl + C.
 
+## Running locally
+
+After building or watching, you can directly run `./index.html` using your favorite browser with some caveat however:
+
+- Settings won't be saved.
+- UCSUR characters will display as tofu.
+
+This could be mitigated by making use of local server but I didn't do that, there's little need for that.
+
 ## About the source codes
 
 ### Runtime agnostic
