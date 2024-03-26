@@ -142,7 +142,7 @@ function properWords(): Lexer<string> {
 }
 /** Parses a specific word. */
 function specificWord(thatWord: string): Lexer<string> {
-  return choiceOnlyOne(ucsurWord(), word()).filter((thisWord) => {
+  return word().filter((thisWord) => {
     if (thatWord === thisWord) return true;
     else throw new UnexpectedError(`"${thisWord}"`, `"${thatWord}"`);
   });
