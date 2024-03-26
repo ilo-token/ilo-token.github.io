@@ -17,7 +17,6 @@ import { TokenTree } from "./token-tree.ts";
 import { CoveredError } from "./error.ts";
 import { settings } from "./settings.ts";
 import {
-  COMBINING_CARTOUCHE_EXTENSION,
   END_OF_CARTOUCHE,
   START_OF_CARTOUCHE,
   UCSUR_TO_LATIN,
