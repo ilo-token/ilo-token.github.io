@@ -1,6 +1,11 @@
 export type TokenTree =
   | { type: "word"; word: string }
   | {
+    type: "combined words";
+    first: string;
+    second: string;
+  }
+  | {
     type: "long container";
     before: Array<TokenTree>;
     word: string;
