@@ -15,6 +15,7 @@ import {
 } from "./parser-lib.ts";
 import { TokenTree } from "./token-tree.ts";
 import { CoveredError } from "./error.ts";
+import { settings } from "./settings.ts";
 
 export type Lexer<T> = Parser<string, T>;
 
@@ -161,7 +162,13 @@ function tokenTree(includeQuotation: boolean): Lexer<TokenTree> {
     }),
     properWords().map((words) => ({ type: "proper word", words }) as TokenTree),
     multipleA().map((count) => ({ type: "multiple a", count }) as TokenTree),
-    xAlaX().map((word) => ({ type: "x ala x", word }) as TokenTree),
+    lazy(() => {
+      if (settings) {
+        return xAlaX().map((word) => ({ type: "x ala x", word }) as TokenTree);
+      } else {
+        return error(new CoveredError());
+      }
+    }),
     word().map((word) => ({ type: "word", word })),
   );
 }
