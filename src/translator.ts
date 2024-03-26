@@ -72,8 +72,10 @@ function wordUnitAs(
     return definition(kind, word.word).map((noun) =>
       new Array(word.count).fill(noun).join(" ")
     );
+  } else if (word.type === "x ala x") {
+    return new Output(new TodoError("translation for X ala X"));
   } else {
-    return new Output(new CoveredError());
+    throw new UnreachableError();
   }
 }
 function modifierAs(
