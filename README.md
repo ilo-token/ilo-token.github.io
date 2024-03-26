@@ -28,4 +28,10 @@ To stop this command, simply press Ctrl + C.
 
 ## About the source codes
 
+### Runtime agnostic
+
 With exception to `./src/main.ts`, every source codes in `./src/` are runtime agnostic. Meaning it can be run on Deno as well. This makes it convenient to directly test codes by using `deno run` or `deno test`.
+
+### UCSUR included
+
+Some parts of the code make use of sitelen pona UCSUR characters. To display properly, install an UCSUR font and change the font settings on your editor. [UCSUR Installation guides](https://github.com/neroist/sitelen-pona-ucsur-guide/).
