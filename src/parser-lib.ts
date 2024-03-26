@@ -110,6 +110,9 @@ export function choiceOnlyOne<T, U>(
 export function optional<T, U>(parser: Parser<T, U>): Parser<T, null | U> {
   return choice(parser, nothing());
 }
+export function optionalAll<T, U>(parser: Parser<T, U>): Parser<T, null | U> {
+  return choiceOnlyOne(parser, nothing());
+}
 /** Takes all parsers and applies them one after another. */
 // Typescript really struggles with inferring types when using this function
 export function sequence<T, U extends Array<unknown>>(
