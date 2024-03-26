@@ -196,7 +196,7 @@ function cartoucheElement(): Lexer<string> {
   return choiceOnlyOne(
     ucsurWord().skip(
       choiceOnlyOne(
-        match(/(：)\s*/, "full width colon").map(([_, dot]) => dot),
+        match(/(\uff1a)\s*/, "full width colon").map(([_, dot]) => dot),
         specificUcsurCharacter("󱦝", true, "colon"),
       ),
     ),
