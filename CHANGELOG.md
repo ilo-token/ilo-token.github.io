@@ -6,7 +6,7 @@ You may need to force restart the page in order to use the latest version: shift
 
 - Add icons.
 - All possible errors will now be listed.
-- Implement settings dialog, although it's still not functional.
+- Implement settings dialog.
 
 Inside update (intended for developers):
 
