@@ -10,6 +10,7 @@ import {
   choiceOnlyOne,
   error,
   lazy,
+  optionalAll,
   Parser,
   sequence as rawSequence,
 } from "./parser-lib.ts";
@@ -99,7 +100,8 @@ function variationSelector(): Lexer<string> {
   );
 }
 function ucsur(): Lexer<string> {
-  return slice(2, "UCSUR character").skip(variationSelector()).skip(spaces());
+  return slice(2, "UCSUR character").skip(optionalAll(variationSelector()))
+    .skip(spaces());
 }
 function specificUcsurCharacter(
   character: string,
