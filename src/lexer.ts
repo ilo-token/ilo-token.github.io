@@ -19,10 +19,13 @@ import { CoveredError } from "./error.ts";
 import { settings } from "./settings.ts";
 import {
   END_OF_CARTOUCHE,
+  SCALING_JOINER,
+  STACKING_JOINER,
   START_OF_CARTOUCHE,
   UCSUR_TO_LATIN,
 } from "./ucsur.ts";
 import { nothing } from "./parser-lib.ts";
+import { CHAR_UPPERCASE_Z } from "https://deno.land/std@0.186.0/path/_constants.ts";
 
 export type Lexer<T> = Parser<string, T>;
 
@@ -143,6 +146,37 @@ function ucsurWord(): Lexer<string> {
       return latin;
     }
   });
+}
+function joiner(): Lexer<string> {
+  return choiceOnlyOne(
+    match(/\u200D/, "zero width joiner").map(([_, joiner]) => joiner),
+    specificUcsurCharacter(STACKING_JOINER, "stacking joiner", {
+      allowVariation: false,
+      allowSpace: false,
+    }),
+    specificUcsurCharacter(SCALING_JOINER, "scaling joiner", {
+      allowVariation: false,
+      allowSpace: false,
+    }),
+  );
+}
+function combinedWords(): Lexer<TokenTree & { type: "combined words" }> {
+  return sequence(
+    ucsur({ allowVariation: false, allowSpace: false }).map((word) => {
+      const latin = UCSUR_TO_LATIN[word];
+      if (latin == null) {
+        throw new CoveredError();
+      } else {
+        return latin;
+      }
+    }),
+    joiner(),
+    ucsurWord(),
+  ).map(([first, _, second]) => ({
+    type: "combined words",
+    first,
+    second,
+  }));
 }
 /** Parses a word. */
 function word(): Lexer<string> {
@@ -313,6 +347,7 @@ function tokenTree(includeQuotation: boolean): Lexer<TokenTree> {
     choiceOnlyOne(cartouches(), properWords()).map((words) =>
       ({ type: "proper word", words }) as TokenTree
     ),
+    combinedWords(),
     multipleA().map((count) => ({ type: "multiple a", count }) as TokenTree),
     lazy(() => {
       if (!settings.xAlaXPartialParsing) {
