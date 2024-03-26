@@ -162,6 +162,23 @@ function openQuotationMark(): Lexer<string> {
 function closeQuotationMark(): Lexer<string> {
   return match(/(["”»」])\s*/, "close quotation mark").map(([_, mark]) => mark);
 }
+/** Parses a comma. */
+function comma(): Lexer<string> {
+  return match(/,\s*/, "comma").map(() => ",");
+}
+/** Parses a punctuation. */
+function punctuation(): Lexer<string> {
+  // UCSUR characters are two characters wide
+  return match(/([.,:;?!]|󱦜|󱦝)\s*/, "punctuation").map(([_, punctuation]) => {
+    if (punctuation === "󱦜") {
+      return ".";
+    } else if (punctuation === "󱦝") {
+      return ":";
+    } else {
+      return punctuation;
+    }
+  });
+}
 function cartoucheSpace(): Lexer<null> {
   return all(choiceOnlyOne(
     match(/\s+/, "space").map(() => null),
@@ -242,17 +259,6 @@ function quotation(): Lexer<TokenTree & { type: "quotation" }> {
       rightMark,
     };
   });
-}
-/** Parses a comma. */
-function comma(): Lexer<string> {
-  return match(/,\s*/, "comma").map(() => ",");
-}
-/** Parses a punctuation. */
-function punctuation(): Lexer<string> {
-  // UCSUR characters are two characters wide
-  return match(/([.,:;?!]|󱦜|󱦝)\s*/, "punctuation").map(([_, punctuation]) =>
-    punctuation
-  );
 }
 /** Parses a token tree. */
 function tokenTree(includeQuotation: boolean): Lexer<TokenTree> {
