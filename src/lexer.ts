@@ -116,7 +116,7 @@ function ucsurWord(): Lexer<string> {
     if (latin == null) {
       throw new CoveredError();
     } else {
-      return word;
+      return latin;
     }
   });
 }
