@@ -184,24 +184,15 @@ function punctuation(): Lexer<string> {
     }
   });
 }
-function cartoucheSpace(): Lexer<null> {
-  return all(choiceOnlyOne(
-    match(/\s+/, "space").map(() => null),
-    specificUcsurCharacter(
-      COMBINING_CARTOUCHE_EXTENSION,
-      "combining cartouche extension",
-    ).map(() => null),
-  )).map(() => null);
-}
 function cartoucheElement(): Lexer<string> {
   return choiceOnlyOne(
-    ucsurWord().skip(cartoucheSpace()).skip(
+    ucsurWord().skip(
       specificUcsurCharacter("󱦝", "colon"),
-    ).skip(cartoucheSpace()),
+    ),
     sequence(
-      ucsurWord().skip(cartoucheSpace()),
+      ucsurWord(),
       allAtLeastOnce(
-        specificUcsurCharacter("󱦜", "colon").skip(cartoucheSpace()),
+        specificUcsurCharacter("󱦜", "colon"),
       ).map(
         (dots) => dots.length,
       ),
@@ -216,8 +207,8 @@ function cartoucheElement(): Lexer<string> {
       }
       return morae.slice(0, count).join("");
     }),
-    ucsurWord().skip(cartoucheSpace()).map((word) => word[0]),
-    match(/([a-zA-Z])\s*/, "Latin letter").skip(cartoucheSpace()).map((
+    ucsurWord().map((word) => word[0]),
+    match(/([a-zA-Z])\s*/, "Latin letter").map((
       [_, letter],
     ) => letter),
   );
@@ -225,7 +216,7 @@ function cartoucheElement(): Lexer<string> {
 function cartouche(): Lexer<string> {
   return sequence(
     specificUcsurCharacter(START_OF_CARTOUCHE, "start of cartouche"),
-    cartoucheSpace().with(allAtLeastOnce(cartoucheElement())),
+    allAtLeastOnce(cartoucheElement()),
     specificUcsurCharacter(END_OF_CARTOUCHE, "end of cartouche"),
   ).map(
     ([_, words, _1]) => {
