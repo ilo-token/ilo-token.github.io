@@ -94,8 +94,13 @@ function latinWord(): Lexer<string> {
     }
   });
 }
+function variationSelector(): Lexer<string> {
+  return match(/[\uFE00-\uFE0F]/, "variation selector").map(([character]) =>
+    character
+  );
+}
 function ucsur(): Lexer<string> {
-  return slice(2, "UCSUR character").skip(spaces());
+  return slice(2, "UCSUR character").skip(variationSelector()).skip(spaces());
 }
 function specificUcsurCharacter(
   character: string,
