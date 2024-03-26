@@ -195,12 +195,18 @@ function punctuation(): Lexer<string> {
 function cartoucheElement(): Lexer<string> {
   return choiceOnlyOne(
     ucsurWord().skip(
-      specificUcsurCharacter("󱦝", true, "colon"),
+      choiceOnlyOne(
+        match(/(：)\s*/, "full width colon").map(([_, dot]) => dot),
+        specificUcsurCharacter("󱦝", true, "colon"),
+      ),
     ),
     sequence(
       ucsurWord(),
       allAtLeastOnce(
-        specificUcsurCharacter("󱦜", true, "colon"),
+        choiceOnlyOne(
+          match(/([・。／])\s*/, "full width dot").map(([_, dot]) => dot),
+          specificUcsurCharacter("󱦜", true, "colon"),
+        ),
       ).map(
         (dots) => dots.length,
       ),
