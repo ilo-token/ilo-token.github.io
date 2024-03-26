@@ -8,6 +8,10 @@ You may need to force restart the page in order to use the latest version: shift
 - All possible errors will now be listed.
 - Implement settings dialog, although it's still not functional.
 
+Inside update (intended for developers):
+
+- Implement lexer.
+
 ## 0.2.2
 
 Update missed links.
