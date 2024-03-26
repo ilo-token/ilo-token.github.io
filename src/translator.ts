@@ -8,7 +8,7 @@ import {
   WordUnit,
 } from "./ast.ts";
 import { Output } from "./output.ts";
-import { parser } from "./parser.ts";
+import { parser } from "./ast-parser.ts";
 import {
   CoveredError,
   OutputError,
