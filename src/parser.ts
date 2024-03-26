@@ -34,63 +34,37 @@ import {
   WORD_UNIT_RULES,
 } from "./filter.ts";
 import { CoveredError } from "./error.ts";
+import {
+  allAtLeastOnce,
+  choice,
+  lazy,
+  lookAhead,
+  many,
+  manyAtLeastOnce,
+  optional,
+  Parser,
+  sequence as rawSequence,
+} from "./parser-lib.ts";
 
-/** A single parsing result. */
-type ValueRest<T> = { value: T; rest: string };
-/** A special kind of Output that parsers returns. */
-type ParserOutput<T> = Output<ValueRest<T>>;
+export type AstParser<T> = Parser<string, T>;
 
-/** Wrapper of parser function with added methods for convenience. */
-class Parser<T> {
-  constructor(public readonly parser: (src: string) => ParserOutput<T>) {}
-  /**
-   * Maps the parsing result. For convenience, the mapper function can throw
-   * an OutputError; Other kinds of error are ignored.
-   */
-  map<U>(mapper: (value: T) => U): Parser<U> {
-    return new Parser((src) =>
-      this.parser(src).map(({ value, rest }) => ({
-        value: mapper(value),
-        rest,
-      }))
-    );
-  }
-  /**
-   * Filters outputs. Instead of returning false, OutputError must be thrown
-   * instead.
-   */
-  filter(mapper: (value: T) => boolean): Parser<T> {
-    return new Parser((src) =>
-      this.parser(src).filter(({ value }) => mapper(value))
-    );
-  }
-  /**
-   * Parses `this` then passes the parsing result in the mapper. The resulting
-   * parser is then also parsed.
-   */
-  then<U>(mapper: (value: T) => Parser<U>): Parser<U> {
-    return new Parser((src) =>
-      this.parser(src).flatMap(({ value, rest }) => mapper(value).parser(rest))
-    );
-  }
-  /** Takes another parser and discards the parsing result of `this`. */
-  with<U>(parser: Parser<U>): Parser<U> {
-    return sequence(this, parser).map(([_, output]) => output);
-  }
-  /** Takes another parser and discards its parsing result. */
-  skip<U>(parser: Parser<U>): Parser<T> {
-    return sequence(this, parser).map(([output, _]) => output);
-  }
-  /** Suppresses all error. */
-  silent(): Parser<T> {
-    return new Parser((src) => new Output(this.parser(src).output));
-  }
+/** Takes all parsers and applies them one after another. */
+// Had to redeclare this function, Typescript really struggles with inferring
+// types when using `sequence`.
+function sequence<T extends Array<unknown>>(
+  ...sequence: { [I in keyof T]: AstParser<T[I]> } & { length: T["length"] }
+): AstParser<T> {
+  // deno-lint-ignore no-explicit-any
+  return rawSequence<string, T>(...sequence as any);
 }
 /**
  * Uses Regular Expression to create parser. The parser outputs
  * RegExpMatchArray, which is what `string.match( ... )` returns.
  */
-function match(regex: RegExp, description: string): Parser<RegExpMatchArray> {
+function match(
+  regex: RegExp,
+  description: string,
+): AstParser<RegExpMatchArray> {
   const newRegex = new RegExp("^" + regex.source, regex.flags);
   return new Parser((src) => {
     const match = src.match(newRegex);
@@ -108,146 +82,30 @@ function match(regex: RegExp, description: string): Parser<RegExpMatchArray> {
     }
   });
 }
-/** Parses nothing and leaves the source string intact. */
-function nothing(): Parser<null> {
-  return new Parser((src) => new Output([{ value: null, rest: src }]));
-}
 /** Parses the end of line (or the end of sentence in context of Toki Pona) */
-function eol(): Parser<null> {
+function eol(): AstParser<null> {
   return new Parser((src) => {
     if (src === "") return new Output([{ value: null, rest: "" }]);
     else return new Output(new UnexpectedError(`"${src}"`, "end of sentence"));
   });
 }
-/** Parses without consuming the source string */
-function lookAhead<T>(parser: Parser<T>): Parser<T> {
-  return new Parser((src) =>
-    parser.parser(src).map(({ value }) => ({ value, rest: src }))
-  );
-}
-/**
- * Lazily evaluates the parser function only when needed. Useful for recursive
- * parsers.
- */
-function lazy<T>(parser: () => Parser<T>): Parser<T> {
-  return new Parser((src) => parser().parser(src));
-}
-/**
- * Evaluates all parsers on the same source string and sums it all on a single
- * Output.
- */
-function choice<T>(...choices: Array<Parser<T>>): Parser<T> {
-  return new Parser((src) =>
-    new Output(choices).flatMap((parser) => parser.parser(src))
-  );
-}
-/**
- * Tries to evaluate each parsers one at a time and only returns the first
- * Output without error.
- */
-function choiceOnlyOne<T>(...choices: Array<Parser<T>>): Parser<T> {
-  return new Parser((src) =>
-    choices.reduce((output, parser) => {
-      if (output.isError()) return parser.parser(src);
-      else return output;
-    }, new Output<ValueRest<T>>())
-  );
-}
-/** Combines `parser` and the `nothing` parser, and output `null | T`. */
-function optional<T>(parser: Parser<T>): Parser<null | T> {
-  return choice(parser, nothing());
-}
-/** Takes all parsers and applies them one after another. */
-function sequence<T extends Array<unknown>>(
-  ...sequence: { [I in keyof T]: Parser<T[I]> } & { length: T["length"] }
-): Parser<T> {
-  // We resorted to using `any` types here, make sure it works properly
-  return new Parser((src) =>
-    sequence.reduce(
-      (output, parser) =>
-        output.flatMap(({ value, rest }) =>
-          parser.parser(rest).map(({ value: newValue, rest }) => ({
-            value: [...value, newValue],
-            rest,
-          }))
-        ),
-      // deno-lint-ignore no-explicit-any
-      new Output<ValueRest<any>>([{ value: [], rest: src }]),
-    )
-  );
-}
-/**
- * Parses `parser` multiple times and returns an `Array<T>`. The resulting
- * output includes all outputs from parsing nothing to parsing as many as
- * possible.
- *
- * ## ⚠️ Warning
- *
- * Will cause infinite recursion if the parser can parse nothing.
- */
-function many<T>(parser: Parser<T>): Parser<Array<T>> {
-  return choice(
-    sequence(parser, lazy(() => many(parser))).map((
-      [first, rest],
-    ) => [first, ...rest]),
-    nothing().map(() => []),
-  );
-}
-/**
- * Like `many` but parses at least once.
- *
- * ## ⚠️ Warning
- *
- * Will cause infinite recursion if the parser can parse nothing.
- */
-function manyAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
-  return sequence(parser, many(parser)).map((
-    [first, rest],
-  ) => [first, ...rest]);
-}
-/**
- * Parses `parser` multiple times and returns an `Array<T>`. This function is
- * exhaustive unlike `many`.
- *
- * ## ⚠️ Warning
- *
- * Will cause infinite recursion if the parser can parse nothing.
- */
-function all<T>(parser: Parser<T>): Parser<Array<T>> {
-  return choiceOnlyOne(
-    sequence(parser, lazy(() => all(parser))).map((
-      [first, rest],
-    ) => [first, ...rest]),
-    nothing().map(() => []),
-  );
-}
-/**
- * Like `all` but parses at least once.
- *
- * ## ⚠️ Warning
- *
- * Will cause infinite recursion if the parser can parse nothing.
- */
-function allAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
-  return sequence(parser, all(parser)).map(([first, rest]) => [first, ...rest]);
-}
 /** Parses comma. */
-function comma(): Parser<string> {
+function comma(): AstParser<string> {
   return match(/,\s*/, "comma").map(() => ",");
 }
 /** Parses an optional comma. */
-function optionalComma(): Parser<null | string> {
+function optionalComma(): AstParser<null | string> {
   return optional(comma());
 }
 /** Parses lowercase word. */
-function word(): Parser<string> {
+function word(): AstParser<string> {
   return match(/([a-z]+)\s*/, "word").map(([_, word]) => word);
 }
 /**
  * Parses all at least one uppercase words and combines them all into single
  * string. This function is exhaustive like `all`.
  */
-function properWords(): Parser<string> {
+function properWords(): AstParser<string> {
   return allAtLeastOnce(
     match(/([A-Z][a-z]*)\s*/, "proper word").map(([_, word]) => word),
   ).map(
@@ -255,7 +113,7 @@ function properWords(): Parser<string> {
   );
 }
 /** Parses word only from `set`. */
-function wordFrom(set: Set<string>, description: string): Parser<string> {
+function wordFrom(set: Set<string>, description: string): AstParser<string> {
   return word().filter((word) => {
     if (set.has(word)) {
       return true;
@@ -265,14 +123,14 @@ function wordFrom(set: Set<string>, description: string): Parser<string> {
   });
 }
 /** Parses a specific word. */
-function specificWord(thatWord: string): Parser<string> {
+function specificWord(thatWord: string): AstParser<string> {
   return word().filter((thisWord) => {
     if (thatWord === thisWord) return true;
     else throw new UnexpectedError(`"${thisWord}"`, `"${thatWord}"`);
   });
 }
 /** Parses word unit without numbers. */
-function wordUnit(word: Parser<string>): Parser<WordUnit> {
+function wordUnit(word: AstParser<string>): AstParser<WordUnit> {
   return choice(
     word.then((word) =>
       manyAtLeastOnce(specificWord(word)).map((words) => ({
@@ -288,7 +146,7 @@ function wordUnit(word: Parser<string>): Parser<WordUnit> {
   ).filter(filter(WORD_UNIT_RULES));
 }
 /** Parses number words in order. */
-function number(): Parser<Array<string>> {
+function number(): AstParser<Array<string>> {
   return sequence(
     many(choice(specificWord("ale"), specificWord("ali"))),
     many(specificWord("mute")),
@@ -305,7 +163,7 @@ function number(): Parser<Array<string>> {
   });
 }
 /** Parses multiple modifiers */
-function modifiers(): Parser<Array<Modifier>> {
+function modifiers(): AstParser<Array<Modifier>> {
   return sequence(
     many(
       choice(
@@ -353,7 +211,7 @@ function modifiers(): Parser<Array<Modifier>> {
   );
 }
 /** Parses phrases including preverbial phrases. */
-function phrase(): Parser<Phrase> {
+function phrase(): AstParser<Phrase> {
   return choice(
     sequence(number(), lazy(modifiers)).map((
       [numbers, modifiers],
@@ -397,7 +255,7 @@ function phrase(): Parser<Phrase> {
  */
 function nestedPhrasesOnly(
   nestingRule: Array<"en" | "li" | "o" | "e" | "anu">,
-): Parser<MultiplePhrases> {
+): AstParser<MultiplePhrases> {
   if (nestingRule.length === 0) {
     return phrase().map(
       (phrase) => ({ type: "single", phrase } as MultiplePhrases),
@@ -426,7 +284,7 @@ function nestedPhrasesOnly(
 /** Parses nested phrases with given nesting rule. */
 function nestedPhrases(
   nestingRule: Array<"en" | "li" | "o" | "e" | "anu">,
-): Parser<MultiplePhrases> {
+): AstParser<MultiplePhrases> {
   if (nestingRule.length === 0) {
     return phrase().map(
       (phrase) => ({ type: "single", phrase } as MultiplePhrases),
@@ -439,7 +297,7 @@ function nestedPhrases(
   }
 }
 /** Parses phrases separated by _en_ or _anu_. */
-function subjectPhrases(): Parser<MultiplePhrases> {
+function subjectPhrases(): AstParser<MultiplePhrases> {
   return choice(
     nestedPhrasesOnly(["en", "anu"]),
     nestedPhrasesOnly(["anu", "en"]),
@@ -447,7 +305,7 @@ function subjectPhrases(): Parser<MultiplePhrases> {
   );
 }
 /** Parses prepositional phrase. */
-function preposition(): Parser<Preposition> {
+function preposition(): AstParser<Preposition> {
   return sequence(
     wordUnit(wordFrom(PREPOSITION, "preposition")),
     modifiers(),
@@ -463,7 +321,7 @@ function preposition(): Parser<Preposition> {
  */
 function associatedPredicates(
   nestingRule: Array<"li" | "o" | "anu">,
-): Parser<MultiplePredicates> {
+): AstParser<MultiplePredicates> {
   return sequence(
     nestedPhrasesOnly(nestingRule),
     optional(
@@ -488,7 +346,7 @@ function associatedPredicates(
 /** Parses multiple predicates without _li_ nor _o_ at the beginning. */
 function multiplePredicates(
   nestingRule: Array<"li" | "o" | "anu">,
-): Parser<MultiplePredicates> {
+): AstParser<MultiplePredicates> {
   if (nestingRule.length === 0) {
     return choice(
       associatedPredicates([]),
@@ -528,7 +386,7 @@ function multiplePredicates(
   }
 }
 /** Parses a single clause. */
-function clause(): Parser<Clause> {
+function clause(): AstParser<Clause> {
   return choice(
     sequence(
       wordFrom(SPECIAL_SUBJECT, "mi/sina subject"),
@@ -597,7 +455,7 @@ function clause(): Parser<Clause> {
   ).filter(filter(CLAUSE_RULE));
 }
 /** Parses a single clause including precaluse and postclause. */
-function fullClause(): Parser<FullClause> {
+function fullClause(): AstParser<FullClause> {
   return sequence(
     optional(wordUnit(specificWord("taso")).skip(optionalComma())),
     clause(),
@@ -613,7 +471,7 @@ function fullClause(): Parser<FullClause> {
   })).filter(filter(FULL_CLAUSE_RULE));
 }
 /** parses _la_ with optional comma around. */
-function la(): Parser<string> {
+function la(): AstParser<string> {
   return choice(
     comma().with(specificWord("la")),
     specificWord("la").skip(comma()),
@@ -621,7 +479,7 @@ function la(): Parser<string> {
   );
 }
 /** Parses a single full sentence with optional punctuations. */
-function sentence(): Parser<Sentence> {
+function sentence(): AstParser<Sentence> {
   return sequence(
     fullClause(),
     many(la().with(fullClause())),
@@ -638,15 +496,15 @@ function sentence(): Parser<Sentence> {
   }));
 }
 /** Parses opening quotation mark */
-function openQuotationMark(): Parser<string> {
+function openQuotationMark(): AstParser<string> {
   return match(/(["“«「])\s*/, "open quotation mark").map(([_, mark]) => mark);
 }
 /** Parses closing quotation mark */
-function closeQuotationMark(): Parser<string> {
+function closeQuotationMark(): AstParser<string> {
   return match(/(["”»」])\s*/, "close quotation mark").map(([_, mark]) => mark);
 }
 /** Parses multiple sentences inside quotation mark */
-function quotation(): Parser<Quotation> {
+function quotation(): AstParser<Quotation> {
   return sequence(
     openQuotationMark(),
     many(lazy(sentence)).filter(filter(SENTENCES_RULE)),
