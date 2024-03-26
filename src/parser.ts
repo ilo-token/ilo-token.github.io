@@ -11,6 +11,7 @@ import {
   WordUnit,
 } from "./ast.ts";
 import {
+  CoveredError,
   UnexpectedError,
   UnreachableError,
   UnrecognizedError,
@@ -33,7 +34,6 @@ import {
   SENTENCES_RULE,
   WORD_UNIT_RULES,
 } from "./filter.ts";
-import { CoveredError } from "./error.ts";
 import {
   allAtLeastOnce,
   choice,

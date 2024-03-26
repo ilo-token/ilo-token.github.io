@@ -1,14 +1,14 @@
-import { somePhraseInMultiplePhrases } from "./ast.ts";
-import { MultiplePhrases } from "./ast.ts";
 import {
   Clause,
   FullClause,
   Modifier,
+  MultiplePhrases,
   Phrase,
   Preposition,
   Sentence,
   someModifierInPhrase,
   someObjectInMultiplePredicate,
+  somePhraseInMultiplePhrases,
   WordUnit,
 } from "./ast.ts";
 import { UnreachableError, UnrecognizedError } from "./error.ts";

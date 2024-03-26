@@ -9,9 +9,13 @@ import {
 } from "./ast.ts";
 import { Output } from "./output.ts";
 import { parser } from "./parser.ts";
-import { TodoError } from "./error.ts";
+import {
+  CoveredError,
+  OutputError,
+  TodoError,
+  UnreachableError,
+} from "./error.ts";
 import { DEFINITION } from "./definition.ts";
-import { CoveredError, OutputError, UnreachableError } from "./error.ts";
 
 /** A special kind of Output that translators returns. */
 export type TranslationOutput = Output<string>;
