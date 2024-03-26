@@ -9,7 +9,7 @@ You may need to force restart the page in order to use the latest version: shift
 - Implement settings dialog ([More info](https://github.com/neverRare/ilo-token/wiki/Settings-Help)).
 - Implement UCSUR support! It supports:
   - Cartouche with nasin sitelen kalama
-  - (Deprecated characters and combiners are not supported )
+  - (Deprecated characters and combiners are not supported)
 
 Inside update (intended for developers):
 
