@@ -205,7 +205,7 @@ function cartoucheElement(): Lexer<string> {
       allAtLeastOnce(
         choiceOnlyOne(
           match(/([・。／])\s*/, "full width dot").map(([_, dot]) => dot),
-          specificUcsurCharacter("󱦜", true, "colon"),
+          specificUcsurCharacter("󱦜", true, "middle dot"),
         ),
       ).map(
         (dots) => dots.length,
