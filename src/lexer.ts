@@ -22,6 +22,7 @@ import {
   START_OF_CARTOUCHE,
   UCSUR_TO_LATIN,
 } from "./ucsur.ts";
+import { nothing } from "./parser-lib.ts";
 
 export type Lexer<T> = Parser<string, T>;
 
@@ -99,15 +100,24 @@ function variationSelector(): Lexer<string> {
     character
   );
 }
-function ucsur(): Lexer<string> {
-  return slice(2, "UCSUR character").skip(optionalAll(variationSelector()))
+function ucsur(allowVariation: boolean): Lexer<string> {
+  return slice(2, "UCSUR character").skip(
+    lazy(() => {
+      if (allowVariation) {
+        return optionalAll(variationSelector()).map(() => null);
+      } else {
+        return nothing();
+      }
+    }),
+  )
     .skip(spaces());
 }
 function specificUcsurCharacter(
   character: string,
+  allowVariation: boolean,
   description: string,
 ): Lexer<string> {
-  return ucsur().filter((word) => {
+  return ucsur(allowVariation).filter((word) => {
     if (word === character) {
       return true;
     } else {
@@ -117,7 +127,7 @@ function specificUcsurCharacter(
 }
 /** Parses UCSUR word. */
 function ucsurWord(): Lexer<string> {
-  return ucsur().map((word) => {
+  return ucsur(true).map((word) => {
     const latin = UCSUR_TO_LATIN[word];
     if (latin == null) {
       throw new CoveredError();
@@ -174,26 +184,23 @@ function comma(): Lexer<string> {
 }
 /** Parses a punctuation. */
 function punctuation(): Lexer<string> {
-  // UCSUR characters are two characters wide
-  return match(/([.,:;?!]|󱦜|󱦝)\s*/, "punctuation").map(([_, punctuation]) => {
-    if (punctuation === "󱦜") {
-      return ".";
-    } else if (punctuation === "󱦝") {
-      return ":";
-    } else {
-      return punctuation;
-    }
-  });
+  return choiceOnlyOne(
+    match(/([.,:;?!])\s*/, "punctuation").map(([_, punctuation]) =>
+      punctuation
+    ),
+    specificUcsurCharacter("󱦜", true, "middle dot").map(() => "."),
+    specificUcsurCharacter("󱦝", true, "middle dot").map(() => ":"),
+  );
 }
 function cartoucheElement(): Lexer<string> {
   return choiceOnlyOne(
     ucsurWord().skip(
-      specificUcsurCharacter("󱦝", "colon"),
+      specificUcsurCharacter("󱦝", true, "colon"),
     ),
     sequence(
       ucsurWord(),
       allAtLeastOnce(
-        specificUcsurCharacter("󱦜", "colon"),
+        specificUcsurCharacter("󱦜", true, "colon"),
       ).map(
         (dots) => dots.length,
       ),
@@ -216,9 +223,9 @@ function cartoucheElement(): Lexer<string> {
 }
 function cartouche(): Lexer<string> {
   return sequence(
-    specificUcsurCharacter(START_OF_CARTOUCHE, "start of cartouche"),
+    specificUcsurCharacter(START_OF_CARTOUCHE, false, "start of cartouche"),
     allAtLeastOnce(cartoucheElement()),
-    specificUcsurCharacter(END_OF_CARTOUCHE, "end of cartouche"),
+    specificUcsurCharacter(END_OF_CARTOUCHE, false, "end of cartouche"),
   ).map(
     ([_, words, _1]) => {
       const word = words.join("");
