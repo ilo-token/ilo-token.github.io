@@ -8,7 +8,7 @@ export type TokenTree =
   }
   | { type: "multiple a"; count: number }
   | { type: "x ala x"; word: string }
-  | { type: "proper word"; word: string }
+  | { type: "proper word"; words: string }
   | {
     type: "quotation";
     tokenTree: Array<TokenTree>;

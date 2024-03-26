@@ -1,3 +1,4 @@
+import { OutputError } from "./error.ts";
 import { Output } from "./output.ts";
 
 /** A single parsing result. */
@@ -50,6 +51,10 @@ export class Parser<T, U> {
   silent(): Parser<T, U> {
     return new Parser((src) => new Output(this.parser(src).output));
   }
+}
+/** Parser that always outputs an error. */
+export function error<T>(error: OutputError): Parser<T, never> {
+  return new Parser(() => new Output(error));
 }
 /** Parses nothing and leaves the source string intact. */
 export function nothing<T>(): Parser<T, null> {
