@@ -98,8 +98,11 @@ export function choiceOnlyOne<T, U>(
 ): Parser<T, U> {
   return new Parser((src) =>
     choices.reduce((output, parser) => {
-      if (output.isError()) return parser.parser(src);
-      else return output;
+      if (output.isError()) {
+        return Output.concat(output, parser.parser(src));
+      } else {
+        return output;
+      }
     }, new Output<ValueRest<T, U>>())
   );
 }
