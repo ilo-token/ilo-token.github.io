@@ -100,24 +100,32 @@ function variationSelector(): Lexer<string> {
     character
   );
 }
-function ucsur(allowVariation: boolean): Lexer<string> {
+function ucsur(
+  settings: { allowVariation: boolean; allowSpace: boolean },
+): Lexer<string> {
   return slice(2, "UCSUR character").skip(
     lazy(() => {
-      if (allowVariation) {
+      if (settings.allowVariation) {
         return optionalAll(variationSelector()).map(() => null);
       } else {
         return nothing();
       }
     }),
   )
-    .skip(spaces());
+    .skip(lazy(() => {
+      if (settings.allowSpace) {
+        return spaces().map(() => null);
+      } else {
+        return nothing();
+      }
+    }));
 }
 function specificUcsurCharacter(
   character: string,
-  allowVariation: boolean,
   description: string,
+  settings: { allowVariation: boolean; allowSpace: boolean },
 ): Lexer<string> {
-  return ucsur(allowVariation).filter((word) => {
+  return ucsur(settings).filter((word) => {
     if (word === character) {
       return true;
     } else {
@@ -127,7 +135,7 @@ function specificUcsurCharacter(
 }
 /** Parses UCSUR word. */
 function ucsurWord(): Lexer<string> {
-  return ucsur(true).map((word) => {
+  return ucsur({ allowVariation: true, allowSpace: true }).map((word) => {
     const latin = UCSUR_TO_LATIN[word];
     if (latin == null) {
       throw new CoveredError();
@@ -188,8 +196,14 @@ function punctuation(): Lexer<string> {
     match(/([.,:;?!])\s*/, "punctuation").map(([_, punctuation]) =>
       punctuation
     ),
-    specificUcsurCharacter("󱦜", true, "middle dot").map(() => "."),
-    specificUcsurCharacter("󱦝", true, "middle dot").map(() => ":"),
+    specificUcsurCharacter("󱦜", "middle dot", {
+      allowVariation: true,
+      allowSpace: true,
+    }).map(() => "."),
+    specificUcsurCharacter("󱦝", "middle dot", {
+      allowVariation: true,
+      allowSpace: true,
+    }).map(() => ":"),
   );
 }
 function cartoucheElement(): Lexer<string> {
@@ -197,7 +211,10 @@ function cartoucheElement(): Lexer<string> {
     ucsurWord().skip(
       choiceOnlyOne(
         match(/(\uff1a)\s*/, "full width colon").map(([_, dot]) => dot),
-        specificUcsurCharacter("󱦝", true, "colon"),
+        specificUcsurCharacter("󱦝", "colon", {
+          allowVariation: true,
+          allowSpace: true,
+        }),
       ),
     ),
     sequence(
@@ -205,7 +222,10 @@ function cartoucheElement(): Lexer<string> {
       allAtLeastOnce(
         choiceOnlyOne(
           match(/([・。／])\s*/, "full width dot").map(([_, dot]) => dot),
-          specificUcsurCharacter("󱦜", true, "middle dot"),
+          specificUcsurCharacter("󱦜", "middle dot", {
+            allowVariation: true,
+            allowSpace: true,
+          }),
         ),
       ).map(
         (dots) => dots.length,
@@ -229,9 +249,15 @@ function cartoucheElement(): Lexer<string> {
 }
 function cartouche(): Lexer<string> {
   return sequence(
-    specificUcsurCharacter(START_OF_CARTOUCHE, false, "start of cartouche"),
+    specificUcsurCharacter(START_OF_CARTOUCHE, "start of cartouche", {
+      allowVariation: false,
+      allowSpace: false,
+    }),
     allAtLeastOnce(cartoucheElement()),
-    specificUcsurCharacter(END_OF_CARTOUCHE, false, "end of cartouche"),
+    specificUcsurCharacter(END_OF_CARTOUCHE, "end of cartouche", {
+      allowVariation: false,
+      allowSpace: false,
+    }),
   ).map(
     ([_, words, _1]) => {
       const word = words.join("");
