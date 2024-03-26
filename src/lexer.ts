@@ -75,7 +75,7 @@ function latinWord(): Lexer<string> {
 function ucsurWord(): Lexer<string> {
   return match(/([^]{2})\s*/, "UCSUR word").map(([_, word]) => {
     const latin = UCSUR_TO_LATIN[word];
-    if (latin === undefined) {
+    if (latin == null) {
       throw new CoveredError();
     } else {
       return word;

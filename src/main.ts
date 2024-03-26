@@ -139,7 +139,7 @@ function loadSettings(): void {
   >(name: T, element: HTMLInputElement): void {
     const x = localStorage.getItem(name);
     let value: boolean;
-    if (x === null) {
+    if (x == null) {
       value = defaultSettings[name];
     } else {
       value = x === "true";
