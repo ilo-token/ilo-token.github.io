@@ -139,19 +139,30 @@ function specificWord(thatWord: string): AstParser<string> {
   });
 }
 /** Parses word unit without numbers. */
-function wordUnit(word: AstParser<string>): AstParser<WordUnit> {
+function wordUnit(word: Set<string>, description: string): AstParser<WordUnit> {
   return choice(
-    word.then((word) =>
+    wordFrom(word, description).then((word) =>
       manyAtLeastOnce(specificWord(word)).map((words) => ({
         type: "reduplication",
         word,
         count: words.length + 1,
       } as WordUnit))
     ),
-    word.then((word) => specificWord("ala").with(specificWord(word))).map((
+    tokenTree("x ala x").map((tokenTree) => {
+      if (tokenTree.type === "x ala x") {
+        return { type: "x ala x", word: tokenTree.word } as WordUnit;
+      } else {
+        throw new UnexpectedError(tokenTree.type, "x ala x");
+      }
+    }),
+    wordFrom(word, description).then((word) =>
+      specificWord("ala").with(specificWord(word))
+    ).map((
       word,
     ) => ({ type: "x ala x", word } as WordUnit)),
-    word.map((word) => ({ type: "default", word } as WordUnit)),
+    wordFrom(word, description).map((
+      word,
+    ) => ({ type: "default", word } as WordUnit)),
   ).filter(filter(WORD_UNIT_RULES));
 }
 /** Parses number words in order. */
@@ -176,7 +187,7 @@ function modifiers(): AstParser<Array<Modifier>> {
   return sequence(
     many(
       choice(
-        wordUnit(wordFrom(CONTENT_WORD, "modifier")).map((word) => ({
+        wordUnit(CONTENT_WORD, "modifier").map((word) => ({
           type: "default",
           word,
         } as Modifier)).filter(filter(MODIFIER_RULES)),
@@ -199,7 +210,7 @@ function modifiers(): AstParser<Array<Modifier>> {
       ),
     ),
     many(
-      sequence(wordUnit(specificWord("nanpa")), phrase()).map((
+      sequence(wordUnit(new Set(["nanpa"]), '"nanpa"'), phrase()).map((
         [nanpa, phrase],
       ) => ({
         type: "nanpa",
@@ -230,7 +241,7 @@ function phrase(): AstParser<Phrase> {
       modifiers,
     } as Phrase)),
     sequence(
-      wordUnit(wordFrom(PREVERB, "preverb")),
+      wordUnit(PREVERB, "preverb"),
       lazy(modifiers),
       lazy(phrase),
     ).map((
@@ -246,7 +257,7 @@ function phrase(): AstParser<Phrase> {
       preposition,
     } as Phrase)),
     sequence(
-      wordUnit(wordFrom(CONTENT_WORD, "headword")),
+      wordUnit(CONTENT_WORD, "headword"),
       lazy(modifiers),
     ).map(([headWord, modifiers]) => ({
       type: "default",
@@ -316,7 +327,7 @@ function subjectPhrases(): AstParser<MultiplePhrases> {
 /** Parses prepositional phrase. */
 function preposition(): AstParser<Preposition> {
   return sequence(
-    wordUnit(wordFrom(PREPOSITION, "preposition")),
+    wordUnit(PREPOSITION, "preposition"),
     modifiers(),
     nestedPhrases(["anu"]),
   ).map(([preposition, modifiers, phrases]) => ({
@@ -466,11 +477,11 @@ function clause(): AstParser<Clause> {
 /** Parses a single clause including precaluse and postclause. */
 function fullClause(): AstParser<FullClause> {
   return sequence(
-    optional(wordUnit(specificWord("taso")).skip(optionalComma())),
+    optional(wordUnit(new Set(["taso"]), '"taso"').skip(optionalComma())),
     clause(),
     optional(
       optionalComma().with(specificWord("anu")).with(
-        wordUnit(specificWord("seme")),
+        wordUnit(new Set(["seme"]), '"seme"'),
       ),
     ),
   ).map(([taso, clause, anuSeme]) => ({
