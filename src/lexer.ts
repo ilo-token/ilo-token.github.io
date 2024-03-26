@@ -162,6 +162,7 @@ function tokenTree(includeQuotation: boolean): Lexer<TokenTree> {
     properWords().map((words) => ({ type: "proper word", words }) as TokenTree),
     multipleA().map((count) => ({ type: "multiple a", count }) as TokenTree),
     xAlaX().map((word) => ({ type: "x ala x", word }) as TokenTree),
+    word().map((word) => ({ type: "word", word })),
   );
 }
 function tokenTrees(includeQuotation: boolean): Lexer<Array<TokenTree>> {
