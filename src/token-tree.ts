@@ -1,0 +1,17 @@
+export type TokenTree =
+  | { type: "word"; word: string }
+  | {
+    type: "long container";
+    before: Array<TokenTree>;
+    word: string;
+    after: Array<TokenTree>;
+  }
+  | { type: "multiple a"; count: number }
+  | { type: "x ala x"; word: string }
+  | { type: "proper word"; word: string }
+  | {
+    type: "quotation";
+    tokenTree: Array<TokenTree>;
+    leftMark: string;
+    rightMark: string;
+  };
