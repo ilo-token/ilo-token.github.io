@@ -6,7 +6,9 @@ You may need to force restart the page in order to use the latest version: shift
 
 - Add icons.
 - All possible errors will now be listed.
-- Implement settings dialog.
+- Implement settings dialog ([More info](https://github.com/neverRare/ilo-token/wiki/Settings-Help)).
+- Implement UCSUR support! It supports:
+  - Cartouche with nasin sitelen kalama
 
 Inside update (intended for developers):
 
