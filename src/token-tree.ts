@@ -19,4 +19,6 @@ export type TokenTree =
     tokenTree: Array<TokenTree>;
     leftMark: string;
     rightMark: string;
-  };
+  }
+  | { type: "comma" }
+  | { type: "punctuation"; punctuation: string };

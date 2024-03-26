@@ -135,9 +135,23 @@ function quotation(): Lexer<TokenTree & { type: "quotation" }> {
     };
   });
 }
+/** Parses a comma. */
+function comma(): Lexer<string> {
+  return match(/,\s*/, "comma").map(() => ",");
+}
+/** Parses a punctuation. */
+function punctuation(): Lexer<string> {
+  return match(/([.,:;?!])\s*/, "punctuation").map(([_, punctuation]) =>
+    punctuation
+  );
+}
 /** Parses a token tree. */
 function tokenTree(includeQuotation: boolean): Lexer<TokenTree> {
   return choiceOnlyOne(
+    punctuation().map((punctuation) =>
+      ({ type: "punctuation", punctuation }) as TokenTree
+    ),
+    comma().map(() => ({ type: "comma" }) as TokenTree),
     lazy(() => {
       if (includeQuotation) {
         return quotation();
@@ -154,5 +168,8 @@ function tokenTrees(includeQuotation: boolean): Lexer<Array<TokenTree>> {
   return all(tokenTree(includeQuotation));
 }
 export function lex(src: string): Output<Array<TokenTree>> {
-  return tokenTrees(true).skip(eol()).parser(src).map(({ value }) => value);
+  return match(/\s*/, "spaces").with(tokenTrees(true)).skip(eol()).parser(src)
+    .map((
+      { value },
+    ) => value);
 }

@@ -10,12 +10,7 @@ import {
   Sentence,
   WordUnit,
 } from "./ast.ts";
-import {
-  CoveredError,
-  UnexpectedError,
-  UnreachableError,
-  UnrecognizedError,
-} from "./error.ts";
+import { CoveredError, UnexpectedError, UnrecognizedError } from "./error.ts";
 import { Output } from "./output.ts";
 import {
   CONTENT_WORD,
@@ -35,18 +30,20 @@ import {
   WORD_UNIT_RULES,
 } from "./filter.ts";
 import {
+  all,
   allAtLeastOnce,
   choice,
   lazy,
-  lookAhead,
   many,
   manyAtLeastOnce,
   optional,
   Parser,
   sequence as rawSequence,
 } from "./parser-lib.ts";
+import { TokenTree } from "./token-tree.ts";
+import { lex } from "./lexer.ts";
 
-export type AstParser<T> = Parser<string, T>;
+export type AstParser<T> = Parser<Array<TokenTree>, T>;
 
 /** Takes all parsers and applies them one after another. */
 // Had to redeclare this function, Typescript really struggles with inferring
@@ -55,43 +52,34 @@ function sequence<T extends Array<unknown>>(
   ...sequence: { [I in keyof T]: AstParser<T[I]> } & { length: T["length"] }
 ): AstParser<T> {
   // deno-lint-ignore no-explicit-any
-  return rawSequence<string, T>(...sequence as any);
-}
-/**
- * Uses Regular Expression to create parser. The parser outputs
- * RegExpMatchArray, which is what `string.match( ... )` returns.
- */
-function match(
-  regex: RegExp,
-  description: string,
-): AstParser<RegExpMatchArray> {
-  const newRegex = new RegExp("^" + regex.source, regex.flags);
-  return new Parser((src) => {
-    const match = src.match(newRegex);
-    if (match !== null) {
-      return new Output([{ value: match, rest: src.slice(match[0].length) }]);
-    } else if (src === "") {
-      return new Output(new UnexpectedError("end of sentence", description));
-    } else {
-      const token = src.match(/[^\s]*/)?.[0];
-      if (token !== undefined) {
-        return new Output(new UnexpectedError(`"${token}"`, description));
-      } else {
-        throw new UnreachableError();
-      }
-    }
-  });
+  return rawSequence<Array<TokenTree>, T>(...sequence as any);
 }
 /** Parses the end of line (or the end of sentence in context of Toki Pona) */
 function eol(): AstParser<null> {
   return new Parser((src) => {
-    if (src === "") return new Output([{ value: null, rest: "" }]);
+    if (src.length === 0) return new Output([{ value: null, rest: [] }]);
     else return new Output(new UnexpectedError(`"${src}"`, "end of sentence"));
+  });
+}
+/** Parses a single token tree. */
+function tokenTree(description: string): AstParser<TokenTree> {
+  return new Parser((src) => {
+    if (src.length === 0) {
+      return new Output(new UnexpectedError("end of sentence", description));
+    } else {
+      return new Output([{ rest: src.slice(1), value: src[0] }]);
+    }
   });
 }
 /** Parses comma. */
 function comma(): AstParser<string> {
-  return match(/,\s*/, "comma").map(() => ",");
+  return tokenTree("comma").map((tokenTree) => {
+    if (tokenTree.type === "comma") {
+      return ",";
+    } else {
+      throw new UnexpectedError(tokenTree.type, "comma");
+    }
+  });
 }
 /** Parses an optional comma. */
 function optionalComma(): AstParser<null | string> {
@@ -99,18 +87,39 @@ function optionalComma(): AstParser<null | string> {
 }
 /** Parses lowercase word. */
 function word(): AstParser<string> {
-  return match(/([a-z]+)\s*/, "word").map(([_, word]) => word);
+  return tokenTree("word").map((tokenTree) => {
+    if (tokenTree.type === "word") {
+      return tokenTree.word;
+    } else {
+      throw new UnexpectedError(tokenTree.type, "word");
+    }
+  });
 }
 /**
  * Parses all at least one uppercase words and combines them all into single
  * string. This function is exhaustive like `all`.
  */
 function properWords(): AstParser<string> {
-  return allAtLeastOnce(
-    match(/([A-Z][a-z]*)\s*/, "proper word").map(([_, word]) => word),
-  ).map(
-    (array) => array.join(" "),
-  );
+  return tokenTree("proper word").map((tokenTree) => {
+    if (tokenTree.type === "proper word") {
+      return tokenTree.words;
+    } else {
+      throw new UnexpectedError(tokenTree.type, "proper words");
+    }
+  });
+}
+/**
+ * Parses all at least one uppercase words and combines them all into single
+ * string. This function is exhaustive like `all`.
+ */
+function punctuation(): AstParser<string> {
+  return tokenTree("punctuation").map((tokenTree) => {
+    if (tokenTree.type === "punctuation") {
+      return tokenTree.punctuation;
+    } else {
+      throw new UnexpectedError(tokenTree.type, "punctuation");
+    }
+  });
 }
 /** Parses word only from `set`. */
 function wordFrom(set: Set<string>, description: string): AstParser<string> {
@@ -485,52 +494,35 @@ function sentence(): AstParser<Sentence> {
     many(la().with(fullClause())),
     choice(
       eol().map(() => ""),
-      lookAhead(closeQuotationMark()).map(() => "").silent(),
-      match(/([.,:;?!])\s*/, "punctuation").map(([_, punctuation]) =>
-        punctuation
-      ),
+      punctuation(),
     ),
   ).map(([clause, moreClauses, punctuation]) => ({
     laClauses: [clause, ...moreClauses],
     punctuation,
   }));
 }
-/** Parses opening quotation mark */
-function openQuotationMark(): AstParser<string> {
-  return match(/(["“«「])\s*/, "open quotation mark").map(([_, mark]) => mark);
-}
-/** Parses closing quotation mark */
-function closeQuotationMark(): AstParser<string> {
-  return match(/(["”»」])\s*/, "close quotation mark").map(([_, mark]) => mark);
-}
-/** Parses multiple sentences inside quotation mark */
-function quotation(): AstParser<Quotation> {
-  return sequence(
-    openQuotationMark(),
-    many(lazy(sentence)).filter(filter(SENTENCES_RULE)),
-    closeQuotationMark(),
-  ).map(([leftMark, sentences, rightMark]) => {
-    if (leftMark === '"' || leftMark === "“") {
-      if (rightMark !== '"' && rightMark !== "”") {
-        throw new UnrecognizedError("Mismatched quotation marks");
-      }
-    } else if (leftMark === "«") {
-      if (rightMark !== "»") {
-        throw new UnrecognizedError("Mismatched quotation marks");
-      }
-    } else if (leftMark === "「") {
-      if (rightMark !== "」") {
-        throw new UnrecognizedError("Mismatched quotation marks");
-      }
-    } else throw new UnreachableError();
-    return { sentences, leftMark, rightMark };
+export function quotation(): AstParser<Quotation> {
+  return tokenTree("quotation").flatMapValue((tokenTree) => {
+    if (tokenTree.type === "quotation") {
+      return all(sentence()).skip(eol()).parser(tokenTree.tokenTree).map(
+        ({ value }) => ({
+          sentences: value,
+          leftMark: tokenTree.leftMark,
+          rightMark: tokenTree.rightMark,
+        }),
+      );
+    } else {
+      return new Output(new UnexpectedError(tokenTree.type, "quotation"));
+    }
   });
 }
 /** A multiple Toki Pona sentence parser. */
 export function parser(src: string): Output<Array<Sentence>> {
-  return match(/\s*/, "space").with(allAtLeastOnce(sentence())).skip(eol())
-    .filter(
-      filter(SENTENCES_RULE),
-    ).parser(src)
-    .map(({ value }) => value);
+  return lex(src).flatMap((src) =>
+    allAtLeastOnce(sentence()).skip(eol())
+      .filter(
+        filter(SENTENCES_RULE),
+      ).parser(src)
+      .map(({ value }) => value)
+  );
 }

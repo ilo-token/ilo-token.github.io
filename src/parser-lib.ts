@@ -21,6 +21,13 @@ export class Parser<T, U> {
       }))
     );
   }
+  flatMapValue<V>(mapper: (value: U) => Output<V>): Parser<T, V> {
+    return new Parser((src) =>
+      this.parser(src).flatMap(({ value, rest }) =>
+        mapper(value).map((value) => ({ value, rest }))
+      )
+    );
+  }
   /**
    * Filters outputs. Instead of returning false, OutputError must be thrown
    * instead.
