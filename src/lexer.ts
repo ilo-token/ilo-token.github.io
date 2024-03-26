@@ -163,7 +163,7 @@ function tokenTree(includeQuotation: boolean): Lexer<TokenTree> {
     properWords().map((words) => ({ type: "proper word", words }) as TokenTree),
     multipleA().map((count) => ({ type: "multiple a", count }) as TokenTree),
     lazy(() => {
-      if (settings) {
+      if (!settings.xAlaXPartialParsing) {
         return xAlaX().map((word) => ({ type: "x ala x", word }) as TokenTree);
       } else {
         return error(new CoveredError());
