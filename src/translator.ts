@@ -165,7 +165,7 @@ function defaultPhraseAs(
         [...modifiers.slice().reverse(), headWord].join(" "),
     ).map(
       (translation) => {
-        if (name !== undefined) {
+        if (name != null) {
           return `${translation} named ${name}`;
         } else {
           return translation;
@@ -187,7 +187,7 @@ function defaultPhraseAs(
             [...modifiers.slice().reverse(), headWord].join(" "),
         ).map(
           (translation) => {
-            if (name !== undefined) {
+            if (name != null) {
               return `${translation} named ${name}`;
             } else {
               return translation;

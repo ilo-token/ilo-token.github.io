@@ -47,13 +47,13 @@ function match(
   const newRegex = new RegExp("^" + regex.source, regex.flags);
   return new Parser((src) => {
     const match = src.match(newRegex);
-    if (match !== null) {
+    if (match != null) {
       return new Output([{ value: match, rest: src.slice(match[0].length) }]);
     } else if (src === "") {
       return new Output(new UnexpectedError("end of sentence", description));
     } else {
       const token = src.match(/[^\s]*/)?.[0];
-      if (token !== undefined) {
+      if (token != null) {
         return new Output(new UnexpectedError(`"${token}"`, description));
       } else {
         throw new UnreachableError();
