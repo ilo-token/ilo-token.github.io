@@ -16,6 +16,7 @@ import {
 import { TokenTree } from "./token-tree.ts";
 import { CoveredError } from "./error.ts";
 import { settings } from "./settings.ts";
+import { UCSUR_TO_LATIN } from "./ucsur.ts";
 
 export type Lexer<T> = Parser<string, T>;
 
@@ -60,8 +61,8 @@ function eol(): Lexer<null> {
     else return new Output(new UnexpectedError(`"${src}"`, "end of sentence"));
   });
 }
-/** Parses lowercase word. */
-function word(): Lexer<string> {
+/** Parses lowercase latin word. */
+function latinWord(): Lexer<string> {
   return match(/([a-z][a-zA-Z]*)\s*/, "word").map(([_, word]) => {
     if (/[A-Z]/.test(word)) {
       throw new UnrecognizedError(`"${word}"`);
@@ -69,6 +70,21 @@ function word(): Lexer<string> {
       return word;
     }
   });
+}
+/** Parses UCSUR word. */
+function ucsurWord(): Lexer<string> {
+  return match(/([^]{2})\s*/, "UCSUR word").map(([_, word]) => {
+    const latin = UCSUR_TO_LATIN[word];
+    if (latin === undefined) {
+      throw new CoveredError();
+    } else {
+      return word;
+    }
+  });
+}
+/** Parses a word. */
+function word(): Lexer<string> {
+  return choiceOnlyOne(ucsurWord(), latinWord());
 }
 /**
  * Parses all at least one uppercase words and combines them all into single
@@ -83,7 +99,7 @@ function properWords(): Lexer<string> {
 }
 /** Parses a specific word. */
 function specificWord(thatWord: string): Lexer<string> {
-  return word().filter((thisWord) => {
+  return choiceOnlyOne(ucsurWord(), word()).filter((thisWord) => {
     if (thatWord === thisWord) return true;
     else throw new UnexpectedError(`"${thisWord}"`, `"${thatWord}"`);
   });
@@ -142,7 +158,8 @@ function comma(): Lexer<string> {
 }
 /** Parses a punctuation. */
 function punctuation(): Lexer<string> {
-  return match(/([.,:;?!])\s*/, "punctuation").map(([_, punctuation]) =>
+  // UCSUR characters are two characters wide
+  return match(/([.,:;?!]|󱦜|󱦝)\s*/, "punctuation").map(([_, punctuation]) =>
     punctuation
   );
 }
