@@ -9,12 +9,7 @@ import {
 } from "./ast.ts";
 import { Output } from "./output.ts";
 import { parser } from "./ast-parser.ts";
-import {
-  CoveredError,
-  OutputError,
-  TodoError,
-  UnreachableError,
-} from "./error.ts";
+import { OutputError, TodoError, UnreachableError } from "./error.ts";
 import { DEFINITION } from "./definition.ts";
 
 /** A special kind of Output that translators returns. */
