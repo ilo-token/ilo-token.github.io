@@ -137,8 +137,10 @@ function specificUcsurCharacter(
   });
 }
 /** Parses UCSUR word. */
-function ucsurWord(): Lexer<string> {
-  return ucsur({ allowVariation: true, allowSpace: true }).map((word) => {
+function ucsurWord(
+  settings: { allowVariation: boolean; allowSpace: boolean },
+): Lexer<string> {
+  return ucsur(settings).map((word) => {
     const latin = UCSUR_TO_LATIN[word];
     if (latin == null) {
       throw new CoveredError();
@@ -146,6 +148,10 @@ function ucsurWord(): Lexer<string> {
       return latin;
     }
   });
+}
+/** Parses UCSUR word. */
+function singleUcsurWord(): Lexer<string> {
+  return ucsurWord({ allowVariation: true, allowSpace: true });
 }
 function joiner(): Lexer<string> {
   return choiceOnlyOne(
@@ -162,16 +168,9 @@ function joiner(): Lexer<string> {
 }
 function combinedWords(): Lexer<TokenTree & { type: "combined words" }> {
   return sequence(
-    ucsur({ allowVariation: false, allowSpace: false }).map((word) => {
-      const latin = UCSUR_TO_LATIN[word];
-      if (latin == null) {
-        throw new CoveredError();
-      } else {
-        return latin;
-      }
-    }),
+    ucsurWord({ allowVariation: false, allowSpace: false }),
     joiner(),
-    ucsurWord(),
+    ucsurWord({ allowVariation: false, allowSpace: true }),
   ).map(([first, _, second]) => ({
     type: "combined words",
     first,
@@ -180,7 +179,7 @@ function combinedWords(): Lexer<TokenTree & { type: "combined words" }> {
 }
 /** Parses a word. */
 function word(): Lexer<string> {
-  return choiceOnlyOne(ucsurWord(), latinWord());
+  return choiceOnlyOne(singleUcsurWord(), latinWord());
 }
 /**
  * Parses all at least one uppercase words and combines them all into single
@@ -242,7 +241,7 @@ function punctuation(): Lexer<string> {
 }
 function cartoucheElement(): Lexer<string> {
   return choiceOnlyOne(
-    ucsurWord().skip(
+    singleUcsurWord().skip(
       choiceOnlyOne(
         match(/(\uff1a)\s*/, "full width colon").map(([_, dot]) => dot),
         specificUcsurCharacter("󱦝", "colon", {
@@ -252,7 +251,7 @@ function cartoucheElement(): Lexer<string> {
       ),
     ),
     sequence(
-      ucsurWord(),
+      singleUcsurWord(),
       allAtLeastOnce(
         choiceOnlyOne(
           match(/([・。／])\s*/, "full width dot").map(([_, dot]) => dot),
@@ -275,7 +274,7 @@ function cartoucheElement(): Lexer<string> {
       }
       return morae.slice(0, count).join("");
     }),
-    ucsurWord().map((word) => word[0]),
+    singleUcsurWord().map((word) => word[0]),
     match(/([a-zA-Z])\s*/, "Latin letter").map((
       [_, letter],
     ) => letter),
