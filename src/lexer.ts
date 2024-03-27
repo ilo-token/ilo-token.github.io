@@ -25,7 +25,6 @@ import {
   UCSUR_TO_LATIN,
 } from "./ucsur.ts";
 import { nothing } from "./parser-lib.ts";
-import { CHAR_UPPERCASE_Z } from "https://deno.land/std@0.186.0/path/_constants.ts";
 
 export type Lexer<T> = Parser<string, T>;
 
