@@ -88,6 +88,14 @@ function eol(): Lexer<null> {
     else return new Output(new UnexpectedError(`"${src}"`, "end of sentence"));
   });
 }
+function allUntilEnd<T>(parser: Lexer<T>): Lexer<Array<T>> {
+  return choiceOnlyOne(
+    sequence(parser, lazy(() => allUntilEnd(parser))).map((
+      [first, rest],
+    ) => [first, ...rest]),
+    eol().map(() => []),
+  );
+}
 /** Parses lowercase latin word. */
 function latinWord(): Lexer<string> {
   return match(/([a-z][a-zA-Z]*)\s*/, "word").map(([_, word]) => {
@@ -362,7 +370,7 @@ function tokenTrees(includeQuotation: boolean): Lexer<Array<TokenTree>> {
   return all(tokenTree(includeQuotation));
 }
 export function lex(src: string): Output<Array<TokenTree>> {
-  return spaces().with(tokenTrees(true)).skip(eol()).parser(src)
+  return spaces().with(allUntilEnd(tokenTree(true))).parser(src)
     .map((
       { value },
     ) => value);
