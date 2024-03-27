@@ -33,7 +33,6 @@ import {
   all,
   allAtLeastOnce,
   choice,
-  choiceOnlyOne,
   lazy,
   many,
   manyAtLeastOnce,
@@ -61,19 +60,6 @@ function eol(): AstParser<null> {
     if (src.length === 0) return new Output([{ value: null, rest: [] }]);
     else return new Output(new UnexpectedError(src[0].type, "end of sentence"));
   });
-}
-function allUntilEnd<T>(parser: AstParser<T>): AstParser<Array<T>> {
-  return choiceOnlyOne(
-    sequence(parser, lazy(() => allUntilEnd(parser))).map((
-      [first, rest],
-    ) => [first, ...rest]),
-    eol().map(() => []),
-  );
-}
-function allUntilEndAtLeastOnce<T>(parser: AstParser<T>): AstParser<Array<T>> {
-  return sequence(parser, allUntilEnd(parser)).map((
-    [first, rest],
-  ) => [first, ...rest]);
 }
 /** Parses a single token tree. */
 function tokenTree(description: string): AstParser<TokenTree> {
@@ -544,7 +530,7 @@ export function quotation(): AstParser<Quotation> {
 /** A multiple Toki Pona sentence parser. */
 export function parser(src: string): Output<Array<Sentence>> {
   return lex(src).flatMap((src) =>
-    allUntilEndAtLeastOnce(sentence())
+    allAtLeastOnce(sentence()).skip(eol())
       .filter(
         filter(SENTENCES_RULE),
       ).parser(src)
