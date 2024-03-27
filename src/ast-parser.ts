@@ -59,7 +59,7 @@ function sequence<T extends Array<unknown>>(
 function eol(): AstParser<null> {
   return new Parser((src) => {
     if (src.length === 0) return new Output([{ value: null, rest: [] }]);
-    else return new Output(new UnexpectedError(`"${src}"`, "end of sentence"));
+    else return new Output(new UnexpectedError(src[0].type, "end of sentence"));
   });
 }
 function allUntilEnd<T>(parser: AstParser<T>): AstParser<Array<T>> {
