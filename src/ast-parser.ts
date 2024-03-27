@@ -148,11 +148,11 @@ function wordUnit(word: Set<string>, description: string): AstParser<WordUnit> {
         count: words.length + 1,
       } as WordUnit))
     ),
-    tokenTree("x ala x").map((tokenTree) => {
+    tokenTree("X ala X").map((tokenTree) => {
       if (tokenTree.type === "x ala x") {
         return { type: "x ala x", word: tokenTree.word } as WordUnit;
       } else {
-        throw new UnexpectedError(tokenTree.type, "x ala x");
+        throw new UnexpectedError(tokenTree.type, "X ala X");
       }
     }),
     wordFrom(word, description).then((word) =>
