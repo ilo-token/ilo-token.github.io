@@ -113,14 +113,13 @@ function ucsur(
         return nothing();
       }
     }),
-  )
-    .skip(lazy(() => {
-      if (settings.allowSpace) {
-        return spaces().map(() => null);
-      } else {
-        return nothing();
-      }
-    }));
+  ).skip(lazy(() => {
+    if (settings.allowSpace) {
+      return spaces().map(() => null);
+    } else {
+      return nothing();
+    }
+  }));
 }
 function specificUcsurCharacter(
   character: string,
