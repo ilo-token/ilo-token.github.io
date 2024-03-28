@@ -4,14 +4,14 @@ You may need to force restart the page in order to use the latest version: shift
 
 ## 0.2.3 (On development)
 
-- Add icons.
+- Implement settings dialog. [More info](https://github.com/neverRare/ilo-token/wiki/Settings-Help).
 - All possible errors will now be listed.
-- Implement settings dialog ([More info](https://github.com/neverRare/ilo-token/wiki/Settings-Help)).
+- ilo Token can now use telo misikeke for error messages. You can turn this on from the settings dialog.
 - Implement UCSUR support! It supports:
   - Cartouche with nasin sitelen kalama
   - (Deprecated characters and combiners are not supported)
-- ilo Token can now use telo misikeke for error messages.
 - Multiline text will no longer be recognized.
+- Add icons.
 
 Inside update (intended for developers):
 
