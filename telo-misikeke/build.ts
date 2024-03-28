@@ -30,7 +30,7 @@ async function buildFile(
   // remove module.export
   const seachText = "if ( typeof ( module ) != 'undefined' )";
   const regex = new RegExp(
-    seachText.replaceAll(/([()])/g, "\\$1").replaceAll(" ", "\\s*") + "[^]*$",
+    seachText.replaceAll(/[()]/g, "\\$&").replaceAll(" ", "\\s*") + "[^]*$",
   );
   file = file.replace(regex, "");
 
