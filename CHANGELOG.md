@@ -10,6 +10,7 @@ You may need to force restart the page in order to use the latest version: shift
 - Implement UCSUR support! It supports:
   - Cartouche with nasin sitelen kalama
   - (Deprecated characters and combiners are not supported)
+- ilo Token can now use telo misikeke for error messages.
 - Multiline text will no longer be recognized.
 
 Inside update (intended for developers):
