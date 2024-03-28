@@ -3,6 +3,7 @@
 import { CoveredError } from "./error.ts";
 import { translate } from "./translator.ts";
 import { defaultSettings, RedundancySettings, settings } from "./settings.ts";
+import { teloMisikeke } from "../deps.ts";
 
 // Set to false when releasing, set to true when developing
 const DEVELOPMENT = true;
@@ -107,16 +108,24 @@ function outputErrors(errors: Array<string>): void {
 }
 function updateOutput(): void {
   clearOutput();
+  const source = elements!.input.value;
   try {
-    const translations = translate(elements!.input.value);
+    const translations = translate(source);
     if (translations.isError()) {
-      outputErrors([
-        ...new Set(
-          translations.errors.filter((x) => !(x instanceof CoveredError)).map(
-            (x) => x.message,
+      let error: Array<string> = [];
+      if (settings.useTeloMisikeke) {
+        error = teloMisikeke.errors(source);
+      }
+      if (error.length === 0) {
+        error = [
+          ...new Set(
+            translations.errors.filter((x) => !(x instanceof CoveredError)).map(
+              (x) => x.message,
+            ),
           ),
-        ),
-      ]);
+        ];
+      }
+      outputErrors(error);
     } else {
       const output = [...new Set(translations.output)];
       if (settings.randomize) {
