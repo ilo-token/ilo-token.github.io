@@ -65,7 +65,7 @@ export function describe(tokenTree: TokenTree): string {
   } else if (tokenTree.type === "x ala x") {
     return `"${tokenTree.word} ala ${tokenTree.word}"`;
   } else if (tokenTree.type === "proper word") {
-    return tokenTree.words;
+    return "proper word or cartouche";
   } else if (tokenTree.type === "quotation") {
     return "quotation";
   } else if (tokenTree.type === "comma") {
