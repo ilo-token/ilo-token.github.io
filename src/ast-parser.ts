@@ -1,3 +1,5 @@
+/** Module for AST Parser. It is responsible for turning an array of token tress into AST. */
+
 import {
   Clause,
   FullClause,
@@ -85,7 +87,7 @@ function comma(): AstParser<string> {
 function optionalComma(): AstParser<null | string> {
   return optional(comma());
 }
-/** Parses lowercase word. */
+/** Parses a toki pona word. */
 function word(): AstParser<string> {
   return tokenTree("word").map((tokenTree) => {
     if (tokenTree.type === "word") {
@@ -95,10 +97,7 @@ function word(): AstParser<string> {
     }
   });
 }
-/**
- * Parses all at least one uppercase words and combines them all into single
- * string. This function is exhaustive like `all`.
- */
+/** Parses proper words spanning multiple words. */
 function properWords(): AstParser<string> {
   return tokenTree("proper word").map((tokenTree) => {
     if (tokenTree.type === "proper word") {
@@ -108,10 +107,7 @@ function properWords(): AstParser<string> {
     }
   });
 }
-/**
- * Parses all at least one uppercase words and combines them all into single
- * string. This function is exhaustive like `all`.
- */
+/** Parses a toki pona */
 function punctuation(): AstParser<string> {
   return tokenTree("punctuation").map((tokenTree) => {
     if (tokenTree.type === "punctuation") {
@@ -182,7 +178,7 @@ function number(): AstParser<Array<string>> {
     }
   });
 }
-/** Parses multiple modifiers */
+/** Parses multiple modifiers. */
 function modifiers(): AstParser<Array<Modifier>> {
   return sequence(
     many(
@@ -230,7 +226,7 @@ function modifiers(): AstParser<Array<Modifier>> {
     filter(MODIFIERS_RULES),
   );
 }
-/** Parses phrases including preverbial phrases. */
+/** Parses phrases. */
 function phrase(): AstParser<Phrase> {
   return choice(
     sequence(number(), lazy(modifiers)).map((
@@ -474,7 +470,7 @@ function clause(): AstParser<Clause> {
     } as Clause)),
   ).filter(filter(CLAUSE_RULE));
 }
-/** Parses a single clause including precaluse and postclause. */
+/** Parses a single clause including preclause and postclause. */
 function fullClause(): AstParser<FullClause> {
   return sequence(
     optional(wordUnit(new Set(["taso"]), '"taso"').skip(optionalComma())),
@@ -512,6 +508,7 @@ function sentence(): AstParser<Sentence> {
     punctuation,
   }));
 }
+/** Parses a quotation. */
 export function quotation(): AstParser<Quotation> {
   return tokenTree("quotation").flatMapValue((tokenTree) => {
     if (tokenTree.type === "quotation") {

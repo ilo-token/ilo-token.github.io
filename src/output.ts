@@ -1,11 +1,11 @@
+/** Module containing the Output data type. */
+
 import { OutputError } from "./error.ts";
 /** Represents possibilities and error. */
 export class Output<T> {
   /** Represents possibilities, considered error when the array is empty. */
   output: Array<T>;
-  /**
-   * A list of errors
-   */
+  /** A list of all aggregated errors. */
   errors: Array<OutputError> = [];
   constructor(output?: undefined | null | Array<T> | OutputError) {
     if (Array.isArray(output)) {
@@ -92,6 +92,7 @@ export class Output<T> {
     for (const value of this.output) wholeOutput.append(mapper(value));
     return wholeOutput;
   }
+  /** Combines all outputs. */
   static concat<U>(...outputs: Array<Output<U>>): Output<U> {
     const wholeOutput = new Output<U>();
     for (const output of outputs) {

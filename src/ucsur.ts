@@ -1,3 +1,6 @@
+/** Module for constants and other helper items for UCSUR. */
+
+/** */
 export const START_OF_CARTOUCHE = "\u{F1990}";
 export const END_OF_CARTOUCHE = "\u{F1991}";
 export const COMBINING_CARTOUCHE_EXTENSION = "\u{F1992}";

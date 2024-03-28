@@ -1,3 +1,5 @@
+/** Module for describing Toki Pona AST. */
+
 import { UnreachableError } from "./error.ts";
 
 /** Represents a word unit. */
@@ -102,6 +104,10 @@ export type Quotation = {
   leftMark: string;
   rightMark: string;
 };
+/**
+ * Helper function for checking whether some modifier passes the test
+ * function.
+ */
 export function someModifierInPhrase(
   phrase: Phrase,
   whenQuotation: boolean,
@@ -126,6 +132,10 @@ export function someModifierInPhrase(
     throw new UnreachableError();
   }
 }
+/**
+ * Helper function for checking whether some modifier passes the test
+ * function.
+ */
 export function someModifierInMultiplePhrases(
   phrases: MultiplePhrases,
   whenQuotation: boolean,
@@ -141,6 +151,10 @@ export function someModifierInMultiplePhrases(
     throw new UnreachableError();
   }
 }
+/**
+ * Helper function for checking whether some phrase passes the test
+ * function.
+ */
 export function somePhraseInMultiplePhrases(
   phrases: MultiplePhrases,
   checker: (modifier: Phrase) => boolean,
@@ -155,6 +169,10 @@ export function somePhraseInMultiplePhrases(
     throw new UnreachableError();
   }
 }
+/**
+ * Helper function for checking whether some object phrase passes the test
+ * function.
+ */
 export function someObjectInMultiplePredicate(
   predicate: MultiplePredicates,
   checker: (object: Phrase) => boolean,

@@ -1,3 +1,5 @@
+/** Module for Error datatypes. */
+
 /** Represents Error used by `Output`. */
 export class OutputError extends Error {}
 /** Represents errors that cannot be reached. */

@@ -1,4 +1,6 @@
-/** Particles. */
+/** Module for accepted words. */
+
+/** */
 export const PARTICLES = new Set([
   "a",
   "ala",
@@ -12,7 +14,6 @@ export const PARTICLES = new Set([
   "pi",
   "taso",
 ]);
-/** Content words. */
 export const CONTENT_WORD = new Set([
   "akesi",
   "ala",
@@ -143,7 +144,6 @@ export const PREVERB = new Set([
   "sona",
   "wile",
 ]);
-/** Prepositions. */
 export const PREPOSITION = new Set([
   "kepeken",
   "lon",

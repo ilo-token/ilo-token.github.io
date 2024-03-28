@@ -1,3 +1,11 @@
+/**
+ * Module for lexer. It is responsible for turning string into array of token
+ * tress. It also latinizes UCSUR characters.
+ *
+ * Note: the words lexer and parser are used interchangeably since they both
+ * have the same capabilities.
+ */
+
 import { Output } from "./output.ts";
 import {
   UnexpectedError,
@@ -31,7 +39,7 @@ export type Lexer<T> = Parser<string, T>;
 const VOWEL = /[aeiou]/;
 const MORAE = /[aeiou]|[jklmnpstw][aeiou]|n/g;
 
-/** Takes all parsers and applies them one after another. */
+/** Takes all parser and applies them one after another. */
 // Had to redeclare this function, Typescript really struggles with inferring
 // types when using `sequence`.
 function sequence<T extends Array<unknown>>(
@@ -65,9 +73,11 @@ function match(
     }
   });
 }
+/** parses space. */
 function spaces(): Lexer<string> {
   return match(/\s*/, "space").map(([space]) => space);
 }
+/** parses a string of consistent length. */
 function slice(length: number, description: string): Lexer<string> {
   return new Parser((src) => {
     if (src.length < length) {
@@ -97,11 +107,13 @@ function latinWord(): Lexer<string> {
     }
   });
 }
+/** Parses variation selector. */
 function variationSelector(): Lexer<string> {
   return match(/[\uFE00-\uFE0F]/, "variation selector").map(([character]) =>
     character
   );
 }
+/** Parses an UCSUR character with optional variation selector and space. */
 function ucsur(
   settings: { allowVariation: boolean; allowSpace: boolean },
 ): Lexer<string> {
@@ -121,6 +133,7 @@ function ucsur(
     }
   }));
 }
+/** Parses a specific UCSUR character. */
 function specificUcsurCharacter(
   character: string,
   description: string,
@@ -147,10 +160,11 @@ function ucsurWord(
     }
   });
 }
-/** Parses UCSUR word. */
+/** Parses a single UCSUR word. */
 function singleUcsurWord(): Lexer<string> {
   return ucsurWord({ allowVariation: true, allowSpace: true });
 }
+/** Parses a joiner. */
 function joiner(): Lexer<string> {
   return choiceOnlyOne(
     match(/\u200D/, "zero width joiner").map(([_, joiner]) => joiner),
@@ -164,6 +178,7 @@ function joiner(): Lexer<string> {
     }),
   );
 }
+/** Parses combined words. */
 function combinedWords(): Lexer<TokenTree & { type: "combined words" }> {
   return sequence(
     ucsurWord({ allowVariation: false, allowSpace: false }),
@@ -175,14 +190,11 @@ function combinedWords(): Lexer<TokenTree & { type: "combined words" }> {
     second,
   }));
 }
-/** Parses a word. */
+/** Parses a word, either UCSUR or latin. */
 function word(): Lexer<string> {
   return choiceOnlyOne(singleUcsurWord(), latinWord());
 }
-/**
- * Parses all at least one uppercase words and combines them all into single
- * string. This function is exhaustive like `all`.
- */
+/** Parses proper words spanning multiple words. */
 function properWords(): Lexer<string> {
   return allAtLeastOnce(
     match(/([A-Z][a-zA-Z]*)\s*/, "proper word").map(([_, word]) => word),
@@ -190,7 +202,7 @@ function properWords(): Lexer<string> {
     (array) => array.join(" "),
   );
 }
-/** Parses a specific word. */
+/** Parses a specific word, either UCSUR or latin. */
 function specificWord(thatWord: string): Lexer<string> {
   return word().filter((thisWord) => {
     if (thatWord === thisWord) return true;
@@ -237,6 +249,7 @@ function punctuation(): Lexer<string> {
     }).map(() => ":"),
   );
 }
+/** Parses cartouche element and returns the phonemes or letters it represents. */
 function cartoucheElement(): Lexer<string> {
   return choiceOnlyOne(
     singleUcsurWord().skip(
@@ -278,6 +291,7 @@ function cartoucheElement(): Lexer<string> {
     ) => letter),
   );
 }
+/** Parses a single cartouche. */
 function cartouche(): Lexer<string> {
   return sequence(
     specificUcsurCharacter(START_OF_CARTOUCHE, "start of cartouche", {
@@ -296,6 +310,7 @@ function cartouche(): Lexer<string> {
     },
   );
 }
+/** Parses multiple cartouches. */
 function cartouches(): Lexer<string> {
   return allAtLeastOnce(cartouche()).map((words) => words.join(" "));
 }
@@ -356,9 +371,11 @@ function tokenTree(includeQuotation: boolean): Lexer<TokenTree> {
     word().map((word) => ({ type: "word", word })),
   );
 }
+/** Parses multiple token trees. */
 function tokenTrees(includeQuotation: boolean): Lexer<Array<TokenTree>> {
   return all(tokenTree(includeQuotation));
 }
+/** Parses multiple token trees. */
 export function lex(src: string): Output<Array<TokenTree>> {
   return spaces().with(all(tokenTree(true))).skip(eol()).parser(src)
     .map((

@@ -1,3 +1,8 @@
+/**
+ * A generic module for parser and parser combinator. It is used by both lexer
+ * and AST parser.
+ */
+
 import { OutputError } from "./error.ts";
 import { Output } from "./output.ts";
 
@@ -21,6 +26,7 @@ export class Parser<T, U> {
       }))
     );
   }
+  /** TODO better comment. */
   flatMapValue<V>(mapper: (value: U) => Output<V>): Parser<T, V> {
     return new Parser((src) =>
       this.parser(src).flatMap(({ value, rest }) =>
@@ -75,7 +81,7 @@ export function lookAhead<T, U>(parser: Parser<T, U>): Parser<T, U> {
 }
 /**
  * Lazily evaluates the parser function only when needed. Useful for recursive
- * parsers.
+ * parsers as well as precomputed parsers.
  */
 export function lazy<T, U>(parser: () => Parser<T, U>): Parser<T, U> {
   return new Parser((src) => parser().parser(src));
@@ -90,8 +96,8 @@ export function choice<T, U>(...choices: Array<Parser<T, U>>): Parser<T, U> {
   );
 }
 /**
- * Tries to evaluate each parsers one at a time and only returns the first
- * Output without error.
+ * Tries to evaluate each parsers one at a time and only only use the output of
+ * the parser that is successful.
  */
 export function choiceOnlyOne<T, U>(
   ...choices: Array<Parser<T, U>>
@@ -110,6 +116,10 @@ export function choiceOnlyOne<T, U>(
 export function optional<T, U>(parser: Parser<T, U>): Parser<T, null | U> {
   return choice(parser, nothing());
 }
+/**
+ * Like `optional` but when the parser is successful, it doesn't consider
+ * parsing nothing.
+ */
 export function optionalAll<T, U>(parser: Parser<T, U>): Parser<T, null | U> {
   return choiceOnlyOne(parser, nothing());
 }

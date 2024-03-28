@@ -1,3 +1,6 @@
+/** Module for translation settings stored as a global state */
+
+/** */
 export type RedundancySettings = "both" | "condensed" | "default only";
 export type Settings = {
   useTeloMisikeke: boolean;

@@ -1,3 +1,5 @@
+/** Module describing filter rules integrated within AST Parser. */
+
 import {
   Clause,
   FullClause,
@@ -288,7 +290,9 @@ function modifierIsNumeric(modifier: Modifier): boolean {
   }
   return false;
 }
-/** Helper function for checking if the modifiers is exactly just _ala_ or nothing. */
+/**
+ * Helper function for checking if the modifiers is exactly just _ala_ or nothing.
+ */
 function modifiersIsAlaOrNone(modifiers: Array<Modifier>): boolean {
   if (modifiers.length > 1) {
     return false;
@@ -299,6 +303,9 @@ function modifiersIsAlaOrNone(modifiers: Array<Modifier>): boolean {
   }
   return true;
 }
+/**
+ * Helper function for determining whether the phrase has a preposition inside.
+ */
 function hasPrepositionInPhrase(phrase: Phrase): boolean {
   if (phrase.type === "default") {
     return false;

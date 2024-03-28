@@ -1,3 +1,5 @@
+/** Module for describing word to word translations. */
+
 // TODO: avoid certain adjectives to be modified by adverb: this applies to
 // possessive adjectives: my, our, your, etc.
 

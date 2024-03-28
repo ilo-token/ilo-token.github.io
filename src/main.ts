@@ -1,3 +1,5 @@
+/** Module for main execution. */
+
 import { CoveredError } from "./error.ts";
 import { translate } from "./translator.ts";
 import { defaultSettings, RedundancySettings, settings } from "./settings.ts";
@@ -25,6 +27,7 @@ type Elements = {
   tense: HTMLSelectElement;
   xAlaXPartialParsing: HTMLInputElement;
 };
+/** A map of all HTML elements that are used here. */
 let elements: undefined | Elements;
 
 function loadElements(): void {
