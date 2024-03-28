@@ -377,6 +377,9 @@ function tokenTrees(includeQuotation: boolean): Lexer<Array<TokenTree>> {
 }
 /** Parses multiple token trees. */
 export function lex(src: string): Output<Array<TokenTree>> {
+  if (/\n/.test(src.trim())) {
+    return new Output(new UnrecognizedError("multiline text"));
+  }
   return spaces().with(all(tokenTree(true))).skip(eol()).parser(src)
     .map((
       { value },
