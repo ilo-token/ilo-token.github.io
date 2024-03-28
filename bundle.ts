@@ -24,7 +24,7 @@ if (Deno.args[0] === "build") {
       console.error(error);
     }
   }, 500);
-  const watcher = Deno.watchFs(["./src/", "./telo-misikeke"]);
+  const watcher = Deno.watchFs(["./src/", "./telo-misikeke/"]);
   builder();
   for await (const _ of watcher) {
     builder();
