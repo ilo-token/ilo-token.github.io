@@ -224,8 +224,8 @@ document.addEventListener("DOMContentLoaded", () => {
   elements!.translateButton.addEventListener("click", updateOutput);
   elements!.input.addEventListener("keydown", (event) => {
     if (event.code === "Enter") {
-      updateOutput();
       event.preventDefault();
+      updateOutput();
     }
   });
 });
