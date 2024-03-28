@@ -2,30 +2,29 @@
 
 /** */
 const SOURCE = [
-  [
-    "https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/-/raw/main/public/rules.js?ref_type=heads&inline=false",
-    "./rules.js",
-    "build_rules",
-  ],
-  [
-    "https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/-/raw/main/public/Parser.js?ref_type=heads&inline=false",
-    "./Parser.js",
-    "ParserWithCallbacks",
-  ],
+  {
+    source:
+      "https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/-/raw/main/public/rules.js?ref_type=heads&inline=false",
+    destination: new URL("./rules.js", import.meta.url),
+    exportItem: "build_rules",
+  },
+  {
+    source:
+      "https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/-/raw/main/public/Parser.js?ref_type=heads&inline=false",
+    destination: new URL("./Parser.js", import.meta.url),
+    exportItem: "ParserWithCallbacks",
+  },
 ] as const;
 async function buildFile(
   source: string,
-  destination: string,
+  destination: URL,
   exportItem: string,
 ): Promise<void> {
   // fetch source code
   let file = await (await fetch(source)).text();
 
   // add `export` keyword
-  file = file.replace(
-    new RegExp(`function\\s+${exportItem}`),
-    `export function ${exportItem}`,
-  );
+  file = file.replace(new RegExp(`function\\s+${exportItem}`), "export $&");
 
   // remove module.export
   const seachText = "if ( typeof ( module ) != 'undefined' )";
@@ -35,12 +34,12 @@ async function buildFile(
   file = file.replace(regex, "");
 
   //write the code
-  await Deno.writeTextFile(new URL(destination, import.meta.url), file);
+  await Deno.writeTextFile(destination, file);
 }
 export async function build(): Promise<void> {
   await Promise.all(
-    SOURCE.map(([source, destination, exportItem]) =>
-      buildFile(source, destination, exportItem)
+    SOURCE.map((file) =>
+      buildFile(file.source, file.destination, file.exportItem)
     ),
   );
 }
