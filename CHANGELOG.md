@@ -10,6 +10,7 @@ You may need to force restart the page in order to use the latest version: shift
 - Implement UCSUR support! It supports:
   - Cartouche with nasin sitelen kalama
   - (Deprecated characters and combiners are not supported)
+- The parser will no longer recognize multiline text.
 
 Inside update (intended for developers):
 
