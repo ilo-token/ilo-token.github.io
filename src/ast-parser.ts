@@ -44,6 +44,7 @@ import {
 } from "./parser-lib.ts";
 import { TokenTree } from "./token-tree.ts";
 import { lex } from "./lexer.ts";
+import { describe } from "./token-tree.ts";
 
 export type AstParser<T> = Parser<Array<TokenTree>, T>;
 
@@ -79,7 +80,7 @@ function comma(): AstParser<string> {
     if (tokenTree.type === "comma") {
       return ",";
     } else {
-      throw new UnexpectedError(tokenTree.type, "comma");
+      throw new UnexpectedError(describe(tokenTree), "comma");
     }
   });
 }
@@ -93,7 +94,7 @@ function word(): AstParser<string> {
     if (tokenTree.type === "word") {
       return tokenTree.word;
     } else {
-      throw new UnexpectedError(tokenTree.type, "word");
+      throw new UnexpectedError(describe(tokenTree), "word");
     }
   });
 }
@@ -103,7 +104,7 @@ function properWords(): AstParser<string> {
     if (tokenTree.type === "proper word") {
       return tokenTree.words;
     } else {
-      throw new UnexpectedError(tokenTree.type, "proper words");
+      throw new UnexpectedError(describe(tokenTree), "proper words");
     }
   });
 }
@@ -113,7 +114,7 @@ function punctuation(): AstParser<string> {
     if (tokenTree.type === "punctuation") {
       return tokenTree.punctuation;
     } else {
-      throw new UnexpectedError(tokenTree.type, "punctuation");
+      throw new UnexpectedError(describe(tokenTree), "punctuation");
     }
   });
 }
@@ -148,7 +149,7 @@ function wordUnit(word: Set<string>, description: string): AstParser<WordUnit> {
       if (tokenTree.type === "x ala x") {
         return { type: "x ala x", word: tokenTree.word } as WordUnit;
       } else {
-        throw new UnexpectedError(tokenTree.type, "X ala X");
+        throw new UnexpectedError(describe(tokenTree), "X ala X");
       }
     }),
     wordFrom(word, description).then((word) =>
@@ -513,14 +514,15 @@ export function quotation(): AstParser<Quotation> {
   return tokenTree("quotation").flatMapValue((tokenTree) => {
     if (tokenTree.type === "quotation") {
       return all(sentence()).skip(eol()).parser(tokenTree.tokenTree).map(
-        ({ value }) => ({
-          sentences: value,
-          leftMark: tokenTree.leftMark,
-          rightMark: tokenTree.rightMark,
-        }),
+        ({ value }) =>
+          ({
+            sentences: value,
+            leftMark: tokenTree.leftMark,
+            rightMark: tokenTree.rightMark,
+          }) as Quotation,
       );
     } else {
-      return new Output(new UnexpectedError(tokenTree.type, "quotation"));
+      return new Output(new UnexpectedError(describe(tokenTree), "quotation"));
     }
   });
 }
