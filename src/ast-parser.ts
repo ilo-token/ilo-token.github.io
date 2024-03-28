@@ -74,15 +74,20 @@ function tokenTree(description: string): AstParser<TokenTree> {
     }
   });
 }
-/** Parses comma. */
-function comma(): AstParser<string> {
-  return tokenTree("comma").map((tokenTree) => {
-    if (tokenTree.type === "comma") {
-      return ",";
+function specificTokenTree<T extends TokenTree["type"]>(
+  type: T,
+): AstParser<TokenTree & { type: T }> {
+  return tokenTree(type).map((tokenTree) => {
+    if (tokenTree.type === type) {
+      return tokenTree as TokenTree & { type: T };
     } else {
-      throw new UnexpectedError(describe(tokenTree), "comma");
+      throw new UnexpectedError(describe(tokenTree), type);
     }
   });
+}
+/** Parses comma. */
+function comma(): AstParser<string> {
+  return specificTokenTree("comma").map(() => ",");
 }
 /** Parses an optional comma. */
 function optionalComma(): AstParser<null | string> {
@@ -90,33 +95,15 @@ function optionalComma(): AstParser<null | string> {
 }
 /** Parses a toki pona word. */
 function word(): AstParser<string> {
-  return tokenTree("word").map((tokenTree) => {
-    if (tokenTree.type === "word") {
-      return tokenTree.word;
-    } else {
-      throw new UnexpectedError(describe(tokenTree), "word");
-    }
-  });
+  return specificTokenTree("word").map(({ word }) => word);
 }
 /** Parses proper words spanning multiple words. */
 function properWords(): AstParser<string> {
-  return tokenTree("proper word").map((tokenTree) => {
-    if (tokenTree.type === "proper word") {
-      return tokenTree.words;
-    } else {
-      throw new UnexpectedError(describe(tokenTree), "proper words");
-    }
-  });
+  return specificTokenTree("proper word").map(({ words }) => words);
 }
 /** Parses a toki pona */
 function punctuation(): AstParser<string> {
-  return tokenTree("punctuation").map((tokenTree) => {
-    if (tokenTree.type === "punctuation") {
-      return tokenTree.punctuation;
-    } else {
-      throw new UnexpectedError(describe(tokenTree), "punctuation");
-    }
-  });
+  return specificTokenTree("punctuation").map(({ punctuation }) => punctuation);
 }
 /** Parses word only from `set`. */
 function wordFrom(set: Set<string>, description: string): AstParser<string> {
@@ -511,20 +498,16 @@ function sentence(): AstParser<Sentence> {
 }
 /** Parses a quotation. */
 export function quotation(): AstParser<Quotation> {
-  return tokenTree("quotation").flatMapValue((tokenTree) => {
-    if (tokenTree.type === "quotation") {
-      return all(sentence()).skip(eol()).parser(tokenTree.tokenTree).map(
-        ({ value }) =>
-          ({
-            sentences: value,
-            leftMark: tokenTree.leftMark,
-            rightMark: tokenTree.rightMark,
-          }) as Quotation,
-      );
-    } else {
-      return new Output(new UnexpectedError(describe(tokenTree), "quotation"));
-    }
-  });
+  return specificTokenTree("quotation").flatMapValue((tokenTree) =>
+    all(sentence()).skip(eol()).parser(tokenTree.tokenTree).map(
+      ({ value }) =>
+        ({
+          sentences: value,
+          leftMark: tokenTree.leftMark,
+          rightMark: tokenTree.rightMark,
+        }) as Quotation,
+    )
+  );
 }
 /** A multiple Toki Pona sentence parser. */
 export function parser(src: string): Output<Array<Sentence>> {
