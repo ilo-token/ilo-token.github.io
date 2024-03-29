@@ -97,8 +97,7 @@ function outputErrors(errors: Array<string>): void {
   } else if (errors.length === 1) {
     elements!.error.innerText = errors[0];
   } else {
-    elements!.error.innerText =
-      "Multiple errors has been found, but only at least one could be helpful:";
+    elements!.error.innerText = "Multiple errors has been found:";
     for (const errorMessage of errors) {
       const list = document.createElement("li");
       list.innerText = errorMessage;
