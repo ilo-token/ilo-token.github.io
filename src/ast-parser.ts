@@ -505,13 +505,12 @@ export function quotation(): AstParser<Quotation> {
     )
   );
 }
+const FULL_PARSER = allAtLeastOnce(sentence())
+  .skip(eol())
+  .filter(filter(SENTENCES_RULE));
 /** A multiple Toki Pona sentence parser. */
 export function parser(src: string): Output<Array<Sentence>> {
   return lex(src).flatMap((src) =>
-    allAtLeastOnce(sentence()).skip(eol())
-      .filter(
-        filter(SENTENCES_RULE),
-      ).parser(src)
-      .map(({ value }) => value)
+    FULL_PARSER.parser(src).map(({ value }) => value)
   );
 }

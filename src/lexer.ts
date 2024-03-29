@@ -375,12 +375,13 @@ function tokenTree(includeQuotation: boolean): Lexer<TokenTree> {
 function tokenTrees(includeQuotation: boolean): Lexer<Array<TokenTree>> {
   return all(tokenTree(includeQuotation));
 }
+const FULL_PARSER = spaces().with(all(tokenTree(true))).skip(eol());
 /** Parses multiple token trees. */
 export function lex(src: string): Output<Array<TokenTree>> {
   if (/\n/.test(src.trim())) {
     return new Output(new UnrecognizedError("multiline text"));
   }
-  return spaces().with(all(tokenTree(true))).skip(eol()).parser(src)
+  return FULL_PARSER.parser(src)
     .map((
       { value },
     ) => value);
