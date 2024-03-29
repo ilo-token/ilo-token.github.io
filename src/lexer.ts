@@ -117,21 +117,19 @@ function variationSelector(): Lexer<string> {
 function ucsur(
   settings: { allowVariation: boolean; allowSpace: boolean },
 ): Lexer<string> {
-  return slice(2, "UCSUR character").skip(
-    lazy(() => {
-      if (settings.allowVariation) {
-        return optionalAll(variationSelector()).map(() => null);
-      } else {
-        return nothing();
-      }
-    }),
-  ).skip(lazy(() => {
-    if (settings.allowSpace) {
-      return spaces().map(() => null);
-    } else {
-      return nothing();
-    }
-  }));
+  let variationParser: Lexer<null>;
+  if (settings.allowVariation) {
+    variationParser = optionalAll(variationSelector()).map(() => null);
+  } else {
+    variationParser = nothing();
+  }
+  let spaceParser: Lexer<null>;
+  if (settings.allowSpace) {
+    spaceParser = spaces().map(() => null);
+  } else {
+    spaceParser = nothing();
+  }
+  return slice(2, "UCSUR character").skip(variationParser).skip(spaceParser);
 }
 /** Parses a specific UCSUR character. */
 function specificUcsurCharacter(
@@ -344,30 +342,32 @@ function quotation(): Lexer<TokenTree & { type: "quotation" }> {
 }
 /** Parses a token tree. */
 function tokenTree(includeQuotation: boolean): Lexer<TokenTree> {
+  let quotationParser: Lexer<TokenTree>;
+  if (includeQuotation) {
+    quotationParser = quotation();
+  } else {
+    quotationParser = error(new CoveredError());
+  }
+  let xAlaXParser: Lexer<TokenTree>;
+  if (settings.xAlaXPartialParsing) {
+    xAlaXParser = error(new CoveredError());
+  } else {
+    xAlaXParser = xAlaX().map((word) =>
+      ({ type: "x ala x", word }) as TokenTree
+    );
+  }
   return choiceOnlyOne(
     punctuation().map((punctuation) =>
       ({ type: "punctuation", punctuation }) as TokenTree
     ),
     comma().map(() => ({ type: "comma" }) as TokenTree),
-    lazy(() => {
-      if (includeQuotation) {
-        return quotation();
-      } else {
-        return error(new CoveredError());
-      }
-    }),
+    quotationParser,
     choiceOnlyOne(cartouches(), properWords()).map((words) =>
       ({ type: "proper word", words }) as TokenTree
     ),
     combinedWords(),
     multipleA().map((count) => ({ type: "multiple a", count }) as TokenTree),
-    lazy(() => {
-      if (!settings.xAlaXPartialParsing) {
-        return xAlaX().map((word) => ({ type: "x ala x", word }) as TokenTree);
-      } else {
-        return error(new CoveredError());
-      }
-    }),
+    xAlaXParser,
     word().map((word) => ({ type: "word", word })),
   );
 }
