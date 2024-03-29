@@ -4,9 +4,9 @@ import { OutputError } from "./error.ts";
 /** Represents possibilities and error. */
 export class Output<T> {
   /** Represents possibilities, considered error when the array is empty. */
-  output: Array<T>;
+  readonly output: Array<T>;
   /** A list of all aggregated errors. */
-  errors: Array<OutputError> = [];
+  readonly errors: Array<OutputError> = [];
   constructor(output?: undefined | null | Array<T> | OutputError) {
     if (Array.isArray(output)) {
       this.output = output;
@@ -19,7 +19,9 @@ export class Output<T> {
   }
   private static newErrors<T>(errors: Array<OutputError>): Output<T> {
     const output = new Output<T>();
-    output.errors = errors;
+    for (const error of errors) {
+      output.pushError(error);
+    }
     return output;
   }
   private pushError(error: OutputError): void {
@@ -64,7 +66,7 @@ export class Output<T> {
    */
   map<U>(mapper: (value: T) => U): Output<U> {
     if (this.isError()) {
-      return Output.newErrors(this.errors.slice());
+      return Output.newErrors(this.errors);
     }
     const wholeOutput = new Output<U>();
     for (const value of this.output) {
@@ -86,7 +88,7 @@ export class Output<T> {
    */
   flatMap<U>(mapper: (value: T) => Output<U>): Output<U> {
     if (this.isError()) {
-      return Output.newErrors(this.errors.slice());
+      return Output.newErrors(this.errors);
     }
     const wholeOutput = new Output<U>();
     for (const value of this.output) wholeOutput.append(mapper(value));
