@@ -133,7 +133,7 @@ function updateOutput(): void {
       outputTranslations(output);
     }
   } catch (unreachableError) {
-    let error;
+    let error: string;
     if (unreachableError instanceof Error) {
       error = unreachableError.message;
     } else {
