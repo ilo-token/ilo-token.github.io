@@ -69,6 +69,10 @@ export class Parser<T, U> {
 export function error<T>(error: OutputError): Parser<T, never> {
   return new Parser(() => new Output(error));
 }
+/** Parser that always outputs an empty output. */
+export function empty<T>(): Parser<T, never> {
+  return new Parser(() => new Output());
+}
 /** Parses nothing and leaves the source string intact. */
 export function nothing<T>(): Parser<T, null> {
   return new Parser((src) => new Output([{ value: null, rest: src }]));
@@ -102,15 +106,20 @@ export function choice<T, U>(...choices: Array<Parser<T, U>>): Parser<T, U> {
 export function choiceOnlyOne<T, U>(
   ...choices: Array<Parser<T, U>>
 ): Parser<T, U> {
-  return new Parser((src) =>
-    choices.reduce((output, parser) => {
+  if (choices.length === 0) {
+    return empty();
+  } else {
+    const first = choices[0];
+    const rest = choiceOnlyOne(...choices.slice(1));
+    return new Parser((src) => {
+      const output = first.parser(src);
       if (output.isError()) {
-        return Output.concat(output, parser.parser(src));
+        return Output.concat(output, rest.parser(src));
       } else {
         return output;
       }
-    }, new Output<ValueRest<T, U>>())
-  );
+    });
+  }
 }
 /** Combines `parser` and the `nothing` parser, and output `null | T`. */
 export function optional<T, U>(parser: Parser<T, U>): Parser<T, null | U> {
