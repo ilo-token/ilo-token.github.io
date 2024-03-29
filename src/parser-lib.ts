@@ -106,7 +106,7 @@ export function choice<T, U>(...choices: Array<Parser<T, U>>): Parser<T, U> {
 export function choiceOnlyOne<T, U>(
   ...choices: Array<Parser<T, U>>
 ): Parser<T, U> {
-  return choices.reduce((parser, newParser) =>
+  return choices.reduceRight((newParser, parser) =>
     new Parser((src) => {
       const output = parser.parser(src);
       if (output.isError()) {
@@ -134,12 +134,12 @@ export function sequence<T, U extends Array<unknown>>(
 ): Parser<T, U> {
   // We resorted to using `any` types here, make sure it works properly
   // deno-lint-ignore no-explicit-any
-  return (sequence as Array<any>).reduce(
-    (parser, newParser) =>
+  return (sequence as Array<any>).reduceRight(
+    (newParser, parser) =>
       // deno-lint-ignore no-explicit-any
       parser.then((value: any) =>
         // deno-lint-ignore no-explicit-any
-        newParser.map((newValue: any) => [...value, newValue])
+        newParser.map((newValue: any) => [value, ...newValue])
       ),
     nothing().map(() => []),
   );
