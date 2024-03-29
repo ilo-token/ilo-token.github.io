@@ -81,7 +81,7 @@ export function lookAhead<T, U>(parser: Parser<T, U>): Parser<T, U> {
 }
 /**
  * Lazily evaluates the parser function only when needed. Useful for recursive
- * parsers as well as precomputed parsers.
+ * parsers.
  */
 export function lazy<T, U>(parser: () => Parser<T, U>): Parser<T, U> {
   return new Parser((src) => parser().parser(src));
