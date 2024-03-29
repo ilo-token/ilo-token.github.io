@@ -129,18 +129,15 @@ export function sequence<T, U extends Array<unknown>>(
   ...sequence: { [I in keyof U]: Parser<T, U[I]> } & { length: U["length"] }
 ): Parser<T, U> {
   // We resorted to using `any` types here, make sure it works properly
-  return new Parser((src) =>
-    sequence.reduce(
-      (output, parser) =>
-        output.flatMap(({ value, rest }) =>
-          parser.parser(rest).map(({ value: newValue, rest }) => ({
-            value: [...value, newValue],
-            rest,
-          }))
-        ),
+  // deno-lint-ignore no-explicit-any
+  return (sequence as Array<any>).reduce(
+    (parser, newParser) =>
       // deno-lint-ignore no-explicit-any
-      new Output<ValueRest<T, any>>([{ value: [], rest: src }]),
-    )
+      parser.then((value: any) =>
+        // deno-lint-ignore no-explicit-any
+        newParser.map((newValue: any) => [...value, newValue])
+      ),
+    nothing().map(() => []),
   );
 }
 /**
