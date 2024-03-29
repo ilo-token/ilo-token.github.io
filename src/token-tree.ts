@@ -12,8 +12,7 @@ export type TokenTree =
   | { type: "word"; word: string }
   | {
     type: "combined words";
-    first: string;
-    second: string;
+    words: Array<string>;
   }
   | {
     type: "long container";
@@ -47,14 +46,13 @@ export type longContainerHead =
   }
   | {
     type: "combined words";
-    first: string;
-    second: string;
+    words: Array<string>;
   };
 export function describe(tokenTree: TokenTree): string {
   if (tokenTree.type === "word") {
     return `"${tokenTree.word}"`;
   } else if (tokenTree.type === "combined words") {
-    return `"${tokenTree.first} ${tokenTree.second}"`;
+    return `"${tokenTree.words.join(" ")}"`;
   } else if (
     tokenTree.type === "long container" ||
     tokenTree.type === "long space container"

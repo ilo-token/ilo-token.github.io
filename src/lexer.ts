@@ -182,12 +182,12 @@ function joiner(): Lexer<string> {
 function combinedWords(): Lexer<TokenTree & { type: "combined words" }> {
   return sequence(
     ucsurWord({ allowVariation: false, allowSpace: false }),
-    joiner(),
-    ucsurWord({ allowVariation: false, allowSpace: true }),
-  ).map(([first, _, second]) => ({
+    allAtLeastOnce(
+      joiner().skip(ucsurWord({ allowVariation: false, allowSpace: true })),
+    ),
+  ).map(([first, rest]) => ({
     type: "combined words",
-    first,
-    second,
+    words: [first, ...rest],
   }));
 }
 /** Parses a word, either UCSUR or latin. */
