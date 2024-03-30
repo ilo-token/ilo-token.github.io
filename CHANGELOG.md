@@ -9,6 +9,7 @@ You may need to force restart the page in order to use the latest version: shift
 - ilo Token can now use telo misikeke for error messages. You can turn this on from the settings dialog.
 - Implement UCSUR support! It supports:
   - Cartouche with nasin sitelen kalama
+  - Combined glyphs
   - (Deprecated characters and combiners are not supported)
 - Multiline text will no longer be recognized.
 - Add icons.
