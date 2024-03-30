@@ -181,7 +181,7 @@ function combinedGlyphs(): Lexer<TokenTree & { type: "combined glyphs" }> {
   return sequence(
     ucsurWord({ allowVariation: false, allowSpace: false }),
     allAtLeastOnce(
-      joiner().skip(ucsurWord({ allowVariation: false, allowSpace: true })),
+      joiner().with(ucsurWord({ allowVariation: false, allowSpace: true })),
     ),
   ).map(([first, rest]) => ({
     type: "combined glyphs",
