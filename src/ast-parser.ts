@@ -156,9 +156,9 @@ function binaryWords(
   word: Set<string>,
   description: string,
 ): AstParser<[string, string]> {
-  return specificTokenTree("combined words").map(({ words }) => {
+  return specificTokenTree("combined glyphs").map(({ words }) => {
     if (words.length > 2) {
-      throw new UnrecognizedError(`combined words of ${words.length} words`);
+      throw new UnrecognizedError(`combined glyphs of ${words.length} words`);
     } else if (!word.has(words[0])) {
       throw new UnrecognizedError(`"${words[0]}" as ${description}`);
     } else if (!CONTENT_WORD.has(words[1])) {

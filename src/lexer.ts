@@ -176,15 +176,15 @@ function joiner(): Lexer<string> {
     }),
   );
 }
-/** Parses combined words. */
-function combinedWords(): Lexer<TokenTree & { type: "combined words" }> {
+/** Parses combined glyphs. */
+function combinedGlyphs(): Lexer<TokenTree & { type: "combined glyphs" }> {
   return sequence(
     ucsurWord({ allowVariation: false, allowSpace: false }),
     allAtLeastOnce(
       joiner().skip(ucsurWord({ allowVariation: false, allowSpace: true })),
     ),
   ).map(([first, rest]) => ({
-    type: "combined words",
+    type: "combined glyphs",
     words: [first, ...rest],
   }));
 }
@@ -365,7 +365,7 @@ function tokenTree(includeQuotation: boolean): Lexer<TokenTree> {
     choiceOnlyOne(cartouches(), properWords()).map((words) =>
       ({ type: "proper word", words }) as TokenTree
     ),
-    combinedWords(),
+    combinedGlyphs(),
     multipleA().map((count) => ({ type: "multiple a", count }) as TokenTree),
     xAlaXParser,
     word().map((word) => ({ type: "word", word })),

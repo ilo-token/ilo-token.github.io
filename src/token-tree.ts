@@ -11,7 +11,7 @@ import { UnreachableError } from "./error.ts";
 export type TokenTree =
   | { type: "word"; word: string }
   | {
-    type: "combined words";
+    type: "combined glyphs";
     words: Array<string>;
   }
   | {
@@ -51,8 +51,8 @@ export type longContainerHead =
 export function describe(tokenTree: TokenTree): string {
   if (tokenTree.type === "word") {
     return `"${tokenTree.word}"`;
-  } else if (tokenTree.type === "combined words") {
-    return `"${tokenTree.words.join(" ")}"`;
+  } else if (tokenTree.type === "combined glyphs") {
+    return `combined glyphs "${tokenTree.words.join(" ")}"`;
   } else if (
     tokenTree.type === "long container" ||
     tokenTree.type === "long space container"
