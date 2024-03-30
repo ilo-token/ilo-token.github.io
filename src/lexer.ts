@@ -285,9 +285,9 @@ function cartoucheElement(): Lexer<string> {
       return morae.slice(0, count).join("");
     }),
     singleUcsurWord().map((word) => word[0]),
-    match(/([a-zA-Z])\s*/, "Latin letter").map((
+    match(/([a-zA-Z]+)\s*/, "Latin letter").map((
       [_, letter],
-    ) => letter),
+    ) => letter.toLowerCase()),
   );
 }
 /** Parses a single cartouche. */
