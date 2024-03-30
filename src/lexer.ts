@@ -237,6 +237,7 @@ function punctuation(): Lexer<string> {
     match(/([.,:;?!])\s*/, "punctuation").map(([_, punctuation]) =>
       punctuation
     ),
+    // NOTE: maybe these are unnecessary
     specificUcsurCharacter("󱦜", "middle dot", {
       allowVariation: true,
       allowSpace: true,
