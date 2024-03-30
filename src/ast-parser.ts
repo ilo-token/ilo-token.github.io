@@ -48,22 +48,6 @@ import { describe } from "./token-tree.ts";
 
 export type AstParser<T> = Parser<Array<TokenTree>, T>;
 
-function nullableAsArray<T>(value?: null | undefined | T): Array<T> {
-  if (value == null) {
-    return [];
-  } else {
-    return [value];
-  }
-}
-function wordAsModifier(word: string): Modifier {
-  return {
-    type: "default",
-    word: {
-      type: "default",
-      word,
-    },
-  };
-}
 /** Takes all parsers and applies them one after another. */
 // Had to redeclare this function, Typescript really struggles with inferring
 // types when using `sequence`.
@@ -180,15 +164,18 @@ function binaryWords(
 function optionalCombined(
   word: Set<string>,
   description: string,
-): AstParser<[WordUnit, null | string]> {
+): AstParser<[WordUnit, Array<Modifier>]> {
   return choice(
     wordUnit(word, description).map((wordUnit) =>
-      [wordUnit, null] as [WordUnit, null | string]
+      [wordUnit, []] as [WordUnit, Array<Modifier>]
     ),
     binaryWords(word, description).map((
       [first, second],
     ) =>
-      [{ type: "default", word: first }, second] as [WordUnit, null | string]
+      [{ type: "default", word: first }, [{
+        type: "default",
+        word: { type: "default", word: second },
+      }]] as [WordUnit, Array<Modifier>]
     ),
   );
 }
@@ -289,7 +276,7 @@ function phrase(): AstParser<Phrase> {
       type: "preverb",
       preverb,
       modifiers: [
-        ...nullableAsArray(modifier).map(wordAsModifier),
+        ...modifier,
         ...modifiers,
       ],
       phrase,
@@ -305,7 +292,7 @@ function phrase(): AstParser<Phrase> {
       type: "default",
       headWord,
       modifiers: [
-        ...nullableAsArray(modifier).map(wordAsModifier),
+        ...modifier,
         ...modifiers,
       ],
     } as Phrase)),
@@ -394,7 +381,7 @@ function preposition(): AstParser<Preposition> {
       ({
         preposition,
         modifiers: [
-          ...nullableAsArray(modifier).map(wordAsModifier),
+          ...modifier,
           ...modifiers,
         ],
         phrases,
