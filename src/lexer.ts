@@ -17,7 +17,6 @@ import {
   allAtLeastOnce,
   choiceOnlyOne,
   error,
-  lazy,
   optionalAll,
   Parser,
   sequence as rawSequence,
@@ -318,7 +317,7 @@ function cartouches(): Lexer<string> {
 function quotation(): Lexer<TokenTree & { type: "quotation" }> {
   return sequence(
     openQuotationMark(),
-    lazy(() => tokenTrees(false)),
+    tokenTrees(false),
     closeQuotationMark(),
   ).map(([leftMark, tokenTree, rightMark]) => {
     if (leftMark === '"' || leftMark === "“") {
