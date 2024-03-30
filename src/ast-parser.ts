@@ -48,6 +48,13 @@ import { describe } from "./token-tree.ts";
 
 export type AstParser<T> = Parser<Array<TokenTree>, T>;
 
+function nullableAsArray<T>(value?: null | undefined | T): Array<T> {
+  if (value == null) {
+    return [];
+  } else {
+    return [value];
+  }
+}
 /** Takes all parsers and applies them one after another. */
 // Had to redeclare this function, Typescript really struggles with inferring
 // types when using `sequence`.
@@ -145,6 +152,37 @@ function wordUnit(word: Set<string>, description: string): AstParser<WordUnit> {
     ) => ({ type: "default", word } as WordUnit)),
   ).filter(filter(WORD_UNIT_RULES));
 }
+function binaryWords(
+  word: Set<string>,
+  description: string,
+): AstParser<[string, string]> {
+  return specificTokenTree("combined words").map(({ words }) => {
+    if (words.length > 2) {
+      throw new UnrecognizedError(`combined words of ${words.length} words`);
+    } else if (!word.has(words[0])) {
+      throw new UnrecognizedError(`"${words[0]}" as ${description}`);
+    } else if (!CONTENT_WORD.has(words[1])) {
+      throw new UnrecognizedError(`"${words[1]}" as content word`);
+    } else {
+      return words as [string, string];
+    }
+  });
+}
+function optionalCombined(
+  word: Set<string>,
+  description: string,
+): AstParser<[WordUnit, null | string]> {
+  return choice(
+    wordUnit(word, description).map((wordUnit) =>
+      [wordUnit, null] as [WordUnit, null | string]
+    ),
+    binaryWords(word, description).map((
+      [first, second],
+    ) =>
+      [{ type: "default", word: first }, second] as [WordUnit, null | string]
+    ),
+  );
+}
 /** Parses number words in order. */
 function number(): AstParser<Array<string>> {
   return sequence(
@@ -220,16 +258,28 @@ function phrase(): AstParser<Phrase> {
       headWord: { type: "numbers", numbers },
       modifiers,
     } as Phrase)),
+    binaryWords(PREVERB, "preveb").map(([preverb, phrase]) =>
+      ({
+        type: "preverb",
+        preverb: { type: "default", word: preverb },
+        modifiers: [],
+        phrase: {
+          type: "default",
+          headWord: { type: "default", word: phrase },
+          modifiers: [],
+        },
+      }) as Phrase
+    ),
     sequence(
-      wordUnit(PREVERB, "preverb"),
+      optionalCombined(PREVERB, "preverb"),
       lazy(modifiers),
       lazy(phrase),
     ).map((
-      [preverb, modifiers, phrase],
+      [[preverb, modifier], modifiers, phrase],
     ) => ({
       type: "preverb",
       preverb,
-      modifiers,
+      modifiers: [...nullableAsArray(modifier), ...modifiers],
       phrase,
     } as Phrase)),
     lazy(preposition).map((preposition) => ({
@@ -237,12 +287,12 @@ function phrase(): AstParser<Phrase> {
       preposition,
     } as Phrase)),
     sequence(
-      wordUnit(CONTENT_WORD, "headword"),
+      optionalCombined(CONTENT_WORD, "headword"),
       lazy(modifiers),
-    ).map(([headWord, modifiers]) => ({
+    ).map(([[headWord, modifier], modifiers]) => ({
       type: "default",
       headWord,
-      modifiers,
+      modifiers: [...nullableAsArray(modifier), ...modifiers],
     } as Phrase)),
     quotation().map((
       quotation,
@@ -306,15 +356,33 @@ function subjectPhrases(): AstParser<MultiplePhrases> {
 }
 /** Parses prepositional phrase. */
 function preposition(): AstParser<Preposition> {
-  return sequence(
-    wordUnit(PREPOSITION, "preposition"),
-    modifiers(),
-    nestedPhrases(["anu"]),
-  ).map(([preposition, modifiers, phrases]) => ({
-    preposition,
-    modifiers,
-    phrases,
-  })).filter(filter(PREPOSITION_RULE));
+  return choice(
+    binaryWords(PREPOSITION, "preposition").map(([preposition, phrase]) =>
+      ({
+        preposition: { type: "default", word: preposition },
+        modifiers: [],
+        phrases: {
+          type: "single",
+          phrase: {
+            type: "default",
+            headWord: { type: "default", word: phrase },
+            modifiers: [],
+          },
+        },
+      }) as Preposition
+    ),
+    sequence(
+      optionalCombined(PREPOSITION, "preposition"),
+      modifiers(),
+      nestedPhrases(["anu"]),
+    ).map(([[preposition, modifier], modifiers, phrases]) =>
+      ({
+        preposition,
+        modifiers: [...nullableAsArray(modifier), ...modifiers],
+        phrases,
+      }) as Preposition
+    ),
+  ).filter(filter(PREPOSITION_RULE));
 }
 /**
  * Parses associated predicates whose predicates only uses top level operator.
