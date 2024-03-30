@@ -49,4 +49,4 @@ With exception to `./src/main.ts`, every source codes in `./src/` are runtime ag
 
 Some parts of the code make use of sitelen pona UCSUR characters. To display properly, install an UCSUR font and change the font settings on your editor. [UCSUR Installation guides](https://github.com/neroist/sitelen-pona-ucsur-guide/).
 
-Also, take note that UCSUR characters are two characters wide in JavaScript string . Be careful with string and regex manipulation.
+Also, take note that UCSUR characters are two characters wide in JavaScript string. Be careful with string and regex manipulation.
