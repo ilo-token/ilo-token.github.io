@@ -295,12 +295,12 @@ function cartouche(): Lexer<string> {
   return sequence(
     specificUcsurCharacter(START_OF_CARTOUCHE, "start of cartouche", {
       allowVariation: false,
-      allowSpace: false,
+      allowSpace: true,
     }),
     allAtLeastOnce(cartoucheElement()),
     specificUcsurCharacter(END_OF_CARTOUCHE, "end of cartouche", {
       allowVariation: false,
-      allowSpace: false,
+      allowSpace: true,
     }),
   ).map(
     ([_, words, _1]) => {
