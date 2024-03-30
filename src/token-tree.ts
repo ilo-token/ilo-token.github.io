@@ -15,15 +15,19 @@ export type TokenTree =
     words: Array<string>;
   }
   | {
-    type: "long container";
+    type: "long glyph";
     before: Array<TokenTree>;
-    word: longContainerHead;
+    word: longGlyphHead;
     after: Array<TokenTree>;
   }
   | {
-    type: "long space container";
-    word: longContainerHead;
+    type: "long glyph space";
+    word: longGlyphHead;
     spaceLength: number;
+  }
+  | {
+    type: "long lon";
+    words: Array<TokenTree>;
   }
   | { type: "multiple a"; count: number }
   | { type: "x ala x"; word: string }
@@ -37,9 +41,9 @@ export type TokenTree =
   | { type: "comma" }
   | { type: "punctuation"; punctuation: string };
 /**
- * Represents the word used as long container.
+ * Represents the word used as long glyph.
  */
-export type longContainerHead =
+export type longGlyphHead =
   | {
     type: "word";
     word: string;
@@ -54,8 +58,8 @@ export function describe(tokenTree: TokenTree): string {
   } else if (tokenTree.type === "combined glyphs") {
     return `combined glyphs "${tokenTree.words.join(" ")}"`;
   } else if (
-    tokenTree.type === "long container" ||
-    tokenTree.type === "long space container"
+    tokenTree.type === "long glyph" ||
+    tokenTree.type === "long glyph space"
   ) {
     return "long glyph";
   } else if (tokenTree.type === "multiple a") {
