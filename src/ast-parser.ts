@@ -55,6 +55,15 @@ function nullableAsArray<T>(value?: null | undefined | T): Array<T> {
     return [value];
   }
 }
+function wordAsModifier(word: string): Modifier {
+  return {
+    type: "default",
+    word: {
+      type: "default",
+      word,
+    },
+  };
+}
 /** Takes all parsers and applies them one after another. */
 // Had to redeclare this function, Typescript really struggles with inferring
 // types when using `sequence`.
@@ -279,7 +288,10 @@ function phrase(): AstParser<Phrase> {
     ) => ({
       type: "preverb",
       preverb,
-      modifiers: [...nullableAsArray(modifier), ...modifiers],
+      modifiers: [
+        ...nullableAsArray(modifier).map(wordAsModifier),
+        ...modifiers,
+      ],
       phrase,
     } as Phrase)),
     lazy(preposition).map((preposition) => ({
@@ -292,7 +304,10 @@ function phrase(): AstParser<Phrase> {
     ).map(([[headWord, modifier], modifiers]) => ({
       type: "default",
       headWord,
-      modifiers: [...nullableAsArray(modifier), ...modifiers],
+      modifiers: [
+        ...nullableAsArray(modifier).map(wordAsModifier),
+        ...modifiers,
+      ],
     } as Phrase)),
     quotation().map((
       quotation,
@@ -378,7 +393,10 @@ function preposition(): AstParser<Preposition> {
     ).map(([[preposition, modifier], modifiers, phrases]) =>
       ({
         preposition,
-        modifiers: [...nullableAsArray(modifier), ...modifiers],
+        modifiers: [
+          ...nullableAsArray(modifier).map(wordAsModifier),
+          ...modifiers,
+        ],
         phrases,
       }) as Preposition
     ),
