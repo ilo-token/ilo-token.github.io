@@ -32,6 +32,7 @@ import {
   WORD_UNIT_RULES,
 } from "./filter.ts";
 import {
+  all,
   allAtLeastOnce,
   choice,
   lazy,
@@ -564,13 +565,13 @@ function sentence(): AstParser<Sentence> {
     punctuation,
   }));
 }
-const FULL_PARSER = allAtLeastOnce(sentence())
+const FULL_INNER_QUOTATION_PARSER = all(sentence())
   .skip(eol())
   .filter(filter(SENTENCES_RULE));
 /** Parses a quotation. */
 export function quotation(): AstParser<Quotation> {
   return specificTokenTree("quotation").flatMapValue((tokenTree) =>
-    FULL_PARSER.parser(tokenTree.tokenTree).map(
+    FULL_INNER_QUOTATION_PARSER.parser(tokenTree.tokenTree).map(
       ({ value }) =>
         ({
           sentences: value,
@@ -580,6 +581,9 @@ export function quotation(): AstParser<Quotation> {
     )
   );
 }
+const FULL_PARSER = allAtLeastOnce(sentence())
+  .skip(eol())
+  .filter(filter(SENTENCES_RULE));
 /** A multiple Toki Pona sentence parser. */
 export function parser(src: string): Output<Array<Sentence>> {
   return lex(src).flatMap((src) =>
