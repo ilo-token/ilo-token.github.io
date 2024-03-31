@@ -76,6 +76,7 @@ export type Clause =
     type: "li clause";
     subjects: MultiplePhrases;
     predicates: MultiplePredicates;
+    explicitLi: boolean;
   }
   | {
     type: "o clause";

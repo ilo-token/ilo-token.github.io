@@ -476,6 +476,7 @@ function clause(): AstParser<Clause> {
         },
       },
       predicates,
+      explicitLi: false,
     } as Clause)),
     sequence(
       preposition(),
@@ -504,6 +505,7 @@ function clause(): AstParser<Clause> {
       type: "li clause",
       subjects,
       predicates,
+      explicitLi: true,
     } as Clause)),
     specificWord("o").with(multiplePredicates(["o", "anu"]))
       .map((predicates) => ({
