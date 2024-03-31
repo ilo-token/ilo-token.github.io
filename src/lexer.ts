@@ -26,9 +26,13 @@ import { CoveredError } from "./error.ts";
 import { settings } from "./settings.ts";
 import {
   END_OF_CARTOUCHE,
+  END_OF_LONG_GLYPH,
+  END_OF_REVERSE_LONG_GLYPH,
   SCALING_JOINER,
   STACKING_JOINER,
   START_OF_CARTOUCHE,
+  START_OF_LONG_GLYPH,
+  START_OF_REVERSE_LONG_GLYPH,
   UCSUR_TO_LATIN,
 } from "./ucsur.ts";
 import { nothing } from "./parser-lib.ts";
@@ -146,9 +150,9 @@ function specificUcsurCharacter(
 }
 /** Parses UCSUR word. */
 function ucsurWord(
-  settings: { allowVariation: boolean; allowSpace: boolean },
+  trailingSettings: { allowVariation: boolean; allowSpace: boolean },
 ): Lexer<string> {
-  return ucsur(settings).map((word) => {
+  return ucsur(trailingSettings).map((word) => {
     const latin = UCSUR_TO_LATIN[word];
     if (latin == null) {
       throw new CoveredError();
@@ -176,17 +180,14 @@ function joiner(): Lexer<string> {
   );
 }
 /** Parses combined glyphs. */
-function combinedGlyphs(): Lexer<TokenTree & { type: "combined glyphs" }> {
+function combinedGlyphs(): Lexer<Array<string>> {
   return sequence(
     ucsurWord({ allowVariation: false, allowSpace: false }),
     allAtLeastOnce(
       joiner().with(ucsurWord({ allowVariation: false, allowSpace: false })),
     ),
   ).skip(spaces())
-    .map(([first, rest]) => ({
-      type: "combined glyphs",
-      words: [first, ...rest],
-    }));
+    .map(([first, rest]) => [first, ...rest]);
 }
 /** Parses a word, either UCSUR or latin. */
 function word(): Lexer<string> {
@@ -314,10 +315,12 @@ function cartouches(): Lexer<string> {
   return allAtLeastOnce(cartouche()).map((words) => words.join(" "));
 }
 /** Parses quotation. */
-function quotation(): Lexer<TokenTree & { type: "quotation" }> {
+function quotation(
+  allowLongGlyph: boolean,
+): Lexer<TokenTree & { type: "quotation" }> {
   return sequence(
     openQuotationMark(),
-    tokenTrees(false),
+    tokenTrees({ allowQuotation: false, allowLongGlyph }),
     closeQuotationMark(),
   ).map(([leftMark, tokenTree, rightMark]) => {
     if (leftMark === '"' || leftMark === "“") {
@@ -341,13 +344,129 @@ function quotation(): Lexer<TokenTree & { type: "quotation" }> {
     };
   });
 }
+function longContainer<T>(
+  left: string,
+  right: string,
+  inside: Lexer<T>,
+): Lexer<T> {
+  const description: { [character: string]: string } = {
+    [START_OF_LONG_GLYPH]: "start of long glyph",
+    [END_OF_LONG_GLYPH]: "end of long glyph",
+    [START_OF_REVERSE_LONG_GLYPH]: "start of reverse long glyph",
+    [END_OF_REVERSE_LONG_GLYPH]: "end of reverse long glyph",
+  };
+  return sequence(
+    specificUcsurCharacter(left, description[left], {
+      allowSpace: true,
+      allowVariation: false,
+    }),
+    inside,
+    specificUcsurCharacter(right, description[right], {
+      allowSpace: true,
+      allowVariation: false,
+    }),
+  ).map(([_, inside, _1]) => inside);
+}
+function longCharacterContainer(
+  allowQuotation: boolean,
+  left: string,
+  right: string,
+): Lexer<Array<TokenTree>> {
+  return longContainer(
+    left,
+    right,
+    allAtLeastOnce(tokenTree({ allowQuotation, allowLongGlyph: false })),
+  );
+}
+function longSpaceContainer(): Lexer<number> {
+  return longContainer(
+    START_OF_LONG_GLYPH,
+    END_OF_LONG_GLYPH,
+    match(/\s+/, "space").map(([space]) => space.length),
+  );
+}
+function longGlyphHead(): Lexer<Array<string>> {
+  return choiceOnlyOne(
+    combinedGlyphs(),
+    ucsurWord({ allowSpace: false, allowVariation: false }).map((
+      word,
+    ) => [word]),
+  );
+}
+function characterLongGlyph(
+  allowQuotation: boolean,
+): Lexer<TokenTree & { type: "long glyph" }> {
+  return sequence(
+    optionalAll(
+      longCharacterContainer(
+        allowQuotation,
+        START_OF_LONG_GLYPH,
+        END_OF_LONG_GLYPH,
+      ),
+    ),
+    longGlyphHead(),
+    optionalAll(
+      longCharacterContainer(
+        allowQuotation,
+        START_OF_REVERSE_LONG_GLYPH,
+        END_OF_REVERSE_LONG_GLYPH,
+      ),
+    ),
+  ).map(([beforeNull, words, afterNull]) => {
+    const before = beforeNull ?? [];
+    const after = afterNull ?? [];
+    if (before.length === 0 && after.length === 0) {
+      throw new CoveredError();
+    }
+    return {
+      type: "long glyph",
+      before: before ?? [],
+      words,
+      after: after ?? [],
+    };
+  });
+}
+function longSpaceGlyph(): Lexer<TokenTree & { type: "long glyph space" }> {
+  return sequence(
+    longGlyphHead(),
+    longSpaceContainer(),
+  ).map(([words, spaceLength]) => ({
+    type: "long glyph space",
+    words,
+    spaceLength,
+  }));
+}
+function longLon(
+  allowQuotation: boolean,
+): Lexer<Array<TokenTree>> {
+  return longCharacterContainer(
+    allowQuotation,
+    START_OF_REVERSE_LONG_GLYPH,
+    END_OF_LONG_GLYPH,
+  );
+}
+function longGlyph(allowQuotation: boolean): Lexer<TokenTree> {
+  return choiceOnlyOne(
+    characterLongGlyph(allowQuotation) as Lexer<TokenTree>,
+    longSpaceGlyph() as Lexer<TokenTree>,
+    longLon(allowQuotation).map((words) => ({ type: "underline lon", words })),
+  );
+}
 /** Parses a token tree. */
-function tokenTree(includeQuotation: boolean): Lexer<TokenTree> {
+function tokenTree(
+  nestingSettings: { allowQuotation: boolean; allowLongGlyph: boolean },
+): Lexer<TokenTree> {
   let quotationParser: Lexer<TokenTree>;
-  if (includeQuotation) {
-    quotationParser = quotation();
+  if (nestingSettings.allowQuotation) {
+    quotationParser = quotation(nestingSettings.allowLongGlyph);
   } else {
     quotationParser = error(new CoveredError());
+  }
+  let longGlyphParser: Lexer<TokenTree>;
+  if (nestingSettings.allowLongGlyph) {
+    longGlyphParser = longGlyph(nestingSettings.allowQuotation);
+  } else {
+    longGlyphParser = error(new CoveredError());
   }
   let xAlaXParser: Lexer<TokenTree>;
   if (settings.xAlaXPartialParsing) {
@@ -363,20 +482,27 @@ function tokenTree(includeQuotation: boolean): Lexer<TokenTree> {
     ),
     comma().map(() => ({ type: "comma" }) as TokenTree),
     quotationParser,
+    longGlyphParser,
     choiceOnlyOne(cartouches(), properWords()).map((words) =>
       ({ type: "proper word", words }) as TokenTree
     ),
-    combinedGlyphs(),
+    combinedGlyphs().map((words) =>
+      ({ type: "combined glyphs", words }) as TokenTree
+    ),
     multipleA().map((count) => ({ type: "multiple a", count }) as TokenTree),
     xAlaXParser,
     word().map((word) => ({ type: "word", word })),
   );
 }
 /** Parses multiple token trees. */
-function tokenTrees(includeQuotation: boolean): Lexer<Array<TokenTree>> {
-  return all(tokenTree(includeQuotation));
+function tokenTrees(
+  nestingSettings: { allowQuotation: boolean; allowLongGlyph: boolean },
+): Lexer<Array<TokenTree>> {
+  return all(tokenTree(nestingSettings));
 }
-const FULL_PARSER = spaces().with(tokenTrees(true)).skip(eol());
+const FULL_PARSER = spaces()
+  .with(tokenTrees({ allowQuotation: true, allowLongGlyph: true }))
+  .skip(eol());
 /** Parses multiple token trees. */
 export function lex(src: string): Output<Array<TokenTree>> {
   if (/\n/.test(src.trim())) {

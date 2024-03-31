@@ -17,16 +17,16 @@ export type TokenTree =
   | {
     type: "long glyph";
     before: Array<TokenTree>;
-    word: longGlyphHead;
+    words: Array<string>;
     after: Array<TokenTree>;
   }
   | {
     type: "long glyph space";
-    word: longGlyphHead;
+    words: Array<string>;
     spaceLength: number;
   }
   | {
-    type: "long lon";
+    type: "underline lon";
     words: Array<TokenTree>;
   }
   | { type: "multiple a"; count: number }
@@ -40,18 +40,7 @@ export type TokenTree =
   }
   | { type: "comma" }
   | { type: "punctuation"; punctuation: string };
-/**
- * Represents the word used as long glyph.
- */
-export type longGlyphHead =
-  | {
-    type: "word";
-    word: string;
-  }
-  | {
-    type: "combined words";
-    words: Array<string>;
-  };
+
 export function describe(tokenTree: TokenTree): string {
   if (tokenTree.type === "word") {
     return `"${tokenTree.word}"`;
