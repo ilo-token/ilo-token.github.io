@@ -23,15 +23,8 @@ async function buildFile(
   // fetch source code
   let file = await (await fetch(source)).text();
 
-  // add `export` keyword
-  file = file.replace(new RegExp(`function\\s+${exportItem}`), "export $&");
-
-  // remove module.export
-  const seachText = "if ( typeof ( module ) != 'undefined' )";
-  const regex = new RegExp(
-    seachText.replaceAll(/[()]/g, "\\$&").replaceAll(" ", "\\s*") + "[^]*$",
-  );
-  file = file.replace(regex, "");
+  // add `export`
+  file = file + `export{${exportItem}};`;
 
   //write the code
   await Deno.writeTextFile(destination, file);
