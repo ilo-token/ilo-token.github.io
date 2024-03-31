@@ -12,13 +12,16 @@ if (Deno.args[0] === "build") {
   console.log("Building telo misikeke...");
   await teloMisikeke.build();
   console.log("Building main.js...");
-  await build({ minify: true });
+  await build({ minify: true, type: "classic" });
   console.log("Building done!");
 } else if (Deno.args[0] === "watch") {
   const builder = debounce.debounce(async () => {
     console.log("Starting to build...");
     try {
-      await build({ compilerOptions: { inlineSourceMap: true } });
+      await build({
+        compilerOptions: { inlineSourceMap: true },
+        type: "classic",
+      });
       console.log("Building done!");
     } catch (error) {
       console.error(error);
