@@ -565,13 +565,13 @@ function sentence(): AstParser<Sentence> {
     punctuation,
   }));
 }
-const FULL_INNER_QUOTATION_PARSER = all(sentence())
+const INNER_QUOTATION_PARSER = all(sentence())
   .skip(eol())
   .filter(filter(SENTENCES_RULE));
 /** Parses a quotation. */
 export function quotation(): AstParser<Quotation> {
   return specificTokenTree("quotation").flatMapValue((tokenTree) =>
-    FULL_INNER_QUOTATION_PARSER.parser(tokenTree.tokenTree).map(
+    INNER_QUOTATION_PARSER.parser(tokenTree.tokenTree).map(
       ({ value }) =>
         ({
           sentences: value,
