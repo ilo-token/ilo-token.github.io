@@ -344,6 +344,7 @@ function quotation(
     };
   });
 }
+// TODO: better space handling
 function longContainer<T>(
   left: string,
   right: string,
@@ -357,12 +358,12 @@ function longContainer<T>(
   };
   return sequence(
     specificUcsurCharacter(left, description[left], {
-      allowSpace: true,
+      allowSpace: false,
       allowVariation: false,
     }),
     inside,
     specificUcsurCharacter(right, description[right], {
-      allowSpace: true,
+      allowSpace: false,
       allowVariation: false,
     }),
   ).map(([_, inside, _1]) => inside);
