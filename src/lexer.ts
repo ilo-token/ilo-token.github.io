@@ -39,9 +39,6 @@ import { nothing } from "./parser-lib.ts";
 
 export type Lexer<T> = Parser<string, T>;
 
-const VOWEL = /[aeiou]/;
-const MORAE = /[aeiou]|[jklmnpstw][aeiou]|n/g;
-
 /** Takes all parser and applies them one after another. */
 // Had to redeclare this function, Typescript really struggles with inferring
 // types when using `sequence`.
@@ -275,6 +272,8 @@ function cartoucheElement(): Lexer<string> {
         (dots) => dots.length,
       ),
     ).map(([word, dots]) => {
+      const VOWEL = /[aeiou]/;
+      const MORAE = /[aeiou]|[jklmnpstw][aeiou]|n/g;
       let count = dots;
       if (VOWEL.test(word[0])) {
         count++;
