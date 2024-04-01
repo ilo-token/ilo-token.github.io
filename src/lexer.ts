@@ -407,16 +407,16 @@ function characterLongGlyph(
     optionalAll(
       longCharacterContainer(
         allowQuotation,
-        START_OF_LONG_GLYPH,
-        END_OF_LONG_GLYPH,
+        START_OF_REVERSE_LONG_GLYPH,
+        END_OF_REVERSE_LONG_GLYPH,
       ),
     ),
     longGlyphHead(),
     optionalAll(
       longCharacterContainer(
         allowQuotation,
-        START_OF_REVERSE_LONG_GLYPH,
-        END_OF_REVERSE_LONG_GLYPH,
+        START_OF_LONG_GLYPH,
+        END_OF_LONG_GLYPH,
       ),
     ),
   ).skip(spaces())
