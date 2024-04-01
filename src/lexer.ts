@@ -344,7 +344,8 @@ function quotation(
     };
   });
 }
-// TODO: better space handling
+// spaces after the first glyph aren't parsed and so must be manually added on
+// the `inside` parser
 function longContainer<T>(
   left: string,
   right: string,
@@ -376,7 +377,9 @@ function longCharacterContainer(
   return longContainer(
     left,
     right,
-    allAtLeastOnce(tokenTree({ allowQuotation, allowLongGlyph: false })),
+    spaces().with(
+      allAtLeastOnce(tokenTree({ allowQuotation, allowLongGlyph: false })),
+    ),
   );
 }
 function longSpaceContainer(): Lexer<number> {
@@ -384,8 +387,9 @@ function longSpaceContainer(): Lexer<number> {
     START_OF_LONG_GLYPH,
     END_OF_LONG_GLYPH,
     match(/\s+/, "space").map(([space]) => space.length),
-  );
+  ).skip(spaces());
 }
+// This doesn't parses space on the right and so must be manually `skip`
 function longGlyphHead(): Lexer<Array<string>> {
   return choiceOnlyOne(
     combinedGlyphs(),
@@ -413,24 +417,25 @@ function characterLongGlyph(
         END_OF_REVERSE_LONG_GLYPH,
       ),
     ),
-  ).map(([beforeNull, words, afterNull]) => {
-    const before = beforeNull ?? [];
-    const after = afterNull ?? [];
-    if (before.length === 0 && after.length === 0) {
-      throw new CoveredError();
-    }
-    return {
-      type: "long glyph",
-      before: before ?? [],
-      words,
-      after: after ?? [],
-    };
-  });
+  ).skip(spaces())
+    .map(([beforeNull, words, afterNull]) => {
+      const before = beforeNull ?? [];
+      const after = afterNull ?? [];
+      if (before.length === 0 && after.length === 0) {
+        throw new CoveredError();
+      }
+      return {
+        type: "long glyph",
+        before: before ?? [],
+        words,
+        after: after ?? [],
+      };
+    });
 }
 function longSpaceGlyph(): Lexer<TokenTree & { type: "long glyph space" }> {
   return sequence(
     longGlyphHead(),
-    longSpaceContainer(),
+    longSpaceContainer().skip(spaces()),
   ).map(([words, spaceLength]) => ({
     type: "long glyph space",
     words,
@@ -444,7 +449,7 @@ function longLon(
     allowQuotation,
     START_OF_REVERSE_LONG_GLYPH,
     END_OF_LONG_GLYPH,
-  );
+  ).skip(spaces());
 }
 function longGlyph(allowQuotation: boolean): Lexer<TokenTree> {
   return choiceOnlyOne(
