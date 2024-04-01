@@ -607,8 +607,8 @@ const INNER_QUOTATION_PARSER = all(sentence())
 /** Parses a quotation. */
 export function quotation(): AstParser<Quotation> {
   return specificTokenTree("quotation").flatMapValue((tokenTree) =>
-    INNER_QUOTATION_PARSER.parser(tokenTree.tokenTree).map(
-      ({ value }) =>
+    INNER_QUOTATION_PARSER.parse(tokenTree.tokenTree).map(
+      (value) =>
         ({
           sentences: value,
           leftMark: tokenTree.leftMark,
@@ -622,7 +622,5 @@ const FULL_PARSER = allAtLeastOnce(sentence())
   .filter(filter(SENTENCES_RULE));
 /** A multiple Toki Pona sentence parser. */
 export function parser(src: string): Output<Array<Sentence>> {
-  return lex(src).flatMap((src) =>
-    FULL_PARSER.parser(src).map(({ value }) => value)
-  );
+  return lex(src).flatMap((src) => FULL_PARSER.parse(src));
 }

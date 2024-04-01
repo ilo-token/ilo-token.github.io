@@ -60,9 +60,8 @@ export class Parser<T, U> {
   skip<V>(parser: Parser<T, V>): Parser<T, U> {
     return sequence<T, [U, V]>(this, parser).map(([output, _]) => output);
   }
-  /** Suppresses all error. */
-  silent(): Parser<T, U> {
-    return new Parser((src) => new Output(this.parser(src).output));
+  parse(src: T): Output<U> {
+    return this.parser(src).map(({ value }) => value);
   }
 }
 /** Parser that always outputs an error. */

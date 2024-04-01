@@ -514,8 +514,5 @@ export function lex(src: string): Output<Array<TokenTree>> {
   if (/\n/.test(src.trim())) {
     return new Output(new UnrecognizedError("multiline text"));
   }
-  return FULL_PARSER.parser(src)
-    .map((
-      { value },
-    ) => value);
+  return FULL_PARSER.parse(src);
 }
