@@ -124,6 +124,66 @@ function specificWord(thatWord: string): AstParser<string> {
     else throw new UnexpectedError(`"${thisWord}"`, `"${thatWord}"`);
   });
 }
+function xAlaX(
+  word: Set<string>,
+  description: string,
+): AstParser<WordUnit & { type: "x ala x" }> {
+  return choice(
+    specificTokenTree("long glyph").map((longGlyph) => {
+      // TODO: reduce duplication
+      if (longGlyph.words.length !== 1 || longGlyph.words[0] !== "ala") {
+        throw new UnexpectedError(
+          describe({ type: "combined glyphs", words: longGlyph.words }),
+          '"ala"',
+        );
+      }
+      if (longGlyph.before.length !== 1) {
+        if (longGlyph.before.length === 0) {
+          throw new UnexpectedError(
+            "forward long glyph",
+            "long glyph on both sides",
+          );
+        } else {
+          throw new UnexpectedError(
+            describe(longGlyph.before[0]),
+            "end of long glyph",
+          );
+        }
+      }
+      const leftGlyph = longGlyph.before[0];
+      if (leftGlyph.type !== "word") {
+        throw new UnexpectedError(describe(leftGlyph), "word");
+      }
+      const word = leftGlyph.word;
+      if (longGlyph.after.length !== 1) {
+        if (longGlyph.after.length === 0) {
+          throw new UnexpectedError(
+            "backwards long glyph",
+            "long glyph on both sides",
+          );
+        } else {
+          throw new UnexpectedError(
+            describe(longGlyph.after[0]),
+            "end of long glyph",
+          );
+        }
+      }
+      const rightGlyph = longGlyph.after[0];
+      if (rightGlyph.type !== "word" || rightGlyph.word !== word) {
+        throw new UnexpectedError(describe(leftGlyph), `"${word}"`);
+      }
+      return { type: "x ala x", word } as WordUnit & { type: "x ala x" };
+    }),
+    specificTokenTree("x ala x").map(({ word }) =>
+      ({ type: "x ala x", word }) as WordUnit & { type: "x ala x" }
+    ),
+    wordFrom(word, description).then((word) =>
+      specificWord("ala").with(specificWord(word))
+    ).map((
+      word,
+    ) => ({ type: "x ala x", word }) as WordUnit & { type: "x ala x" }),
+  );
+}
 /** Parses word unit without numbers. */
 function wordUnit(word: Set<string>, description: string): AstParser<WordUnit> {
   return choice(
@@ -136,14 +196,7 @@ function wordUnit(word: Set<string>, description: string): AstParser<WordUnit> {
         }) as WordUnit
       )
     ),
-    specificTokenTree("x ala x").map(({ word }) =>
-      ({ type: "x ala x", word }) as WordUnit
-    ),
-    wordFrom(word, description).then((word) =>
-      specificWord("ala").with(specificWord(word))
-    ).map((
-      word,
-    ) => ({ type: "x ala x", word }) as WordUnit),
+    xAlaX(word, description),
     wordFrom(word, description).map((
       word,
     ) => ({ type: "default", word }) as WordUnit),
