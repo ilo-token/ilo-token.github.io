@@ -110,7 +110,13 @@ function updateOutput(): void {
   const source = elements!.input.value;
   try {
     const translations = translate(source);
-    if (translations.isError()) {
+    if (!translations.isError()) {
+      const output = [...new Set(translations.output)];
+      if (settings.randomize) {
+        output.sort(() => Math.random() - Math.random());
+      }
+      outputTranslations(output);
+    } else {
       let error: Array<string> = [];
       if (settings.useTeloMisikeke) {
         error = teloMisikeke.errors(source);
@@ -125,12 +131,6 @@ function updateOutput(): void {
         ];
       }
       outputErrors(error);
-    } else {
-      const output = [...new Set(translations.output)];
-      if (settings.randomize) {
-        output.sort(() => Math.random() - Math.random());
-      }
-      outputTranslations(output);
     }
   } catch (unreachableError) {
     let error: string;
