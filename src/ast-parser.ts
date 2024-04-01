@@ -255,7 +255,7 @@ function number(): AstParser<Array<string>> {
 }
 function pi(): AstParser<Modifier & { type: "pi" }> {
   return choice(
-    specificTokenTree("long glyph").flatMapValue<Modifier & { type: "pi" }>(
+    specificTokenTree("long glyph").flatMapValue<Phrase>(
       (longGlyph) => {
         if (longGlyph.before.length !== 0) {
           return new Output(
@@ -270,13 +270,13 @@ function pi(): AstParser<Modifier & { type: "pi" }> {
             ),
           );
         }
-        return INNER_PHRASE_PARSER.map((phrase) =>
-          ({
-            type: "pi",
-            phrase,
-          }) as Modifier & { type: "pi" }
-        ).parse(longGlyph.after);
+        return INNER_PHRASE_PARSER.parse(longGlyph.after);
       },
+    ).map((phrase) =>
+      ({
+        type: "pi",
+        phrase,
+      }) as Modifier & { type: "pi" }
     ),
     specificWord("pi").with(phrase()).map((phrase) =>
       ({
