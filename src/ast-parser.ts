@@ -58,10 +58,12 @@ function sequence<T extends Array<unknown>>(
   return rawSequence<Array<TokenTree>, T>(...sequence as any);
 }
 /** Parses the end of line (or the end of sentence in context of Toki Pona) */
-function eol(): AstParser<null> {
+function eol(description: string): AstParser<null> {
   return new Parser((src) => {
     if (src.length === 0) return new Output([{ value: null, rest: [] }]);
-    else return new Output(new UnexpectedError(src[0].type, "end of sentence"));
+    else {return new Output(
+        new UnexpectedError(src[0].type, description),
+      );}
   });
 }
 /** Parses a single token tree. */
@@ -198,7 +200,7 @@ function number(): AstParser<Array<string>> {
     }
   });
 }
-const INNER_PI_PARSER = phrase().skip(eol());
+const INNER_PI_PARSER = phrase().skip(eol("end of long glyph"));
 function pi(): AstParser<Modifier & { type: "pi" }> {
   return choice(
     specificTokenTree("long glyph").flatMapValue<Modifier & { type: "pi" }>(
@@ -620,7 +622,7 @@ function sentence(): AstParser<Sentence> {
     fullClause(),
     many(la().with(fullClause())),
     choice(
-      eol().map(() => ""),
+      eol("end of sentence").map(() => ""),
       punctuation(),
     ),
   ).map(([clause, moreClauses, punctuation]) => ({
@@ -629,7 +631,7 @@ function sentence(): AstParser<Sentence> {
   }));
 }
 const INNER_QUOTATION_PARSER = all(sentence())
-  .skip(eol())
+  .skip(eol("end of sentence"))
   .filter(filter(SENTENCES_RULE));
 /** Parses a quotation. */
 export function quotation(): AstParser<Quotation> {
@@ -645,7 +647,7 @@ export function quotation(): AstParser<Quotation> {
   );
 }
 const FULL_PARSER = allAtLeastOnce(sentence())
-  .skip(eol())
+  .skip(eol("end of sentence"))
   .filter(filter(SENTENCES_RULE));
 /** A multiple Toki Pona sentence parser. */
 export function parser(src: string): Output<Array<Sentence>> {
