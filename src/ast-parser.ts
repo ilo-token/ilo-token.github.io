@@ -198,6 +198,40 @@ function number(): AstParser<Array<string>> {
     }
   });
 }
+const INNER_PI_PARSER = phrase().skip(eol());
+function pi(): AstParser<Modifier & { type: "pi" }> {
+  return choice(
+    specificTokenTree("long glyph").flatMapValue<Modifier & { type: "pi" }>(
+      (longGlyph) => {
+        if (longGlyph.before.length !== 0) {
+          return new Output(
+            new UnexpectedError("reverse long glyph", "long pi"),
+          );
+        }
+        if (longGlyph.words.length !== 1 || longGlyph.words[0] !== "pi") {
+          return new Output(
+            new UnexpectedError(
+              describe({ type: "combined glyphs", words: longGlyph.words }),
+              "pi",
+            ),
+          );
+        }
+        return INNER_PI_PARSER.map((phrase) =>
+          ({
+            type: "pi",
+            phrase,
+          }) as Modifier & { type: "pi" }
+        ).parse(longGlyph.after);
+      },
+    ),
+    specificWord("pi").with(phrase()).map((phrase) =>
+      ({
+        type: "pi",
+        phrase,
+      }) as Modifier & { type: "pi" }
+    ),
+  ).filter(filter(MODIFIER_RULES));
+}
 /** Parses multiple modifiers. */
 function modifiers(): AstParser<Array<Modifier>> {
   return sequence(
@@ -240,14 +274,7 @@ function modifiers(): AstParser<Array<Modifier>> {
         }) as Modifier
       ).filter(filter(MODIFIER_RULES)),
     ),
-    many(
-      specificWord("pi").with(phrase()).map((phrase) =>
-        ({
-          type: "pi",
-          phrase,
-        }) as Modifier
-      ).filter(filter(MODIFIER_RULES)),
-    ),
+    many(pi()),
   ).map((
     [modifiers, nanpaModifiers, piModifiers],
   ) => [...modifiers, ...nanpaModifiers, ...piModifiers]).filter(
