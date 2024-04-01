@@ -176,15 +176,17 @@ function joiner(): Lexer<string> {
     }),
   );
 }
-/** Parses combined glyphs. */
+/**
+ * Parses combined glyphs. The spaces after aren't parsed and so must be
+ * manually added by the caller.
+ */
 function combinedGlyphs(): Lexer<Array<string>> {
   return sequence(
     ucsurWord({ allowVariation: false, allowSpace: false }),
     allAtLeastOnce(
       joiner().with(ucsurWord({ allowVariation: false, allowSpace: false })),
     ),
-  ).skip(spaces())
-    .map(([first, rest]) => [first, ...rest]);
+  ).map(([first, rest]) => [first, ...rest]);
 }
 /** Parses a word, either UCSUR or latin. */
 function word(): Lexer<string> {
@@ -492,7 +494,7 @@ function tokenTree(
     choiceOnlyOne(cartouches(), properWords()).map((words) =>
       ({ type: "proper word", words }) as TokenTree
     ),
-    combinedGlyphs().map((words) =>
+    combinedGlyphs().skip(spaces()).map((words) =>
       ({ type: "combined glyphs", words }) as TokenTree
     ),
     multipleA().map((count) => ({ type: "multiple a", count }) as TokenTree),
