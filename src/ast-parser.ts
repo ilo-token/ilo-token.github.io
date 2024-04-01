@@ -253,7 +253,6 @@ function number(): AstParser<Array<string>> {
     }
   });
 }
-const INNER_PI_PARSER = phrase().skip(eol("end of long glyph"));
 function pi(): AstParser<Modifier & { type: "pi" }> {
   return choice(
     specificTokenTree("long glyph").flatMapValue<Modifier & { type: "pi" }>(
@@ -271,7 +270,7 @@ function pi(): AstParser<Modifier & { type: "pi" }> {
             ),
           );
         }
-        return INNER_PI_PARSER.map((phrase) =>
+        return INNER_PHRASE_PARSER.map((phrase) =>
           ({
             type: "pi",
             phrase,
@@ -336,6 +335,7 @@ function modifiers(): AstParser<Array<Modifier>> {
     filter(MODIFIERS_RULES),
   );
 }
+const INNER_PHRASE_PARSER = phrase().skip(eol("end of long glyph"));
 /** Parses phrases. */
 function phrase(): AstParser<Phrase> {
   return choice(
@@ -459,6 +459,18 @@ function subjectPhrases(): AstParser<MultiplePhrases> {
 /** Parses prepositional phrase. */
 function preposition(): AstParser<Preposition> {
   return choice(
+    specificTokenTree("underline lon").flatMapValue((tokenTrees) =>
+      INNER_PHRASE_PARSER.parse(tokenTrees.words)
+    ).map((phrase) =>
+      ({
+        preposition: { type: "default", word: "lon" },
+        modifiers: [],
+        phrases: {
+          type: "single",
+          phrase,
+        },
+      }) as Preposition
+    ),
     binaryWords(PREPOSITION, "preposition").map(([preposition, phrase]) =>
       ({
         preposition: { type: "default", word: preposition },
