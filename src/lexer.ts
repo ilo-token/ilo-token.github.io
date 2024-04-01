@@ -343,8 +343,8 @@ function quotation(
     };
   });
 }
-// spaces after the first glyph aren't parsed and so must be manually added on
-// the `inside` parser
+// spaces after the first glyph and the last glyph aren't parsed and so must be
+// manually added by the caller if needed
 function longContainer<T>(
   left: string,
   right: string,
@@ -388,7 +388,8 @@ function longSpaceContainer(): Lexer<number> {
     match(/\s+/, "space").map(([space]) => space.length),
   ).skip(spaces());
 }
-// This doesn't parses space on the right and so must be manually `skip`
+// This doesn't parses space on the right and so must be manually added by the
+// caller if needed
 function longGlyphHead(): Lexer<Array<string>> {
   return choiceOnlyOne(
     combinedGlyphs(),
