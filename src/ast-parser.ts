@@ -471,6 +471,39 @@ function preposition(): AstParser<Preposition> {
         },
       }) as Preposition
     ),
+    specificTokenTree("long glyph").flatMapValue((tokenTrees) => {
+      if (tokenTrees.before.length !== 0) {
+        return new Output(
+          new UnexpectedError("reverse long glyph", "forward long glyph"),
+        );
+      }
+      if (tokenTrees.words.length > 2) {
+        return new Output(
+          new UnrecognizedError(
+            `combined glyphs of ${tokenTrees.words.length} words`,
+          ),
+        );
+      }
+      const word = tokenTrees.words[0];
+      if (!PREPOSITION.has(word)) {
+        return new Output(
+          new UnrecognizedError(`"${word}" as preposition`),
+        );
+      }
+      const modifiers = tokenTrees.words.slice(1).map((word) =>
+        ({ type: "default", word: { type: "default", word } }) as Modifier
+      );
+      return INNER_PHRASE_PARSER.parse(tokenTrees.after).map((phrase) =>
+        ({
+          preposition: { type: "default", word },
+          modifiers,
+          phrases: {
+            type: "single",
+            phrase,
+          },
+        }) as Preposition
+      );
+    }),
     binaryWords(PREPOSITION, "preposition").map(([preposition, phrase]) =>
       ({
         preposition: { type: "default", word: preposition },
