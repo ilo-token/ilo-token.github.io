@@ -2,9 +2,13 @@
 
 import { UnreachableError } from "./error.ts";
 
+export type Marker =
+  | { type: "a" }
+  | { type: "long a"; length: number }
+  | { type: "multiple a"; count: number };
 /** Represents a word unit. */
 export type WordUnit =
-  | { type: "default"; word: string }
+  | { type: "default"; word: string; marker: null | Marker }
   | { type: "x ala x"; word: string }
   | { type: "reduplication"; word: string; count: number }
   | { type: "numbers"; numbers: Array<string> };
@@ -91,12 +95,36 @@ export type Clause =
     type: "quotation";
     quotation: Quotation;
   };
+export type Preclause =
+  | {
+    type: "taso";
+    taso: WordUnit;
+  }
+  | {
+    type: "marker";
+    marker: Marker;
+  };
+export type Postclause =
+  | {
+    type: "anu seme";
+    seme: WordUnit;
+  }
+  | {
+    type: "marker";
+    marker: Marker;
+  };
 /** Represents a clause including preclause and postclause. */
-export type FullClause = {
-  taso: null | WordUnit;
-  anuSeme: null | WordUnit;
-  clause: Clause;
-};
+export type FullClause =
+  | {
+    type: "default";
+    preclause: null | Preclause;
+    postclause: null | Postclause;
+    clause: Clause;
+  }
+  | {
+    type: "marker";
+    marker: Marker;
+  };
 /** Represents a single full sentence. */
 export type Sentence = { laClauses: Array<FullClause>; punctuation: string };
 /** Represents quotation. */

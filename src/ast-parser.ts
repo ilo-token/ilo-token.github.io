@@ -3,10 +3,13 @@
 import {
   Clause,
   FullClause,
+  Marker,
   Modifier,
   MultiplePhrases,
   MultiplePredicates,
   Phrase,
+  Postclause,
+  Preclause,
   Preposition,
   Quotation,
   Sentence,
@@ -124,6 +127,17 @@ function specificWord(thatWord: string): AstParser<string> {
     else throw new UnexpectedError(`"${thisWord}"`, `"${thatWord}"`);
   });
 }
+function marker(): AstParser<Marker> {
+  return choice(
+    specificTokenTree("multiple a").map(({ count }) =>
+      ({ type: "multiple a", count }) as Marker
+    ),
+    specificTokenTree("long a").map(({ length }) =>
+      ({ type: "long a", length }) as Marker
+    ),
+    specificWord("a").map(() => ({ type: "a" }) as Marker),
+  );
+}
 function xAlaX(
   word: Set<string>,
   description: string,
@@ -197,9 +211,9 @@ function wordUnit(word: Set<string>, description: string): AstParser<WordUnit> {
       )
     ),
     xAlaX(word, description),
-    wordFrom(word, description).map((
-      word,
-    ) => ({ type: "default", word }) as WordUnit),
+    sequence(wordFrom(word, description), marker()).map(
+      ([word, marker]) => ({ type: "default", word, marker }) as WordUnit,
+    ),
   ).filter(filter(WORD_UNIT_RULES));
 }
 function binaryWords(
@@ -351,11 +365,11 @@ function phrase(): AstParser<Phrase> {
     binaryWords(PREVERB, "preveb").map(([preverb, phrase]) =>
       ({
         type: "preverb",
-        preverb: { type: "default", word: preverb },
+        preverb: { type: "default", word: preverb, marker: null },
         modifiers: [],
         phrase: {
           type: "default",
-          headWord: { type: "default", word: phrase },
+          headWord: { type: "default", word: phrase, marker: null },
           modifiers: [],
         },
       }) as Phrase
@@ -463,7 +477,7 @@ function preposition(): AstParser<Preposition> {
       INNER_PHRASE_PARSER.parse(tokenTrees.words)
     ).map((phrase) =>
       ({
-        preposition: { type: "default", word: "lon" },
+        preposition: { type: "default", word: "lon", marker: null },
         modifiers: [],
         phrases: {
           type: "single",
@@ -506,13 +520,13 @@ function preposition(): AstParser<Preposition> {
     }),
     binaryWords(PREPOSITION, "preposition").map(([preposition, phrase]) =>
       ({
-        preposition: { type: "default", word: preposition },
+        preposition: { type: "default", word: preposition, marker: null },
         modifiers: [],
         phrases: {
           type: "single",
           phrase: {
             type: "default",
-            headWord: { type: "default", word: phrase },
+            headWord: { type: "default", word: phrase, marker: null },
             modifiers: [],
           },
         },
@@ -618,7 +632,7 @@ function clause(): AstParser<Clause> {
           type: "single",
           phrase: {
             type: "default",
-            headWord: { type: "default", word: subject },
+            headWord: { type: "default", word: subject, marker: null },
             alaQuestion: false,
             modifiers: [],
           },
@@ -690,21 +704,39 @@ function clause(): AstParser<Clause> {
     ),
   ).filter(filter(CLAUSE_RULE));
 }
+function preclause(): AstParser<Preclause> {
+  return choice(
+    marker().map((marker) => ({ type: "marker", marker }) as Preclause),
+    wordUnit(new Set(["taso"]), '"taso"').map((taso) =>
+      ({ type: "taso", taso }) as Preclause
+    ),
+  );
+}
+function postclause(): AstParser<Postclause> {
+  return choice(
+    marker().map((marker) => ({ type: "marker", marker }) as Postclause),
+    specificWord("anu").with(wordUnit(new Set(["seme"]), '"seme"')).map(
+      (seme) => ({ type: "anu seme", seme }) as Postclause,
+    ),
+  );
+}
 /** Parses a single clause including preclause and postclause. */
 function fullClause(): AstParser<FullClause> {
-  return sequence(
-    optional(wordUnit(new Set(["taso"]), '"taso"').skip(optionalComma())),
-    clause(),
-    optional(
-      optionalComma().with(specificWord("anu")).with(
-        wordUnit(new Set(["seme"]), '"seme"'),
-      ),
+  return choice(
+    sequence(
+      optional(preclause().skip(optionalComma())),
+      clause(),
+      optional(optionalComma().with(specificWord("anu"))),
+    ).map(([preclause, clause, postclause]) =>
+      ({
+        type: "default",
+        preclause,
+        clause,
+        postclause,
+      }) as FullClause
     ),
-  ).map(([taso, clause, anuSeme]) => ({
-    taso,
-    anuSeme,
-    clause,
-  })).filter(filter(FULL_CLAUSE_RULE));
+    marker().map((marker) => ({ type: "marker", marker }) as FullClause),
+  ).filter(filter(FULL_CLAUSE_RULE));
 }
 /** parses _la_ with optional comma around. */
 function la(): AstParser<string> {

@@ -213,6 +213,16 @@ function multipleA(): Lexer<number> {
     [a, as],
   ) => [a, ...as].length);
 }
+function longA(): Lexer<number> {
+  return match(/(a+)\s*/, "long a").map(([_, a]) => {
+    const length = a.length;
+    if (length > 1) {
+      return length;
+    } else {
+      throw new CoveredError();
+    }
+  });
+}
 /** Parses X ala X constructions. */
 function xAlaX(): Lexer<string> {
   return word().then((word) =>
@@ -497,6 +507,7 @@ function tokenTree(
     combinedGlyphs().skip(spaces()).map((words) =>
       ({ type: "combined glyphs", words }) as TokenTree
     ),
+    longA().map((length) => ({ type: "long a", length }) as TokenTree),
     multipleA().map((count) => ({ type: "multiple a", count }) as TokenTree),
     xAlaXParser,
     word().map((word) => ({ type: "word", word })),
