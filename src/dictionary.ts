@@ -1001,10 +1001,6 @@ export type Definition =
   | {
     type: "gerund";
     gerund: string;
-  }
-  | {
-    type: "modifier as preposition";
-    preposition: never;
   };
 export const CONTENT_WORD = new Set([
   ...SPECIAL_CONTENT_WORD,
