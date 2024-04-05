@@ -4,6 +4,7 @@ export const SPECIAL_CONTENT_WORD = new Set([
   "ni",
   "pu",
   "seme",
+  "lili",
 ]);
 export const PRONOUN: { [word: string]: Pronoun } = {
   mi: {
