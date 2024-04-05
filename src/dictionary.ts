@@ -77,6 +77,9 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjective("reptilian", "qualifier"),
     adjective("amphibian", "qualifier"),
   ],
+  ala: [
+    numeral(0),
+  ],
   alasa: [
     verb("hunt(ed)", "hunting"),
     verb("search(ed)", "searching"),
