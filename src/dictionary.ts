@@ -737,7 +737,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   sewi: [
     // TODO: area above, something elevated
     adjectiveNounPhrase([adjective("highest", "origin")], noun("part(s)")),
-    verb("elevate(d)", "elavating"),
+    verb("elevate(d)", "elevating"),
     adjective("awe-inspiring", "opinion"),
     adjective("divine", "opinion"),
     adjective("sacred", "opinion"),
@@ -952,7 +952,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjective("confident", "opinion"),
     adjective("energetic", "opinion"),
     adjective("intense", "opinion"),
-    adverb("powefully"),
+    adverb("powerfully"),
   ],
   weka: [
     adjective("absent", "origin"),
