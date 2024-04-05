@@ -4,8 +4,10 @@ export const PARTICLES = new Set([
   "anu",
   "e",
   "en",
+  "kin",
   "la",
   "li",
+  "n",
   "nanpa",
   "o",
   "pi",
@@ -18,6 +20,11 @@ export const SPECIAL_CONTENT_WORD = new Set([
   "pu",
   "seme",
   "lili",
+  "kokosila",
+  "kijetesantakalu",
+  "ku",
+  "su",
+  "jasima",
 ]);
 export const PRONOUN_DEFINITION: { [word: string]: Pronoun } = {
   mi: {
@@ -107,6 +114,12 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     verb("protect(ed)", "protecting"),
     // TODO: preverb
   ],
+  epiku: [
+    adjective("epic", "opinion"),
+    adjective("cool", "opinion"),
+    adjective("awesome", "opinion"),
+    adjective("amazing", "opinion"),
+  ],
   esun: [
     noun("shop(s)"),
     verb("trade(d)", "trading"),
@@ -155,6 +168,13 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     singularNoun("human being"),
     noun("person/people"),
     singularNoun("somebody"), // This is technically a pronoun
+  ],
+  jasima: [
+    noun("reflection(s)"),
+    noun("mirror(s)"),
+    verb("reflect(ed)", "reflecting"),
+    verb("resound(ed)", "resounding"),
+    verb("mirror(ed)", "mirroring"),
   ],
   jelo: [
     singularNoun("yellow"),
@@ -209,6 +229,13 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("fruit(s)"),
     noun("vegetable(s)"),
     noun("mushroom(s)"),
+  ],
+  kipisi: [
+    adjective("sharp", "physical quality"),
+    verb("split(ted)", "splitting"),
+    verb("cut", "cutting"),
+    verb("slice(d)", "slicing"),
+    verb("sever(ed)", "severing"),
   ],
   kiwen: [
     adjectiveNounPhrase(
@@ -267,6 +294,19 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("ear(s)"),
     verb("listen(ed)", "listening", "at"),
   ],
+  lanpan: [
+    verb("take/took", "taking"),
+    verb("seize(d)", "seizing"),
+    verb("catch(ed)", "catching"),
+    verb("receive(d)", "receiving"),
+    verb("get/got", "getting"),
+  ],
+  lape: [
+    singularNoun("sleep"),
+    singularNoun("rest"),
+    intransitiveVerb("sleep/slept", "sleeping"),
+    intransitiveVerb("rest(ed)", "resting"),
+  ],
   laso: [
     singularNoun("turquoise"),
     singularNoun("blue"),
@@ -294,6 +334,13 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     verb("own(ed)", "owning"),
     verb("regulate(d)", "regulating"),
     verb("rule(d)", "ruling"),
+  ],
+  leko: [
+    pluralNoun("stairs"),
+    noun("square(s)"),
+    noun("block(s)"),
+    noun("corner(s)"),
+    noun("cube(s)"),
   ],
   len: [
     noun("clothing(s)"),
@@ -400,6 +447,11 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("territory/territories"),
     singularNoun("soil"),
   ],
+  majuna: [
+    adjective("old", "age"),
+    adjective("aged", "age"),
+    adjective("ancient", "age"),
+  ],
   mama: [
     noun("parent(s)"),
     noun("ancestor(s)"),
@@ -428,6 +480,12 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     ),
     noun("wife/wives"),
   ],
+  meso: [
+    noun("midpoint(s)"),
+    adjective("midpoint", "opinion"),
+    adjective("medium", "size"),
+    adjective("mediocre", "opinion"),
+  ],
   mije: [
     noun("man/men"),
     // noun("male(s)"), // this sounds dehumanizing
@@ -436,6 +494,10 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
       noun("person/people"),
     ),
     noun("husband(s)"),
+  ],
+  misikeke: [
+    noun("medicine(s)"),
+    adjective("medical", "qualifier"),
   ],
   moku: [
     noun("food(s)"),
@@ -454,6 +516,13 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     singularNoun("back"),
     singularNoun("behind"),
     singularNoun("rear"),
+  ],
+  monsuta: [
+    noun("monster(s)"),
+    noun("predator(s)"),
+    noun("threat(s)"),
+    noun("danger(s)"),
+    adjective("scary", "opinion"),
   ],
   mun: [
     singularNoun("moon"),
@@ -525,6 +594,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
       noun("organ(s)"),
     ),
   ],
+  oko: [], // Will be duplicated with "lukin"
   olin: [
     singularNoun("affection"),
     singularNoun("appreciation"),
@@ -701,6 +771,9 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("symbol(s)"),
     noun("mark(s)"),
     noun("writing(s)"),
+  ],
+  soko: [
+    noun("fungus/fungi"),
   ],
   sona: [
     singularNoun("knowledge"),
@@ -887,6 +960,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
 };
 CONTENT_WORD_DEFINITION.ali = CONTENT_WORD_DEFINITION.ale;
+CONTENT_WORD_DEFINITION.oko = CONTENT_WORD_DEFINITION.lukin;
 
 export type AdjectiveType =
   | "opinion"
