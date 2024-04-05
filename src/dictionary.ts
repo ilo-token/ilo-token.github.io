@@ -15,16 +15,16 @@ export const PARTICLES = new Set([
 ]);
 export const SPECIAL_CONTENT_WORD = new Set([
   "ala",
+  "jasima",
+  "kijetesantakalu",
+  "kokosila",
+  "ku",
+  "lili",
   "mu",
   "ni",
   "pu",
   "seme",
-  "lili",
-  "kokosila",
-  "kijetesantakalu",
-  "ku",
   "su",
-  "jasima",
 ]);
 export const PRONOUN_DEFINITION: { [word: string]: Pronoun } = {
   mi: {
