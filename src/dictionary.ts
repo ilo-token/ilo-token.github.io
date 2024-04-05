@@ -14,14 +14,15 @@ export const PARTICLES = new Set([
   "taso",
 ]);
 export const SPECIAL_CONTENT_WORD = new Set([
-  "ala",
-  "jasima",
+  "ala", // not
+  "jasima", // opposite of
   "kijetesantakalu",
   "kokosila",
   "ku",
-  "lili",
+  "lili", // piece of
   "mu",
   "ni",
+  "olin", // have a strong emotional bond with
   "pu",
   "seme",
   "su",
@@ -79,6 +80,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
   ala: [
     numeral(0),
+    quantifier("no"),
   ],
   alasa: [
     verb("hunt(ed)", "hunting"),
@@ -98,7 +100,15 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     singularNoun("bottom"),
     singularNoun("below"),
     singularNoun("floor"),
-    // TODO: adjectives
+    // TODO: bowing down
+    adjective("downward", "origin"),
+    adjective("humble", "opinion"),
+    adjective("lowly", "opinion"),
+    adjective("dependent", "opinion"),
+    adjective("low", "size"),
+    adjective("lower", "origin"),
+    adjective("bottom", "origin"),
+    adjective("down", "origin"),
   ],
   ante: [
     noun("change(s)"),
@@ -600,7 +610,6 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjective("romantic", "qualifier"),
     adjective("familial", "qualifier"),
     verb("respect(ed)", "respecting"),
-    // TODO: to have a strong emotional bond (with)
   ],
   open: [
     noun("beginning(s)"),
@@ -620,6 +629,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     verb("damage(d)", "damaging"),
     verb("harm(ed)", "harming"),
     verb("mess(ed) up", "messing up"),
+    interjection("fuck"),
   ],
   pan: [
     noun("grain(s)"),
@@ -850,7 +860,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("communication(s)"),
     noun("language(s)"),
     verb("communicate(d)", "communicating", "about"),
-    // TODO: hello interjection
+    interjection("hello"),
   ],
   tomo: [
     noun("building(s)"),
@@ -1029,6 +1039,10 @@ export type Definition =
   | {
     type: "gerund";
     gerund: string;
+  }
+  | {
+    type: "interjection";
+    interjection: string;
   };
 export const CONTENT_WORD = new Set([
   ...SPECIAL_CONTENT_WORD,
@@ -1190,5 +1204,11 @@ function quantifier(word: string): Definition & { type: "quantifier" } {
   return {
     type: "quantifier",
     quantifier: word,
+  };
+}
+function interjection(word: string): Definition & { type: "interjection" } {
+  return {
+    type: "interjection",
+    interjection: word,
   };
 }
