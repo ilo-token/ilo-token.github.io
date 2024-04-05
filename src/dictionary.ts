@@ -394,7 +394,15 @@ export const DICTIONARY: { [word: string]: Array<Definition> } = {
     noun("wife/wives"),
   ],
   mi: [
-    // TODO: pronouns
+    {
+      type: "pronoun",
+      singularSubject: "I",
+      singularObject: "me",
+      singularPossessive: "my",
+      pluralSubject: "we",
+      pluralObject: "us",
+      pluralPossessive: "our",
+    },
   ],
   mije: [
     noun("man/men"),
@@ -505,7 +513,15 @@ export const DICTIONARY: { [word: string]: Array<Definition> } = {
     // TODO: to have a strong emotional bond (with)
   ],
   ona: [
-    // TODO: pronouns
+    {
+      type: "pronoun",
+      singularSubject: null,
+      singularObject: null,
+      singularPossessive: null,
+      pluralSubject: "they",
+      pluralObject: "them",
+      pluralPossessive: "their",
+    },
   ],
   open: [
     noun("beginning(s)"),
@@ -672,7 +688,15 @@ export const DICTIONARY: { [word: string]: Array<Definition> } = {
     adverb("newly"),
   ],
   sina: [
-    // TODO: pronouns
+    {
+      type: "pronoun",
+      singularSubject: null,
+      singularObject: null,
+      singularPossessive: null,
+      pluralSubject: "you",
+      pluralObject: "you",
+      pluralPossessive: "your",
+    },
   ],
   sinpin: [
     noun("face(s)"),
@@ -899,9 +923,12 @@ export type Definition =
   }
   | {
     type: "pronoun";
-    subject: string;
-    object: string;
-    possessive: string;
+    singularSubject: null | string;
+    singularObject: null | string;
+    singularPossessive: null | string;
+    pluralSubject: string;
+    pluralObject: string;
+    pluralPossessive: string;
   }
   | {
     type: "adjective";
