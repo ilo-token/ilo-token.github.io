@@ -80,7 +80,6 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   alasa: [
     verb("hunt(ed)", "hunting"),
     verb("search(ed)", "searching"),
-    // TODO: preverb
   ],
   ale: [
     numeral(100),
@@ -112,7 +111,6 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     intransitiveVerb("endure(d)", "enduring"),
     verb("keep/kept", "keeping"),
     verb("protect(ed)", "protecting"),
-    // TODO: preverb
   ],
   epiku: [
     adjective("epic", "opinion"),
@@ -220,11 +218,8 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ken: [
     noun("ability/abilities"),
     noun("possibility/possibilities"),
-    // TODO: preverb
   ],
-  kepeken: [
-    // TODO: preposition
-  ],
+  kepeken: [],
   kili: [
     noun("fruit(s)"),
     noun("vegetable(s)"),
@@ -356,7 +351,6 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     verb("freeze/froze", "freezing"),
   ],
   lili: [
-    // TODO: "piece of" prefix
     singularNoun("smallness"),
     adjective("small", "physical quality"),
     adjective("short", "physical quality"),
@@ -413,7 +407,6 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjective("real", "opinion"),
     adverb("truthfully"),
     verb("exist", "existing"),
-    // TODO: preposition
   ],
   luka: [
     numeral(5),
