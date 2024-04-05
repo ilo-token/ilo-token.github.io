@@ -17,12 +17,7 @@ import {
 } from "./ast.ts";
 import { CoveredError, UnexpectedError, UnrecognizedError } from "./error.ts";
 import { Output } from "./output.ts";
-import {
-  CONTENT_WORD,
-  PREPOSITION,
-  PREVERB,
-  SPECIAL_SUBJECT,
-} from "./vocabulary.ts";
+import { CONTENT_WORD, PREPOSITION, PREVERB } from "./dictionary.ts";
 import {
   CLAUSE_RULE,
   filter,
@@ -623,7 +618,7 @@ function multiplePredicates(
 function clause(): AstParser<Clause> {
   return choice(
     sequence(
-      wordFrom(SPECIAL_SUBJECT, "mi/sina subject"),
+      wordFrom(new Set(["mi", "sina"]), "mi/sina subject"),
       multiplePredicates(["li", "anu"]),
     ).map(([subject, predicates]) =>
       ({

@@ -1,3 +1,16 @@
+export const PARTICLES = new Set([
+  "a",
+  "ala",
+  "anu",
+  "e",
+  "en",
+  "la",
+  "li",
+  "nanpa",
+  "o",
+  "pi",
+  "taso",
+]);
 export const SPECIAL_CONTENT_WORD = new Set([
   "ala",
   "mu",
@@ -6,7 +19,7 @@ export const SPECIAL_CONTENT_WORD = new Set([
   "seme",
   "lili",
 ]);
-export const PRONOUN: { [word: string]: Pronoun } = {
+export const PRONOUN_DEFINITION: { [word: string]: Pronoun } = {
   mi: {
     singularSubject: "I",
     singularObject: "me",
@@ -32,14 +45,25 @@ export const PRONOUN: { [word: string]: Pronoun } = {
     pluralPossessive: "their",
   },
 };
-export const PREPOSITION: { [word: string]: Array<string> } = {
+export const PREPOSITION_DEFINITION: { [word: string]: Array<string> } = {
   kepeken: ["using"],
   lon: ["at"],
   sama: ["similar to"],
   tan: ["from", "because of"],
   tawa: ["towards", "in perspective of"],
 };
-export const DICTIONARY: { [word: string]: Array<Definition> } = {
+export const PREVERB_DEFINITION: { [word: string]: Array<never> } = {
+  alasa: [],
+  awen: [],
+  kama: [],
+  ken: [],
+  lukin: [],
+  open: [],
+  pini: [],
+  sona: [],
+  wile: [],
+};
+export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   akesi: [
     noun("reptile(s)"),
     noun("amphibian(s)"),
@@ -899,7 +923,7 @@ export const DICTIONARY: { [word: string]: Array<Definition> } = {
     noun("need(s)"),
   ],
 };
-DICTIONARY.ali = DICTIONARY.ale;
+CONTENT_WORD_DEFINITION.ali = CONTENT_WORD_DEFINITION.ale;
 
 export type AdjectiveType =
   | "opinion"
@@ -982,6 +1006,14 @@ export type Definition =
     type: "modifier as preposition";
     preposition: never;
   };
+export const CONTENT_WORD = new Set([
+  ...SPECIAL_CONTENT_WORD,
+  ...Object.keys(PRONOUN_DEFINITION),
+  ...Object.keys(CONTENT_WORD_DEFINITION),
+]);
+export const PREVERB = new Set(Object.keys(PREVERB_DEFINITION));
+export const PREPOSITION = new Set(Object.keys(PREPOSITION_DEFINITION));
+
 function noun(word: string): Definition & { type: "noun" } {
   const paren = word.match(/([a-z]*)\(([a-z]*)\)/);
   let singular: string;
