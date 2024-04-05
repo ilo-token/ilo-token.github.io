@@ -1,3 +1,6 @@
+/** Module for describing word to word translations. */
+
+/** */
 export const PARTICLES = new Set([
   "a",
   "ala",
