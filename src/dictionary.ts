@@ -985,18 +985,12 @@ export type Definition =
     past: string;
     present: string;
     condensed: string;
-    usePreposition: null | string;
+    object: boolean | string;
   }
   | {
     type: "verb object phrase";
     verb: Definition & { type: "verb" };
     object: Definition & { type: "noun" };
-  }
-  | {
-    type: "intransitive verb";
-    past: string;
-    present: string;
-    condensed: string;
   }
   | {
     type: "gerund";
@@ -1074,10 +1068,9 @@ function compoundAdjective(
     adjectives,
   };
 }
-function verb(
+function parseVerb(
   word: string,
-  usePreposition?: null | undefined | string,
-): Definition & { type: "verb" } {
+): { past: string; present: string; condensed: string } {
   const paren = word.match(/([a-z]*)\(([a-z]*)\)(| [a-z]*)/);
   let present: string;
   let past: string;
@@ -1096,12 +1089,19 @@ function verb(
       past = word;
     }
   }
+  return { past, present, condensed: word };
+}
+function verb(
+  word: string,
+  usePreposition?: null | undefined | string,
+): Definition & { type: "verb" } {
+  const { past, present, condensed } = parseVerb(word);
   return {
     type: "verb",
     present,
     past,
     condensed: word,
-    usePreposition: usePreposition ?? null,
+    object: usePreposition ?? true,
   };
 }
 function verbObjectPhrase(
@@ -1116,30 +1116,14 @@ function verbObjectPhrase(
 }
 function intransitiveVerb(
   word: string,
-): Definition & { type: "intransitive verb" } {
-  const paren = word.match(/([a-z]*)\(([a-z]*)\)/);
-  let present: string;
-  let past: string;
-  if (paren != null) {
-    const [_, first, second] = paren;
-    present = first;
-    past = first + second;
-  } else {
-    const slash = word.match(/([a-z*])\/([a-z]*)(| [a-z]*)/);
-    if (slash != null) {
-      const [_, first, second, third] = slash;
-      present = first + third;
-      past = second + third;
-    } else {
-      present = word;
-      past = word;
-    }
-  }
+): Definition & { type: "verb" } {
+  const { past, present, condensed } = parseVerb(word);
   return {
-    type: "intransitive verb",
+    type: "verb",
     present,
     past,
-    condensed: word,
+    condensed,
+    object: false,
   };
 }
 function gerund(word: string): Definition & { type: "gerund" } {
