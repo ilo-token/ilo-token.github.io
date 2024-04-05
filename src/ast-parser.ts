@@ -721,7 +721,7 @@ function fullClause(): AstParser<FullClause> {
     sequence(
       optional(preclause().skip(optionalComma())),
       clause(),
-      optional(optionalComma().with(specificWord("anu"))),
+      optional(optionalComma().with(postclause())),
     ).map(([preclause, clause, postclause]) =>
       ({
         type: "default",
