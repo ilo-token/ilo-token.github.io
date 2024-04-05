@@ -11,6 +11,7 @@ You may need to force restart the page in order to use the latest version: shift
   - Cartouche with nasin sitelen kalama
   - Combined glyphs
   - (Deprecated characters and combiners are not supported)
+- The vocabulary has been expanded to nimi ku suli plus nimi su! (Some are still unimplemented)
 - Multiline text will no longer be recognized.
 - Add icons.
 
