@@ -2,7 +2,7 @@
 
 You may need to force restart the page in order to use the latest version: shift + click the restart button; or ctrl + shift + R.
 
-## 0.2.3 (On development)
+## 0.3.0 (On development)
 
 - Implement settings dialog. [More info](https://github.com/neverRare/ilo-token/wiki/Settings-Help).
 - All possible errors will now be listed.

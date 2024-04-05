@@ -9,7 +9,7 @@ import { teloMisikeke } from "../deps.ts";
 const DEVELOPMENT = true;
 // Don't forget these two when releasing
 const DATE_RELEASED = new Date("2024-2-1");
-const VERSION = "v0.2.3";
+const VERSION = "v0.3.0";
 
 type Elements = {
   input: HTMLTextAreaElement;
