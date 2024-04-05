@@ -32,6 +32,13 @@ export const PRONOUN: { [word: string]: Pronoun } = {
     pluralPossessive: "their",
   },
 };
+export const PREPOSITION: { [word: string]: Array<string> } = {
+  kepeken: ["using"],
+  lon: ["at"],
+  sama: ["similar to"],
+  tan: ["from", "because of"],
+  tawa: ["towards", "in perspective of"],
+};
 export const DICTIONARY: { [word: string]: Array<Definition> } = {
   akesi: [
     noun("reptile(s)"),
