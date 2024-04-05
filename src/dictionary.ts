@@ -147,7 +147,7 @@ export const DICTIONARY: { [word: string]: Array<Definition> } = {
     intransitiveVerb("sound(ed)"),
   ],
   kama: [
-    noun("future"),
+    singularNoun("future"),
     adjective("future", "age"),
     verb("summon(ed)"),
     intransitiveVerb("arrive"),
@@ -422,7 +422,7 @@ export const DICTIONARY: { [word: string]: Array<Definition> } = {
     verb("ingest(ed)"),
   ],
   moli: [
-    noun("death"),
+    singularNoun("death"),
     adjective("dead", "age"),
     verb("kill(ed)"),
   ],
