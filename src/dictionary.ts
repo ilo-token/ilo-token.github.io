@@ -118,6 +118,10 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjective("other", "opinion"),
     adjective("altered", "opinion"),
   ],
+  anu: [
+    verb("choose/chose", "choosing"),
+    intransitiveVerb("decide(d)", "deciding"),
+  ],
   awen: [
     intransitiveVerb("wait(ed)", "waiting"),
     intransitiveVerb("stay(ed)", "staying"),
