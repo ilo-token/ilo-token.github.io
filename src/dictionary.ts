@@ -5,6 +5,32 @@ export const SPECIAL_CONTENT_WORD = new Set([
   "pu",
   "seme",
 ]);
+export const PRONOUN: { [word: string]: Pronoun } = {
+  mi: {
+    singularSubject: "I",
+    singularObject: "me",
+    singularPossessive: "my",
+    pluralSubject: "we",
+    pluralObject: "us",
+    pluralPossessive: "our",
+  },
+  sina: {
+    singularSubject: null,
+    singularObject: null,
+    singularPossessive: null,
+    pluralSubject: "you",
+    pluralObject: "you",
+    pluralPossessive: "your",
+  },
+  ona: {
+    singularSubject: null,
+    singularObject: null,
+    singularPossessive: null,
+    pluralSubject: "they",
+    pluralObject: "them",
+    pluralPossessive: "their",
+  },
+};
 export const DICTIONARY: { [word: string]: Array<Definition> } = {
   akesi: [
     noun("reptile(s)"),
@@ -393,17 +419,6 @@ export const DICTIONARY: { [word: string]: Array<Definition> } = {
     ),
     noun("wife/wives"),
   ],
-  mi: [
-    {
-      type: "pronoun",
-      singularSubject: "I",
-      singularObject: "me",
-      singularPossessive: "my",
-      pluralSubject: "we",
-      pluralObject: "us",
-      pluralPossessive: "our",
-    },
-  ],
   mije: [
     noun("man/men"),
     // noun("male(s)"), // this sounds dehumanizing
@@ -511,17 +526,6 @@ export const DICTIONARY: { [word: string]: Array<Definition> } = {
     adjective("familial", "qualifier"),
     verb("respect(ed)"),
     // TODO: to have a strong emotional bond (with)
-  ],
-  ona: [
-    {
-      type: "pronoun",
-      singularSubject: null,
-      singularObject: null,
-      singularPossessive: null,
-      pluralSubject: "they",
-      pluralObject: "them",
-      pluralPossessive: "their",
-    },
   ],
   open: [
     noun("beginning(s)"),
@@ -686,17 +690,6 @@ export const DICTIONARY: { [word: string]: Array<Definition> } = {
     adjective("extra", "origin"),
     quantifier("another"), // It is a determiner. But is it a quantifier?
     adverb("newly"),
-  ],
-  sina: [
-    {
-      type: "pronoun",
-      singularSubject: null,
-      singularObject: null,
-      singularPossessive: null,
-      pluralSubject: "you",
-      pluralObject: "you",
-      pluralPossessive: "your",
-    },
   ],
   sinpin: [
     noun("face(s)"),
@@ -909,6 +902,14 @@ export type AdjectiveType =
   | "origin"
   | "material"
   | "qualifier";
+export type Pronoun = {
+  singularSubject: null | string;
+  singularObject: null | string;
+  singularPossessive: null | string;
+  pluralSubject: string;
+  pluralObject: string;
+  pluralPossessive: string;
+};
 export type Definition =
   | {
     type: "noun";
@@ -920,15 +921,6 @@ export type Definition =
     type: "adjective noun phrase";
     adjectives: Array<Definition & { type: "adjective" }>;
     noun: Definition & { type: "noun" };
-  }
-  | {
-    type: "pronoun";
-    singularSubject: null | string;
-    singularObject: null | string;
-    singularPossessive: null | string;
-    pluralSubject: string;
-    pluralObject: string;
-    pluralPossessive: string;
   }
   | {
     type: "adjective";
