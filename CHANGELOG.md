@@ -17,6 +17,7 @@ You may need to force restart the page in order to use the latest version: shift
 Inside update (intended for developers):
 
 - Implement lexer.
+- Overhaul dictionary.
 
 ## 0.2.2
 
