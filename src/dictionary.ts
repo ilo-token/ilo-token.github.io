@@ -71,10 +71,8 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjective("amphibian", "qualifier"),
   ],
   alasa: [
-    verb("hunt(ed)"),
-    verb("search(ed)"),
-    gerund("searching"),
-    gerund("hunting"),
+    verb("hunt(ed)", "hunting"),
+    verb("search(ed)", "searching"),
     // TODO: preverb
   ],
   ale: [
@@ -102,32 +100,21 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjective("altered", "opinion"),
   ],
   awen: [
-    intransitiveVerb("wait(ed)"),
-    intransitiveVerb("stay(ed)"),
-    intransitiveVerb("endure(d)"),
-    verb("keep/kept"),
-    verb("protect(ed)"),
-    gerund("waiting"),
-    gerund("staying"),
-    gerund("enduring"),
-    gerund("keeping"),
-    gerund("protecting"),
+    intransitiveVerb("wait(ed)", "waiting"),
+    intransitiveVerb("stay(ed)", "staying"),
+    intransitiveVerb("endure(d)", "enduring"),
+    verb("keep/kept", "keeping"),
+    verb("protect(ed)", "protecting"),
     // TODO: preverb
   ],
   esun: [
     noun("shop(s)"),
-    verb("trade(d)"),
-    verb("barter(ed)"),
-    verb("exchange(d)"),
-    verb("swap(ped)"),
-    verb("buy/bought"),
-    verb("sell/sold"),
-    gerund("trading"),
-    gerund("bartering"),
-    gerund("exchanging"),
-    gerund("swapping"),
-    gerund("buying"),
-    gerund("selling"),
+    verb("trade(d)", "trading"),
+    verb("barter(ed)", "bartering"),
+    verb("exchange(d)", "exchanging"),
+    verb("swap(ped)", "swapping"),
+    verb("buy/bought", "buying"),
+    verb("sell/sold", "selling"),
   ],
   ijo: [
     noun("phenomenon(s)"),
@@ -185,32 +172,25 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adverbAdjectivePhrase([adverb("yellowish")], adjective("orange", "color")),
   ],
   jo: [
-    verb("have/had"),
-    verb("carry/carried"),
-    verb("contain(ed)"),
-    verb("hold/held"),
-    gerund("having"),
-    gerund("carrying"),
-    gerund("containing"),
-    gerund("holding"),
+    verb("have/had", "having"),
+    verb("carry/carried", "carrying"),
+    verb("contain(ed)", "containing"),
+    verb("hold/held", "holding"),
   ],
   kala: [
     noun("fish(es)"),
     adjectiveNounPhrase([adjective("sea", "qualifier")], noun("creature(s)")),
-    gerund("swimming"),
-    intransitiveVerb("swim"),
+    intransitiveVerb("swim", "swimming"),
   ],
   kalama: [
     noun("sound(s)"),
-    intransitiveVerb("sound(ed)"),
+    intransitiveVerb("sound(ed)", "sounding"),
   ],
   kama: [
     singularNoun("future"),
     adjective("future", "age"),
-    verb("summon(ed)"),
-    intransitiveVerb("arrive"),
-    gerund("arriving"),
-    gerund("summoning"),
+    verb("summon(ed)", "summoning"),
+    intransitiveVerb("arrive", "arriving"),
   ],
   kasi: [
     noun("plant(s)"),
@@ -285,8 +265,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
   kute: [
     noun("ear(s)"),
-    gerund("listening"),
-    verb("listen(ed)", "at"),
+    verb("listen(ed)", "listening", "at"),
   ],
   laso: [
     singularNoun("turquoise"),
@@ -308,27 +287,26 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("guide(s)"),
     noun("plan(s)"),
     noun("rule(s)"),
-    verb("control(led)"),
-    verb("direct(ed)"),
-    verb("guide(d)"),
-    verb("lead/led"),
-    verb("own(ed"),
-    verb("regulate(d)"),
-    verb("rule(d)"),
+    verb("control(led)", "controlling"),
+    verb("direct(ed)", "directing"),
+    verb("guide(d)", "guiding"),
+    verb("lead/led", "leading"),
+    verb("own(ed)", "owning"),
+    verb("regulate(d)", "regulating"),
+    verb("rule(d)", "ruling"),
   ],
   len: [
     noun("clothing(s)"),
     noun("fabric(s)"),
-    gerund("hiding"),
     adjective("hidden", "origin"),
-    verb("cover(ed)"),
+    verb("cover(ed)", "covering"),
   ],
   lete: [
     singularNoun("coldness"),
     adjective("cool", "physical quality"),
     adjective("cold", "physical quality"),
     adjective("frozen", "physical quality"),
-    verb("freeze/froze"),
+    verb("freeze/froze", "freezing"),
   ],
   lili: [
     // TODO: "piece of" prefix
@@ -386,9 +364,8 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   lon: [
     singularNoun("truth"),
     adjective("real", "opinion"),
-    gerund("existing"),
     adverb("truthfully"),
-    verb("exist"),
+    verb("exist", "existing"),
     // TODO: preposition
   ],
   luka: [
@@ -403,9 +380,9 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("visual(s)"),
     noun("eye(s)"),
     adjectiveNounPhrase([adjective("seeing", "qualifier")], noun("organ(s)")),
-    verb("look(ed)", "at"),
-    verb("read"),
-    verb("watch(ed)"),
+    verb("look(ed)", "looking", "at"),
+    verb("read", "reading"),
+    verb("watch(ed)", "watchingF"),
   ],
   lupa: [
     noun("hole(s)"),
@@ -463,15 +440,15 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   moku: [
     noun("food(s)"),
     noun("drink(s)"),
-    verb("eat/ate"),
-    verb("drink/drank"),
-    verb("consume(d)"),
-    verb("ingest(ed)"),
+    verb("eat/ate", "eating"),
+    verb("drink/drank", "drinking"),
+    verb("consume(d)", "consuming"),
+    verb("ingest(ed)", "ingesting"),
   ],
   moli: [
     singularNoun("death"),
     adjective("dead", "age"),
-    verb("kill(ed)"),
+    verb("kill(ed)", "killing"),
   ],
   monsi: [
     singularNoun("back"),
@@ -500,7 +477,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjective("interesting", "opinion"),
     adjective("comical", "opinion"),
     adjective("silly", "opinion"),
-    verbObjectPhrase(verb("have/had"), singularNoun("fun")),
+    verbObjectPhrase(verb("have/had", "having"), singularNoun("fun")),
   ],
   mute: [
     numeral(20),
@@ -556,7 +533,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjective("platonic", "qualifier"),
     adjective("romantic", "qualifier"),
     adjective("familial", "qualifier"),
-    verb("respect(ed)"),
+    verb("respect(ed)", "respecting"),
     // TODO: to have a strong emotional bond (with)
   ],
   open: [
@@ -564,19 +541,19 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     singularNoun("start"),
     adjective("open", "physical quality"),
     adjective("turned on", "qualifier"),
-    verb("start(ed)"),
-    verb("turn(ed) on"),
+    verb("start(ed)", "starting"),
+    verb("turn(ed) on", "turning on"),
   ],
   pakala: [
     singularNoun("mess"),
     noun("damage(s)"),
     adjective("botched", "opinion"),
     adjective("broken", "opinion"),
-    verb("botch(ed)"),
-    verb("break/broke"),
-    verb("damage(d)"),
-    verb("harm(ed)"),
-    verb("mess(ed) up"),
+    verb("botch(ed)", "botching"),
+    verb("break/broke", "breaking"),
+    verb("damage(d)", "damaging"),
+    verb("harm(ed)", "harming"),
+    verb("mess(ed) up", "messing up"),
   ],
   pan: [
     noun("grain(s)"),
@@ -584,30 +561,19 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjectiveNounPhrase([adjective("baked", "qualifier")], pluralNoun("goods")),
   ],
   pana: [
-    verb("give/gave"),
-    verb("send/sent"),
-    verb("emit(ted)"),
-    verb("provide(d)"),
-    verb("put"),
-    verb("release(d)"),
-    gerund("giving"),
-    gerund("sending"),
-    gerund("emitting"),
-    gerund("providing"),
-    gerund("putting"),
-    gerund("releasing"),
+    verb("give/gave", "giving"),
+    verb("send/sent", "sending"),
+    verb("emit(ted)", "emitting"),
+    verb("provide(d)", "providing"),
+    verb("put", "putting"),
+    verb("release(d)", "releasing"),
   ],
   pali: [
-    verb("build"),
-    verb("make/made"),
-    verb("prepare(d)"),
-    intransitiveVerb("do/did"),
-    intransitiveVerb("work/worked"),
-    gerund("building"),
-    gerund("making"),
-    gerund("preparing"),
-    gerund("doing"),
-    gerund("working"),
+    verb("build", "building"),
+    verb("make/made", "making"),
+    verb("prepare(d)", "preparing"),
+    intransitiveVerb("do/did", "doing"),
+    intransitiveVerb("work/worked", "working"),
   ],
   palisa: [
     adjectiveNounPhrase([
@@ -621,8 +587,8 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   pilin: [
     noun("heart(s)"),
     noun("feeling(s)"),
-    verb("touch(ed)"),
-    verb("feel/felt"),
+    verb("touch(ed)", "touching"),
+    verb("feel/felt", "feeling"),
   ],
   pimeja: [
     singularNoun("darkness"),
@@ -635,7 +601,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
   pini: [
     singularNoun("past"),
-    verb("end(ed)"),
+    verb("end(ed)", "ending"),
   ],
   pipi: [
     noun("insect(s)"),
@@ -684,7 +650,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
       noun("source(s)"),
     ),
     adjective("hot", "material"),
-    verb("heat(ed)"),
+    verb("heat(ed)", "heating"),
   ],
   selo: [
     adjectiveNounPhrase([adjective("outer", "origin")], noun("form(s)")),
@@ -695,7 +661,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   sewi: [
     // TODO: area above, something elevated
     adjectiveNounPhrase([adjective("highest", "origin")], noun("part(s)")),
-    verb("elevate(d)"),
+    verb("elevate(d)", "elavating"),
     adjective("awe-inspiring", "opinion"),
     adjective("divine", "opinion"),
     adjective("sacred", "opinion"),
@@ -792,10 +758,8 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   tawa: [
     noun("motion(s)"),
     singularNoun("travel"),
-    verb("shake(d)"),
-    intransitiveVerb("walk(ed)"),
-    gerund("walking"),
-    gerund("shaking"),
+    verb("shake(d)", "shaking"),
+    intransitiveVerb("walk(ed)", "walking"),
   ],
   telo: [
     singularNoun("water"),
@@ -816,7 +780,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   toki: [
     noun("communication(s)"),
     noun("language(s)"),
-    verb("communicate(d)", "about"),
+    verb("communicate(d)", "communicating", "about"),
     // TODO: hello interjection
   ],
   tomo: [
@@ -849,16 +813,16 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
   tu: [
     numeral(2),
-    verb("separate(d)"),
-    verb("divide(d)"),
-    verb("split"),
-    verb("multiply/multiplied"),
-    verb("duplicate(d)"),
+    verb("separate(d)", "separating"),
+    verb("divide(d)", "dividing"),
+    verb("split", "splitting"),
+    verb("multiply/multiplied", "multiplying"),
+    verb("duplicate(d)", "duplicating"),
   ],
   unpa: [
     adjective("sexual", "qualifier"),
     adverb("sexually"),
-    verbObjectPhrase(verb("have/had", "with"), singularNoun("sex")),
+    verbObjectPhrase(verb("have/had", "having", "with"), singularNoun("sex")),
   ],
   uta: [
     singularNoun("mouth"),
@@ -883,9 +847,9 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   wan: [
     numeral(1),
     adjective("singular", "opinion"),
-    verb("combine(d)"),
-    verb("mix(ed)"),
-    verb("fuse(d)"),
+    verb("combine(d)", "combining"),
+    verb("mix(ed)", "mixing"),
+    verb("fuse(d)", "fusing"),
   ],
   waso: [
     noun("bird(s)"),
@@ -897,8 +861,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
       [adjective("winged", "qualifier")],
       noun("animal(s)"),
     ),
-    intransitiveVerb("fly"),
-    gerund("flying"),
+    intransitiveVerb("fly", "flying"),
   ],
   wawa: [
     singularNoun("power"),
@@ -916,7 +879,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjective("absent", "origin"),
     adjective("away", "origin"),
     adjective("ignored", "opinion"),
-    intransitiveVerb("leave"),
+    intransitiveVerb("leave", "leaving"),
   ],
   wile: [
     noun("want(s)"),
@@ -985,6 +948,7 @@ export type Definition =
     past: string;
     present: string;
     condensed: string;
+    gerund: string;
     object: boolean | string;
   }
   | {
@@ -1093,6 +1057,7 @@ function parseVerb(
 }
 function verb(
   word: string,
+  gerund: string,
   usePreposition?: null | undefined | string,
 ): Definition & { type: "verb" } {
   const { past, present, condensed } = parseVerb(word);
@@ -1100,7 +1065,8 @@ function verb(
     type: "verb",
     present,
     past,
-    condensed: word,
+    condensed,
+    gerund,
     object: usePreposition ?? true,
   };
 }
@@ -1116,6 +1082,7 @@ function verbObjectPhrase(
 }
 function intransitiveVerb(
   word: string,
+  gerund: string,
 ): Definition & { type: "verb" } {
   const { past, present, condensed } = parseVerb(word);
   return {
@@ -1123,13 +1090,8 @@ function intransitiveVerb(
     present,
     past,
     condensed,
+    gerund,
     object: false,
-  };
-}
-function gerund(word: string): Definition & { type: "gerund" } {
-  return {
-    type: "gerund",
-    gerund: word,
   };
 }
 function adjective(
