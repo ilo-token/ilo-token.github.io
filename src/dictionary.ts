@@ -30,32 +30,6 @@ export const SPECIAL_CONTENT_WORD = new Set([
   "seme",
   "su",
 ]);
-export const PRONOUN_DEFINITION: { [word: string]: Pronoun } = {
-  mi: {
-    singularSubject: "I",
-    singularObject: "me",
-    singularPossessive: "my",
-    pluralSubject: "we",
-    pluralObject: "us",
-    pluralPossessive: "our",
-  },
-  sina: {
-    singularSubject: null,
-    singularObject: null,
-    singularPossessive: null,
-    pluralSubject: "you",
-    pluralObject: "you",
-    pluralPossessive: "your",
-  },
-  ona: {
-    singularSubject: null,
-    singularObject: null,
-    singularPossessive: null,
-    pluralSubject: "they",
-    pluralObject: "them",
-    pluralPossessive: "their",
-  },
-};
 export const PREPOSITION_DEFINITION: { [word: string]: Array<string> } = {
   kepeken: ["using"],
   lon: ["at"],
@@ -84,6 +58,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ala: [
     numeral(0),
     quantifier("no"),
+    singularNoun("nothing"), // This is technically a pronoun
   ],
   alasa: [
     verb("hunt(ed)", "hunting"),
@@ -119,7 +94,8 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("modification(s)"),
     adjective("different", "opinion"),
     adjective("other", "opinion"),
-    adjective("altered", "opinion"),
+    verb("change(d)", "changing"),
+    verb("alter(ed)", "altering"),
   ],
   anu: [
     verb("choose/chose", "choosing"),
@@ -171,9 +147,9 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("machine(s)"),
   ],
   insa: [
-    singularNoun("centre"),
+    singularNoun("center"),
     noun("content(s)"),
-    singularNoun("inside"),
+    noun("inside(s)"),
   ],
   jaki: [
     noun("obscenity/obscenities"),
@@ -210,7 +186,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adverbAdjectivePhrase([adverb("yellowish")], adjective("orange", "color")),
   ],
   jo: [
-    verb("have/had", "having"),
+    // verb("have/had", "having"),
     verb("carry/carried", "carrying"),
     verb("contain(ed)", "containing"),
     verb("hold/held", "holding"),
@@ -254,13 +230,13 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
   kiwen: [
     adjectiveNounPhrase(
-      [adjective("hard", "physical quality")],
+      [adjective("hard", "material")],
       noun("object(s)"),
     ),
     noun("metal(s)"),
     noun("rock(s)"),
     noun("stone(s)"),
-    adjective("hard", "physical quality"),
+    adjective("hard", "material"),
   ],
   ko: [
     singularNoun("semi-solid"),
@@ -270,21 +246,21 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     singularNoun("sand"),
     singularNoun("soil"),
     singularNoun("clay"),
-    adjective("squishy", "physical quality"),
-    adjective("moldable", "physical quality"),
+    adjective("squishy", "material"),
+    adjective("moldable", "material"),
   ],
   kon: [
     singularNoun("air"),
     singularNoun("breath"),
-    singularNoun("essence"),
-    singularNoun("spirit"),
+    noun("essence(s)"),
+    noun("spirit(s)"),
     adjectiveNounPhrase(
       [adjective("hidden", "physical quality")],
-      singularNoun("reality"),
+      noun("reality/realities"),
     ),
     adjectiveNounPhrase(
       [adjective("unseen", "physical quality")],
-      singularNoun("agent"),
+      noun("agent(s)"),
     ),
   ],
   kule: [
@@ -314,7 +290,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     verb("seize(d)", "seizing"),
     verb("catch(ed)", "catching"),
     verb("receive(d)", "receiving"),
-    verb("get/got", "getting"),
+    // verb("get/got", "getting"),
   ],
   lape: [
     singularNoun("sleep"),
@@ -362,6 +338,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("fabric(s)"),
     adjective("hidden", "origin"),
     verb("cover(ed)", "covering"),
+    verb("hide/hid", "hiding"),
   ],
   lete: [
     singularNoun("coldness"),
@@ -372,15 +349,15 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
   lili: [
     singularNoun("smallness"),
-    adjective("small", "physical quality"),
-    adjective("short", "physical quality"),
+    adjective("small", "size"),
+    adjective("short", "size"),
     adjective("young", "age"),
     quantifier("few"),
   ],
   linja: [
     adjectiveNounPhrase([
-      adjective("long", "physical quality"),
-      adjective("flexible", "physical quality"),
+      adjective("long", "size"),
+      adjective("flexible", "material"),
     ], noun("thing(s)")),
     noun("cord(s)"),
     singularNoun("hair"),
@@ -388,13 +365,13 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("line(s)"),
     noun("connection(s)"),
     compoundAdjective([
-      adjective("long", "physical quality"),
-      adjective("flexible", "physical quality"),
+      adjective("long", "size"),
+      adjective("flexible", "material"),
     ]),
   ],
   lipu: [
     adjectiveNounPhrase(
-      [adjective("flat", "physical quality")],
+      [adjective("flat", "size")],
       noun("object(s)"),
     ),
     noun("book(s)"),
@@ -403,7 +380,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("paper(s)"),
     noun("record(s)"),
     noun("website(s)"),
-    adjective("flat", "physical quality"),
+    adjective("flat", "size"),
   ],
   loje: [
     singularNoun("red"),
@@ -426,7 +403,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     singularNoun("truth"),
     adjective("real", "opinion"),
     adverb("truthfully"),
-    verb("exist", "existing"),
+    verb("exist(ed)", "existing"),
   ],
   luka: [
     numeral(5),
@@ -442,13 +419,13 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjectiveNounPhrase([adjective("seeing", "qualifier")], noun("organ(s)")),
     verb("look(ed)", "looking", "at"),
     verb("read", "reading"),
-    verb("watch(ed)", "watchingF"),
+    verb("watch(ed)", "watching"),
   ],
   lupa: [
     noun("hole(s)"),
     singularNoun("pit"),
     noun("cave(s)"),
-    singularNoun("doorway"),
+    noun("doorway(s)"),
     noun("window(s)"),
     noun("portal(s)"),
   ],
@@ -498,6 +475,17 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjective("midpoint", "opinion"),
     adjective("medium", "size"),
     adjective("mediocre", "opinion"),
+  ],
+  mi: [
+    {
+      type: "pronoun",
+      singularSubject: "I",
+      singularObject: "me",
+      singularPossessive: "my",
+      pluralSubject: "we",
+      pluralObject: "us",
+      pluralPossessive: "our",
+    },
   ],
   mije: [
     noun("man/men"),
@@ -618,6 +606,17 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjective("familial", "qualifier"),
     verb("respect(ed)", "respecting"),
   ],
+  ona: [
+    {
+      type: "pronoun",
+      singularSubject: null,
+      singularObject: null,
+      singularPossessive: null,
+      pluralSubject: "they",
+      pluralObject: "them",
+      pluralPossessive: "their",
+    },
+  ],
   open: [
     noun("beginning(s)"),
     singularNoun("start"),
@@ -660,8 +659,8 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
   palisa: [
     adjectiveNounPhrase([
-      adjective("long", "physical quality"),
-      adjective("hard", "physical quality"),
+      adjective("long", "size"),
+      adjective("hard", "material"),
     ], noun("thing(s)")),
     noun("branch(es)"),
     noun("rod(s)"),
@@ -684,6 +683,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
   pini: [
     singularNoun("past"),
+    adjective("past", "age"),
     verb("end(ed)", "ending"),
   ],
   pipi: [
@@ -772,6 +772,17 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     quantifier("another"), // It is a determiner. But is it a quantifier?
     adverb("newly"),
   ],
+  sina: [
+    {
+      type: "pronoun",
+      singularSubject: null,
+      singularObject: null,
+      singularPossessive: null,
+      pluralSubject: "you",
+      pluralObject: "you",
+      pluralPossessive: "your",
+    },
+  ],
   sinpin: [
     noun("face(s)"),
     noun("wall(s)"),
@@ -815,7 +826,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("light(s)"),
     singularNoun("brightness"),
     singularNoun("glow"),
-    singularNoun("radiance"),
+    noun("radiance(s)"),
     adjectiveNounPhrase([adjective("light", "qualifier")], noun("source(s)")),
     adjective("shining", "color"),
   ],
@@ -858,7 +869,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   tenpo: [
     singularNoun("time"),
     singularNoun("duration"),
-    singularNoun("moment"),
+    noun("moment(s)"),
     noun("occasion(s)"),
     noun("period(s)"),
     noun("situation(s)"),
@@ -984,14 +995,6 @@ export type AdjectiveType =
   | "origin"
   | "material"
   | "qualifier";
-export type Pronoun = {
-  singularSubject: null | string;
-  singularObject: null | string;
-  singularPossessive: null | string;
-  pluralSubject: string;
-  pluralObject: string;
-  pluralPossessive: string;
-};
 export type Definition =
   | {
     type: "noun";
@@ -1003,6 +1006,15 @@ export type Definition =
     type: "adjective noun phrase";
     adjectives: Array<Definition & { type: "adjective" }>;
     noun: Definition & { type: "noun" };
+  }
+  | {
+    type: "pronoun";
+    singularSubject: null | string;
+    singularObject: null | string;
+    singularPossessive: null | string;
+    pluralSubject: string;
+    pluralObject: string;
+    pluralPossessive: string;
   }
   | {
     type: "adjective";
@@ -1053,7 +1065,6 @@ export type Definition =
   };
 export const CONTENT_WORD = new Set([
   ...SPECIAL_CONTENT_WORD,
-  ...Object.keys(PRONOUN_DEFINITION),
   ...Object.keys(CONTENT_WORD_DEFINITION),
 ]);
 export const PREVERB = new Set(Object.keys(PREVERB_DEFINITION));
