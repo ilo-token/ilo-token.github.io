@@ -10,6 +10,7 @@ You may need to force restart the page in order to use the latest version: shift
 - Implement UCSUR support! It supports:
   - Cartouche with nasin sitelen kalama
   - Combined glyphs
+  - Long glyphs
   - (Deprecated characters and combiners are not supported)
 - The vocabulary has been expanded to nimi ku suli plus nimi su! (Some are still unimplemented)
 - Multiline text will no longer be recognized.
