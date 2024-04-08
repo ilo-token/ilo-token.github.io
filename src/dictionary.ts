@@ -194,7 +194,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   kala: [
     noun("fish(es)"),
     adjectiveNounPhrase([adjective("sea", "qualifier")], noun("creature(s)")),
-    intransitiveVerb("swim", "swimming"),
+    intransitiveVerb("swim/swam", "swimming"),
   ],
   kalama: [
     noun("sound(s)"),
@@ -565,7 +565,8 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjective("strange", "opinion"),
     adjective("silly", "opinion"),
     adjective("drunk", "opinion"),
-    adjective("intoxicated", "opinion"),
+    // adjective("intoxicated", "opinion"),
+    verb("intoxicate", "intoxicating"),
     adverb("strangely"),
   ],
   nasin: [
@@ -628,7 +629,6 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   pakala: [
     singularNoun("mess"),
     noun("damage(s)"),
-    adjective("botched", "opinion"),
     adjective("broken", "opinion"),
     verb("botch(ed)", "botching"),
     verb("break/broke", "breaking"),
@@ -975,7 +975,8 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   weka: [
     adjective("absent", "origin"),
     adjective("away", "origin"),
-    adjective("ignored", "opinion"),
+    // adjective("ignored", "opinion"),
+    verb("ignore(d)", "ignoring"),
     intransitiveVerb("leave", "leaving"),
   ],
   wile: [
