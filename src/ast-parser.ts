@@ -206,7 +206,7 @@ function wordUnit(word: Set<string>, description: string): AstParser<WordUnit> {
       )
     ),
     xAlaX(word, description),
-    sequence(wordFrom(word, description), marker()).map(
+    sequence(wordFrom(word, description), optional(marker())).map(
       ([word, marker]) => ({ type: "default", word, marker }) as WordUnit,
     ),
   ).filter(filter(WORD_UNIT_RULES));
@@ -778,3 +778,6 @@ const FULL_PARSER = allAtLeastOnce(sentence())
 export function parser(src: string): Output<Array<Sentence>> {
   return lex(src).flatMap((src) => FULL_PARSER.parse(src));
 }
+console.log(
+  wordUnit(CONTENT_WORD, "content word").parse([{ type: "word", word: "ijo" }]),
+);
