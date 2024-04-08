@@ -6,6 +6,7 @@ export type Settings = {
   useTeloMisikeke: boolean;
   randomize: boolean;
   xAlaXPartialParsing: boolean;
+  anuAsContentWord: boolean;
   number: RedundancySettings;
   tense: RedundancySettings;
 };
@@ -13,6 +14,7 @@ export const defaultSettings: Settings = {
   useTeloMisikeke: false,
   randomize: false,
   xAlaXPartialParsing: false,
+  anuAsContentWord: false,
   number: "both",
   tense: "both",
 };
@@ -20,6 +22,7 @@ export const settings: Settings = {
   useTeloMisikeke: false,
   randomize: false,
   xAlaXPartialParsing: false,
+  anuAsContentWord: false,
   number: "both",
   tense: "both",
 };

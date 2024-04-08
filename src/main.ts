@@ -27,6 +27,7 @@ type Elements = {
   number: HTMLSelectElement;
   tense: HTMLSelectElement;
   xAlaXPartialParsing: HTMLInputElement;
+  anuAsContentWord: HTMLInputElement;
 };
 /** A map of all HTML elements that are used here. */
 let elements: undefined | Elements;
@@ -61,6 +62,9 @@ function loadElements(): void {
     tense: document.getElementById("tense") as HTMLSelectElement,
     xAlaXPartialParsing: document.getElementById(
       "x-ala-x-parsing",
+    ) as HTMLInputElement,
+    anuAsContentWord: document.getElementById(
+      "anu-as-content-word",
     ) as HTMLInputElement,
   };
 }
@@ -146,7 +150,11 @@ function updateOutput(): void {
 }
 function loadSettings(): void {
   function setBool<
-    T extends "useTeloMisikeke" | "randomize" | "xAlaXPartialParsing",
+    T extends
+      | "useTeloMisikeke"
+      | "randomize"
+      | "xAlaXPartialParsing"
+      | "anuAsContentWord",
   >(name: T, element: HTMLInputElement): void {
     const x = localStorage.getItem(name);
     let value: boolean;
@@ -174,12 +182,17 @@ function loadSettings(): void {
   setBool("useTeloMisikeke", elements!.useTeloMisikeke);
   setBool("randomize", elements!.randomize);
   setBool("xAlaXPartialParsing", elements!.xAlaXPartialParsing);
+  setBool("anuAsContentWord", elements!.anuAsContentWord);
   setRedundancy("number", elements!.number);
   setRedundancy("tense", elements!.tense);
 }
 function confirmSettings(): void {
   function setBool<
-    T extends "useTeloMisikeke" | "randomize" | "xAlaXPartialParsing",
+    T extends
+      | "useTeloMisikeke"
+      | "randomize"
+      | "xAlaXPartialParsing"
+      | "anuAsContentWord",
   >(name: T, element: HTMLInputElement) {
     const value = element.checked;
     localStorage.setItem(name, value.toString());
@@ -196,12 +209,17 @@ function confirmSettings(): void {
   setBool("useTeloMisikeke", elements!.useTeloMisikeke);
   setBool("randomize", elements!.randomize);
   setBool("xAlaXPartialParsing", elements!.xAlaXPartialParsing);
+  setBool("anuAsContentWord", elements!.anuAsContentWord);
   setRedundancy("number", elements!.number);
   setRedundancy("tense", elements!.tense);
 }
 function resetSettings(): void {
   function setBool<
-    T extends "useTeloMisikeke" | "randomize" | "xAlaXPartialParsing",
+    T extends
+      | "useTeloMisikeke"
+      | "randomize"
+      | "xAlaXPartialParsing"
+      | "anuAsContentWord",
   >(name: T, element: HTMLInputElement) {
     element.checked = defaultSettings[name];
   }
@@ -214,6 +232,7 @@ function resetSettings(): void {
   setBool("useTeloMisikeke", elements!.useTeloMisikeke);
   setBool("randomize", elements!.randomize);
   setBool("xAlaXPartialParsing", elements!.xAlaXPartialParsing);
+  setBool("anuAsContentWord", elements!.anuAsContentWord);
   setRedundancy("number", elements!.number);
   setRedundancy("tense", elements!.tense);
 }

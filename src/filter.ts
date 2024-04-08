@@ -14,6 +14,7 @@ import {
   WordUnit,
 } from "./ast.ts";
 import { UnreachableError, UnrecognizedError } from "./error.ts";
+import { settings } from "./settings.ts";
 
 /** Array of filter rules for a word unit. */
 export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
@@ -33,6 +34,22 @@ export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
       throw new UnrecognizedError(`reduplication of ${wordUnit.word}`);
     }
     return true;
+  },
+  // disallow "anu" as content word only when turned off in settings
+  (wordUnit) => {
+    if (settings.anuAsContentWord) {
+      return true;
+    }
+    const isAnu = (
+      wordUnit.type === "default" ||
+      wordUnit.type === "reduplication" ||
+      wordUnit.type === "x ala x"
+    ) && wordUnit.word === "anu";
+    if (isAnu) {
+      throw new UnrecognizedError("anu as content word");
+    } else {
+      return true;
+    }
   },
 ];
 /** Array of filter rules for a single modifier. */
