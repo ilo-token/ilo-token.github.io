@@ -4,6 +4,8 @@ A rule-based Toki Pona to English translator that translates into multiple sente
 
 [Try it](https://neverrare.github.io/ilo-token/)
 
+**It is work in progress!** [We welcome contributors however!](./CONTRIBUTING.md)
+
 ## Dependencies
 
 You'll need the following in order to run commands:
@@ -12,7 +14,7 @@ You'll need the following in order to run commands:
 
 ## Building
 
-This builds `./main.js` as a minified file ready for production use.
+This fetches dependencies needed and builds `./main.js` as a minified file ready for production use.
 
 ```
 deno task build
@@ -20,7 +22,7 @@ deno task build
 
 ## Watching
 
-Before running this command, you'll need to run `deno task build` first. You'll only need to run this command once.
+Before running this command, you'll need to run `deno task build` first. This is because `deno task watch` doesn't fetch dependencies. You'll only need to run this command once.
 
 This builds `./main.js` as a non-minified file with source mapping, intended for testing and debugging. This command also watches the source codes in `./src/` path and rebuilds `./main.js` whenever there are changes.
 
