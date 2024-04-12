@@ -14,7 +14,7 @@ You'll need the following in order to run commands:
 
 ## Building
 
-This fetches dependencies needed and builds `./main.js` as a minified file ready for production use.
+This fetches more dependencies needed and builds `./main.js` as a minified file ready for production use.
 
 ```
 deno task build
