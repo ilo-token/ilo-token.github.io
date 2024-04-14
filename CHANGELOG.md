@@ -2,7 +2,12 @@
 
 You may need to force restart the page in order to use the latest version: shift + click the restart button; or ctrl + shift + R.
 
+<details>
+<summary>On development changelog</summary>
+
 ## 0.3.0 (On development)
+
+The latest on development version can be accessed by building the source code.
 
 - Implement settings dialog. [More info](https://github.com/neverRare/ilo-token/wiki/Settings-Help).
 - All possible errors will now be listed.
@@ -20,6 +25,8 @@ Inside update (intended for developers):
 
 - Implement lexer.
 - Overhaul dictionary.
+
+</details>
 
 ## 0.2.2
 
