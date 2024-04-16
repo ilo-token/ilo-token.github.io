@@ -7,7 +7,7 @@ You may need to force restart the page in order to use the latest version: shift
 
 ## 0.3.0 (On development)
 
-The latest on development version can be accessed by building the source code.
+The latest on-development version can be accessed by building the source code.
 
 - Implement settings dialog. [More info](https://github.com/neverRare/ilo-token/wiki/Settings-Help).
 - All possible errors will now be listed.
