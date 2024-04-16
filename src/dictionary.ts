@@ -1,6 +1,7 @@
 /** Module for describing word to word translations. */
 
-/** */
+import { UnreachableError } from "./error.ts";
+
 export const PARTICLES = new Set([
   "a",
   "ala",
@@ -98,7 +99,11 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     verb("alter(ed)", "altering"),
   ],
   anu: [
-    verb("choose/chose", "choosing"),
+    verb({
+      presentPast: "choose/chose",
+      pastParticiple: "chosen",
+      gerund: "choosing",
+    }),
     intransitiveVerb("decide(d)", "deciding"),
   ],
   awen: [
@@ -204,7 +209,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     singularNoun("future"),
     adjective("future", "age"),
     verb("summon(ed)", "summoning"),
-    intransitiveVerb("arrive", "arriving"),
+    intransitiveVerb("arrive(d)", "arriving"),
   ],
   kasi: [
     noun("plant(s)"),
@@ -283,10 +288,18 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
   kute: [
     noun("ear(s)"),
-    verb("listen(ed)", "listening", "at"),
+    verb({
+      presentPast: "listen(ed)",
+      gerund: "listening",
+      usePreposition: "at",
+    }),
   ],
   lanpan: [
-    verb("take/took", "taking"),
+    verb({
+      presentPast: "take/took",
+      pastParticiple: "taken",
+      gerund: "taking",
+    }),
     verb("seize(d)", "seizing"),
     verb("catch(ed)", "catching"),
     verb("receive(d)", "receiving"),
@@ -338,14 +351,22 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("fabric(s)"),
     adjective("hidden", "origin"),
     verb("cover(ed)", "covering"),
-    verb("hide/hid", "hiding"),
+    verb({
+      presentPast: "hide/hid",
+      pastParticiple: "hidden",
+      gerund: "hiding",
+    }),
   ],
   lete: [
     singularNoun("coldness"),
     adjective("cool", "physical quality"),
     adjective("cold", "physical quality"),
     adjective("frozen", "physical quality"),
-    verb("freeze/froze", "freezing"),
+    verb({
+      presentPast: "freeze/froze",
+      pastParticiple: "frozen",
+      gerund: "freezing",
+    }),
   ],
   lili: [
     singularNoun("smallness"),
@@ -417,7 +438,11 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("visual(s)"),
     noun("eye(s)"),
     adjectiveNounPhrase([adjective("seeing", "qualifier")], noun("organ(s)")),
-    verb("look(ed)", "looking", "at"),
+    verb({
+      presentPast: "look(ed)",
+      gerund: "looking",
+      usePreposition: "at",
+    }),
     verb("read", "reading"),
     verb("watch(ed)", "watching"),
   ],
@@ -503,8 +528,16 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   moku: [
     noun("food(s)"),
     noun("drink(s)"),
-    verb("eat/ate", "eating"),
-    verb("drink/drank", "drinking"),
+    verb({
+      presentPast: "eat/ate",
+      pastParticiple: "eaten",
+      gerund: "eating",
+    }),
+    verb({
+      presentPast: "drink/drank",
+      pastParticiple: "drinked",
+      gerund: "drinking",
+    }),
     verb("consume(d)", "consuming"),
     verb("ingest(ed)", "ingesting"),
   ],
@@ -566,7 +599,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjective("silly", "opinion"),
     adjective("drunk", "opinion"),
     // adjective("intoxicated", "opinion"),
-    verb("intoxicate", "intoxicating"),
+    verb("intoxicate(d)", "intoxicating"),
     adverb("strangely"),
   ],
   nasin: [
@@ -629,9 +662,13 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   pakala: [
     singularNoun("mess"),
     noun("damage(s)"),
-    adjective("broken", "opinion"),
+    // adjective("broken", "opinion"),
     verb("botch(ed)", "botching"),
-    verb("break/broke", "breaking"),
+    verb({
+      presentPast: "break/broke",
+      pastParticiple: "broken",
+      gerund: "breaking",
+    }),
     verb("damage(d)", "damaging"),
     verb("harm(ed)", "harming"),
     verb("mess(ed) up", "messing up"),
@@ -654,7 +691,11 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     verb("build", "building"),
     verb("make/made", "making"),
     verb("prepare(d)", "preparing"),
-    intransitiveVerb("do/did", "doing"),
+    intransitiveVerb({
+      presentPast: "do/did",
+      pastParticiple: "done",
+      gerund: "doing",
+    }),
     intransitiveVerb("work/worked", "working"),
   ],
   palisa: [
@@ -877,7 +918,11 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   toki: [
     noun("communication(s)"),
     noun("language(s)"),
-    verb("communicate(d)", "communicating", "about"),
+    verb({
+      presentPast: "communicate(d)",
+      gerund: "communicating",
+      usePreposition: "about",
+    }),
     interjection("hello"),
   ],
   tomo: [
@@ -919,7 +964,14 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   unpa: [
     adjective("sexual", "qualifier"),
     adverb("sexually"),
-    verbObjectPhrase(verb("have/had", "having", "with"), singularNoun("sex")),
+    verbObjectPhrase(
+      verb({
+        presentPast: "have/had",
+        gerund: "having",
+        usePreposition: "with",
+      }),
+      singularNoun("sex"),
+    ),
   ],
   uta: [
     singularNoun("mouth"),
@@ -958,7 +1010,11 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
       [adjective("winged", "qualifier")],
       noun("animal(s)"),
     ),
-    intransitiveVerb("fly", "flying"),
+    intransitiveVerb({
+      presentPast: "fly/flew",
+      pastParticiple: "flown",
+      gerund: "flying",
+    }),
   ],
   wawa: [
     singularNoun("power"),
@@ -1045,9 +1101,10 @@ export type Definition =
   }
   | {
     type: "verb";
-    past: string;
     present: string;
+    past: string;
     condensed: string;
+    pastParticiple: string;
     gerund: string;
     object: boolean | string;
   }
@@ -1158,20 +1215,44 @@ function parseVerb(
   }
   return { past, present, condensed: word };
 }
+type VerbOption = {
+  presentPast: string;
+  pastParticiple?: null | undefined | string;
+  gerund: string;
+  usePreposition?: null | undefined | string;
+};
+function verb(word: string, gerund: string): Definition & { type: "verb" };
+function verb(option: VerbOption): Definition & { type: "verb" };
 function verb(
-  word: string,
-  gerund: string,
-  usePreposition?: null | undefined | string,
+  word: string | VerbOption,
+  gerund?: string,
 ): Definition & { type: "verb" } {
-  const { past, present, condensed } = parseVerb(word);
-  return {
-    type: "verb",
-    present,
-    past,
-    condensed,
-    gerund,
-    object: usePreposition ?? true,
-  };
+  if (typeof word === "string") {
+    if (typeof gerund !== "string") {
+      throw new UnreachableError();
+    }
+    const { past, present, condensed } = parseVerb(word);
+    return {
+      type: "verb",
+      present,
+      past,
+      pastParticiple: past,
+      condensed,
+      gerund,
+      object: true,
+    };
+  } else {
+    const { past, present, condensed } = parseVerb(word.presentPast);
+    return {
+      type: "verb",
+      present,
+      past,
+      pastParticiple: word.pastParticiple ?? past,
+      condensed,
+      gerund: word.gerund,
+      object: word.usePreposition ?? true,
+    };
+  }
 }
 function verbObjectPhrase(
   verb: Definition & { type: "verb" },
@@ -1183,19 +1264,48 @@ function verbObjectPhrase(
     object,
   };
 }
+type IntransitiveVerbOption = {
+  presentPast: string;
+  pastParticiple: string;
+  gerund: string;
+};
 function intransitiveVerb(
   word: string,
   gerund: string,
+): Definition & { type: "verb" };
+function intransitiveVerb(
+  option: IntransitiveVerbOption,
+): Definition & { type: "verb" };
+function intransitiveVerb(
+  word: string | IntransitiveVerbOption,
+  gerund?: string,
 ): Definition & { type: "verb" } {
-  const { past, present, condensed } = parseVerb(word);
-  return {
-    type: "verb",
-    present,
-    past,
-    condensed,
-    gerund,
-    object: false,
-  };
+  if (typeof word === "string") {
+    if (typeof gerund !== "string") {
+      throw new UnreachableError();
+    }
+    const { past, present, condensed } = parseVerb(word);
+    return {
+      type: "verb",
+      present,
+      past,
+      pastParticiple: past,
+      condensed,
+      gerund,
+      object: false,
+    };
+  } else {
+    const { past, present, condensed } = parseVerb(word.presentPast);
+    return {
+      type: "verb",
+      present,
+      past,
+      pastParticiple: word.pastParticiple,
+      condensed,
+      gerund: word.gerund,
+      object: false,
+    };
+  }
 }
 function adjective(
   word: string,
