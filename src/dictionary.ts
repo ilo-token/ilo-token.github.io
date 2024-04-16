@@ -997,8 +997,16 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   utala: [
     noun("battle(s)"),
     noun("challenge(s)"),
-    verb("compete(d)", "against"),
-    verb("struggle(d)", "against"),
+    verb({
+      presentPast: "compete(d)",
+      gerund: "competing",
+      usePreposition: "against",
+    }),
+    verb({
+      presentPast: "struggle(d)",
+      gerund: "struggling",
+      usePreposition: "against",
+    }),
   ],
   walo: [
     adjectiveNounPhrase([adjective("light", "color")], noun("color(s)")),
