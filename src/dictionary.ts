@@ -349,7 +349,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   len: [
     noun("clothing(s)"),
     noun("fabric(s)"),
-    adjective("hidden", "origin"),
+    // adjective("hidden", "origin"),
     verb("cover(ed)", "covering"),
     verb({
       presentPast: "hide/hid",
@@ -361,7 +361,8 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     singularNoun("coldness"),
     adjective("cool", "physical quality"),
     adjective("cold", "physical quality"),
-    adjective("frozen", "physical quality"),
+    // adjective("frozen", "physical quality"),
+    verb("cool(ed)", "cooling"),
     verb({
       presentPast: "freeze/froze",
       pastParticiple: "frozen",
@@ -655,9 +656,10 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("beginning(s)"),
     singularNoun("start"),
     adjective("open", "physical quality"),
-    adjective("turned on", "qualifier"),
+    // adjective("turned on", "qualifier"),
     verb("start(ed)", "starting"),
     verb("turn(ed) on", "turning on"),
+    verb("open(ed)", "opening"),
   ],
   pakala: [
     singularNoun("mess"),
