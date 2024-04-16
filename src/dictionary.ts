@@ -26,7 +26,6 @@ export const SPECIAL_CONTENT_WORD = new Set([
   "lili", // piece of
   "mu",
   "ni",
-  "olin", // have a strong emotional bond with
   "pu",
   "seme",
   "su",
@@ -639,6 +638,17 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjective("platonic", "qualifier"),
     adjective("romantic", "qualifier"),
     adjective("familial", "qualifier"),
+    verbObjectPhrase(
+      verb({
+        presentPast: "have/had",
+        gerund: "having",
+        usePreposition: "with",
+      }),
+      adjectiveNounPhrase([
+        adjective("strong", "opinion"),
+        adjective("emotional", "qualifier"),
+      ], singularNoun("bond")),
+    ),
     verb("respect(ed)", "respecting"),
   ],
   ona: [
@@ -1113,7 +1123,7 @@ export type Definition =
   | {
     type: "verb object phrase";
     verb: Definition & { type: "verb" };
-    object: Definition & { type: "noun" };
+    object: Definition & { type: "noun" | "adjective noun phrase" };
   }
   | {
     type: "gerund";
@@ -1258,7 +1268,7 @@ function verb(
 }
 function verbObjectPhrase(
   verb: Definition & { type: "verb" },
-  object: Definition & { type: "noun" },
+  object: Definition & { type: "noun" | "adjective noun phrase" },
 ): Definition & { type: "verb object phrase" } {
   return {
     type: "verb object phrase",
