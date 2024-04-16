@@ -78,7 +78,6 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     singularNoun("bottom"),
     singularNoun("below"),
     singularNoun("floor"),
-    // TODO: bowing down
     adjective("downward", "origin"),
     adjective("humble", "opinion"),
     adjective("lowly", "opinion"),
@@ -87,6 +86,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjective("lower", "origin"),
     adjective("bottom", "origin"),
     adjective("down", "origin"),
+    verb("bow(ed) down", "bowing down"),
   ],
   ante: [
     noun("change(s)"),
