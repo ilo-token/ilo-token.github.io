@@ -274,12 +274,16 @@ export const CLAUSE_RULE: Array<(clause: Clause) => boolean> = [
 ];
 export const FULL_CLAUSE_RULE: Array<(fullClase: FullClause) => boolean> = [
   // Prevent "taso ala taso"
-  // (fullClause) => {
-  //   if (fullClause.taso && fullClause.taso.type === "x ala x") {
-  //     throw new UnrecognizedError('"taso ala taso"');
-  //   }
-  //   return true;
-  // },
+  (fullClause) => {
+    if (
+      fullClause.type === "default" && fullClause.preclause &&
+      fullClause.preclause.type === "taso" &&
+      fullClause.preclause.taso.type === "x ala x"
+    ) {
+      throw new UnrecognizedError('"taso ala taso"');
+    }
+    return true;
+  },
 ];
 /** Array of filter rules for multiple sentences. */
 export const SENTENCES_RULE: Array<(sentences: Array<Sentence>) => boolean> = [
