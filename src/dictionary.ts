@@ -220,7 +220,10 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("ability/abilities"),
     noun("possibility/possibilities"),
   ],
-  kepeken: [],
+  kepeken: [
+    verb("use(d)", "using "),
+  ],
+  kijetesantakalu: [], // Special case
   kili: [
     noun("fruit(s)"),
     noun("vegetable(s)"),
@@ -254,6 +257,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjective("squishy", "material"),
     adjective("moldable", "material"),
   ],
+  kokosila: [], // Special case
   kon: [
     singularNoun("air"),
     singularNoun("breath"),
@@ -268,6 +272,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
       noun("agent(s)"),
     ),
   ],
+  ku: [], // Special case
   kule: [
     noun("color(s)"),
     noun("pigment(s)"),
@@ -559,6 +564,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("danger(s)"),
     adjective("scary", "opinion"),
   ],
+  mu: [], // Special case
   mun: [
     singularNoun("moon"),
     adjectiveNounPhrase(
@@ -617,6 +623,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("nose(s)"),
     noun("protuberance(s)"),
   ],
+  ni: [], // Special case
   nimi: [
     noun("name(s)"),
     noun("word(s)"),
@@ -764,6 +771,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjective("simple", "opinion"),
     adverb("nicely"),
   ],
+  pu: [], // Special case
   sama: [
     noun("similarity/similarities"),
     noun("sibling(s)"),
@@ -795,6 +803,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     singularNoun("skin"),
     noun("boundary/boundaries"),
   ],
+  seme: [], // Special case
   sewi: [
     // TODO: area above, something elevated
     adjectiveNounPhrase([adjective("highest", "origin")], noun("part(s)")),
@@ -867,6 +876,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     ),
     noun("beast(s)"),
   ],
+  su: [], // Special case
   suli: [
     singularNoun("hugeness"),
     singularNoun("importance"),
