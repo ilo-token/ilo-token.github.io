@@ -202,7 +202,8 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
   kalama: [
     noun("sound(s)"),
-    intransitiveVerb("sound(ed)", "sounding"),
+    // intransitiveVerb("sound(ed)", "sounding"),
+    verbObjectPhrase(verb("make/made", "making"), noun("sound(s)")),
   ],
   kama: [
     singularNoun("future"),
