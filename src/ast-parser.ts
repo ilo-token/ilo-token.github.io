@@ -139,7 +139,7 @@ function xAlaX(
 ): AstParser<WordUnit & { type: "x ala x" }> {
   return choice(
     specificTokenTree("long glyph").map((longGlyph) => {
-      // TODO: reduce duplication
+      // TODO: reduce code duplication
       if (longGlyph.words.length !== 1 || longGlyph.words[0] !== "ala") {
         throw new UnexpectedError(
           describe({ type: "combined glyphs", words: longGlyph.words }),
