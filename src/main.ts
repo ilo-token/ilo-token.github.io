@@ -128,9 +128,9 @@ function updateOutput(): void {
       if (error.length === 0) {
         error = [
           ...new Set(
-            translations.errors.filter((x) => !(x instanceof CoveredError)).map(
-              (x) => x.message,
-            ),
+            translations.errors
+              .filter((x) => !(x instanceof CoveredError))
+              .map((x) => x.message),
           ),
         ];
       }

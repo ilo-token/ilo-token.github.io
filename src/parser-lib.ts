@@ -20,18 +20,19 @@ export class Parser<T, U> {
    */
   map<V>(mapper: (value: U) => V): Parser<T, V> {
     return new Parser((src) =>
-      this.parser(src).map(({ value, rest }) => ({
-        value: mapper(value),
-        rest,
-      }))
+      this
+        .parser(src)
+        .map(({ value, rest }) => ({ value: mapper(value), rest }))
     );
   }
   /** TODO better comment. */
   flatMapValue<V>(mapper: (value: U) => Output<V>): Parser<T, V> {
     return new Parser((src) =>
-      this.parser(src).flatMap(({ value, rest }) =>
-        mapper(value).map((value) => ({ value, rest }))
-      )
+      this
+        .parser(src)
+        .flatMap(({ value, rest }) =>
+          mapper(value).map((value) => ({ value, rest }))
+        )
     );
   }
   /**
@@ -133,15 +134,13 @@ export function sequence<T, U extends Array<unknown>>(
 ): Parser<T, U> {
   // We resorted to using `any` types here, make sure it works properly
   // deno-lint-ignore no-explicit-any
-  return (sequence as Array<any>).reduceRight(
-    (newParser, parser) =>
+  return (sequence as Array<any>)
+    .reduceRight((newParser, parser) =>
       // deno-lint-ignore no-explicit-any
       parser.then((value: any) =>
         // deno-lint-ignore no-explicit-any
         newParser.map((newValue: any) => [value, ...newValue])
-      ),
-    nothing().map(() => []),
-  );
+      ), nothing().map(() => []));
 }
 /**
  * Parses `parser` multiple times and returns an `Array<T>`. The resulting
@@ -154,9 +153,8 @@ export function sequence<T, U extends Array<unknown>>(
  */
 export function many<T, U>(parser: Parser<T, U>): Parser<T, Array<U>> {
   return choice<T, Array<U>>(
-    sequence<T, [U, Array<U>]>(parser, lazy(() => many(parser))).map((
-      [first, rest],
-    ) => [first, ...rest]),
+    sequence<T, [U, Array<U>]>(parser, lazy(() => many(parser)))
+      .map(([first, rest]) => [first, ...rest]),
     nothing<T>().map(() => []),
   );
 }
@@ -170,9 +168,8 @@ export function many<T, U>(parser: Parser<T, U>): Parser<T, Array<U>> {
 export function manyAtLeastOnce<T, U>(
   parser: Parser<T, U>,
 ): Parser<T, Array<U>> {
-  return sequence<T, [U, Array<U>]>(parser, many(parser)).map((
-    [first, rest],
-  ) => [first, ...rest]);
+  return sequence<T, [U, Array<U>]>(parser, many(parser))
+    .map(([first, rest]) => [first, ...rest]);
 }
 /**
  * Parses `parser` multiple times and returns an `Array<T>`. This function is
@@ -184,9 +181,8 @@ export function manyAtLeastOnce<T, U>(
  */
 export function all<T, U>(parser: Parser<T, U>): Parser<T, Array<U>> {
   return choiceOnlyOne<T, Array<U>>(
-    sequence<T, [U, Array<U>]>(parser, lazy(() => all(parser))).map((
-      [first, rest],
-    ) => [first, ...rest]),
+    sequence<T, [U, Array<U>]>(parser, lazy(() => all(parser)))
+      .map(([first, rest]) => [first, ...rest]),
     nothing<T>().map(() => []),
   );
 }
@@ -200,7 +196,6 @@ export function all<T, U>(parser: Parser<T, U>): Parser<T, Array<U>> {
 export function allAtLeastOnce<T, U>(
   parser: Parser<T, U>,
 ): Parser<T, Array<U>> {
-  return sequence<T, [U, Array<U>]>(parser, all(parser)).map((
-    [first, rest],
-  ) => [first, ...rest]);
+  return sequence<T, [U, Array<U>]>(parser, all(parser))
+    .map(([first, rest]) => [first, ...rest]);
 }

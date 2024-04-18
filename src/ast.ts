@@ -173,9 +173,10 @@ export function someModifierInMultiplePhrases(
   if (phrases.type === "single") {
     return someModifierInPhrase(phrases.phrase, whenQuotation, checker);
   } else if (phrases.type === "and conjunction" || phrases.type === "anu") {
-    return phrases.phrases.some((phrases) =>
-      someModifierInMultiplePhrases(phrases, whenQuotation, checker)
-    );
+    return phrases.phrases
+      .some((phrases) =>
+        someModifierInMultiplePhrases(phrases, whenQuotation, checker)
+      );
   } else {
     throw new UnreachableError();
   }
@@ -191,9 +192,8 @@ export function somePhraseInMultiplePhrases(
   if (phrases.type === "single") {
     return checker(phrases.phrase);
   } else if (phrases.type === "and conjunction" || phrases.type === "anu") {
-    return phrases.phrases.some((phrases) =>
-      somePhraseInMultiplePhrases(phrases, checker)
-    );
+    return phrases.phrases
+      .some((phrases) => somePhraseInMultiplePhrases(phrases, checker));
   } else {
     throw new UnreachableError();
   }
@@ -215,9 +215,8 @@ export function someObjectInMultiplePredicate(
       return false;
     }
   } else if (predicate.type === "and conjunction" || predicate.type === "anu") {
-    return predicate.predicates.some((predicates) =>
-      someObjectInMultiplePredicate(predicates, checker)
-    );
+    return predicate.predicates
+      .some((predicates) => someObjectInMultiplePredicate(predicates, checker));
   } else {
     throw new UnreachableError();
   }

@@ -1,7 +1,7 @@
 // This module is bound to be replaced with a translator that uses English AST
 
-import { Clause } from "./ast.ts";
 import {
+  Clause,
   FullClause,
   Modifier,
   MultiplePhrases,
@@ -66,9 +66,8 @@ function wordUnitAs(
   } else if (word.type === "numbers") {
     return new Output([number(word.numbers).toString()]);
   } else if (word.type === "reduplication") {
-    return definition(kind, word.word).map((noun) =>
-      new Array(word.count).fill(noun).join(" ")
-    );
+    return definition(kind, word.word)
+      .map((noun) => new Array(word.count).fill(noun).join(" "));
   } else if (word.type === "x ala x") {
     return new Output(new TodoError("translation for X ala X"));
   } else {
@@ -105,23 +104,20 @@ function modifierAsSuffix(
     construction = "in X way";
   }
   if (suffix.type === "default") {
-    return wordUnitAs(kind, suffix.word).map((translation) =>
-      construction.replace("X", translation)
-    );
+    return wordUnitAs(kind, suffix.word)
+      .map((translation) => construction.replace("X", translation));
   } else if (suffix.type === "nanpa") {
     return phraseAs(kind, suffix.phrase, {
       named: kind === "noun",
       suffix: false,
-    }).map(
-      (translation) => `in position ${translation}`,
-    );
+    })
+      .map((translation) => `in position ${translation}`);
   } else if (suffix.type === "pi") {
     return phraseAs(kind, suffix.phrase, {
       named: kind === "noun",
       suffix: false,
-    }).map((
-      translation,
-    ) => construction.replace("X", translation));
+    })
+      .map((translation) => construction.replace("X", translation));
   } else if (suffix.type === "proper words") {
     return new Output([`named ${suffix.words}`]);
   } else {
@@ -133,18 +129,17 @@ function modifierAsSuffix(
 function defaultPhraseAs(
   kind: "noun" | "adjective",
   phrase: Phrase & { type: "default" },
-  options?: {
-    named?: boolean;
-    suffix?: boolean;
-  },
+  options?: { named?: boolean; suffix?: boolean },
 ): TranslationOutput {
   const named = options?.named ?? true;
   const suffix = options?.suffix ?? true;
   const name = (
-    phrase.modifiers.filter(
-      (modifier) => modifier.type === "proper words",
-    )[0] as undefined | (Modifier & { type: "proper words" })
-  )?.words;
+    phrase.modifiers
+      .filter((modifier) => modifier.type === "proper words")[0] as
+        | undefined
+        | (Modifier & { type: "proper words" })
+  )
+    ?.words;
   if (name && !named) {
     return new Output();
   }
@@ -155,60 +150,57 @@ function defaultPhraseAs(
     modifierKind = "adverb";
   }
   const headWord = wordUnitAs(kind, phrase.headWord);
-  const modifierNoName = phrase.modifiers.filter((
-    modifier,
-  ) => modifier.type !== "proper words");
-  const modifierTranslation: Array<TranslationOutput> = modifierNoName.map(
-    (modifier) => modifierAs(modifierKind, modifier),
-  );
+  const modifierNoName = phrase.modifiers
+    .filter((modifier) => modifier.type !== "proper words");
+  const modifierTranslation: Array<TranslationOutput> = modifierNoName
+    .map((modifier) => modifierAs(modifierKind, modifier));
   const translations = rotate([headWord, rotate(modifierTranslation)] as const)
-    .map(
-      ([headWord, modifiers]) =>
-        [...modifiers.slice().reverse(), headWord].join(" "),
-    ).map(
-      (translation) => {
-        if (name != null) {
-          return `${translation} named ${name}`;
-        } else {
-          return translation;
-        }
-      },
-    );
+    .map(([headWord, modifiers]) =>
+      [...modifiers.slice().reverse(), headWord].join(" ")
+    )
+    .map((translation) => {
+      if (name != null) {
+        return `${translation} named ${name}`;
+      } else {
+        return translation;
+      }
+    });
   if (suffix) {
     const extraTranslations: Array<TranslationOutput> = [
       ...modifierNoName.keys(),
-    ].map(
-      (i) => {
+    ]
+      .map((i) => {
         const suffixTranslation = modifierAsSuffix(kind, modifierNoName[i]);
         const modifierTranslation = [
           ...modifierNoName.slice(0, i),
           ...modifierNoName.slice(i + 1),
-        ].map((modifier) => modifierAs(modifierKind, modifier));
-        return rotate([headWord, rotate(modifierTranslation)] as const).map(
-          ([headWord, modifiers]) =>
-            [...modifiers.slice().reverse(), headWord].join(" "),
-        ).map(
-          (translation) => {
+        ]
+          .map((modifier) => modifierAs(modifierKind, modifier));
+        return rotate([headWord, rotate(modifierTranslation)] as const)
+          .map(([headWord, modifiers]) =>
+            [...modifiers.slice().reverse(), headWord].join(" ")
+          )
+          .map((translation) => {
             if (name != null) {
               return `${translation} named ${name}`;
             } else {
               return translation;
             }
-          },
-        ).flatMap((left) =>
-          suffixTranslation.map((right) => [left, right].join(" "))
-        );
-      },
-    );
+          })
+          .flatMap((left) =>
+            suffixTranslation.map((right) => [left, right].join(" "))
+          );
+      });
     return Output.concat(translations, ...extraTranslations);
   } else {
     return translations;
   }
 }
-function phraseAs(kind: "noun" | "adjective", phrase: Phrase, options?: {
-  named?: boolean;
-  suffix?: boolean;
-}): TranslationOutput {
+function phraseAs(
+  kind: "noun" | "adjective",
+  phrase: Phrase,
+  options?: { named?: boolean; suffix?: boolean },
+): TranslationOutput {
   if (phrase.type === "default") {
     return defaultPhraseAs(kind, phrase, options);
   } else {
@@ -246,13 +238,13 @@ function translateMultiplePhrases(
             conjunction,
             " ",
             last,
-          ].join("");
+          ]
+            .join("");
         }
       });
     } else if (level === 1) {
-      return translations.map((phrases) =>
-        phrases.join([" ", conjunction, " "].join(""))
-      );
+      return translations
+        .map((phrases) => phrases.join([" ", conjunction, " "].join("")));
     } else {
       throw new UnreachableError();
     }
@@ -335,14 +327,14 @@ function translateSentence(sentence: Sentence): TranslationOutput {
       ...contexts.map((context) => `given ${context}, `),
       final,
       sentence.punctuation,
-    ].join("");
+    ]
+      .join("");
   });
 }
 /** Translates multiple sentences. */
 function translateSentences(sentences: Array<Sentence>): TranslationOutput {
-  return rotate(sentences.map(translateSentence)).map((sentences) =>
-    sentences.join(" ")
-  );
+  return rotate(sentences.map(translateSentence))
+    .map((sentences) => sentences.join(" "));
 }
 /** Full Toki Pona translator. */
 export function translate(src: string): TranslationOutput {

@@ -40,9 +40,8 @@ import {
   Parser,
   sequence as rawSequence,
 } from "./parser-lib.ts";
-import { TokenTree } from "./token-tree.ts";
+import { describe, TokenTree } from "./token-tree.ts";
 import { lex } from "./lexer.ts";
-import { describe } from "./token-tree.ts";
 
 export type AstParser<T> = Parser<Array<TokenTree>, T>;
 
@@ -124,12 +123,10 @@ function specificWord(thatWord: string): AstParser<string> {
 }
 function marker(): AstParser<Marker> {
   return choice(
-    specificTokenTree("multiple a").map(({ count }) =>
-      ({ type: "multiple a", count }) as Marker
-    ),
-    specificTokenTree("long a").map(({ length }) =>
-      ({ type: "long a", length }) as Marker
-    ),
+    specificTokenTree("multiple a")
+      .map(({ count }) => ({ type: "multiple a", count }) as Marker),
+    specificTokenTree("long a")
+      .map(({ length }) => ({ type: "long a", length }) as Marker),
     specificWord("a").map(() => ({ type: "a" }) as Marker),
   );
 }
@@ -183,14 +180,15 @@ function xAlaX(
       }
       return { type: "x ala x", word } as WordUnit & { type: "x ala x" };
     }),
-    specificTokenTree("x ala x").map(({ word }) =>
-      ({ type: "x ala x", word }) as WordUnit & { type: "x ala x" }
-    ),
-    wordFrom(word, description).then((word) =>
-      specificWord("ala").with(specificWord(word))
-    ).map((
-      word,
-    ) => ({ type: "x ala x", word }) as WordUnit & { type: "x ala x" }),
+    specificTokenTree("x ala x")
+      .map(({ word }) =>
+        ({ type: "x ala x", word }) as WordUnit & { type: "x ala x" }
+      ),
+    wordFrom(word, description)
+      .then((word) => specificWord("ala").with(specificWord(word)))
+      .map((word) =>
+        ({ type: "x ala x", word }) as WordUnit & { type: "x ala x" }
+      ),
   );
 }
 /** Parses word unit without numbers. */
@@ -206,10 +204,10 @@ function wordUnit(word: Set<string>, description: string): AstParser<WordUnit> {
       )
     ),
     xAlaX(word, description),
-    sequence(wordFrom(word, description), optional(marker())).map(
-      ([word, marker]) => ({ type: "default", word, marker }) as WordUnit,
-    ),
-  ).filter(filter(WORD_UNIT_RULES));
+    sequence(wordFrom(word, description), optional(marker()))
+      .map(([word, marker]) => ({ type: "default", word, marker }) as WordUnit),
+  )
+    .filter(filter(WORD_UNIT_RULES));
 }
 function binaryWords(
   word: Set<string>,
@@ -232,17 +230,18 @@ function optionalCombined(
   description: string,
 ): AstParser<[WordUnit, Array<Modifier>]> {
   return choice(
-    wordUnit(word, description).map((wordUnit) =>
-      [wordUnit, []] as [WordUnit, Array<Modifier>]
-    ),
-    binaryWords(word, description).map((
-      [first, second],
-    ) =>
-      [{ type: "default", word: first }, [{
-        type: "default",
-        word: { type: "default", word: second },
-      }]] as [WordUnit, Array<Modifier>]
-    ),
+    wordUnit(word, description)
+      .map((wordUnit) => [wordUnit, []] as [WordUnit, Array<Modifier>]),
+    binaryWords(word, description)
+      .map(([first, second]) =>
+        [
+          { type: "default", word: first },
+          [{
+            type: "default",
+            word: { type: "default", word: second },
+          }],
+        ] as [WordUnit, Array<Modifier>]
+      ),
   );
 }
 /** Parses number words in order. */
@@ -253,14 +252,15 @@ function number(): AstParser<Array<string>> {
     many(specificWord("luka")),
     many(specificWord("tu")),
     many(specificWord("wan")),
-  ).map((array) => {
-    const output = array.flat();
-    if (output.length >= 2) {
-      return output;
-    } else {
-      throw new CoveredError();
-    }
-  });
+  )
+    .map((array) => {
+      const output = array.flat();
+      if (output.length >= 2) {
+        return output;
+      } else {
+        throw new CoveredError();
+      }
+    });
 }
 function pi(): AstParser<Modifier & { type: "pi" }> {
   return choice(
@@ -281,82 +281,66 @@ function pi(): AstParser<Modifier & { type: "pi" }> {
         }
         return INNER_PHRASE_PARSER.parse(longGlyph.after);
       },
-    ).map((phrase) =>
-      ({
-        type: "pi",
-        phrase,
-      }) as Modifier & { type: "pi" }
-    ),
-    specificWord("pi").with(phrase()).map((phrase) =>
-      ({
-        type: "pi",
-        phrase,
-      }) as Modifier & { type: "pi" }
-    ),
-  ).filter(filter(MODIFIER_RULES));
+    )
+      .map((phrase) => ({ type: "pi", phrase }) as Modifier & { type: "pi" }),
+    specificWord("pi")
+      .with(phrase())
+      .map((phrase) => ({ type: "pi", phrase }) as Modifier & { type: "pi" }),
+  )
+    .filter(filter(MODIFIER_RULES));
 }
 /** Parses multiple modifiers. */
 function modifiers(): AstParser<Array<Modifier>> {
   return sequence(
     many(
       choice(
-        wordUnit(CONTENT_WORD, "modifier").map((word) =>
-          ({
-            type: "default",
-            word,
-          }) as Modifier
-        ).filter(filter(MODIFIER_RULES)),
-        properWords().map((
-          words,
-        ) => ({ type: "proper words", words }) as Modifier).filter(
-          filter(MODIFIER_RULES),
-        ),
-        number().map((
-          numbers,
-        ) =>
-          ({
-            type: "default",
-            word: { type: "numbers", numbers },
-          }) as Modifier
-        ).filter(filter(MODIFIER_RULES)),
-        quotation().map((
-          quotation,
-        ) => ({ type: "quotation", quotation }) as Modifier).filter(
-          filter(MODIFIER_RULES),
-        ),
+        wordUnit(CONTENT_WORD, "modifier")
+          .map((word) => ({ type: "default", word }) as Modifier)
+          .filter(filter(MODIFIER_RULES)),
+        properWords()
+          .map((words) => ({ type: "proper words", words }) as Modifier)
+          .filter(filter(MODIFIER_RULES)),
+        number()
+          .map((numbers) =>
+            ({
+              type: "default",
+              word: { type: "numbers", numbers },
+            }) as Modifier
+          )
+          .filter(filter(MODIFIER_RULES)),
+        quotation()
+          .map((quotation) => ({ type: "quotation", quotation }) as Modifier)
+          .filter(filter(MODIFIER_RULES)),
       ),
     ),
     many(
-      sequence(wordUnit(new Set(["nanpa"]), '"nanpa"'), phrase()).map((
-        [nanpa, phrase],
-      ) =>
-        ({
-          type: "nanpa",
-          nanpa,
-          phrase,
-        }) as Modifier
-      ).filter(filter(MODIFIER_RULES)),
+      sequence(wordUnit(new Set(["nanpa"]), '"nanpa"'), phrase())
+        .map(([nanpa, phrase]) =>
+          ({ type: "nanpa", nanpa, phrase }) as Modifier
+        )
+        .filter(filter(MODIFIER_RULES)),
     ),
     many(pi()),
-  ).map((
-    [modifiers, nanpaModifiers, piModifiers],
-  ) => [...modifiers, ...nanpaModifiers, ...piModifiers]).filter(
-    filter(MODIFIERS_RULES),
-  );
+  )
+    .map(([modifiers, nanpaModifiers, piModifiers]) => [
+      ...modifiers,
+      ...nanpaModifiers,
+      ...piModifiers,
+    ])
+    .filter(filter(MODIFIERS_RULES));
 }
 const INNER_PHRASE_PARSER = phrase().skip(eol("end of long glyph"));
 /** Parses phrases. */
 function phrase(): AstParser<Phrase> {
   return choice(
-    sequence(number(), lazy(modifiers)).map((
-      [numbers, modifiers],
-    ) =>
-      ({
-        type: "default",
-        headWord: { type: "numbers", numbers },
-        modifiers,
-      }) as Phrase
-    ),
+    sequence(number(), lazy(modifiers))
+      .map(([numbers, modifiers]) =>
+        ({
+          type: "default",
+          headWord: { type: "numbers", numbers },
+          modifiers,
+        }) as Phrase
+      ),
     binaryWords(PREVERB, "preveb").map(([preverb, phrase]) =>
       ({
         type: "preverb",
@@ -373,42 +357,32 @@ function phrase(): AstParser<Phrase> {
       optionalCombined(PREVERB, "preverb"),
       lazy(modifiers),
       lazy(phrase),
-    ).map((
-      [[preverb, modifier], modifiers, phrase],
-    ) =>
-      ({
-        type: "preverb",
-        preverb,
-        modifiers: [
-          ...modifier,
-          ...modifiers,
-        ],
-        phrase,
-      }) as Phrase
-    ),
-    lazy(preposition).map((preposition) =>
-      ({
-        type: "preposition",
-        preposition,
-      }) as Phrase
-    ),
+    )
+      .map(([[preverb, modifier], modifiers, phrase]) =>
+        ({
+          type: "preverb",
+          preverb,
+          modifiers: [...modifier, ...modifiers],
+          phrase,
+        }) as Phrase
+      ),
+    lazy(preposition)
+      .map((preposition) => ({ type: "preposition", preposition }) as Phrase),
     sequence(
       optionalCombined(CONTENT_WORD, "headword"),
       lazy(modifiers),
-    ).map(([[headWord, modifier], modifiers]) =>
-      ({
-        type: "default",
-        headWord,
-        modifiers: [
-          ...modifier,
-          ...modifiers,
-        ],
-      }) as Phrase
-    ),
-    quotation().map((
-      quotation,
-    ) => ({ type: "quotation", quotation }) as Phrase),
-  ).filter(filter(PHRASE_RULE));
+    )
+      .map(([[headWord, modifier], modifiers]) =>
+        ({
+          type: "default",
+          headWord,
+          modifiers: [...modifier, ...modifiers],
+        }) as Phrase
+      ),
+    quotation()
+      .map((quotation) => ({ type: "quotation", quotation }) as Phrase),
+  )
+    .filter(filter(PHRASE_RULE));
 }
 /**
  * Parses nested phrases with given nesting rule, only accepting the top level
@@ -418,9 +392,8 @@ function nestedPhrasesOnly(
   nestingRule: Array<"en" | "li" | "o" | "e" | "anu">,
 ): AstParser<MultiplePhrases> {
   if (nestingRule.length === 0) {
-    return phrase().map(
-      (phrase) => ({ type: "single", phrase }) as MultiplePhrases,
-    );
+    return phrase()
+      .map((phrase) => ({ type: "single", phrase }) as MultiplePhrases);
   } else {
     const [first, ...rest] = nestingRule;
     let type: "and conjunction" | "anu";
@@ -436,10 +409,11 @@ function nestedPhrasesOnly(
           nestedPhrases(rest),
         ),
       ),
-    ).map(([group, moreGroups]) => ({
-      type,
-      phrases: [group, ...moreGroups],
-    }));
+    )
+      .map(([group, moreGroups]) => ({
+        type,
+        phrases: [group, ...moreGroups],
+      }));
   }
 }
 /** Parses nested phrases with given nesting rule. */
@@ -447,9 +421,8 @@ function nestedPhrases(
   nestingRule: Array<"en" | "li" | "o" | "e" | "anu">,
 ): AstParser<MultiplePhrases> {
   if (nestingRule.length === 0) {
-    return phrase().map(
-      (phrase) => ({ type: "single", phrase }) as MultiplePhrases,
-    );
+    return phrase()
+      .map((phrase) => ({ type: "single", phrase }) as MultiplePhrases);
   } else {
     return choice(
       nestedPhrasesOnly(nestingRule),
@@ -468,18 +441,15 @@ function subjectPhrases(): AstParser<MultiplePhrases> {
 /** Parses prepositional phrase. */
 function preposition(): AstParser<Preposition> {
   return choice(
-    specificTokenTree("underline lon").flatMapValue((tokenTrees) =>
-      INNER_PHRASE_PARSER.parse(tokenTrees.words)
-    ).map((phrase) =>
-      ({
-        preposition: { type: "default", word: "lon", marker: null },
-        modifiers: [],
-        phrases: {
-          type: "single",
-          phrase,
-        },
-      }) as Preposition
-    ),
+    specificTokenTree("underline lon")
+      .flatMapValue((tokenTrees) => INNER_PHRASE_PARSER.parse(tokenTrees.words))
+      .map((phrase) =>
+        ({
+          preposition: { type: "default", word: "lon", marker: null },
+          modifiers: [],
+          phrases: { type: "single", phrase },
+        }) as Preposition
+      ),
     specificTokenTree("long glyph").flatMapValue((tokenTrees) => {
       if (tokenTrees.before.length !== 0) {
         return new Output(
@@ -499,19 +469,20 @@ function preposition(): AstParser<Preposition> {
           new UnrecognizedError(`"${word}" as preposition`),
         );
       }
-      const modifiers = tokenTrees.words.slice(1).map((word) =>
-        ({ type: "default", word: { type: "default", word } }) as Modifier
-      );
-      return INNER_PHRASE_PARSER.parse(tokenTrees.after).map((phrase) =>
-        ({
-          preposition: { type: "default", word },
-          modifiers,
-          phrases: {
-            type: "single",
-            phrase,
-          },
-        }) as Preposition
-      );
+      const modifiers = tokenTrees.words
+        .slice(1)
+        .map((word) =>
+          ({ type: "default", word: { type: "default", word } }) as Modifier
+        );
+      return INNER_PHRASE_PARSER
+        .parse(tokenTrees.after)
+        .map((phrase) =>
+          ({
+            preposition: { type: "default", word },
+            modifiers,
+            phrases: { type: "single", phrase },
+          }) as Preposition
+        );
     }),
     binaryWords(PREPOSITION, "preposition").map(([preposition, phrase]) =>
       ({
@@ -531,17 +502,16 @@ function preposition(): AstParser<Preposition> {
       optionalCombined(PREPOSITION, "preposition"),
       modifiers(),
       nestedPhrases(["anu"]),
-    ).map(([[preposition, modifier], modifiers, phrases]) =>
-      ({
-        preposition,
-        modifiers: [
-          ...modifier,
-          ...modifiers,
-        ],
-        phrases,
-      }) as Preposition
-    ),
-  ).filter(filter(PREPOSITION_RULE));
+    )
+      .map(([[preposition, modifier], modifiers, phrases]) =>
+        ({
+          preposition,
+          modifiers: [...modifier, ...modifiers],
+          phrases,
+        }) as Preposition
+      ),
+  )
+    .filter(filter(PREPOSITION_RULE));
 }
 /**
  * Parses associated predicates whose predicates only uses top level operator.
@@ -557,18 +527,14 @@ function associatedPredicates(
       ),
     ),
     many(optionalComma().with(preposition())),
-  ).map(([predicates, objects, prepositions]) => {
-    if (!objects && prepositions.length === 0) {
-      throw new CoveredError();
-    } else {
-      return {
-        type: "associated",
-        predicates,
-        objects,
-        prepositions,
-      };
-    }
-  });
+  )
+    .map(([predicates, objects, prepositions]) => {
+      if (!objects && prepositions.length === 0) {
+        throw new CoveredError();
+      } else {
+        return { type: "associated", predicates, objects, prepositions };
+      }
+    });
 }
 /** Parses multiple predicates without _li_ nor _o_ at the beginning. */
 function multiplePredicates(
@@ -577,9 +543,9 @@ function multiplePredicates(
   if (nestingRule.length === 0) {
     return choice(
       associatedPredicates([]),
-      phrase().map((
-        predicate,
-      ) => ({ type: "single", predicate }) as MultiplePredicates),
+      phrase().map((predicate) =>
+        ({ type: "single", predicate }) as MultiplePredicates
+      ),
     );
   } else {
     const [first, ...rest] = nestingRule;
@@ -604,12 +570,10 @@ function multiplePredicates(
             ),
           ),
         ),
-      ).map(([group, moreGroups]) =>
-        ({
-          type,
-          predicates: [group, ...moreGroups],
-        }) as MultiplePredicates
-      ),
+      )
+        .map(([group, moreGroups]) =>
+          ({ type, predicates: [group, ...moreGroups] }) as MultiplePredicates
+        ),
       multiplePredicates(rest),
     );
   }
@@ -620,31 +584,33 @@ function clause(): AstParser<Clause> {
     sequence(
       wordFrom(new Set(["mi", "sina"]), "mi/sina subject"),
       multiplePredicates(["li", "anu"]),
-    ).map(([subject, predicates]) =>
-      ({
-        type: "li clause",
-        subjects: {
-          type: "single",
-          phrase: {
-            type: "default",
-            headWord: { type: "default", word: subject, marker: null },
-            alaQuestion: false,
-            modifiers: [],
+    )
+      .map(([subject, predicates]) =>
+        ({
+          type: "li clause",
+          subjects: {
+            type: "single",
+            phrase: {
+              type: "default",
+              headWord: { type: "default", word: subject, marker: null },
+              alaQuestion: false,
+              modifiers: [],
+            },
           },
-        },
-        predicates,
-        explicitLi: false,
-      }) as Clause
-    ),
+          predicates,
+          explicitLi: false,
+        }) as Clause
+      ),
     sequence(
       preposition(),
       many(optionalComma().with(preposition())),
-    ).map(([preposition, morePreposition]) =>
-      ({
-        type: "prepositions",
-        prepositions: [preposition, ...morePreposition],
-      }) as Clause
-    ),
+    )
+      .map(([preposition, morePreposition]) =>
+        ({
+          type: "prepositions",
+          prepositions: [preposition, ...morePreposition],
+        }) as Clause
+      ),
     subjectPhrases().map((phrases) => {
       if (phrases.type === "single" && phrases.phrase.type === "quotation") {
         throw new CoveredError();
@@ -652,67 +618,56 @@ function clause(): AstParser<Clause> {
         return { type: "phrases", phrases } as Clause;
       }
     }),
-    subjectPhrases().skip(specificWord("o")).map((phrases) =>
-      ({
-        type: "o vocative",
-        phrases,
-      }) as Clause
-    ),
+    subjectPhrases()
+      .skip(specificWord("o"))
+      .map((phrases) => ({ type: "o vocative", phrases }) as Clause),
     sequence(
       subjectPhrases(),
       optionalComma().with(specificWord("li")).with(
         multiplePredicates(["li", "anu"]),
       ),
-    ).map(([subjects, predicates]) =>
-      ({
-        type: "li clause",
-        subjects,
-        predicates,
-        explicitLi: true,
-      }) as Clause
-    ),
-    specificWord("o").with(multiplePredicates(["o", "anu"]))
-      .map((predicates) =>
+    )
+      .map(([subjects, predicates]) =>
         ({
-          type: "o clause",
-          subjects: null,
+          type: "li clause",
+          subjects,
           predicates,
+          explicitLi: true,
         }) as Clause
+      ),
+    specificWord("o")
+      .with(multiplePredicates(["o", "anu"]))
+      .map((predicates) =>
+        ({ type: "o clause", subjects: null, predicates }) as Clause
       ),
     sequence(
       subjectPhrases(),
       optionalComma().with(specificWord("o")).with(
         multiplePredicates(["o", "anu"]),
       ),
-    ).map(([subjects, predicates]) =>
-      ({
-        type: "o clause",
-        subjects: subjects,
-        predicates,
-      }) as Clause
-    ),
+    )
+      .map(([subjects, predicates]) =>
+        ({ type: "o clause", subjects, predicates }) as Clause
+      ),
     quotation().map((quotation) =>
-      ({
-        type: "quotation",
-        quotation,
-      }) as Clause
+      ({ type: "quotation", quotation }) as Clause
     ),
-  ).filter(filter(CLAUSE_RULE));
+  )
+    .filter(filter(CLAUSE_RULE));
 }
 function preclause(): AstParser<Preclause> {
   return choice(
     marker().map((marker) => ({ type: "marker", marker }) as Preclause),
-    wordUnit(new Set(["taso"]), '"taso"').map((taso) =>
-      ({ type: "taso", taso }) as Preclause
-    ),
+    wordUnit(new Set(["taso"]), '"taso"')
+      .map((taso) => ({ type: "taso", taso }) as Preclause),
   );
 }
 function postclause(): AstParser<Postclause> {
   return choice(
     marker().map((marker) => ({ type: "marker", marker }) as Postclause),
-    specificWord("anu").with(wordUnit(new Set(["seme"]), '"seme"')).map(
-      (seme) => ({ type: "anu seme", seme }) as Postclause,
-    ),
+    specificWord("anu")
+      .with(wordUnit(new Set(["seme"]), '"seme"'))
+      .map((seme) => ({ type: "anu seme", seme }) as Postclause),
   );
 }
 /** Parses a single clause including preclause and postclause. */
@@ -722,16 +677,13 @@ function fullClause(): AstParser<FullClause> {
       optional(preclause().skip(optionalComma())),
       clause(),
       optional(optionalComma().with(postclause())),
-    ).map(([preclause, clause, postclause]) =>
-      ({
-        type: "default",
-        preclause,
-        clause,
-        postclause,
-      }) as FullClause
-    ),
+    )
+      .map(([preclause, clause, postclause]) =>
+        ({ type: "default", preclause, clause, postclause }) as FullClause
+      ),
     marker().map((marker) => ({ type: "marker", marker }) as FullClause),
-  ).filter(filter(FULL_CLAUSE_RULE));
+  )
+    .filter(filter(FULL_CLAUSE_RULE));
 }
 /** parses _la_ with optional comma around. */
 function la(): AstParser<string> {
@@ -750,10 +702,11 @@ function sentence(): AstParser<Sentence> {
       eol("end of sentence").map(() => ""),
       punctuation(),
     ),
-  ).map(([clause, moreClauses, punctuation]) => ({
-    laClauses: [clause, ...moreClauses],
-    punctuation,
-  }));
+  )
+    .map(([clause, moreClauses, punctuation]) => ({
+      laClauses: [clause, ...moreClauses],
+      punctuation,
+    }));
 }
 const INNER_QUOTATION_PARSER = all(sentence())
   .skip(eol("end of sentence"))
@@ -761,14 +714,15 @@ const INNER_QUOTATION_PARSER = all(sentence())
 /** Parses a quotation. */
 export function quotation(): AstParser<Quotation> {
   return specificTokenTree("quotation").flatMapValue((tokenTree) =>
-    INNER_QUOTATION_PARSER.parse(tokenTree.tokenTree).map(
-      (value) =>
+    INNER_QUOTATION_PARSER
+      .parse(tokenTree.tokenTree)
+      .map((value) =>
         ({
           sentences: value,
           leftMark: tokenTree.leftMark,
           rightMark: tokenTree.rightMark,
-        }) as Quotation,
-    )
+        }) as Quotation
+      )
   );
 }
 const FULL_PARSER = allAtLeastOnce(sentence())

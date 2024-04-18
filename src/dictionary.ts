@@ -1104,11 +1104,7 @@ export type Definition =
     pluralObject: string;
     pluralPossessive: string;
   }
-  | {
-    type: "adjective";
-    adjective: string;
-    kind: AdjectiveType;
-  }
+  | { type: "adjective"; adjective: string; kind: AdjectiveType }
   | {
     type: "compound adjective";
     adjectives: Array<Definition & { type: "adjective" }>;
@@ -1118,18 +1114,9 @@ export type Definition =
     adverbs: Array<Definition & { type: "adverb" }>;
     adjective: Definition & { type: "adjective" };
   }
-  | {
-    type: "quantifier";
-    quantifier: string;
-  }
-  | {
-    type: "numeral";
-    number: number;
-  }
-  | {
-    type: "adverb";
-    adverb: string;
-  }
+  | { type: "quantifier"; quantifier: string }
+  | { type: "numeral"; number: number }
+  | { type: "adverb"; adverb: string }
   | {
     type: "verb";
     present: string;
@@ -1144,14 +1131,8 @@ export type Definition =
     verb: Definition & { type: "verb" };
     object: Definition & { type: "noun" | "adjective noun phrase" };
   }
-  | {
-    type: "gerund";
-    gerund: string;
-  }
-  | {
-    type: "interjection";
-    interjection: string;
-  };
+  | { type: "gerund"; gerund: string }
+  | { type: "interjection"; interjection: string };
 export const CONTENT_WORD = new Set([
   ...SPECIAL_CONTENT_WORD,
   ...Object.keys(CONTENT_WORD_DEFINITION),
@@ -1172,60 +1153,36 @@ function noun(word: string): Definition & { type: "noun" } {
   } else {
     throw new Error(`${word} must either contain parenthesis or slash`);
   }
-  return {
-    type: "noun",
-    singular,
-    plural,
-    condensed: word,
-  };
+  return { type: "noun", singular, plural, condensed: word };
 }
 function singularNoun(word: string): Definition & { type: "noun" } {
-  return {
-    type: "noun",
-    singular: word,
-    plural: null,
-    condensed: word,
-  };
+  return { type: "noun", singular: word, plural: null, condensed: word };
 }
 function pluralNoun(word: string): Definition & { type: "noun" } {
-  return {
-    type: "noun",
-    singular: null,
-    plural: word,
-    condensed: word,
-  };
+  return { type: "noun", singular: null, plural: word, condensed: word };
 }
 function adjectiveNounPhrase(
   adjectives: Array<Definition & { type: "adjective" }>,
   noun: Definition & { type: "noun" },
 ): Definition & { type: "adjective noun phrase" } {
-  return {
-    type: "adjective noun phrase",
-    adjectives,
-    noun,
-  };
+  return { type: "adjective noun phrase", adjectives, noun };
 }
 function adverbAdjectivePhrase(
   adverbs: Array<Definition & { type: "adverb" }>,
   adjective: Definition & { type: "adjective" },
 ): Definition & { type: "adverb adjective phrase" } {
-  return {
-    type: "adverb adjective phrase",
-    adverbs,
-    adjective,
-  };
+  return { type: "adverb adjective phrase", adverbs, adjective };
 }
 function compoundAdjective(
   adjectives: Array<Definition & { type: "adjective" }>,
 ): Definition & { type: "compound adjective" } {
-  return {
-    type: "compound adjective",
-    adjectives,
-  };
+  return { type: "compound adjective", adjectives };
 }
-function parseVerb(
-  word: string,
-): { past: string; present: string; condensed: string } {
+function parseVerb(word: string): {
+  past: string;
+  present: string;
+  condensed: string;
+} {
   const paren = word.match(/([a-z]*)\(([a-z]*)\)(| [a-z]*)/);
   let present: string;
   let past: string;
@@ -1289,11 +1246,7 @@ function verbObjectPhrase(
   verb: Definition & { type: "verb" },
   object: Definition & { type: "noun" | "adjective noun phrase" },
 ): Definition & { type: "verb object phrase" } {
-  return {
-    type: "verb object phrase",
-    verb,
-    object,
-  };
+  return { type: "verb object phrase", verb, object };
 }
 type IntransitiveVerbOption = {
   presentPast: string;
@@ -1342,33 +1295,17 @@ function adjective(
   word: string,
   kind: AdjectiveType,
 ): Definition & { type: "adjective" } {
-  return {
-    type: "adjective",
-    adjective: word,
-    kind,
-  };
+  return { type: "adjective", adjective: word, kind };
 }
 function numeral(number: number): Definition & { type: "numeral" } {
-  return {
-    type: "numeral",
-    number,
-  };
+  return { type: "numeral", number };
 }
 function adverb(word: string): Definition & { type: "adverb" } {
-  return {
-    type: "adverb",
-    adverb: word,
-  };
+  return { type: "adverb", adverb: word };
 }
 function quantifier(word: string): Definition & { type: "quantifier" } {
-  return {
-    type: "quantifier",
-    quantifier: word,
-  };
+  return { type: "quantifier", quantifier: word };
 }
 function interjection(word: string): Definition & { type: "interjection" } {
-  return {
-    type: "interjection",
-    interjection: word,
-  };
+  return { type: "interjection", interjection: word };
 }

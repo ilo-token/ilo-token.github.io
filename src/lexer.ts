@@ -8,6 +8,7 @@
 
 import { Output } from "./output.ts";
 import {
+  CoveredError,
   UnexpectedError,
   UnreachableError,
   UnrecognizedError,
@@ -17,12 +18,12 @@ import {
   allAtLeastOnce,
   choiceOnlyOne,
   error,
+  nothing,
   optionalAll,
   Parser,
   sequence as rawSequence,
 } from "./parser-lib.ts";
 import { TokenTree } from "./token-tree.ts";
-import { CoveredError } from "./error.ts";
 import { settings } from "./settings.ts";
 import {
   END_OF_CARTOUCHE,
@@ -35,7 +36,6 @@ import {
   START_OF_REVERSE_LONG_GLYPH,
   UCSUR_TO_LATIN,
 } from "./ucsur.ts";
-import { nothing } from "./parser-lib.ts";
 
 export type Lexer<T> = Parser<string, T>;
 
@@ -109,9 +109,8 @@ function latinWord(): Lexer<string> {
 }
 /** Parses variation selector. */
 function variationSelector(): Lexer<string> {
-  return match(/[\uFE00-\uFE0F]/, "variation selector").map(([character]) =>
-    character
-  );
+  return match(/[\uFE00-\uFE0F]/, "variation selector")
+    .map(([character]) => character);
 }
 /** Parses an UCSUR character with optional variation selector and space. */
 function ucsur(
@@ -186,7 +185,8 @@ function combinedGlyphs(): Lexer<Array<string>> {
     allAtLeastOnce(
       joiner().with(ucsurWord({ allowVariation: false, allowSpace: false })),
     ),
-  ).map(([first, rest]) => [first, ...rest]);
+  )
+    .map(([first, rest]) => [first, ...rest]);
 }
 /** Parses a word, either UCSUR or latin. */
 function word(): Lexer<string> {
@@ -196,9 +196,8 @@ function word(): Lexer<string> {
 function properWords(): Lexer<string> {
   return allAtLeastOnce(
     match(/([A-Z][a-zA-Z]*)\s*/, "proper word").map(([_, word]) => word),
-  ).map(
-    (array) => array.join(" "),
-  );
+  )
+    .map((array) => array.join(" "));
 }
 /** Parses a specific word, either UCSUR or latin. */
 function specificWord(thatWord: string): Lexer<string> {
@@ -209,9 +208,8 @@ function specificWord(thatWord: string): Lexer<string> {
 }
 /** Parses multiple a. */
 function multipleA(): Lexer<number> {
-  return sequence(specificWord("a"), allAtLeastOnce(specificWord("a"))).map((
-    [a, as],
-  ) => [a, ...as].length);
+  return sequence(specificWord("a"), allAtLeastOnce(specificWord("a")))
+    .map(([a, as]) => [a, ...as].length);
 }
 function longA(): Lexer<number> {
   return match(/(a+)\s*/, "long a").map(([_, a]) => {
@@ -244,18 +242,19 @@ function comma(): Lexer<string> {
 /** Parses a punctuation. */
 function punctuation(): Lexer<string> {
   return choiceOnlyOne(
-    match(/([.,:;?!])\s*/, "punctuation").map(([_, punctuation]) =>
-      punctuation
-    ),
+    match(/([.,:;?!])\s*/, "punctuation")
+      .map(([_, punctuation]) => punctuation),
     // NOTE: maybe these are unnecessary
     specificUcsurCharacter("󱦜", "middle dot", {
       allowVariation: true,
       allowSpace: true,
-    }).map(() => "."),
+    })
+      .map(() => "."),
     specificUcsurCharacter("󱦝", "middle dot", {
       allowVariation: true,
       allowSpace: true,
-    }).map(() => ":"),
+    })
+      .map(() => ":"),
   );
 }
 /** Parses cartouche element and returns the phonemes or letters it represents. */
@@ -280,26 +279,25 @@ function cartoucheElement(): Lexer<string> {
             allowSpace: true,
           }),
         ),
-      ).map(
-        (dots) => dots.length,
-      ),
-    ).map(([word, dots]) => {
-      const VOWEL = /[aeiou]/;
-      const MORAE = /[aeiou]|[jklmnpstw][aeiou]|n/g;
-      let count = dots;
-      if (VOWEL.test(word[0])) {
-        count++;
-      }
-      const morae = word.match(MORAE)!;
-      if (morae.length < count) {
-        throw new UnrecognizedError("Excess dots");
-      }
-      return morae.slice(0, count).join("");
-    }),
+      )
+        .map((dots) => dots.length),
+    )
+      .map(([word, dots]) => {
+        const VOWEL = /[aeiou]/;
+        const MORAE = /[aeiou]|[jklmnpstw][aeiou]|n/g;
+        let count = dots;
+        if (VOWEL.test(word[0])) {
+          count++;
+        }
+        const morae = word.match(MORAE)!;
+        if (morae.length < count) {
+          throw new UnrecognizedError("Excess dots");
+        }
+        return morae.slice(0, count).join("");
+      }),
     singleUcsurWord().map((word) => word[0]),
-    match(/([a-zA-Z]+)\s*/, "Latin letter").map((
-      [_, letter],
-    ) => letter.toLowerCase()),
+    match(/([a-zA-Z]+)\s*/, "Latin letter")
+      .map(([_, letter]) => letter.toLowerCase()),
   );
 }
 /** Parses a single cartouche. */
@@ -314,12 +312,11 @@ function cartouche(): Lexer<string> {
       allowVariation: false,
       allowSpace: true,
     }),
-  ).map(
-    ([_, words, _1]) => {
+  )
+    .map(([_, words, _1]) => {
       const word = words.join("");
       return word[0].toUpperCase() + word.slice(1);
-    },
-  );
+    });
 }
 /** Parses multiple cartouches. */
 function cartouches(): Lexer<string> {
@@ -333,27 +330,23 @@ function quotation(
     openQuotationMark(),
     tokenTrees({ allowQuotation: false, allowLongGlyph }),
     closeQuotationMark(),
-  ).map(([leftMark, tokenTree, rightMark]) => {
-    if (leftMark === '"' || leftMark === "“") {
-      if (rightMark !== '"' && rightMark !== "”") {
-        throw new UnrecognizedError("Mismatched quotation marks");
-      }
-    } else if (leftMark === "«") {
-      if (rightMark !== "»") {
-        throw new UnrecognizedError("Mismatched quotation marks");
-      }
-    } else if (leftMark === "「") {
-      if (rightMark !== "」") {
-        throw new UnrecognizedError("Mismatched quotation marks");
-      }
-    } else throw new UnreachableError();
-    return {
-      type: "quotation",
-      tokenTree,
-      leftMark,
-      rightMark,
-    };
-  });
+  )
+    .map(([leftMark, tokenTree, rightMark]) => {
+      if (leftMark === '"' || leftMark === "“") {
+        if (rightMark !== '"' && rightMark !== "”") {
+          throw new UnrecognizedError("Mismatched quotation marks");
+        }
+      } else if (leftMark === "«") {
+        if (rightMark !== "»") {
+          throw new UnrecognizedError("Mismatched quotation marks");
+        }
+      } else if (leftMark === "「") {
+        if (rightMark !== "」") {
+          throw new UnrecognizedError("Mismatched quotation marks");
+        }
+      } else throw new UnreachableError();
+      return { type: "quotation", tokenTree, leftMark, rightMark };
+    });
 }
 // spaces after the first glyph and the last glyph aren't parsed and so must be
 // manually added by the caller if needed
@@ -378,7 +371,8 @@ function longContainer<T>(
       allowSpace: false,
       allowVariation: false,
     }),
-  ).map(([_, inside, _1]) => inside);
+  )
+    .map(([_, inside, _1]) => inside);
 }
 function longCharacterContainer(
   allowQuotation: boolean,
@@ -398,16 +392,16 @@ function longSpaceContainer(): Lexer<number> {
     START_OF_LONG_GLYPH,
     END_OF_LONG_GLYPH,
     match(/\s+/, "space").map(([space]) => space.length),
-  ).skip(spaces());
+  )
+    .skip(spaces());
 }
 // This doesn't parses space on the right and so must be manually added by the
 // caller if needed
 function longGlyphHead(): Lexer<Array<string>> {
   return choiceOnlyOne(
     combinedGlyphs(),
-    ucsurWord({ allowSpace: false, allowVariation: false }).map((
-      word,
-    ) => [word]),
+    ucsurWord({ allowSpace: false, allowVariation: false })
+      .map((word) => [word]),
   );
 }
 function characterLongGlyph(
@@ -429,7 +423,8 @@ function characterLongGlyph(
         END_OF_LONG_GLYPH,
       ),
     ),
-  ).skip(spaces())
+  )
+    .skip(spaces())
     .map(([beforeNull, words, afterNull]) => {
       const before = beforeNull ?? [];
       const after = afterNull ?? [];
@@ -448,11 +443,12 @@ function longSpaceGlyph(): Lexer<TokenTree & { type: "long glyph space" }> {
   return sequence(
     longGlyphHead(),
     longSpaceContainer().skip(spaces()),
-  ).map(([words, spaceLength]) => ({
-    type: "long glyph space",
-    words,
-    spaceLength,
-  }));
+  )
+    .map(([words, spaceLength]) => ({
+      type: "long glyph space",
+      words,
+      spaceLength,
+    }));
 }
 function longLon(
   allowQuotation: boolean,
@@ -461,7 +457,8 @@ function longLon(
     allowQuotation,
     START_OF_REVERSE_LONG_GLYPH,
     END_OF_LONG_GLYPH,
-  ).skip(spaces());
+  )
+    .skip(spaces());
 }
 function longGlyph(allowQuotation: boolean): Lexer<TokenTree> {
   return choiceOnlyOne(
@@ -490,9 +487,8 @@ function tokenTree(
   if (settings.xAlaXPartialParsing) {
     xAlaXParser = error(new CoveredError());
   } else {
-    xAlaXParser = xAlaX().map((word) =>
-      ({ type: "x ala x", word }) as TokenTree
-    );
+    xAlaXParser = xAlaX()
+      .map((word) => ({ type: "x ala x", word }) as TokenTree);
   }
   return choiceOnlyOne(
     punctuation().map((punctuation) =>
@@ -501,12 +497,11 @@ function tokenTree(
     comma().map(() => ({ type: "comma" }) as TokenTree),
     quotationParser,
     longGlyphParser,
-    choiceOnlyOne(cartouches(), properWords()).map((words) =>
-      ({ type: "proper word", words }) as TokenTree
-    ),
-    combinedGlyphs().skip(spaces()).map((words) =>
-      ({ type: "combined glyphs", words }) as TokenTree
-    ),
+    choiceOnlyOne(cartouches(), properWords())
+      .map((words) => ({ type: "proper word", words }) as TokenTree),
+    combinedGlyphs()
+      .skip(spaces())
+      .map((words) => ({ type: "combined glyphs", words }) as TokenTree),
     longA().map((length) => ({ type: "long a", length }) as TokenTree),
     multipleA().map((count) => ({ type: "multiple a", count }) as TokenTree),
     xAlaXParser,
