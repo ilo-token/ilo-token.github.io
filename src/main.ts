@@ -41,7 +41,7 @@ function loadElements(): void {
     // deno-lint-ignore no-explicit-any
   } as any;
   for (const name of Object.keys(elementNames)) {
-    elementNames[name] = document.getElementById(name);
+    elementNames[name] = document.getElementById(elementNames[name]);
   }
   elements = elementNames;
 }
