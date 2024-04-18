@@ -369,7 +369,7 @@ function phrase(): AstParser<Phrase> {
     lazy(preposition)
       .map((preposition) => ({ type: "preposition", preposition }) as Phrase),
     sequence(
-      optionalCombined(CONTENT_WORD, "headword"),
+      optionalCombined(CONTENT_WORD, "content word"),
       lazy(modifiers),
     )
       .map(([[headWord, modifier], modifiers]) =>
