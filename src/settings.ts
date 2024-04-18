@@ -77,15 +77,21 @@ class Setter<T extends { [name: string]: unknown }> {
 }
 const boolUpdater: Updater<boolean> = {
   parse: (value) => {
-    if (value === "true") {
+    if (value === "T") {
       return true;
-    } else if (value === "false") {
+    } else if (value === "F") {
       return false;
     } else {
       return null;
     }
   },
-  stringify: (value) => value.toString(),
+  stringify: (value) => {
+    if (value) {
+      return "T";
+    } else {
+      return "F";
+    }
+  },
   load: (input) => (input as HTMLInputElement).checked,
   set: (input, value) => {
     (input as HTMLInputElement).checked = value;
