@@ -1,6 +1,7 @@
 /** Module for describing word to word translations. */
 
 import { UnreachableError } from "./error.ts";
+import { SENTENCES_RULE } from "./filter.ts";
 
 export const PARTICLE_DEFINITION: { [word: string]: Array<string> } = {
   a: [
@@ -1224,9 +1225,11 @@ export type Definition =
   }
   | { type: "gerund"; gerund: string }
   | { type: "interjection"; interjection: string };
+export const PARTICLE = new Set(Object.keys(PARTICLE_DEFINITION));
 export const CONTENT_WORD = new Set(Object.keys(CONTENT_WORD_DEFINITION));
 export const PREVERB = new Set(Object.keys(PREVERB_DEFINITION));
 export const PREPOSITION = new Set(Object.keys(PREPOSITION_DEFINITION));
+export const TOKI_PONA_WORD = new Set([...PARTICLE, ...CONTENT_WORD]);
 
 function noun(word: string): Definition & { type: "noun" } {
   const paren = word.match(/([a-z]*)\(([a-z]*)\)/);

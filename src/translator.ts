@@ -7,6 +7,7 @@ import {
   MultiplePhrases,
   Phrase,
   Sentence,
+  Sentences,
   WordUnit,
 } from "./ast.ts";
 import { Output } from "./output.ts";
@@ -332,9 +333,13 @@ function translateSentence(sentence: Sentence): TranslationOutput {
   });
 }
 /** Translates multiple sentences. */
-function translateSentences(sentences: Array<Sentence>): TranslationOutput {
-  return rotate(sentences.map(translateSentence))
-    .map((sentences) => sentences.join(" "));
+function translateSentences(sentences: Sentences): TranslationOutput {
+  if (sentences.type === "sentences") {
+    return rotate(sentences.sentences.map(translateSentence))
+      .map((sentences) => sentences.join(" "));
+  } else {
+    return new Output(new TodoError("translation of a single word"));
+  }
 }
 /** Full Toki Pona translator. */
 export function translate(src: string): TranslationOutput {

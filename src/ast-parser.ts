@@ -13,11 +13,17 @@ import {
   Preposition,
   Quotation,
   Sentence,
+  Sentences,
   WordUnit,
 } from "./ast.ts";
 import { CoveredError, UnexpectedError, UnrecognizedError } from "./error.ts";
 import { Output } from "./output.ts";
-import { CONTENT_WORD, PREPOSITION, PREVERB } from "./dictionary.ts";
+import {
+  CONTENT_WORD,
+  PREPOSITION,
+  PREVERB,
+  TOKI_PONA_WORD,
+} from "./dictionary.ts";
 import {
   CLAUSE_RULE,
   filter,
@@ -33,6 +39,7 @@ import {
   all,
   allAtLeastOnce,
   choice,
+  choiceOnlyOne,
   lazy,
   many,
   manyAtLeastOnce,
@@ -725,10 +732,16 @@ export function quotation(): AstParser<Quotation> {
       )
   );
 }
-const FULL_PARSER = allAtLeastOnce(sentence())
-  .skip(eol("end of sentence"))
-  .filter(filter(SENTENCES_RULE));
+const FULL_PARSER = choiceOnlyOne(
+  wordFrom(TOKI_PONA_WORD, "Toki Pona word")
+    .skip(eol("end of sentence"))
+    .map((word) => ({ type: "single word", word }) as Sentences),
+  allAtLeastOnce(sentence())
+    .skip(eol("end of sentence"))
+    .filter(filter(SENTENCES_RULE))
+    .map((sentences) => ({ type: "sentences", sentences }) as Sentences),
+);
 /** A multiple Toki Pona sentence parser. */
-export function parser(src: string): Output<Array<Sentence>> {
+export function parser(src: string): Output<Sentences> {
   return lex(src).flatMap((src) => FULL_PARSER.parse(src));
 }

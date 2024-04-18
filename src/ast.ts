@@ -133,6 +133,15 @@ export type Quotation = {
   leftMark: string;
   rightMark: string;
 };
+export type Sentences =
+  | {
+    type: "single word";
+    word: string;
+  }
+  | {
+    type: "sentences";
+    sentences: Array<Sentence>;
+  };
 /**
  * Helper function for checking whether some modifier passes the test
  * function.
