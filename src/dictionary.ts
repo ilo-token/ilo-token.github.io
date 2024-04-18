@@ -1,7 +1,6 @@
 /** Module for describing word to word translations. */
 
 import { UnreachableError } from "./error.ts";
-import { SENTENCES_RULE } from "./filter.ts";
 
 export const PARTICLE_DEFINITION: { [word: string]: Array<string> } = {
   a: [
