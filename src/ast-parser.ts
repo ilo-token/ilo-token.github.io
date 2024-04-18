@@ -732,6 +732,3 @@ const FULL_PARSER = allAtLeastOnce(sentence())
 export function parser(src: string): Output<Array<Sentence>> {
   return lex(src).flatMap((src) => FULL_PARSER.parse(src));
 }
-console.log(
-  wordUnit(CONTENT_WORD, "content word").parse([{ type: "word", word: "ijo" }]),
-);
