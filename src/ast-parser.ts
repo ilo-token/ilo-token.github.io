@@ -344,12 +344,13 @@ const INNER_PHRASE_PARSER = phrase().skip(eol("end of long glyph"));
 /** Parses phrases. */
 function phrase(): AstParser<Phrase> {
   return choice(
-    sequence(number(), lazy(modifiers))
-      .map(([numbers, modifiers]) =>
+    sequence(number(), lazy(modifiers), optional(marker()))
+      .map(([numbers, modifiers, marker]) =>
         ({
           type: "default",
           headWord: { type: "numbers", numbers },
           modifiers,
+          marker,
         }) as Phrase
       ),
     binaryWords(PREVERB, "preveb").map(([preverb, phrase]) =>
@@ -361,20 +362,24 @@ function phrase(): AstParser<Phrase> {
           type: "default",
           headWord: { type: "default", word: phrase, marker: null },
           modifiers: [],
+          marker: null,
         },
+        marker: null,
       }) as Phrase
     ),
     sequence(
       optionalCombined(PREVERB, "preverb"),
       lazy(modifiers),
       lazy(phrase),
+      optional(marker()),
     )
-      .map(([[preverb, modifier], modifiers, phrase]) =>
+      .map(([[preverb, modifier], modifiers, phrase, marker]) =>
         ({
           type: "preverb",
           preverb,
           modifiers: [...modifier, ...modifiers],
           phrase,
+          marker,
         }) as Phrase
       ),
     lazy(preposition)
@@ -382,12 +387,14 @@ function phrase(): AstParser<Phrase> {
     sequence(
       optionalCombined(CONTENT_WORD, "content word"),
       lazy(modifiers),
+      optional(marker()),
     )
-      .map(([[headWord, modifier], modifiers]) =>
+      .map(([[headWord, modifier], modifiers, marker]) =>
         ({
           type: "default",
           headWord,
           modifiers: [...modifier, ...modifiers],
+          marker,
         }) as Phrase
       ),
     quotation()
@@ -459,6 +466,7 @@ function preposition(): AstParser<Preposition> {
           preposition: { type: "default", word: "lon", marker: null },
           modifiers: [],
           phrases: { type: "single", phrase },
+          marker: null,
         }) as Preposition
       ),
     specificTokenTree("long glyph").flatMapValue((tokenTrees) => {
@@ -505,20 +513,24 @@ function preposition(): AstParser<Preposition> {
             type: "default",
             headWord: { type: "default", word: phrase, marker: null },
             modifiers: [],
+            marker: null,
           },
         },
+        marker: null,
       }) as Preposition
     ),
     sequence(
       optionalCombined(PREPOSITION, "preposition"),
       modifiers(),
       nestedPhrases(["anu"]),
+      optional(marker()),
     )
-      .map(([[preposition, modifier], modifiers, phrases]) =>
+      .map(([[preposition, modifier], modifiers, phrases, marker]) =>
         ({
           preposition,
           modifiers: [...modifier, ...modifiers],
           phrases,
+          marker,
         }) as Preposition
       ),
   )
@@ -606,6 +618,7 @@ function clause(): AstParser<Clause> {
               headWord: { type: "default", word: subject, marker: null },
               alaQuestion: false,
               modifiers: [],
+              marker: null,
             },
           },
           predicates,

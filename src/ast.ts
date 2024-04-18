@@ -24,12 +24,18 @@ export type Modifier =
  * prepositional phrases intended for predicate.
  */
 export type Phrase =
-  | { type: "default"; headWord: WordUnit; modifiers: Array<Modifier> }
+  | {
+    type: "default";
+    headWord: WordUnit;
+    modifiers: Array<Modifier>;
+    marker: null | Marker;
+  }
   | {
     type: "preverb";
     preverb: WordUnit;
     modifiers: Array<Modifier>;
     phrase: Phrase;
+    marker: null | Marker;
   }
   | { type: "preposition"; preposition: Preposition }
   | { type: "quotation"; quotation: Quotation };
@@ -44,6 +50,7 @@ export type Preposition = {
   modifiers: Array<Modifier>;
   /** This cannot be an "and conjunction": only "anu" or "single". */
   phrases: MultiplePhrases;
+  marker: null | Marker;
 };
 /** Represents multiple predicates. */
 export type MultiplePredicates =
