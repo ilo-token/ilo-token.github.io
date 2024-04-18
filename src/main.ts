@@ -1,7 +1,7 @@
 /** Module for main execution in the browser. */
 
 import { CoveredError } from "./error.ts";
-import { translate } from "./translator.ts";
+import { translate } from "./old-translator.ts";
 import { settings } from "./settings.ts";
 import { teloMisikeke } from "../deps.ts";
 
