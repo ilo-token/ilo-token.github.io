@@ -30,7 +30,7 @@ export type TokenTree =
     words: Array<TokenTree>;
   }
   | { type: "multiple a"; count: number }
-  | { type: "long a"; length: number }
+  | { type: "long word"; word: string; length: number }
   | { type: "x ala x"; word: string }
   | { type: "proper word"; words: string }
   | {

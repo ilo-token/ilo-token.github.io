@@ -90,6 +90,15 @@ function slice(length: number, description: string): Lexer<string> {
     }
   });
 }
+function matchString(match: string): Lexer<string> {
+  return slice(match.length, `"${match}"`).map((slice) => {
+    if (slice === match) {
+      return match;
+    } else {
+      throw new UnexpectedError(`"${slice}"`, `"${match}"`);
+    }
+  });
+}
 /** Parses the end of line (or the end of sentence in context of Toki Pona) */
 function eol(): Lexer<null> {
   return new Parser((src) => {
@@ -211,8 +220,16 @@ function multipleA(): Lexer<number> {
   return sequence(specificWord("a"), allAtLeastOnce(specificWord("a")))
     .map(([a, as]) => [a, ...as].length);
 }
-function longA(): Lexer<number> {
-  return match(/(a{2,})\s*/, "long a").map(([_, a]) => a.length);
+function longWord(): Lexer<TokenTree & { type: "long word" }> {
+  return match(/[an]/, 'long "a" or "n"').then(([word, _]) =>
+    allAtLeastOnce(matchString(word))
+      .skip(spaces())
+      .map((array) => ({
+        type: "long word",
+        word,
+        length: 1 + array.length,
+      }))
+  );
 }
 /** Parses X ala X constructions. */
 function xAlaX(): Lexer<string> {
@@ -495,7 +512,7 @@ function tokenTree(
     combinedGlyphs()
       .skip(spaces())
       .map((words) => ({ type: "combined glyphs", words }) as TokenTree),
-    longA().map((length) => ({ type: "long a", length }) as TokenTree),
+    longWord(),
     multipleA().map((count) => ({ type: "multiple a", count }) as TokenTree),
     xAlaXParser,
     word().map((word) => ({ type: "word", word })),

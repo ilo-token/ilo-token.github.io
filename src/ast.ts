@@ -3,8 +3,8 @@
 import { UnreachableError } from "./error.ts";
 
 export type Marker =
-  | { type: "a" }
-  | { type: "long a"; length: number }
+  | { type: "word"; word: string }
+  | { type: "long word"; word: string; length: number }
   | { type: "multiple a"; count: number };
 /** Represents a word unit. */
 export type WordUnit =

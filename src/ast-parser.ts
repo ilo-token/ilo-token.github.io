@@ -132,9 +132,13 @@ function marker(): AstParser<Marker> {
   return choice(
     specificTokenTree("multiple a")
       .map(({ count }) => ({ type: "multiple a", count }) as Marker),
-    specificTokenTree("long a")
-      .map(({ length }) => ({ type: "long a", length }) as Marker),
-    specificWord("a").map(() => ({ type: "a" }) as Marker),
+    specificTokenTree("long word")
+      .map(({ word, length }) =>
+        ({ type: "long word", word, length }) as Marker
+      ),
+    wordFrom(new Set(["a", "n", "kin"]), "a/n/kin").map((word) =>
+      ({ type: "word", word }) as Marker
+    ),
   );
 }
 function xAlaX(
