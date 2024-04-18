@@ -45,10 +45,17 @@ This could be mitigated by making use of local server but I didn't do that, ther
 
 ### Runtime agnostic
 
-With exception to `./src/main.ts`, every source codes in `./src/` are runtime agnostic. Meaning it can be run on Deno as well. This makes it convenient to directly test codes by using `deno run` or `deno test`.
+With some exception, every source codes in `./src/` are runtime agnostic. Meaning it can be run on Deno as well. This makes it convenient to directly test codes by using `deno run` or `deno test`.
+
+- `main.ts` needs to access the web page DOM. It detects if `document` is available, otherwise it will do nothing.
+- `settings.ts` will access DOM and local storage unless you don't use methods marked as browser-only.
+
+If adding `Deno.test`, please use `if (typeof Deno !== "undefined")` so the code can be run on browser.
 
 ### UCSUR included
 
 Some parts of the code make use of sitelen pona UCSUR characters. To display properly, install an UCSUR font and change the font settings on your editor. [UCSUR Installation guides](https://github.com/neroist/sitelen-pona-ucsur-guide/).
+
+Oftentimes, you don't need to be able to type UCSUR in the source codes. We reduce UCSUR used in code and prefer to use latin letters instead.
 
 Also, take note that UCSUR characters are two characters wide in JavaScript string. Be careful with string and regex manipulation.
