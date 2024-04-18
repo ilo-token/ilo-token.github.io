@@ -20,8 +20,8 @@ interface SettingsItem<T> extends Option<T> {
 type Updater<T> = {
   parse: (value: string) => T | null;
   stringify: (value: T) => string;
-  load: (input: HTMLInputElement) => T;
-  set: (input: HTMLInputElement, value: T) => void;
+  load: (input: HTMLInputElement | HTMLSelectElement) => T;
+  set: (input: HTMLInputElement | HTMLSelectElement, value: T) => void;
 };
 class Setter<T extends { [name: string]: unknown }> {
   private settings: { [S in keyof T]: SettingsItem<T[S]> };
@@ -41,7 +41,7 @@ class Setter<T extends { [name: string]: unknown }> {
   get<S extends keyof T>(name: S): T[S] {
     return this.settings[name].value as T[S];
   }
-  load(): void {
+  loadFromLocalStorage(): void {
     for (const name of Object.keys(this.settings)) {
       const settings = this.settings[name];
       const src = localStorage.getItem(name);
@@ -56,7 +56,7 @@ class Setter<T extends { [name: string]: unknown }> {
       );
     }
   }
-  confirm(): void {
+  loadFromElements(): void {
     for (const name of Object.keys(this.settings)) {
       const settings = this.settings[name];
       settings.value = settings.updater.load(
@@ -65,7 +65,7 @@ class Setter<T extends { [name: string]: unknown }> {
       localStorage.setItem(name, settings.updater.stringify(settings.value));
     }
   }
-  reset(): void {
+  resetElements(): void {
     for (const name of Object.keys(this.settings)) {
       const settings = this.settings[name];
       settings.updater.set(
@@ -86,9 +86,9 @@ const boolUpdater: Updater<boolean> = {
     }
   },
   stringify: (value) => value.toString(),
-  load: (input) => input.checked,
+  load: (input) => (input as HTMLInputElement).checked,
   set: (input, value) => {
-    input.checked = value;
+    (input as HTMLInputElement).checked = value;
   },
 };
 const redundancyUpdater: Updater<RedundancySettings> = {

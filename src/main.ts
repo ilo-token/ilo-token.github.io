@@ -128,17 +128,17 @@ function updateOutput(): void {
 if (typeof document !== "undefined") {
   document.addEventListener("DOMContentLoaded", () => {
     loadElements();
+    settings.loadFromLocalStorage();
     setVersion();
-    settings.load();
     elements!.settingsButton.addEventListener("click", () => {
       elements!.dialogBox.showModal();
     });
     elements!.confirmButton.addEventListener("click", () => {
-      settings.confirm();
+      settings.loadFromElements();
       elements!.dialogBox.close();
     });
     elements!.resetButton.addEventListener("click", () => {
-      settings.reset();
+      settings.resetElements();
     });
     elements!.translateButton.addEventListener("click", updateOutput);
     elements!.input.addEventListener("keydown", (event) => {
