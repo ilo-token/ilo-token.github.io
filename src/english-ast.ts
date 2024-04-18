@@ -37,14 +37,19 @@ export type Verb =
     type: "linking adjective";
     adjective: PredicateAdjective;
   };
-export type Sentence =
+export type Clause =
   | { type: "free form"; text: string }
   | { type: "default"; subject: NounPhrase; verb: Verb; object: NounPhrase }
   | { type: "subject phrase"; subject: NounPhrase }
   | { type: "implied it's noun"; noun: NounPhrase }
   | { type: "implied it's adjective"; noun: PredicateAdjective }
   | { type: "interjection"; interjection: string };
-export type SentencePunctuation = {
-  sentence: Sentence;
+export type DependentClause = {
+  conjunction: string;
+  clause: Clause;
+};
+export type Sentence = {
+  dependentClauses: Array<DependentClause>;
+  independentClause: Clause;
   punctuation: string;
 };
