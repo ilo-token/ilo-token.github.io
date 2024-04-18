@@ -23,7 +23,7 @@ The latest on-development version can be accessed by building the source code.
 
 Inside update (intended for developers):
 
-- Implement lexer.
+- Implement lexer and english AST.
 - Overhaul dictionary.
 
 </details>
