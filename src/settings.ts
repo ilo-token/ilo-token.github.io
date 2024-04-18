@@ -5,10 +5,10 @@ type RedundancySettings = "both" | "condensed" | "default only";
 type Settings = {
   "use-telo-misikeke": boolean;
   "randomize": boolean;
-  "x-ala-x-parsing": boolean;
+  "x-ala-x-partial-parsing": boolean;
   "anu-as-content-word": boolean;
-  "number": RedundancySettings;
-  "tense": RedundancySettings;
+  "number-settings": RedundancySettings;
+  "tense-settings": RedundancySettings;
 };
 interface Option<T> {
   default: T;
@@ -114,7 +114,7 @@ export const settings = new Setter<Settings>({
     default: false,
     updater: boolUpdater,
   },
-  "x-ala-x-parsing": {
+  "x-ala-x-partial-parsing": {
     default: false,
     updater: boolUpdater,
   },
@@ -122,11 +122,11 @@ export const settings = new Setter<Settings>({
     default: false,
     updater: boolUpdater,
   },
-  "number": {
+  "number-settings": {
     default: "both",
     updater: redundancyUpdater,
   },
-  "tense": {
+  "tense-settings": {
     default: "both",
     updater: redundancyUpdater,
   },
