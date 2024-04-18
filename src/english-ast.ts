@@ -43,7 +43,8 @@ export type Clause =
   | { type: "subject phrase"; subject: NounPhrase }
   | { type: "implied it's noun"; noun: NounPhrase }
   | { type: "implied it's adjective"; noun: PredicateAdjective }
-  | { type: "interjection"; interjection: string };
+  | { type: "interjection"; interjection: string }
+  | { type: "compound"; clauses: Array<Clause> };
 export type DependentClause = {
   conjunction: string;
   clause: Clause;
