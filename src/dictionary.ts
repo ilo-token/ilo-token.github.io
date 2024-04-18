@@ -3,11 +3,24 @@
 import { UnreachableError } from "./error.ts";
 
 export const PARTICLE_DEFINITION: { [word: string]: Array<string> } = {
-  a: ["[placed after something for emphasis or emotion]"],
-  ala: ["not", "[negates a word or phrase]", "[forms a yes-no question]"],
-  anu: ["or", "[separates multiple possibilities, replacing another particle]"],
-  e: ["[marks the start of a direct object]"],
-  en: ["[separates multiple subjects]"],
+  a: [
+    "[placed after something for emphasis or emotion]",
+  ],
+  ala: [
+    "not",
+    "[negates a word or phrase]",
+    "[forms a yes-no question]",
+  ],
+  anu: [
+    "or",
+    "[separates multiple possibilities, replacing another particle]",
+  ],
+  e: [
+    "[marks the start of a direct object]",
+  ],
+  en: [
+    "[separates multiple subjects]",
+  ],
   kin: [
     "too",
     "also",
@@ -15,36 +28,64 @@ export const PARTICLE_DEFINITION: { [word: string]: Array<string> } = {
     "additionally",
     "[after phrase or at sentence start]",
   ],
-  la: ["[mark the previous statement as context to a following statement]"],
-  li: ["[marks the start of an indicative verb (statement)]"],
-  n: ["[indicate thinking or pause]"],
-  nanpa: ["-th", "[ordinal number]"],
+  la: [
+    "[mark the previous statement as context to a following statement]",
+  ],
+  li: [
+    "[marks the start of an indicative verb (statement)]",
+  ],
+  n: [
+    "[indicate thinking or pause]",
+  ],
+  nanpa: [
+    "-th",
+    "[ordinal number]",
+  ],
   o: [
     "should",
     "[marks the end of a vocative (who is being spoken to)]",
     "[marks the start of an imperative (command, wish, instruction)]",
   ],
-  pi: ["[modify the next word with one or more following words]"],
+  pi: [
+    "[modify the next word with one or more following words]",
+  ],
   seme: [
     "what",
     "which",
     "who",
     "[indicate a question by marking missing info in a sentence]",
   ],
-  taso: ["but", "however", "[marks a sentence as qualifying or contradictory]"],
+  taso: [
+    "but",
+    "however",
+    "[marks a sentence as qualifying or contradictory]",
+  ],
 };
 export const SPECIAL_CONTENT_WORD_DEFINITION: {
   [word: string]: Array<string>;
 } = {
-  jasima: ["opposite of"],
+  jasima: [
+    "opposite of",
+  ],
   kokosila: [
     "to speak a non-Toki Pona language in an environment where Toki Pona is \
     more appropriate",
   ],
-  ku: ["interacting with the Toki Pona Dictionary by Sonja Lang"],
-  lili: ["piece of"],
-  mu: ["(animal noise or communication, onomatopoeia)"],
-  ni: ["this", "that", "these", "those"],
+  ku: [
+    "interacting with the Toki Pona Dictionary by Sonja Lang",
+  ],
+  lili: [
+    "piece of",
+  ],
+  mu: [
+    "(animal noise or communication, onomatopoeia)",
+  ],
+  ni: [
+    "this",
+    "that",
+    "these",
+    "those",
+  ],
   pu: [
     "to interact with the book Toki Pona: The Language of Good by Sonja Lang",
   ],
