@@ -38,13 +38,13 @@ const LOCAL_STORAGE_AVAILABLE = (() => {
     );
   }
 })();
-interface Option<T> {
+type Option<T> = {
   default: T;
   updater: Updater<T>;
-}
-interface SettingsItem<T> extends Option<T> {
+};
+type SettingsItem<T> = Option<T> & {
   value: T;
-}
+};
 type Updater<T> = {
   parse: (value: string) => T | null;
   stringify: (value: T) => string;
