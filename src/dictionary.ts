@@ -2,34 +2,57 @@
 
 import { UnreachableError } from "./error.ts";
 
-export const PARTICLES = new Set([
-  "a",
-  "ala",
-  "anu",
-  "e",
-  "en",
-  "kin",
-  "la",
-  "li",
-  "n",
-  "nanpa",
-  "o",
-  "pi",
-  "taso",
-]);
-export const SPECIAL_CONTENT_WORD = new Set([
-  "ala", // not
-  "jasima", // opposite of
-  "kijetesantakalu",
-  "kokosila",
-  "ku",
-  "lili", // piece of
-  "mu",
-  "ni",
-  "pu",
-  "seme",
-  "su",
-]);
+export const PARTICLE_DEFINITION: { [word: string]: Array<string> } = {
+  a: ["[placed after something for emphasis or emotion]"],
+  ala: ["not", "[negates a word or phrase]", "[forms a yes-no question]"],
+  anu: ["or", "[separates multiple possibilities, replacing another particle]"],
+  e: ["[marks the start of a direct object]"],
+  en: ["[separates multiple subjects]"],
+  kin: [
+    "too",
+    "also",
+    "as well",
+    "additionally",
+    "[after phrase or at sentence start]",
+  ],
+  la: ["[mark the previous statement as context to a following statement]"],
+  li: ["[marks the start of an indicative verb (statement)]"],
+  n: ["[indicate thinking or pause]"],
+  nanpa: ["-th", "[ordinal number]"],
+  o: [
+    "should",
+    "[marks the end of a vocative (who is being spoken to)]",
+    "[marks the start of an imperative (command, wish, instruction)]",
+  ],
+  pi: ["[modify the next word with one or more following words]"],
+  seme: [
+    "what",
+    "which",
+    "who",
+    "[indicate a question by marking missing info in a sentence]",
+  ],
+  taso: ["but", "however", "[marks a sentence as qualifying or contradictory]"],
+};
+export const SPECIAL_CONTENT_WORD_DEFINITION: {
+  [word: string]: Array<string>;
+} = {
+  jasima: ["opposite of"],
+  kokosila: [
+    "to speak a non-Toki Pona language in an environment where Toki Pona is \
+    more appropriate",
+  ],
+  ku: ["interacting with the Toki Pona Dictionary by Sonja Lang"],
+  lili: ["piece of"],
+  mu: ["(animal noise or communication, onomatopoeia)"],
+  ni: ["this", "that", "these", "those"],
+  pu: [
+    "to interact with the book Toki Pona: The Language of Good by Sonja Lang",
+  ],
+  su: [
+    "interacting with a book from the illustrated story book series that \
+    began with The Wonderful Wizard of Oz, produced by Sonja Lang",
+  ],
+};
 export const PREPOSITION_DEFINITION: { [word: string]: Array<string> } = {
   kepeken: ["using"],
   lon: ["at"],
@@ -38,7 +61,7 @@ export const PREPOSITION_DEFINITION: { [word: string]: Array<string> } = {
   tawa: ["towards", "in perspective of"],
 };
 export const PREVERB_DEFINITION: { [word: string]: Array<never> } = {
-  alasa: [],
+  alasa: [], // Will be duplicated with lukin
   awen: [],
   kama: [],
   ken: [],
@@ -48,7 +71,16 @@ export const PREVERB_DEFINITION: { [word: string]: Array<never> } = {
   sona: [],
   wile: [],
 };
+PREVERB_DEFINITION.alasa = PREVERB_DEFINITION.lukin;
 export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
+  a: [
+    interjection("ah"),
+    interjection("oh"),
+    interjection("ha"),
+    interjection("eh"),
+    interjection("um"),
+    interjection("oy"),
+  ],
   akesi: [
     noun("reptile(s)"),
     noun("amphibian(s)"),
@@ -221,9 +253,20 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("possibility/possibilities"),
   ],
   kepeken: [
-    verb("use(d)", "using "),
+    verb("use(d)", "using"),
   ],
-  kijetesantakalu: [], // Special case
+  kijetesantakalu: [
+    noun("raccoon(s)"),
+    noun("coati(s)"),
+    noun("kinkajou(s)"),
+    noun("olingo(s)"),
+    noun("ringtail(s)"),
+    noun("cacomistle(s)"),
+    noun("weasel(s)"),
+    noun("otter(s)"),
+    noun("skunk(s)"),
+    noun("red panda(s)"),
+  ],
   kili: [
     noun("fruit(s)"),
     noun("vegetable(s)"),
@@ -588,6 +631,13 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjective("comical", "opinion"),
     adjective("silly", "opinion"),
     verbObjectPhrase(verb("have/had", "having"), singularNoun("fun")),
+  ],
+  n: [
+    interjection("hm"),
+    interjection("uh"),
+    interjection("mm"),
+    interjection("er"),
+    interjection("umm"),
   ],
   mute: [
     numeral(20),
@@ -1133,10 +1183,7 @@ export type Definition =
   }
   | { type: "gerund"; gerund: string }
   | { type: "interjection"; interjection: string };
-export const CONTENT_WORD = new Set([
-  ...SPECIAL_CONTENT_WORD,
-  ...Object.keys(CONTENT_WORD_DEFINITION),
-]);
+export const CONTENT_WORD = new Set(Object.keys(CONTENT_WORD_DEFINITION));
 export const PREVERB = new Set(Object.keys(PREVERB_DEFINITION));
 export const PREPOSITION = new Set(Object.keys(PREPOSITION_DEFINITION));
 
