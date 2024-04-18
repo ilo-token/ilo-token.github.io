@@ -41,6 +41,7 @@ class Setter<T extends { [name: string]: unknown }> {
   get<S extends keyof T>(name: S): T[S] {
     return this.settings[name].value as T[S];
   }
+  /** This function is for browser only. */
   loadFromLocalStorage(): void {
     for (const name of Object.keys(this.settings)) {
       const settings = this.settings[name];
@@ -56,6 +57,7 @@ class Setter<T extends { [name: string]: unknown }> {
       );
     }
   }
+  /** This function is for browser only. */
   loadFromElements(): void {
     for (const name of Object.keys(this.settings)) {
       const settings = this.settings[name];
@@ -65,6 +67,7 @@ class Setter<T extends { [name: string]: unknown }> {
       localStorage.setItem(name, settings.updater.stringify(settings.value));
     }
   }
+  /** This function is for browser only. */
   resetElements(): void {
     for (const name of Object.keys(this.settings)) {
       const settings = this.settings[name];
