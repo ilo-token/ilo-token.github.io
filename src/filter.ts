@@ -37,7 +37,7 @@ export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
   },
   // disallow "anu" as content word only when turned off in settings
   (wordUnit) => {
-    if (settings.anuAsContentWord) {
+    if (settings.get("anu-as-content-word")) {
       return true;
     }
     const isAnu = (

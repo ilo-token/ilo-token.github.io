@@ -2,7 +2,7 @@
 
 import { CoveredError } from "./error.ts";
 import { translate } from "./translator.ts";
-import { defaultSettings, RedundancySettings, settings } from "./settings.ts";
+import { settings } from "./settings.ts";
 import { teloMisikeke } from "../deps.ts";
 
 // Set to false when releasing, set to true when developing
@@ -22,12 +22,6 @@ type Elements = {
   confirmButton: HTMLButtonElement;
   resetButton: HTMLButtonElement;
   version: HTMLAnchorElement;
-  useTeloMisikeke: HTMLInputElement;
-  randomize: HTMLInputElement;
-  number: HTMLSelectElement;
-  tense: HTMLSelectElement;
-  xAlaXPartialParsing: HTMLInputElement;
-  anuAsContentWord: HTMLInputElement;
 };
 /** A map of all HTML elements that are used here. */
 let elements: undefined | Elements;
@@ -44,12 +38,6 @@ function loadElements(): void {
     confirmButton: "confirm-button",
     resetButton: "reset-button",
     version: "version",
-    useTeloMisikeke: "use-telo-misikeke",
-    randomize: "randomize",
-    number: "number",
-    tense: "tense",
-    xAlaXPartialParsing: "x-ala-x-parsing",
-    anuAsContentWord: "anu-as-content-word",
     // deno-lint-ignore no-explicit-any
   } as any;
   for (const name of Object.keys(elementNames)) {
@@ -105,13 +93,13 @@ function updateOutput(): void {
     const translations = translate(source);
     if (!translations.isError()) {
       const output = [...new Set(translations.output)];
-      if (settings.randomize) {
+      if (settings.get("randomize")) {
         output.sort(() => Math.random() - Math.random());
       }
       outputTranslations(output);
     } else {
       let error: Array<string> = [];
-      if (settings.useTeloMisikeke) {
+      if (settings.get("use-telo-misikeke")) {
         error = teloMisikeke.errors(source);
       }
       if (error.length === 0) {
@@ -137,107 +125,21 @@ function updateOutput(): void {
     throw unreachableError;
   }
 }
-function loadSettings(): void {
-  function setBool<
-    T extends
-      | "useTeloMisikeke"
-      | "randomize"
-      | "xAlaXPartialParsing"
-      | "anuAsContentWord",
-  >(name: T, element: HTMLInputElement): void {
-    const x = localStorage.getItem(name);
-    let value: boolean;
-    if (x == null) {
-      value = defaultSettings[name];
-    } else {
-      value = x === "true";
-    }
-    settings[name] = value;
-    element.checked = value;
-  }
-  function setRedundancy<T extends "number" | "tense">(
-    name: T,
-    element: HTMLSelectElement,
-  ): void {
-    const x = localStorage.getItem(name) ?? defaultSettings[name];
-    if (["both", "condensed", "default only"].includes(x)) {
-      settings[name] = x as RedundancySettings;
-      element.value = x;
-    } else {
-      settings[name] = defaultSettings[name];
-      element.value = defaultSettings[name];
-    }
-  }
-  setBool("useTeloMisikeke", elements!.useTeloMisikeke);
-  setBool("randomize", elements!.randomize);
-  setBool("xAlaXPartialParsing", elements!.xAlaXPartialParsing);
-  setBool("anuAsContentWord", elements!.anuAsContentWord);
-  setRedundancy("number", elements!.number);
-  setRedundancy("tense", elements!.tense);
-}
-function confirmSettings(): void {
-  function setBool<
-    T extends
-      | "useTeloMisikeke"
-      | "randomize"
-      | "xAlaXPartialParsing"
-      | "anuAsContentWord",
-  >(name: T, element: HTMLInputElement) {
-    const value = element.checked;
-    localStorage.setItem(name, value.toString());
-    settings[name] = value;
-  }
-  function setRedundancy<T extends "number" | "tense">(
-    name: T,
-    element: HTMLSelectElement,
-  ): void {
-    const value = element.value as RedundancySettings;
-    localStorage.setItem(name, value.toString());
-    settings[name] = value;
-  }
-  setBool("useTeloMisikeke", elements!.useTeloMisikeke);
-  setBool("randomize", elements!.randomize);
-  setBool("xAlaXPartialParsing", elements!.xAlaXPartialParsing);
-  setBool("anuAsContentWord", elements!.anuAsContentWord);
-  setRedundancy("number", elements!.number);
-  setRedundancy("tense", elements!.tense);
-}
-function resetSettings(): void {
-  function setBool<
-    T extends
-      | "useTeloMisikeke"
-      | "randomize"
-      | "xAlaXPartialParsing"
-      | "anuAsContentWord",
-  >(name: T, element: HTMLInputElement) {
-    element.checked = defaultSettings[name];
-  }
-  function setRedundancy<T extends "number" | "tense">(
-    name: T,
-    element: HTMLSelectElement,
-  ): void {
-    element.value = defaultSettings[name];
-  }
-  setBool("useTeloMisikeke", elements!.useTeloMisikeke);
-  setBool("randomize", elements!.randomize);
-  setBool("xAlaXPartialParsing", elements!.xAlaXPartialParsing);
-  setBool("anuAsContentWord", elements!.anuAsContentWord);
-  setRedundancy("number", elements!.number);
-  setRedundancy("tense", elements!.tense);
-}
 if (typeof document !== "undefined") {
   document.addEventListener("DOMContentLoaded", () => {
     loadElements();
     setVersion();
-    loadSettings();
+    settings.load();
     elements!.settingsButton.addEventListener("click", () => {
       elements!.dialogBox.showModal();
     });
     elements!.confirmButton.addEventListener("click", () => {
-      confirmSettings();
+      settings.confirm();
       elements!.dialogBox.close();
     });
-    elements!.resetButton.addEventListener("click", resetSettings);
+    elements!.resetButton.addEventListener("click", () => {
+      settings.reset();
+    });
     elements!.translateButton.addEventListener("click", updateOutput);
     elements!.input.addEventListener("keydown", (event) => {
       if (event.code === "Enter") {
