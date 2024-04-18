@@ -212,14 +212,7 @@ function multipleA(): Lexer<number> {
     .map(([a, as]) => [a, ...as].length);
 }
 function longA(): Lexer<number> {
-  return match(/(a+)\s*/, "long a").map(([_, a]) => {
-    const length = a.length;
-    if (length > 1) {
-      return length;
-    } else {
-      throw new CoveredError();
-    }
-  });
+  return match(/(a{2,})\s*/, "long a").map(([_, a]) => a.length);
 }
 /** Parses X ala X constructions. */
 function xAlaX(): Lexer<string> {
@@ -244,7 +237,7 @@ function punctuation(): Lexer<string> {
   return choiceOnlyOne(
     match(/([.,:;?!])\s*/, "punctuation")
       .map(([_, punctuation]) => punctuation),
-    // NOTE: maybe these are unnecessary
+    // NOTE: maybe these mapping are unnecessary
     specificUcsurCharacter("󱦜", "middle dot", {
       allowVariation: true,
       allowSpace: true,
