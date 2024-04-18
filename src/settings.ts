@@ -10,6 +10,34 @@ type Settings = {
   "number-settings": RedundancySettings;
   "tense-settings": RedundancySettings;
 };
+const LOCAL_STORAGE_AVAILABLE = (() => {
+  if (typeof localStorage === "undefined") {
+    return false;
+  }
+  // https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
+  try {
+    const x = "__storage_test__";
+    localStorage.setItem(x, x);
+    localStorage.removeItem(x);
+    return true;
+  } catch (e) {
+    return (
+      e instanceof DOMException &&
+      // everything except Firefox
+      (e.code === 22 ||
+        // Firefox
+        e.code === 1014 ||
+        // test name field too, because code might not be present
+        // everything except Firefox
+        e.name === "QuotaExceededError" ||
+        // Firefox
+        e.name === "NS_ERROR_DOM_QUOTA_REACHED") &&
+      // acknowledge QuotaExceededError only if there's something already stored
+      localStorage &&
+      localStorage.length !== 0
+    );
+  }
+})();
 interface Option<T> {
   default: T;
   updater: Updater<T>;
@@ -43,6 +71,9 @@ class Setter<T extends { [name: string]: unknown }> {
   }
   /** This function is for browser only. */
   loadFromLocalStorage(): void {
+    if (!LOCAL_STORAGE_AVAILABLE) {
+      return;
+    }
     for (const name of Object.keys(this.settings)) {
       const settings = this.settings[name];
       const src = localStorage.getItem(name);
@@ -64,7 +95,9 @@ class Setter<T extends { [name: string]: unknown }> {
       settings.value = settings.updater.load(
         document.getElementById(name) as HTMLInputElement,
       );
-      localStorage.setItem(name, settings.updater.stringify(settings.value));
+      if (LOCAL_STORAGE_AVAILABLE) {
+        localStorage.setItem(name, settings.updater.stringify(settings.value));
+      }
     }
   }
   /** This function is for browser only. */
