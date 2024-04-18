@@ -484,7 +484,7 @@ function tokenTree(
     longGlyphParser = error(new CoveredError());
   }
   let xAlaXParser: Lexer<TokenTree>;
-  if (settings.get("x-ala-x-parsing")) {
+  if (settings.get("x-ala-x-partial-parsing")) {
     xAlaXParser = error(new CoveredError());
   } else {
     xAlaXParser = xAlaX()
