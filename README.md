@@ -42,7 +42,7 @@ This could be mitigated by making use of local server but I didn't do that, ther
 
 ### Runtime agnostic
 
-With some exception, every source codes in `./src/` are runtime agnostic. Meaning it can be run on Deno as well. This makes it convenient to directly test codes by using `deno run` or `deno test`.
+With some exception, most source codes in `./src/` are runtime agnostic. Meaning it can be run on Deno as well. This makes it convenient to directly test codes by using `deno run` or `deno test`.
 
 - `main.ts` needs to access the web page DOM. It detects if `document` is available, otherwise it will do nothing.
 - `settings.ts` will access DOM and local storage unless you don't use methods marked as browser-only.
