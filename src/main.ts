@@ -1,4 +1,4 @@
-/** Module for main execution. */
+/** Module for main execution in the browser. */
 
 import { CoveredError } from "./error.ts";
 import { translate } from "./translator.ts";
@@ -236,23 +236,25 @@ function resetSettings(): void {
   setRedundancy("number", elements!.number);
   setRedundancy("tense", elements!.tense);
 }
-document.addEventListener("DOMContentLoaded", () => {
-  loadElements();
-  setVersion();
-  loadSettings();
-  elements!.settingsButton.addEventListener("click", () => {
-    elements!.dialogBox.showModal();
+if (typeof document !== "undefined") {
+  document.addEventListener("DOMContentLoaded", () => {
+    loadElements();
+    setVersion();
+    loadSettings();
+    elements!.settingsButton.addEventListener("click", () => {
+      elements!.dialogBox.showModal();
+    });
+    elements!.confirmButton.addEventListener("click", () => {
+      confirmSettings();
+      elements!.dialogBox.close();
+    });
+    elements!.resetButton.addEventListener("click", resetSettings);
+    elements!.translateButton.addEventListener("click", updateOutput);
+    elements!.input.addEventListener("keydown", (event) => {
+      if (event.code === "Enter") {
+        event.preventDefault();
+        updateOutput();
+      }
+    });
   });
-  elements!.confirmButton.addEventListener("click", () => {
-    confirmSettings();
-    elements!.dialogBox.close();
-  });
-  elements!.resetButton.addEventListener("click", resetSettings);
-  elements!.translateButton.addEventListener("click", updateOutput);
-  elements!.input.addEventListener("keydown", (event) => {
-    if (event.code === "Enter") {
-      event.preventDefault();
-      updateOutput();
-    }
-  });
-});
+}
