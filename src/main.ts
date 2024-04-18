@@ -33,40 +33,29 @@ type Elements = {
 let elements: undefined | Elements;
 
 function loadElements(): void {
-  elements = {
-    input: document.getElementById("input") as HTMLTextAreaElement,
-    output: document.getElementById("output") as HTMLUListElement,
-    error: document.getElementById("error") as HTMLParagraphElement,
-    errorList: document.getElementById(
-      "error-list",
-    ) as HTMLParagraphElement,
-    translateButton: document.getElementById(
-      "translate-button",
-    ) as HTMLButtonElement,
-    settingsButton: document.getElementById(
-      "settings-button",
-    ) as HTMLButtonElement,
-    dialogBox: document.getElementById(
-      "dialog-box",
-    ) as HTMLDialogElement,
-    confirmButton: document.getElementById(
-      "confirm-button",
-    ) as HTMLButtonElement,
-    resetButton: document.getElementById("reset-button") as HTMLButtonElement,
-    version: document.getElementById("version") as HTMLAnchorElement,
-    useTeloMisikeke: document.getElementById(
-      "use-telo-misikeke",
-    ) as HTMLInputElement,
-    randomize: document.getElementById("randomize") as HTMLInputElement,
-    number: document.getElementById("number") as HTMLSelectElement,
-    tense: document.getElementById("tense") as HTMLSelectElement,
-    xAlaXPartialParsing: document.getElementById(
-      "x-ala-x-parsing",
-    ) as HTMLInputElement,
-    anuAsContentWord: document.getElementById(
-      "anu-as-content-word",
-    ) as HTMLInputElement,
-  };
+  const elementNames = {
+    input: "input",
+    output: "output",
+    error: "error",
+    errorList: "error-list",
+    translateButton: "translate-button",
+    settingsButton: "settings-button",
+    dialogBox: "dialog-box",
+    confirmButton: "confirm-button",
+    resetButton: "reset-button",
+    version: "version",
+    useTeloMisikeke: "use-telo-misikeke",
+    randomize: "randomize",
+    number: "number",
+    tense: "tense",
+    xAlaXPartialParsing: "x-ala-x-parsing",
+    anuAsContentWord: "anu-as-content-word",
+    // deno-lint-ignore no-explicit-any
+  } as any;
+  for (const name of Object.keys(elementNames)) {
+    elementNames[name] = document.getElementById(name);
+  }
+  elements = elementNames;
 }
 function setVersion(): void {
   if (DEVELOPMENT) {
