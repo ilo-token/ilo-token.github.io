@@ -9,9 +9,6 @@ body {
 h1 {
   vertical-align: middle;
 }
-h1 > img {
-  height: 1em;
-}
 a {
   color: #0057af;
 }
