@@ -397,7 +397,7 @@ function nestedPhrasesOnly(
   } else {
     const [first, ...rest] = nestingRule;
     let type: "and conjunction" | "anu";
-    if (["en", "li", "o", "e"].indexOf(first) !== -1) {
+    if (["en", "li", "o", "e"].includes(first)) {
       type = "and conjunction";
     } else {
       type = "anu";
