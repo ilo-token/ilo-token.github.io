@@ -24,32 +24,19 @@ export type Modifier =
  * prepositional phrases intended for predicate.
  */
 export type Phrase =
-  | {
-    type: "default";
-    headWord: WordUnit;
-    modifiers: Array<Modifier>;
-  }
+  | { type: "default"; headWord: WordUnit; modifiers: Array<Modifier> }
   | {
     type: "preverb";
     preverb: WordUnit;
     modifiers: Array<Modifier>;
     phrase: Phrase;
   }
-  | {
-    type: "preposition";
-    preposition: Preposition;
-  }
-  | {
-    type: "quotation";
-    quotation: Quotation;
-  };
+  | { type: "preposition"; preposition: Preposition }
+  | { type: "quotation"; quotation: Quotation };
 /** Represents multiple phrases separated by repeated particle or _anu_. */
 export type MultiplePhrases =
   | { type: "single"; phrase: Phrase }
-  | {
-    type: "and conjunction";
-    phrases: Array<MultiplePhrases>;
-  }
+  | { type: "and conjunction"; phrases: Array<MultiplePhrases> }
   | { type: "anu"; phrases: Array<MultiplePhrases> };
 /** Represents a single prepositional phrase. */
 export type Preposition = {
@@ -72,10 +59,7 @@ export type MultiplePredicates =
 /** Represents a simple clause. */
 export type Clause =
   | { type: "phrases"; phrases: MultiplePhrases }
-  | {
-    type: "o vocative";
-    phrases: MultiplePhrases;
-  }
+  | { type: "o vocative"; phrases: MultiplePhrases }
   | {
     type: "li clause";
     subjects: MultiplePhrases;
@@ -87,32 +71,14 @@ export type Clause =
     subjects: null | MultiplePhrases;
     predicates: MultiplePredicates;
   }
-  | {
-    type: "prepositions";
-    prepositions: Array<Preposition>;
-  }
-  | {
-    type: "quotation";
-    quotation: Quotation;
-  };
+  | { type: "prepositions"; prepositions: Array<Preposition> }
+  | { type: "quotation"; quotation: Quotation };
 export type Preclause =
-  | {
-    type: "taso";
-    taso: WordUnit;
-  }
-  | {
-    type: "marker";
-    marker: Marker;
-  };
+  | { type: "taso"; taso: WordUnit }
+  | { type: "marker"; marker: Marker };
 export type Postclause =
-  | {
-    type: "anu seme";
-    seme: WordUnit;
-  }
-  | {
-    type: "marker";
-    marker: Marker;
-  };
+  | { type: "anu seme"; seme: WordUnit }
+  | { type: "marker"; marker: Marker };
 /** Represents a clause including preclause and postclause. */
 export type FullClause =
   | {
@@ -121,10 +87,7 @@ export type FullClause =
     postclause: null | Postclause;
     clause: Clause;
   }
-  | {
-    type: "marker";
-    marker: Marker;
-  };
+  | { type: "marker"; marker: Marker };
 /** Represents a single full sentence. */
 export type Sentence = { laClauses: Array<FullClause>; punctuation: string };
 /** Represents quotation. */
@@ -134,14 +97,8 @@ export type Quotation = {
   rightMark: string;
 };
 export type Sentences =
-  | {
-    type: "single word";
-    word: string;
-  }
-  | {
-    type: "sentences";
-    sentences: Array<Sentence>;
-  };
+  | { type: "single word"; word: string }
+  | { type: "sentences"; sentences: Array<Sentence> };
 /**
  * Helper function for checking whether some modifier passes the test
  * function.
