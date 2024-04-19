@@ -28,6 +28,10 @@ a:visited {
 summary {
   cursor: pointer;
 }
+dialog {
+  background-color: inherit;
+  color: inherit;
+}
 @media (min-width: 800px) {
   body {
     margin: 50px;
