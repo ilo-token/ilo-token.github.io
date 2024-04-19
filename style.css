@@ -28,10 +28,6 @@ a:visited {
 summary {
   cursor: pointer;
 }
-dialog {
-  background-color: inherit;
-  color: inherit;
-}
 @media (min-width: 800px) {
   body {
     margin: 50px;
@@ -39,6 +35,10 @@ dialog {
 }
 @media (prefers-color-scheme: dark) {
   body {
+    background-color: black;
+    color: white;
+  }
+  dialog {
     background-color: black;
     color: white;
   }
