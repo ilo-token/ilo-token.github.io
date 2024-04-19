@@ -103,7 +103,7 @@ export type Quotation = {
   leftMark: string;
   rightMark: string;
 };
-export type Sentences =
+export type MultipleSentences =
   | { type: "single word"; word: string }
   | { type: "sentences"; sentences: Array<Sentence> };
 /**

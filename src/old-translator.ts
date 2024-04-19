@@ -5,9 +5,9 @@ import {
   FullClause,
   Modifier,
   MultiplePhrases,
+  MultipleSentences,
   Phrase,
   Sentence,
-  Sentences,
   WordUnit,
 } from "./ast.ts";
 import { Output } from "./output.ts";
@@ -333,7 +333,7 @@ function translateSentence(sentence: Sentence): TranslationOutput {
   });
 }
 /** Translates multiple sentences. */
-function translateSentences(sentences: Sentences): TranslationOutput {
+function translateSentences(sentences: MultipleSentences): TranslationOutput {
   if (sentences.type === "sentences") {
     return rotate(sentences.sentences.map(translateSentence))
       .map((sentences) => sentences.join(" "));

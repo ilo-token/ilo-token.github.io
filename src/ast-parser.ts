@@ -7,13 +7,13 @@ import {
   Modifier,
   MultiplePhrases,
   MultiplePredicates,
+  MultipleSentences,
   Phrase,
   Postclause,
   Preclause,
   Preposition,
   Quotation,
   Sentence,
-  Sentences,
   WordUnit,
 } from "./ast.ts";
 import { CoveredError, UnexpectedError, UnrecognizedError } from "./error.ts";
@@ -752,13 +752,15 @@ export function quotation(): AstParser<Quotation> {
 const FULL_PARSER = choiceOnlyOne(
   wordFrom(TOKI_PONA_WORD, "Toki Pona word")
     .skip(eol("end of sentence"))
-    .map((word) => ({ type: "single word", word }) as Sentences),
+    .map((word) => ({ type: "single word", word }) as MultipleSentences),
   allAtLeastOnce(sentence())
     .skip(eol("end of sentence"))
     .filter(filter(SENTENCES_RULE))
-    .map((sentences) => ({ type: "sentences", sentences }) as Sentences),
+    .map((sentences) =>
+      ({ type: "sentences", sentences }) as MultipleSentences
+    ),
 );
 /** A multiple Toki Pona sentence parser. */
-export function parser(src: string): Output<Sentences> {
+export function parser(src: string): Output<MultipleSentences> {
   return lex(src).flatMap((src) => FULL_PARSER.parse(src));
 }
