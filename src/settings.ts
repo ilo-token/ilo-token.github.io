@@ -93,7 +93,7 @@ class Setter<T extends { [name: string]: unknown }> {
     for (const name of Object.keys(this.settings)) {
       const settings = this.settings[name];
       settings.value = settings.updater.load(
-        document.getElementById(name) as HTMLInputElement,
+        document.getElementById(name) as HTMLInputElement | HTMLSelectElement,
       );
       if (LOCAL_STORAGE_AVAILABLE) {
         localStorage.setItem(name, settings.updater.stringify(settings.value));
@@ -105,7 +105,7 @@ class Setter<T extends { [name: string]: unknown }> {
     for (const name of Object.keys(this.settings)) {
       const settings = this.settings[name];
       settings.updater.set(
-        document.getElementById(name) as HTMLInputElement,
+        document.getElementById(name) as HTMLInputElement | HTMLSelectElement,
         settings.value,
       );
     }
@@ -115,7 +115,7 @@ class Setter<T extends { [name: string]: unknown }> {
     for (const name of Object.keys(this.settings)) {
       const settings = this.settings[name];
       settings.updater.set(
-        document.getElementById(name) as HTMLInputElement,
+        document.getElementById(name) as HTMLInputElement | HTMLSelectElement,
         settings.default,
       );
     }
