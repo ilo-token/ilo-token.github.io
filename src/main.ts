@@ -20,6 +20,7 @@ type Elements = {
   settingsButton: HTMLButtonElement;
   dialogBox: HTMLDialogElement;
   confirmButton: HTMLButtonElement;
+  cancelButton: HTMLButtonElement;
   resetButton: HTMLButtonElement;
   version: HTMLAnchorElement;
 };
@@ -36,6 +37,7 @@ function loadElements(): void {
     settingsButton: "settings-button",
     dialogBox: "dialog-box",
     confirmButton: "confirm-button",
+    cancelButton: "cancel-button",
     resetButton: "reset-button",
     version: "version",
     // deno-lint-ignore no-explicit-any
@@ -137,8 +139,12 @@ if (typeof document !== "undefined") {
       settings.loadFromElements();
       elements!.dialogBox.close();
     });
+    elements!.cancelButton.addEventListener("click", () => {
+      settings.resetElementsToCurrent();
+      elements!.dialogBox.close();
+    });
     elements!.resetButton.addEventListener("click", () => {
-      settings.resetElements();
+      settings.resetElementsToDefault();
     });
     elements!.translateButton.addEventListener("click", updateOutput);
     elements!.input.addEventListener("keydown", (event) => {

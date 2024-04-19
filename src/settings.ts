@@ -101,7 +101,17 @@ class Setter<T extends { [name: string]: unknown }> {
     }
   }
   /** This function is for browser only. */
-  resetElements(): void {
+  resetElementsToCurrent(): void {
+    for (const name of Object.keys(this.settings)) {
+      const settings = this.settings[name];
+      settings.updater.set(
+        document.getElementById(name) as HTMLInputElement,
+        settings.value,
+      );
+    }
+  }
+  /** This function is for browser only. */
+  resetElementsToDefault(): void {
     for (const name of Object.keys(this.settings)) {
       const settings = this.settings[name];
       settings.updater.set(

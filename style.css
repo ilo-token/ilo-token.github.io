@@ -22,6 +22,9 @@ a:visited {
 #error-list {
   color: #b60000;
 }
+.button-row {
+  text-align: right;
+}
 summary {
   cursor: pointer;
 }
