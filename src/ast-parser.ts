@@ -64,10 +64,13 @@ function sequence<T extends Array<unknown>>(
 /** Parses the end of line (or the end of sentence in context of Toki Pona) */
 function eol(description: string): AstParser<null> {
   return new Parser((src) => {
-    if (src.length === 0) return new Output([{ value: null, rest: [] }]);
-    else {return new Output(
-        new UnexpectedError(src[0].type, description),
-      );}
+    if (src.length === 0) {
+      return new Output([{ value: null, rest: [] }]);
+    } else {
+      return new Output(
+        new UnexpectedError(describe(src[0]), description),
+      );
+    }
   });
 }
 /** Parses a single token tree. */
