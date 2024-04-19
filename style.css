@@ -1,5 +1,5 @@
 @font-face {
-  font-family: "nasin-nanpa";
+  font-family: nasin-nanpa;
   src: url("https://github.com/ETBCOR/nasin-nanpa/raw/main/versions/nasin-nanpa.otf");
 }
 body {
@@ -13,7 +13,7 @@ a:visited {
   color: #551a8b;
 }
 #input {
-  font-family: "nasin-nanpa", sans-serif;
+  font-family: sans-serif, nasin-nanpa;
   box-sizing: border-box;
   resize: vertical;
   width: 100%;
