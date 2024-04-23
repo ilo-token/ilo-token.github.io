@@ -133,10 +133,12 @@ if (typeof document !== "undefined") {
     settings.loadFromLocalStorage();
     setVersion();
     // Auto resize
-    elements!.input.style.height = elements!.input.scrollHeight + "px";
-    elements!.input.addEventListener("input", () => {
-      elements!.input.style.height = elements!.input.scrollHeight + "px";
-    });
+    function resizeTextarea() {
+      elements!.input.style.height =
+        Math.max(50, elements!.input.scrollHeight) + "px";
+    }
+    resizeTextarea();
+    elements!.input.addEventListener("input", resizeTextarea);
     elements!.settingsButton.addEventListener("click", () => {
       elements!.dialogBox.showModal();
     });
