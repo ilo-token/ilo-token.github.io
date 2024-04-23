@@ -82,7 +82,7 @@ dialog input[type="checkbox"] {
   body {
     margin: 50px;
   }
-  dialog:modal {
+  dialog {
     padding: 20px;
   }
 }
