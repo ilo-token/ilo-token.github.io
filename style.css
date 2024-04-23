@@ -4,7 +4,7 @@
 }
 body {
   margin: 10px;
-  font-family: sans-serif;
+  font-family: sans-serif, nasin-nanpa;
 }
 a {
   color: #0057af;
@@ -13,7 +13,6 @@ a:visited {
   color: #551a8b;
 }
 #input {
-  font-family: sans-serif, nasin-nanpa;
   box-sizing: border-box;
   resize: vertical;
   width: 100%;
