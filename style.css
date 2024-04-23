@@ -43,13 +43,15 @@ button,
 select {
   padding: 10px;
 }
-dialog:modal {
+dialog {
   padding: 0px;
   padding-top: 20px;
   padding-bottom: 20px;
-  display: flex;
   flex-direction: column;
   resize: both;
+}
+dialog:modal {
+  display: flex;
 }
 dialog > label,
 dialog > h1 {
