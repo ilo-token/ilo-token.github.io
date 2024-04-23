@@ -83,59 +83,41 @@
           >(Help)</a
         >
       </h1>
-      <p>
-        <label
-          ><input type="checkbox" id="use-telo-misikeke" /> Use telo misikeke
-          error messages</label
-        >
-      </p>
-      <p>
-        <label
-          ><input type="checkbox" id="randomize" /> Randomize output
-          order</label
-        >
-      </p>
-      <p>
-        <label
-          >Singular and plural forms<br />
-          <select id="number-settings">
-            <option value="both">Show all</option>
-            <option value="condense">Condense</option>
-            <option value="default only">Show singular only</option>
-          </select></label
-        >
-      </p>
-      <p>
-        <label
-          >Verb tenses<br />
-          <select id="tense-settings">
-            <option value="both">Show all</option>
-            <option value="condense">Condense</option>
-            <option value="default only">Show present only only</option>
-          </select></label
-        >
-      </p>
-      <p
+      <label>
+        Use telo misikeke error messages
+        <input type="checkbox" id="use-telo-misikeke" />
+      </label>
+      <label>
+        Randomize output order <input type="checkbox" id="randomize" />
+      </label>
+      <label for="number-settings">Singular and plural forms</label>
+      <select id="number-settings">
+        <option value="both">Show all</option>
+        <option value="condense">Condense</option>
+        <option value="default only">Show singular only</option>
+      </select>
+      <label for="tense-settings">Verb tenses</label>
+      <select id="tense-settings">
+        <option value="both">Show all</option>
+        <option value="condense">Condense</option>
+        <option value="default only">Show present only only</option>
+      </select>
+      <label
         title="This allows X ala X constructions to be parsed as series of modifiers along with the usual translation"
       >
-        <label
-          ><input type="checkbox" id="x-ala-x-partial-parsing" /> Allow partial
-          parsing of X ala X constructions (?)</label
-        >
-      </p>
-      <p>
-        <label
-          ><input type="checkbox" id="anu-as-content-word" /> Recognize "anu" as
-          content word</label
-        >
-      </p>
-      <p>
+        Allow partial parsing of X ala X
+        <input type="checkbox" id="x-ala-x-partial-parsing" />
+      </label>
+      <label>
+        Recognize "anu" as content word
+        <input type="checkbox" id="anu-as-content-word" />
+      </label>
+      <div>
         <button id="reset-button">Reset to default</button>
-      </p>
-      <p class="align-right">
+        <div></div>
         <button id="cancel-button">Cancel</button>
         <button id="confirm-button">Confirm</button>
-      </p>
+      </div>
     </dialog>
   </body>
 </html>

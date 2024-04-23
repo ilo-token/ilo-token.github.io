@@ -27,19 +27,49 @@ a:visited {
 summary {
   cursor: pointer;
 }
-button {
-  padding: 10px;
-}
+button,
 select {
   padding: 10px;
 }
-input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
+dialog:modal {
+  padding: 0px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  resize: both;
+}
+dialog > label,
+dialog > h1 {
+  padding: 10px;
+  margin: 0;
+}
+dialog > label[for] {
+  padding-bottom: 5px;
+}
+dialog > select {
+  margin: 10px;
+  margin-top: 0px;
+}
+dialog > div {
+  margin: 10px;
+  display: flex;
+}
+dialog > div > div {
+  flex-grow: 1;
+}
+dialog input[type="checkbox"] {
+  margin-left: 10px;
+  width: 1em;
+  height: 1em;
+  float: right;
 }
 @media (min-width: 800px) {
   body {
     margin: 50px;
+  }
+  dialog:modal {
+    padding: 20px;
   }
 }
 @media (prefers-color-scheme: dark) {
