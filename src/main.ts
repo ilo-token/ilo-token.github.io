@@ -134,8 +134,9 @@ if (typeof document !== "undefined") {
     setVersion();
     // Auto resize
     function resizeTextarea() {
+      elements!.input.style.height = "auto";
       elements!.input.style.height =
-        Math.max(50, elements!.input.scrollHeight) + "px";
+        Math.max(50, elements!.input.scrollHeight + 20) + "px";
     }
     resizeTextarea();
     elements!.input.addEventListener("input", resizeTextarea);
