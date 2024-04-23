@@ -132,6 +132,7 @@ if (typeof document !== "undefined") {
     loadElements();
     settings.loadFromLocalStorage();
     setVersion();
+    // Auto resize
     elements!.input.style.height = elements!.input.scrollHeight + "px";
     elements!.input.addEventListener("input", () => {
       elements!.input.style.height = elements!.input.scrollHeight + "px";
