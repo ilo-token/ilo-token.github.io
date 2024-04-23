@@ -132,6 +132,10 @@ if (typeof document !== "undefined") {
     loadElements();
     settings.loadFromLocalStorage();
     setVersion();
+    elements!.input.style.height = elements!.input.scrollHeight + "px";
+    elements!.input.addEventListener("input", () => {
+      elements!.input.style.height = elements!.input.scrollHeight + "px";
+    });
     elements!.settingsButton.addEventListener("click", () => {
       elements!.dialogBox.showModal();
     });
