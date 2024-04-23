@@ -28,6 +28,16 @@ a:visited {
 summary {
   cursor: pointer;
 }
+button {
+  padding: 10px;
+}
+select {
+  padding: 10px;
+}
+input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+}
 @media (min-width: 800px) {
   body {
     margin: 50px;
