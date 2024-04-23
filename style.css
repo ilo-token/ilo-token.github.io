@@ -14,7 +14,7 @@ a:visited {
 }
 #input {
   box-sizing: border-box;
-  resize: vertical;
+  resize: none;
   width: 100%;
 
   background-color: inherit;
