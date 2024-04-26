@@ -1,7 +1,6 @@
 import { parse } from "./ast-parser.ts";
 import * as TokiPona from "./ast.ts";
 import { SPECIAL_CONTENT_WORD_DEFINITION } from "./dictionary.ts";
-import { CONTENT_WORD_DEFINITION } from "./dictionary.ts";
 import { PREPOSITION_DEFINITION } from "./dictionary.ts";
 import { PARTICLE_DEFINITION } from "./dictionary.ts";
 import * as English from "./english-ast.ts";
