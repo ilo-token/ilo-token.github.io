@@ -764,6 +764,6 @@ const FULL_PARSER = choiceOnlyOne(
     ),
 );
 /** A multiple Toki Pona sentence parser. */
-export function parser(src: string): Output<MultipleSentences> {
+export function parse(src: string): Output<MultipleSentences> {
   return lex(src).flatMap((src) => FULL_PARSER.parse(src));
 }

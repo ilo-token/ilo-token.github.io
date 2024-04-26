@@ -11,7 +11,7 @@ import {
   WordUnit,
 } from "./ast.ts";
 import { Output } from "./output.ts";
-import { parser } from "./ast-parser.ts";
+import { parse } from "./ast-parser.ts";
 import { OutputError, TodoError, UnreachableError } from "./error.ts";
 import { DEFINITION } from "./old-definition.ts";
 
@@ -343,5 +343,5 @@ function translateSentences(sentences: MultipleSentences): TranslationOutput {
 }
 /** Full Toki Pona translator. */
 export function translate(src: string): TranslationOutput {
-  return parser(src).flatMap(translateSentences);
+  return parse(src).flatMap(translateSentences);
 }
