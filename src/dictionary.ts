@@ -715,7 +715,12 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("nose(s)"),
     noun("protuberance(s)"),
   ],
-  ni: [], // Special case
+  ni: [
+    determiner("this", "demonstrative"),
+    determiner("that", "demonstrative"),
+    determiner("these", "demonstrative"),
+    determiner("those", "demonstrative"),
+  ],
   nimi: [
     noun("name(s)"),
     noun("word(s)"),
