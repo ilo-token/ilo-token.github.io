@@ -1,6 +1,6 @@
 /** Module for describing word to word translations. */
 
-import { AdjectiveType } from "./english-ast.ts";
+import { AdjectiveType, DeterminerType } from "./english-ast.ts";
 import { UnreachableError } from "./error.ts";
 
 export const PARTICLE_DEFINITION: { [word: string]: Array<string> } = {
@@ -131,7 +131,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
   ala: [
     numeral(0),
-    quantifier("no"),
+    determiner("no", "quantifier"),
     singularNoun("nothing"), // This is technically a pronoun
   ],
   alasa: [
@@ -143,8 +143,8 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     singularNoun("everything"),
     singularNoun("anything"),
     singularNoun("entirety"),
-    quantifier("all"),
-    quantifier("every"),
+    determiner("all", "distributive"),
+    determiner("every", "distributive"),
     adverb("completely"),
   ],
   ali: [], // Will be duplicated with "ale"
@@ -464,7 +464,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjective("small", "size"),
     adjective("short", "size"),
     adjective("young", "age"),
-    quantifier("few"),
+    determiner("few", "quantifier"),
   ],
   linja: [
     adjectiveNounPhrase([
@@ -683,8 +683,8 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
   mute: [
     numeral(20),
-    quantifier("many"),
-    quantifier("several"),
+    determiner("many", "quantifier"),
+    determiner("several", "quantifier"),
     adverb("very"),
   ],
   nanpa: [
@@ -1005,7 +1005,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("cause(s)"),
   ],
   taso: [
-    quantifier("only"),
+    determiner("only", "distributive"), // Question: is this really a distributive determiner?
   ],
   tawa: [
     noun("motion(s)"),
@@ -1196,7 +1196,7 @@ export type Definition =
     adverbs: Array<Definition & { type: "adverb" }>;
     adjective: Definition & { type: "adjective" };
   }
-  | { type: "quantifier"; quantifier: string }
+  | { type: "determiner"; determiner: string; kind: DeterminerType }
   | { type: "numeral"; number: number }
   | { type: "adverb"; adverb: string }
   | {
@@ -1381,11 +1381,14 @@ function adjective(
 function numeral(number: number): Definition & { type: "numeral" } {
   return { type: "numeral", number };
 }
+function determiner(
+  determiner: string,
+  kind: DeterminerType,
+): Definition & { type: "determiner" } {
+  return { type: "determiner", determiner, kind };
+}
 function adverb(word: string): Definition & { type: "adverb" } {
   return { type: "adverb", adverb: word };
-}
-function quantifier(word: string): Definition & { type: "quantifier" } {
-  return { type: "quantifier", quantifier: word };
 }
 function interjection(word: string): Definition & { type: "interjection" } {
   return { type: "interjection", interjection: word };
