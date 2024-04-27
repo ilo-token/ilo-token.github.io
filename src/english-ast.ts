@@ -1,5 +1,6 @@
 /** Module for describing English AST. */
 
+/** */
 export type NounPhrase =
   | {
     type: "simple";
