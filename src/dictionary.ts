@@ -1218,7 +1218,6 @@ export type Definition =
     verb: Definition & { type: "verb" };
     object: Definition & { type: "noun" | "adjective noun phrase" };
   }
-  | { type: "gerund"; gerund: string }
   | { type: "interjection"; interjection: string };
 export const PARTICLE = new Set(Object.keys(PARTICLE_DEFINITION));
 export const CONTENT_WORD = new Set(Object.keys(CONTENT_WORD_DEFINITION));
