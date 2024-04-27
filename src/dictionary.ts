@@ -924,7 +924,6 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjective("fresh", "opinion"),
     adjective("additional", "origin"),
     adjective("extra", "origin"),
-    quantifier("another"), // It is a determiner. But is it a quantifier?
     adverb("newly"),
   ],
   sina: [
