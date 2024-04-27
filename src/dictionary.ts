@@ -1,5 +1,6 @@
 /** Module for describing word to word translations. */
 
+import { AdjectiveType } from "./english-ast.ts";
 import { UnreachableError } from "./error.ts";
 
 export const PARTICLE_DEFINITION: { [word: string]: Array<string> } = {
@@ -1165,15 +1166,6 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
 CONTENT_WORD_DEFINITION.ali = CONTENT_WORD_DEFINITION.ale;
 CONTENT_WORD_DEFINITION.oko = CONTENT_WORD_DEFINITION.lukin;
 
-export type AdjectiveType =
-  | "opinion"
-  | "size"
-  | "physical quality"
-  | "age"
-  | "color"
-  | "origin"
-  | "material"
-  | "qualifier";
 export type Definition =
   | {
     type: "noun";

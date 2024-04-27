@@ -1,7 +1,5 @@
 /** Module for describing English AST. */
 
-import { AdjectiveType } from "./dictionary.ts";
-
 export type NounPhrase =
   | {
     type: "simple";
@@ -16,9 +14,26 @@ export type NounPhrase =
     subjects: NounPhrase;
     preposition: Array<Preposition>;
   };
+export type DeterminerType =
+  | "article"
+  | "demonstrative"
+  | "distributive"
+  | "interrogative"
+  | "possessive"
+  | "quantifier"
+  | "relative";
 export type Determiner =
-  | { type: "quantifier"; quantifier: string }
+  | { type: "default"; kind: DeterminerType; word: string }
   | { type: "numeral"; number: number };
+export type AdjectiveType =
+  | "opinion"
+  | "size"
+  | "physical quality"
+  | "age"
+  | "color"
+  | "origin"
+  | "material"
+  | "qualifier";
 export type AdjectivePhrase = {
   type: AdjectiveType;
   adverbs: Array<string>;
