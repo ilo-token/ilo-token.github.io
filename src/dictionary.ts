@@ -1,6 +1,10 @@
 /** Module for describing word to word translations. */
 
-import { AdjectiveType, DeterminerType } from "./english-ast.ts";
+import {
+  AdjectiveType,
+  DeterminerQuantity,
+  DeterminerType,
+} from "./english-ast.ts";
 import { UnreachableError } from "./error.ts";
 
 export const PARTICLE_DEFINITION: { [word: string]: Array<string> } = {
@@ -131,7 +135,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
   ala: [
     numeral(0),
-    determiner("no", "quantifier"),
+    determiner("no", "quantifier", "zero"),
     indefinitePronoun("nothing"),
   ],
   alasa: [
@@ -143,8 +147,8 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     indefinitePronoun("everything"),
     indefinitePronoun("anything"),
     singularNoun("entirety"),
-    determiner("all", "distributive"),
-    determiner("every", "distributive"),
+    determiner("all", "distributive", "plural"),
+    determiner("every", "distributive", "plural"),
     adverb("completely"),
   ],
   ali: [], // Will be duplicated with "ale"
@@ -464,7 +468,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjective("small", "size"),
     adjective("short", "size"),
     adjective("young", "age"),
-    determiner("few", "quantifier"),
+    determiner("few", "quantifier", "plural"),
   ],
   linja: [
     adjectiveNounPhrase([
@@ -683,8 +687,8 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
   mute: [
     numeral(20),
-    determiner("many", "quantifier"),
-    determiner("several", "quantifier"),
+    determiner("many", "quantifier", "plural"),
+    determiner("several", "quantifier", "plural"),
     adverb("very"),
   ],
   nanpa: [
@@ -716,10 +720,10 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("protuberance(s)"),
   ],
   ni: [
-    determiner("this", "demonstrative"),
-    determiner("that", "demonstrative"),
-    determiner("these", "demonstrative"),
-    determiner("those", "demonstrative"),
+    determiner("this", "demonstrative", "both"),
+    determiner("that", "demonstrative", "both"),
+    determiner("these", "demonstrative", "both"),
+    determiner("those", "demonstrative", "both"),
   ],
   nimi: [
     noun("name(s)"),
@@ -901,8 +905,8 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("boundary/boundaries"),
   ],
   seme: [
-    determiner("what", "interrogative"),
-    determiner("which", "interrogative"),
+    determiner("what", "interrogative", "both"),
+    determiner("which", "interrogative", "both"),
   ],
   sewi: [
     // TODO: area above, something elevated
@@ -1013,7 +1017,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("cause(s)"),
   ],
   taso: [
-    determiner("only", "distributive"), // Question: is this really a distributive determiner?
+    determiner("only", "distributive", "both"), // Question: is this really a distributive determiner?
   ],
   tawa: [
     noun("motion(s)"),
@@ -1208,7 +1212,12 @@ export type Definition =
     adverbs: Array<Definition & { type: "adverb" }>;
     adjective: Definition & { type: "adjective" };
   }
-  | { type: "determiner"; determiner: string; kind: DeterminerType }
+  | {
+    type: "determiner";
+    determiner: string;
+    kind: DeterminerType;
+    quantity: DeterminerQuantity;
+  }
   | { type: "numeral"; number: number }
   | { type: "adverb"; adverb: string }
   | {
@@ -1400,8 +1409,9 @@ function numeral(number: number): Definition & { type: "numeral" } {
 function determiner(
   determiner: string,
   kind: DeterminerType,
+  quantity: DeterminerQuantity,
 ): Definition & { type: "determiner" } {
-  return { type: "determiner", determiner, kind };
+  return { type: "determiner", determiner, kind, quantity };
 }
 function adverb(word: string): Definition & { type: "adverb" } {
   return { type: "adverb", adverb: word };
