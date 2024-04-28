@@ -132,7 +132,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ala: [
     numeral(0),
     determiner("no", "quantifier"),
-    singularNoun("nothing"), // This is technically a pronoun
+    indefinitePronoun("nothing"),
   ],
   alasa: [
     verb("hunt(ed)", "hunting"),
@@ -140,8 +140,8 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
   ale: [
     numeral(100),
-    singularNoun("everything"),
-    singularNoun("anything"),
+    indefinitePronoun("everything"),
+    indefinitePronoun("anything"),
     singularNoun("entirety"),
     determiner("all", "distributive"),
     determiner("every", "distributive"),
@@ -239,7 +239,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   jan: [
     singularNoun("human being"),
     noun("person/people"),
-    singularNoun("somebody"), // This is technically a pronoun
+    indefinitePronoun("somebody"),
   ],
   jasima: [
     noun("reflection(s)"),
@@ -594,7 +594,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
   mi: [
     {
-      type: "pronoun",
+      type: "personal pronoun",
       singularSubject: "I",
       singularObject: "me",
       singularPossessive: "my",
@@ -758,7 +758,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
   ona: [
     {
-      type: "pronoun",
+      type: "personal pronoun",
       singularSubject: null,
       singularObject: null,
       singularPossessive: null,
@@ -900,7 +900,10 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     singularNoun("skin"),
     noun("boundary/boundaries"),
   ],
-  seme: [], // Special case
+  seme: [
+    determiner("what", "interrogative"),
+    determiner("which", "interrogative"),
+  ],
   sewi: [
     // TODO: area above, something elevated
     adjectiveNounPhrase([adjective("highest", "origin")], noun("part(s)")),
@@ -933,7 +936,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
   sina: [
     {
-      type: "pronoun",
+      type: "personal pronoun",
       singularSubject: null,
       singularObject: null,
       singularPossessive: null,
@@ -1183,13 +1186,17 @@ export type Definition =
     noun: Definition & { type: "noun" };
   }
   | {
-    type: "pronoun";
+    type: "personal pronoun";
     singularSubject: null | string;
     singularObject: null | string;
     singularPossessive: null | string;
     pluralSubject: string;
     pluralObject: string;
     pluralPossessive: string;
+  }
+  | {
+    type: "indefinite pronoun";
+    pronoun: string;
   }
   | { type: "adjective"; adjective: string; kind: AdjectiveType }
   | {
@@ -1245,6 +1252,11 @@ function singularNoun(word: string): Definition & { type: "noun" } {
 }
 function pluralNoun(word: string): Definition & { type: "noun" } {
   return { type: "noun", singular: null, plural: word, condensed: word };
+}
+function indefinitePronoun(
+  pronoun: string,
+): Definition & { type: "indefinite pronoun" } {
+  return { type: "indefinite pronoun", pronoun };
 }
 function adjectiveNounPhrase(
   adjectives: Array<Definition & { type: "adjective" }>,
