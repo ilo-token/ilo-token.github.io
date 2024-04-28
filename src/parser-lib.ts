@@ -134,13 +134,13 @@ export function sequence<T, U extends Array<unknown>>(
 ): Parser<T, U> {
   // We resorted to using `any` types here, make sure it works properly
   // deno-lint-ignore no-explicit-any
-  return (sequence as Array<any>)
-    .reduceRight((newParser, parser) =>
+  return sequence.reduceRight((newParser: any, parser) =>
+    // deno-lint-ignore no-explicit-any
+    parser.then((value: any) =>
       // deno-lint-ignore no-explicit-any
-      parser.then((value: any) =>
-        // deno-lint-ignore no-explicit-any
-        newParser.map((newValue: any) => [value, ...newValue])
-      ), nothing().map(() => []));
+      newParser.map((newValue: any) => [value, ...newValue] as any)
+      // deno-lint-ignore no-explicit-any
+    ), nothing().map(() => [] as any));
 }
 /**
  * Parses `parser` multiple times and returns an `Array<T>`. The resulting
