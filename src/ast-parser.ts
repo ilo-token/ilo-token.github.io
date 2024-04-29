@@ -452,7 +452,7 @@ function nestedPhrases(
     );
   }
 }
-/** Parses phrases separated by _en_ or _anu_. */
+/** Parses phrases separated by "en" or "anu". */
 function subjectPhrases(): AstParser<MultiplePhrases> {
   return choice(
     nestedPhrasesOnly(["en", "anu"]),
@@ -575,7 +575,7 @@ function associatedPredicates(
       }
     });
 }
-/** Parses multiple predicates without _li_ nor _o_ at the beginning. */
+/** Parses multiple predicates without "li" nor "o" at the beginning. */
 function multiplePredicates(
   nestingRule: Array<"li" | "o" | "anu">,
 ): AstParser<MultiplePredicates> {
@@ -738,7 +738,7 @@ function fullClause(): AstParser<FullClause> {
   )
     .filter(filter(FULL_CLAUSE_RULE));
 }
-/** parses _la_ with optional comma around. */
+/** parses "la" with optional comma around. */
 function la(): AstParser<string> {
   return choice(
     comma().with(specificWord("la")),

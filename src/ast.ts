@@ -43,7 +43,7 @@ export type Phrase =
   }
   | { type: "preposition"; preposition: Preposition }
   | { type: "quotation"; quotation: Quotation };
-/** Represents multiple phrases separated by repeated particle or _anu_. */
+/** Represents multiple phrases separated by repeated particle or "anu". */
 export type MultiplePhrases =
   | { type: "single"; phrase: Phrase }
   | { type: "and conjunction"; phrases: Array<MultiplePhrases> }

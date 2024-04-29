@@ -208,7 +208,7 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
     }
     return true;
   },
-  // Disallow preverb modifiers other than _ala_
+  // Disallow preverb modifiers other than "ala"
   (phrase) => {
     if (phrase.type === "preverb" && !modifiersIsAlaOrNone(phrase.modifiers)) {
       throw new UnrecognizedError('preverb with modifiers other than "ala"');
@@ -256,7 +256,7 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
 ];
 /** Array of filter rules for preposition. */
 export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
-  // Disallow preverb modifiers other than _ala_
+  // Disallow preverb modifiers other than "ala"
   (preposition) => {
     if (!modifiersIsAlaOrNone(preposition.modifiers)) {
       throw new UnrecognizedError('preverb with modifiers other than "ala"');
@@ -356,7 +356,7 @@ function modifierIsNumeric(modifier: Modifier): boolean {
   return false;
 }
 /**
- * Helper function for checking if the modifiers is exactly just _ala_ or nothing.
+ * Helper function for checking if the modifiers is exactly just "ala" or nothing.
  */
 function modifiersIsAlaOrNone(modifiers: Array<Modifier>): boolean {
   if (modifiers.length > 1) {
