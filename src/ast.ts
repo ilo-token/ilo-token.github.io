@@ -96,7 +96,11 @@ export type FullClause =
   }
   | { type: "marker"; marker: Marker };
 /** Represents a single full sentence. */
-export type Sentence = { laClauses: Array<FullClause>; punctuation: string };
+export type Sentence = {
+  laClauses: Array<FullClause>;
+  finalClause: FullClause;
+  punctuation: string;
+};
 /** Represents quotation. */
 export type Quotation = {
   sentences: Array<Sentence>;

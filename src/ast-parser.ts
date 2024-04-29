@@ -723,15 +723,16 @@ function la(): AstParser<string> {
 /** Parses a single full sentence with optional punctuations. */
 function sentence(): AstParser<Sentence> {
   return sequence(
+    many(fullClause().skip(la())),
     fullClause(),
-    many(la().with(fullClause())),
     choice(
       eol("end of sentence").map(() => ""),
       punctuation(),
     ),
   )
-    .map(([clause, moreClauses, punctuation]) => ({
-      laClauses: [clause, ...moreClauses],
+    .map(([laClauses, finalClause, punctuation]) => ({
+      laClauses,
+      finalClause,
       punctuation,
     }));
 }
