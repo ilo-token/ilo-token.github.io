@@ -11,7 +11,7 @@ import { Output } from "./output.ts";
 
 function multipleSentences(
   sentences: TokiPona.MultipleSentences,
-): Output<English.Sentence> {
+): Output<Array<English.Sentence>> {
   if (sentences.type === "single word") {
     const word = sentences.word;
     return new Output([
@@ -20,17 +20,22 @@ function multipleSentences(
       ...PREPOSITION_DEFINITION[word] ?? [],
       // TODO: Preverb
       // TODO: Content word definition
-    ]).map((definition) => ({
-      dependentClauses: [],
-      independentClause: { type: "free form", text: definition },
-      punctuation: "",
-    }));
+    ])
+      .map((definition) => ({
+        dependentClauses: [],
+        independentClause: {
+          type: "free form",
+          text: definition,
+        } as English.Clause,
+        punctuation: "",
+      }))
+      .map((definition) => [definition]);
   } else if (sentences.type === "sentences") {
     return new Output(new TodoError("translation of sentences"));
   } else {
     throw new UnreachableError();
   }
 }
-export function translate(src: string): Output<English.Sentence> {
+export function translate(src: string): Output<Array<English.Sentence>> {
   return parse(src).flatMap(multipleSentences);
 }
