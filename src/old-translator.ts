@@ -29,23 +29,6 @@ const WORD_TO_NUMBER: { [word: string]: number } = {
 // TODO: -like and -related suffixes for nouns as adjectives
 // TODO: "and" in "of" and "in X way"
 
-/**
- * Helper function for turning array or tuple of Output into Output of array or
- * tuple. Make use of `as const` to infer array as tuple.
- */
-// TODO: maybe there's a better name
-function rotate<T extends Array<unknown>>(
-  array: { [I in keyof T]: Output<T[I]> } & { length: T["length"] },
-): Output<T> {
-  // We resorted to using `any` types here, make sure it works properly
-  return array.reduce(
-    // deno-lint-ignore no-explicit-any
-    (result: Output<any>, output) =>
-      result.flatMap((left) => output.map((right) => [...left, right])),
-    // deno-lint-ignore no-explicit-any
-    new Output<any>([[]]),
-  ) as Output<T>;
-}
 function definition(
   kind: "noun" | "adjective" | "adverb",
   word: string,
@@ -155,7 +138,10 @@ function defaultPhraseAs(
     .filter((modifier) => modifier.type !== "proper words");
   const modifierTranslation: Array<TranslationOutput> = modifierNoName
     .map((modifier) => modifierAs(modifierKind, modifier));
-  const translations = rotate([headWord, rotate(modifierTranslation)] as const)
+  const translations = Output.combine(
+    headWord,
+    Output.combine(...modifierTranslation),
+  )
     .map(([headWord, modifiers]) =>
       [...modifiers.slice().reverse(), headWord].join(" ")
     )
@@ -177,7 +163,7 @@ function defaultPhraseAs(
           ...modifierNoName.slice(i + 1),
         ]
           .map((modifier) => modifierAs(modifierKind, modifier));
-        return rotate([headWord, rotate(modifierTranslation)] as const)
+        return Output.combine(headWord, Output.combine(...modifierTranslation))
           .map(([headWord, modifiers]) =>
             [...modifiers.slice().reverse(), headWord].join(" ")
           )
@@ -222,8 +208,8 @@ function translateMultiplePhrases(
     } else {
       conjunction = "or";
     }
-    const translations = rotate(
-      phrases.phrases.map((phrases) =>
+    const translations = Output.combine(
+      ...phrases.phrases.map((phrases) =>
         translateMultiplePhrases(phrases, translator, level - 1)
       ),
     );
@@ -321,21 +307,23 @@ function translateFullClause(fullClause: FullClause): TranslationOutput {
 }
 /** Translates a single sentence. */
 function translateSentence(sentence: Sentence): TranslationOutput {
-  return rotate(sentence.laClauses.map(translateFullClause)).map((clauses) => {
-    const contexts = clauses.slice(0, clauses.length - 1);
-    const final = clauses[clauses.length - 1];
-    return [
-      ...contexts.map((context) => `given ${context}, `),
-      final,
-      sentence.punctuation,
-    ]
-      .join("");
-  });
+  return Output.combine(...sentence.laClauses.map(translateFullClause)).map(
+    (clauses) => {
+      const contexts = clauses.slice(0, clauses.length - 1);
+      const final = clauses[clauses.length - 1];
+      return [
+        ...contexts.map((context) => `given ${context}, `),
+        final,
+        sentence.punctuation,
+      ]
+        .join("");
+    },
+  );
 }
 /** Translates multiple sentences. */
 function translateSentences(sentences: MultipleSentences): TranslationOutput {
   if (sentences.type === "sentences") {
-    return rotate(sentences.sentences.map(translateSentence))
+    return Output.combine(...sentences.sentences.map(translateSentence))
       .map((sentences) => sentences.join(" "));
   } else {
     return new Output(new TodoError("translation of a single word"));
