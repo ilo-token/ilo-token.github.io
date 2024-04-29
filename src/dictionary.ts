@@ -9,6 +9,12 @@ import { UnreachableError } from "./error.ts";
 
 export const PARTICLE_DEFINITION: { [word: string]: Array<string> } = {
   a: [
+    "ah",
+    "oh",
+    "ha",
+    "eh",
+    "um",
+    "oy",
     "[placed after something for emphasis or emotion]",
   ],
   ala: [
@@ -40,6 +46,11 @@ export const PARTICLE_DEFINITION: { [word: string]: Array<string> } = {
     "[marks the start of an indicative verb (statement)]",
   ],
   n: [
+    "hm",
+    "uh",
+    "mm",
+    "er",
+    "umm",
     "[indicate thinking or pause]",
   ],
   nanpa: [
@@ -119,14 +130,6 @@ export const PREVERB_DEFINITION: { [word: string]: Array<never> } = {
 };
 PREVERB_DEFINITION.alasa = PREVERB_DEFINITION.lukin;
 export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
-  a: [
-    interjection("ah"),
-    interjection("oh"),
-    interjection("ha"),
-    interjection("eh"),
-    interjection("um"),
-    interjection("oy"),
-  ],
   akesi: [
     noun("reptile(s)"),
     noun("amphibian(s)"),
@@ -677,13 +680,6 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjective("comical", "opinion"),
     adjective("silly", "opinion"),
     verbObjectPhrase(verb("have/had", "having"), singularNoun("fun")),
-  ],
-  n: [
-    interjection("hm"),
-    interjection("uh"),
-    interjection("mm"),
-    interjection("er"),
-    interjection("umm"),
   ],
   mute: [
     numeral(20),
