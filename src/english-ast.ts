@@ -92,7 +92,7 @@ export type Clause =
   }
   | {
     type: "implied it's adjective";
-    noun: PredicateAdjective;
+    adjective: PredicateAdjective;
     preposition: Array<Preposition>;
   }
   | { type: "interjection"; interjection: string }
