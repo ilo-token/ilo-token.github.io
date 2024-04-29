@@ -51,6 +51,19 @@ export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
       return true;
     }
   },
+  // "n" cannot modify a word
+  (wordUnit) => {
+    if (
+      wordUnit.type === "default" && wordUnit.modifyingParticle &&
+      ((wordUnit.modifyingParticle.type === "word" &&
+        wordUnit.modifyingParticle.word === "n") ||
+        (wordUnit.modifyingParticle.type === "long word" &&
+          wordUnit.modifyingParticle.word === "n"))
+    ) {
+      throw new UnrecognizedError('"n" modifying a word');
+    }
+    return true;
+  },
 ];
 /** Array of filter rules for a single modifier. */
 export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
@@ -224,6 +237,19 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
       phrase.modifiers.length === 0
     ) {
       throw new CoveredError();
+    }
+    return true;
+  },
+  // "n" cannot modify a phrase
+  (phrase) => {
+    if (
+      phrase.type === "default" && phrase.modifyingParticle &&
+      ((phrase.modifyingParticle.type === "word" &&
+        phrase.modifyingParticle.word === "n") ||
+        (phrase.modifyingParticle.type === "long word" &&
+          phrase.modifyingParticle.word === "n"))
+    ) {
+      throw new UnrecognizedError('"n" modifying a phrase');
     }
     return true;
   },
