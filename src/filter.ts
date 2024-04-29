@@ -233,7 +233,7 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
   // If the phrase has no modifiers, avoid modifying particle
   (phrase) => {
     if (
-      phrase.type === "default" && phrase.modifyingParticle !== null &&
+      phrase.type === "default" && phrase.modifyingParticle != null &&
       phrase.modifiers.length === 0
     ) {
       throw new CoveredError();
@@ -320,7 +320,7 @@ export const FULL_CLAUSE_RULE: Array<(fullClase: FullClause) => boolean> = [
   // If the clause is just a single phrase, avoid post modifying particles
   (fullClause) => {
     if (
-      fullClause.type === "default" && fullClause.postclause !== null &&
+      fullClause.type === "default" && fullClause.postclause != null &&
       fullClause.clause.type === "phrases" &&
       fullClause.clause.phrases.type === "single"
     ) {
