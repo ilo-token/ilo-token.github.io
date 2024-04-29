@@ -91,23 +91,23 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
   },
   // nanpa construction cannot contain pi
   (modifier) => {
-    if (modifier.type === "nanpa" && modifier.phrase.type === "default") {
-      if (
-        modifier.phrase.modifiers.some((modifier) => modifier.type === "pi")
-      ) {
-        throw new UnrecognizedError("pi inside nanpa");
-      }
+    if (
+      modifier.type === "nanpa" &&
+      modifier.phrase.type === "default" &&
+      modifier.phrase.modifiers.some((modifier) => modifier.type === "pi")
+    ) {
+      throw new UnrecognizedError("pi inside nanpa");
     }
     return true;
   },
   // nanpa construction cannot contain nanpa
   (modifier) => {
-    if (modifier.type === "nanpa" && modifier.phrase.type === "default") {
-      if (
-        modifier.phrase.modifiers.some((modifier) => modifier.type === "nanpa")
-      ) {
-        throw new UnrecognizedError("nanpa inside nanpa");
-      }
+    if (
+      modifier.type === "nanpa" &&
+      modifier.phrase.type === "default" &&
+      modifier.phrase.modifiers.some((modifier) => modifier.type === "nanpa")
+    ) {
+      throw new UnrecognizedError("nanpa inside nanpa");
     }
     return true;
   },
@@ -197,24 +197,22 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
   },
   // Disallow preverb modifiers other than _ala_
   (phrase) => {
-    if (phrase.type === "preverb") {
-      if (!modifiersIsAlaOrNone(phrase.modifiers)) {
-        throw new UnrecognizedError('preverb with modifiers other than "ala"');
-      }
+    if (phrase.type === "preverb" && !modifiersIsAlaOrNone(phrase.modifiers)) {
+      throw new UnrecognizedError('preverb with modifiers other than "ala"');
     }
     return true;
   },
   // No multiple number words
   (phrase) => {
     if (phrase.type === "default") {
+      const headWord = phrase.headWord;
       if (
-        phrase.headWord.type === "numbers" ||
-        (phrase.headWord.type === "default" &&
-          (phrase.headWord.word === "wan" || phrase.headWord.word === "tu"))
+        (headWord.type === "numbers" ||
+          (headWord.type === "default" &&
+            (headWord.word === "wan" || headWord.word === "tu"))) &&
+        phrase.modifiers.some(modifierIsNumeric)
       ) {
-        if (phrase.modifiers.some(modifierIsNumeric)) {
-          throw new UnrecognizedError("Multiple number words");
-        }
+        throw new UnrecognizedError("Multiple number words");
       }
     }
     return true;
@@ -272,12 +270,11 @@ export const CLAUSE_RULE: Array<(clause: Clause) => boolean> = [
   },
   // disallow preposition in object
   (clause) => {
-    if (clause.type === "li clause" || clause.type === "o clause") {
-      if (
-        someObjectInMultiplePredicate(clause.predicates, hasPrepositionInPhrase)
-      ) {
-        throw new UnrecognizedError("Preposition in object");
-      }
+    if (
+      (clause.type === "li clause" || clause.type === "o clause") &&
+      someObjectInMultiplePredicate(clause.predicates, hasPrepositionInPhrase)
+    ) {
+      throw new UnrecognizedError("Preposition in object");
     }
     return true;
   },
