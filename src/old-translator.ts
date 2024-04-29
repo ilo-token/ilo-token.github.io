@@ -307,7 +307,9 @@ function translateFullClause(fullClause: FullClause): TranslationOutput {
 }
 /** Translates a single sentence. */
 function translateSentence(sentence: Sentence): TranslationOutput {
-  return Output.combine(...sentence.laClauses.map(translateFullClause)).map(
+  return Output.combine(
+    ...[...sentence.laClauses, sentence.finalClause].map(translateFullClause),
+  ).map(
     (clauses) => {
       const contexts = clauses.slice(0, clauses.length - 1);
       const final = clauses[clauses.length - 1];
