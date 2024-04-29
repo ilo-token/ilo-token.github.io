@@ -96,6 +96,7 @@ export type Clause =
     preposition: Array<Preposition>;
   }
   | { type: "interjection"; interjection: string }
+  | { type: "vocative"; call: string; addressee: NounPhrase }
   | {
     type: "compound";
     conjunction: string;
