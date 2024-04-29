@@ -13,7 +13,7 @@ import {
   somePhraseInMultiplePhrases,
   WordUnit,
 } from "./ast.ts";
-import { UnreachableError, UnrecognizedError } from "./error.ts";
+import { CoveredError, UnreachableError, UnrecognizedError } from "./error.ts";
 import { settings } from "./settings.ts";
 
 /** Array of filter rules for a word unit. */
@@ -219,6 +219,16 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
     }
     return true;
   },
+  // If the phrase has no modifiers, avoid marker
+  (phrase) => {
+    if (
+      phrase.type === "default" && phrase.marker !== null &&
+      phrase.modifiers.length === 0
+    ) {
+      throw new CoveredError();
+    }
+    return true;
+  },
 ];
 /** Array of filter rules for preposition. */
 export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
@@ -281,6 +291,17 @@ export const FULL_CLAUSE_RULE: Array<(fullClase: FullClause) => boolean> = [
       fullClause.preclause.taso.type === "x ala x"
     ) {
       throw new UnrecognizedError('"taso ala taso"');
+    }
+    return true;
+  },
+  // If the clause is just a single phrase, avoid post markers
+  (fullClause) => {
+    if (
+      fullClause.type === "default" && fullClause.postclause !== null &&
+      fullClause.clause.type === "phrases" &&
+      fullClause.clause.phrases.type === "single"
+    ) {
+      throw new CoveredError();
     }
     return true;
   },
