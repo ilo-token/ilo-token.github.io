@@ -1,1 +1,1 @@
-export * as teloMisikeke from "./telo-misikeke/telo-misikeke.ts";
+export * as TeloMisikeke from "./telo-misikeke/telo-misikeke.ts";

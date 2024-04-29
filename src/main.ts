@@ -3,7 +3,7 @@
 import { CoveredError } from "./error.ts";
 import { translate } from "./old-translator.ts";
 import { settings } from "./settings.ts";
-import { teloMisikeke } from "../deps.ts";
+import { TeloMisikeke } from "../deps.ts";
 
 // Set to false when releasing, set to true when developing
 const DEVELOPMENT = true;
@@ -102,7 +102,7 @@ function updateOutput(): void {
     } else {
       let error: Array<string> = [];
       if (settings.get("use-telo-misikeke")) {
-        error = teloMisikeke.errors(source);
+        error = TeloMisikeke.errors(source);
       }
       if (error.length === 0) {
         error = [

@@ -1,21 +1,21 @@
-import { debounce, emit, teloMisikeke } from "./dev-deps.ts";
+import { Debounce, Emit, TeloMisikeke } from "./dev-deps.ts";
 
 const SOURCE = new URL("./src/main.ts", import.meta.url);
 const DESTINATION = new URL("./main.js", import.meta.url);
 
-async function build(options: emit.BundleOptions): Promise<void> {
-  const result = await emit.bundle(SOURCE, options);
+async function build(options: Emit.BundleOptions): Promise<void> {
+  const result = await Emit.bundle(SOURCE, options);
   const { code } = result;
   await Deno.writeTextFile(DESTINATION, code);
 }
 if (Deno.args[0] === "build") {
   console.log("Building telo misikeke...");
-  await teloMisikeke.build();
+  await TeloMisikeke.build();
   console.log("Building main.js...");
   await build({ minify: true, type: "classic" });
   console.log("Building done!");
 } else if (Deno.args[0] === "watch") {
-  const builder = debounce.debounce(async () => {
+  const builder = Debounce.debounce(async () => {
     console.log("Starting to build...");
     try {
       await build({
