@@ -53,14 +53,16 @@ export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
   },
   // "n" cannot modify a word
   (wordUnit) => {
-    if (
-      wordUnit.type === "default" && wordUnit.modifyingParticle != null &&
-      ((wordUnit.modifyingParticle.type === "word" &&
-        wordUnit.modifyingParticle.word === "n") ||
-        (wordUnit.modifyingParticle.type === "long word" &&
-          wordUnit.modifyingParticle.word === "n"))
-    ) {
-      throw new UnrecognizedError('"n" modifying a word');
+    if (wordUnit.type === "default") {
+      const modifyingParticle = wordUnit.modifyingParticle;
+      const hasN = modifyingParticle != null &&
+        ((modifyingParticle.type === "word" &&
+          modifyingParticle.word === "n") ||
+          (modifyingParticle.type === "long word" &&
+            modifyingParticle.word === "n"));
+      if (hasN) {
+        throw new UnrecognizedError('"n" modifying a word');
+      }
     }
     return true;
   },
@@ -242,14 +244,17 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
   },
   // "n" cannot modify a phrase
   (phrase) => {
-    if (
-      phrase.type === "default" && phrase.modifyingParticle != null &&
-      ((phrase.modifyingParticle.type === "word" &&
-        phrase.modifyingParticle.word === "n") ||
-        (phrase.modifyingParticle.type === "long word" &&
-          phrase.modifyingParticle.word === "n"))
-    ) {
-      throw new UnrecognizedError('"n" modifying a phrase');
+    if (phrase.type === "default") {
+      const modifyingParticle = phrase.modifyingParticle;
+      if (
+        modifyingParticle != null &&
+        ((modifyingParticle.type === "word" &&
+          modifyingParticle.word === "n") ||
+          (modifyingParticle.type === "long word" &&
+            modifyingParticle.word === "n"))
+      ) {
+        throw new UnrecognizedError('"n" modifying a phrase');
+      }
     }
     return true;
   },
@@ -308,22 +313,37 @@ export const CLAUSE_RULE: Array<(clause: Clause) => boolean> = [
 export const FULL_CLAUSE_RULE: Array<(fullClase: FullClause) => boolean> = [
   // Prevent "taso ala taso"
   (fullClause) => {
-    if (
-      fullClause.type === "default" && fullClause.preclause &&
-      fullClause.preclause.type === "taso" &&
-      fullClause.preclause.taso.type === "x ala x"
-    ) {
-      throw new UnrecognizedError('"taso ala taso"');
+    if (fullClause.type === "default") {
+      const preclause = fullClause.preclause;
+      if (
+        preclause != null &&
+        preclause.type === "taso" &&
+        preclause.taso.type === "x ala x"
+      ) {
+        throw new UnrecognizedError('"taso ala taso"');
+      }
     }
     return true;
   },
   // If the clause is just a single phrase, avoid post modifying particles
+  // unless it is "n"
   (fullClause) => {
+    // TODO: clean this mess
     if (
-      fullClause.type === "default" && fullClause.postclause != null &&
+      fullClause.type === "default" &&
+      fullClause.postclause != null &&
+      fullClause.postclause.type === "modifying particle" &&
       fullClause.clause.type === "phrases" &&
       fullClause.clause.phrases.type === "single"
     ) {
+      const modifyingParticle = fullClause.postclause.modifyingParticle;
+      if (
+        (modifyingParticle.type === "word" ||
+          modifyingParticle.type === "long word") &&
+        modifyingParticle.word === "n"
+      ) {
+        return true;
+      }
       throw new CoveredError();
     }
     return true;
