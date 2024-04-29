@@ -54,7 +54,7 @@ export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
   // "n" cannot modify a word
   (wordUnit) => {
     if (
-      wordUnit.type === "default" && wordUnit.modifyingParticle &&
+      wordUnit.type === "default" && wordUnit.modifyingParticle != null &&
       ((wordUnit.modifyingParticle.type === "word" &&
         wordUnit.modifyingParticle.word === "n") ||
         (wordUnit.modifyingParticle.type === "long word" &&
@@ -243,7 +243,7 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
   // "n" cannot modify a phrase
   (phrase) => {
     if (
-      phrase.type === "default" && phrase.modifyingParticle &&
+      phrase.type === "default" && phrase.modifyingParticle != null &&
       ((phrase.modifyingParticle.type === "word" &&
         phrase.modifyingParticle.word === "n") ||
         (phrase.modifyingParticle.type === "long word" &&
