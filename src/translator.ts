@@ -9,6 +9,9 @@ import * as English from "./english-ast.ts";
 import { TodoError, UnreachableError } from "./error.ts";
 import { Output } from "./output.ts";
 
+function sentence(sentence: TokiPona.Sentence): Output<English.Sentence> {
+  return new Output(new TodoError("translation of sentence"));
+}
 function multipleSentences(
   sentences: TokiPona.MultipleSentences,
 ): Output<Array<English.Sentence>> {
@@ -31,7 +34,7 @@ function multipleSentences(
       }))
       .map((definition) => [definition]);
   } else if (sentences.type === "sentences") {
-    return new Output(new TodoError("translation of sentences"));
+    return Output.combine(...sentences.sentences.map(sentence));
   } else {
     throw new UnreachableError();
   }
