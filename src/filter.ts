@@ -217,10 +217,10 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
     }
     return true;
   },
-  // If the phrase has no modifiers, avoid marker
+  // If the phrase has no modifiers, avoid modifying particle
   (phrase) => {
     if (
-      phrase.type === "default" && phrase.marker !== null &&
+      phrase.type === "default" && phrase.modifyingParticle !== null &&
       phrase.modifiers.length === 0
     ) {
       throw new CoveredError();
@@ -291,7 +291,7 @@ export const FULL_CLAUSE_RULE: Array<(fullClase: FullClause) => boolean> = [
     }
     return true;
   },
-  // If the clause is just a single phrase, avoid post markers
+  // If the clause is just a single phrase, avoid post modifying particles
   (fullClause) => {
     if (
       fullClause.type === "default" && fullClause.postclause !== null &&

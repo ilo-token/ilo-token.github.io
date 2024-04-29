@@ -2,13 +2,17 @@
 
 import { UnreachableError } from "./error.ts";
 
-export type Marker =
+export type ModifyingParticle =
   | { type: "word"; word: string }
   | { type: "long word"; word: string; length: number }
   | { type: "multiple a"; count: number };
 /** Represents a word unit. */
 export type WordUnit =
-  | { type: "default"; word: string; marker: null | Marker }
+  | {
+    type: "default";
+    word: string;
+    modifyingParticle: null | ModifyingParticle;
+  }
   | { type: "x ala x"; word: string }
   | { type: "reduplication"; word: string; count: number }
   | { type: "numbers"; numbers: Array<string> };
@@ -28,14 +32,14 @@ export type Phrase =
     type: "default";
     headWord: WordUnit;
     modifiers: Array<Modifier>;
-    marker: null | Marker;
+    modifyingParticle: null | ModifyingParticle;
   }
   | {
     type: "preverb";
     preverb: WordUnit;
     modifiers: Array<Modifier>;
     phrase: Phrase;
-    marker: null | Marker;
+    modifyingParticle: null | ModifyingParticle;
   }
   | { type: "preposition"; preposition: Preposition }
   | { type: "quotation"; quotation: Quotation };
@@ -50,7 +54,7 @@ export type Preposition = {
   modifiers: Array<Modifier>;
   /** This cannot be an "and conjunction": only "anu" or "single". */
   phrases: MultiplePhrases;
-  marker: null | Marker;
+  modifyingParticle: null | ModifyingParticle;
 };
 /** Represents multiple predicates. */
 export type MultiplePredicates =
@@ -82,10 +86,10 @@ export type Clause =
   | { type: "quotation"; quotation: Quotation };
 export type Preclause =
   | { type: "taso"; taso: WordUnit }
-  | { type: "marker"; marker: Marker };
+  | { type: "modifying particle"; modifyingParticle: ModifyingParticle };
 export type Postclause =
   | { type: "anu seme"; seme: WordUnit }
-  | { type: "marker"; marker: Marker };
+  | { type: "modifying particle"; modifyingParticle: ModifyingParticle };
 /** Represents a clause including preclause and postclause. */
 export type FullClause =
   | {
@@ -94,7 +98,7 @@ export type FullClause =
     postclause: null | Postclause;
     clause: Clause;
   }
-  | { type: "marker"; marker: Marker };
+  | { type: "modifying particle"; modifyingParticle: ModifyingParticle };
 /** Represents a single full sentence. */
 export type Sentence = {
   laClauses: Array<FullClause>;
