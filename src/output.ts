@@ -110,21 +110,18 @@ export class Output<T> {
     ...outputs: { [I in keyof T]: Output<T[I]> } & { length: T["length"] }
   ): Output<T> {
     // We resorted to using `any` types here, make sure it works properly
-    if (outputs.some((output) => output.isError())) {
-      return Output.concat(...[
-        // deno-lint-ignore no-explicit-any
-        new Output<any>(),
-        // deno-lint-ignore no-explicit-any
-        ...outputs as Array<Output<any>>,
-      ]);
-    } else {
-      return outputs.reduce(
-        // deno-lint-ignore no-explicit-any
-        (result: Output<any>, output) =>
-          result.flatMap((left) => output.map((right) => [...left, right])),
-        // deno-lint-ignore no-explicit-any
-        new Output<any>([[]]),
-      ) as Output<T>;
-    }
+    return outputs.reduce(
+      // deno-lint-ignore no-explicit-any
+      (output: Output<any>, newOutput) => {
+        if (output.isError() || newOutput.isError()) {
+          return Output.concat(output, newOutput);
+        } else {
+          return output
+            .flatMap((left) => newOutput.map((right) => [...left, right]));
+        }
+      },
+      // deno-lint-ignore no-explicit-any
+      new Output<any>([[]]),
+    ) as Output<T>;
   }
 }
