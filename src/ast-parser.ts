@@ -143,53 +143,42 @@ function modifyingParticle(): AstParser<ModifyingParticle> {
       .map((word) => ({ type: "word", word }) as ModifyingParticle),
   );
 }
+function parseXAlaXSide(tokenTrees: Array<TokenTree>, name: string): TokenTree {
+  if (tokenTrees.length !== 1) {
+    if (tokenTrees.length === 0) {
+      throw new UnexpectedError(name, "long glyph on both sides");
+    } else {
+      throw new UnexpectedError(
+        describe(tokenTrees[0]),
+        "end of long glyph",
+      );
+    }
+  }
+  return tokenTrees[0];
+}
 function xAlaX(
   word: Set<string>,
   description: string,
 ): AstParser<WordUnit & { type: "x ala x" }> {
   return choice(
     specificTokenTree("long glyph").map((longGlyph) => {
-      // TODO: reduce code duplication
-      if (longGlyph.words.length !== 1 || longGlyph.words[0] !== "ala") {
+      if (longGlyph.words.length !== 1) {
         throw new UnexpectedError(
           describe({ type: "combined glyphs", words: longGlyph.words }),
           '"ala"',
         );
       }
-      if (longGlyph.before.length !== 1) {
-        if (longGlyph.before.length === 0) {
-          throw new UnexpectedError(
-            "forward long glyph",
-            "long glyph on both sides",
-          );
-        } else {
-          throw new UnexpectedError(
-            describe(longGlyph.before[0]),
-            "end of long glyph",
-          );
-        }
+      if (longGlyph.words[0] !== "ala") {
+        throw new UnexpectedError(`"${longGlyph.words[0]}"`, '"ala"');
       }
-      const leftGlyph = longGlyph.before[0];
+      const leftGlyph = parseXAlaXSide(longGlyph.before, "backward long glyph");
       if (leftGlyph.type !== "word") {
         throw new UnexpectedError(describe(leftGlyph), "word");
       }
       const word = leftGlyph.word;
-      if (longGlyph.after.length !== 1) {
-        if (longGlyph.after.length === 0) {
-          throw new UnexpectedError(
-            "backwards long glyph",
-            "long glyph on both sides",
-          );
-        } else {
-          throw new UnexpectedError(
-            describe(longGlyph.after[0]),
-            "end of long glyph",
-          );
-        }
-      }
-      const rightGlyph = longGlyph.after[0];
+      const rightGlyph = parseXAlaXSide(longGlyph.after, "forward long glyph");
       if (rightGlyph.type !== "word" || rightGlyph.word !== word) {
-        throw new UnexpectedError(describe(leftGlyph), `"${word}"`);
+        throw new UnexpectedError(describe(rightGlyph), `"${word}"`);
       }
       return { type: "x ala x", word } as WordUnit & { type: "x ala x" };
     }),
