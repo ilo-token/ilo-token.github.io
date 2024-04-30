@@ -123,12 +123,13 @@ class Setter<T extends { [name: string]: unknown }> {
 }
 const boolUpdater: Updater<boolean> = {
   parse: (value) => {
-    if (value === "T") {
-      return true;
-    } else if (value === "F") {
-      return false;
-    } else {
-      return null;
+    switch (value) {
+      case "T":
+        return true;
+      case "F":
+        return false;
+      default:
+        return null;
     }
   },
   stringify: (value) => {

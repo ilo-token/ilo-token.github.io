@@ -13,7 +13,7 @@ import {
   somePhraseInMultiplePhrases,
   WordUnit,
 } from "./ast.ts";
-import { CoveredError, UnreachableError, UnrecognizedError } from "./error.ts";
+import { CoveredError, UnrecognizedError } from "./error.ts";
 import { settings } from "./settings.ts";
 
 /** Array of filter rules for a word unit. */
@@ -146,17 +146,15 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
   // pi cannot be nested
   (modifier) => {
     const checker = (modifier: Modifier) => {
-      if (
-        modifier.type === "default" || modifier.type === "proper words" ||
-        modifier.type === "quotation"
-      ) {
-        return false;
-      } else if (modifier.type === "nanpa") {
-        return someModifierInPhrase(modifier.phrase, false, checker);
-      } else if (modifier.type === "pi") {
-        return true;
-      } else {
-        throw new UnreachableError();
+      switch (modifier.type) {
+        case "default":
+        case "proper words":
+        case "quotation":
+          return false;
+        case "nanpa":
+          return someModifierInPhrase(modifier.phrase, false, checker);
+        case "pi":
+          return true;
       }
     };
     if (modifier.type === "pi") {
@@ -283,16 +281,22 @@ export const CLAUSE_RULE: Array<(clause: Clause) => boolean> = [
   // disallow preposition in subject
   (clause) => {
     let phrases: MultiplePhrases;
-    if (clause.type === "phrases" || clause.type === "o vocative") {
-      phrases = clause.phrases;
-    } else if (clause.type === "li clause" || clause.type === "o clause") {
-      if (clause.subjects) {
-        phrases = clause.subjects;
-      } else {
+    switch (clause.type) {
+      case "phrases":
+      case "o vocative":
+        phrases = clause.phrases;
+        break;
+      case "li clause":
+      case "o clause":
+        if (clause.subjects) {
+          phrases = clause.subjects;
+        } else {
+          return true;
+        }
+        break;
+      case "prepositions":
+      case "quotation":
         return true;
-      }
-    } else {
-      return true;
     }
     if (somePhraseInMultiplePhrases(phrases, hasPrepositionInPhrase)) {
       throw new UnrecognizedError("Preposition in subject");
@@ -392,15 +396,14 @@ function modifiersIsAlaOrNone(modifiers: Array<Modifier>): boolean {
  * Helper function for determining whether the phrase has a preposition inside.
  */
 function hasPrepositionInPhrase(phrase: Phrase): boolean {
-  if (phrase.type === "default") {
-    return false;
-  } else if (phrase.type === "preposition") {
-    return true;
-  } else if (phrase.type === "preverb") {
-    return hasPrepositionInPhrase(phrase.phrase);
-  } else if (phrase.type === "quotation") {
-    return false;
-  } else {
-    throw new UnreachableError();
+  switch (phrase.type) {
+    case "default":
+      return false;
+    case "preposition":
+      return true;
+    case "preverb":
+      return hasPrepositionInPhrase(phrase.phrase);
+    case "quotation":
+      return false;
   }
 }

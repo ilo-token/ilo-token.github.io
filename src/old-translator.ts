@@ -45,36 +45,38 @@ function wordUnitAs(
   kind: "noun" | "adjective" | "adverb",
   word: WordUnit,
 ): TranslationOutput {
-  if (word.type === "default") {
-    return definition(kind, word.word);
-  } else if (word.type === "numbers") {
-    return new Output([number(word.numbers).toString()]);
-  } else if (word.type === "reduplication") {
-    return definition(kind, word.word)
-      .map((noun) => new Array(word.count).fill(noun).join(" "));
-  } else if (word.type === "x ala x") {
-    return new Output(new TodoError("translation for X ala X"));
-  } else {
-    throw new UnreachableError();
+  switch (word.type) {
+    case "default":
+      return definition(kind, word.word);
+    case "numbers":
+      return new Output([number(word.numbers).toString()]);
+    case "reduplication":
+      return definition(kind, word.word)
+        .map((noun) => new Array(word.count).fill(noun).join(" "));
+    case "x ala x":
+      return new Output(new TodoError("translation for X ala X"));
   }
 }
 function modifierAs(
   kind: "noun" | "adjective" | "adverb",
   modifier: Modifier,
 ): TranslationOutput {
-  if (modifier.type === "default") {
-    return wordUnitAs(kind, modifier.word);
-  } else if (modifier.type === "nanpa" || modifier.type === "proper words") {
-    return new Output();
-  } else if (modifier.type === "pi") {
-    if (kind === "adverb") {
+  switch (modifier.type) {
+    case "default":
+      return wordUnitAs(kind, modifier.word);
+    case "nanpa":
+    case "proper words":
       return new Output();
-    }
-    return phraseAs(kind, modifier.phrase, { named: false, suffix: false });
-  } else {
-    return new Output(
-      new TodoError(`translating ${modifier.type} as adjective`),
-    );
+    case "pi":
+      if (kind === "adverb") {
+        return new Output();
+      }
+      return phraseAs(kind, modifier.phrase, { named: false, suffix: false });
+    // case "quotation":
+    default:
+      return new Output(
+        new TodoError(`translating ${modifier.type} as adjective`),
+      );
   }
 }
 function modifierAsSuffix(
@@ -87,27 +89,29 @@ function modifierAsSuffix(
   } else {
     construction = "in X way";
   }
-  if (suffix.type === "default") {
-    return wordUnitAs(kind, suffix.word)
-      .map((translation) => construction.replace("X", translation));
-  } else if (suffix.type === "nanpa") {
-    return phraseAs(kind, suffix.phrase, {
-      named: kind === "noun",
-      suffix: false,
-    })
-      .map((translation) => `in position ${translation}`);
-  } else if (suffix.type === "pi") {
-    return phraseAs(kind, suffix.phrase, {
-      named: kind === "noun",
-      suffix: false,
-    })
-      .map((translation) => construction.replace("X", translation));
-  } else if (suffix.type === "proper words") {
-    return new Output([`named ${suffix.words}`]);
-  } else {
-    return new Output(
-      new TodoError(`translation of ${suffix.type} as noun`),
-    );
+  switch (suffix.type) {
+    case "default":
+      return wordUnitAs(kind, suffix.word)
+        .map((translation) => construction.replace("X", translation));
+    case "nanpa":
+      return phraseAs(kind, suffix.phrase, {
+        named: kind === "noun",
+        suffix: false,
+      })
+        .map((translation) => `in position ${translation}`);
+    case "pi":
+      return phraseAs(kind, suffix.phrase, {
+        named: kind === "noun",
+        suffix: false,
+      })
+        .map((translation) => construction.replace("X", translation));
+    case "proper words":
+      return new Output([`named ${suffix.words}`]);
+    // case "quotation":
+    default:
+      return new Output(
+        new TodoError(`translation of ${suffix.type} as noun`),
+      );
   }
 }
 function defaultPhraseAs(
@@ -128,10 +132,13 @@ function defaultPhraseAs(
     return new Output();
   }
   let modifierKind: "adjective" | "adverb";
-  if (kind === "noun") {
-    modifierKind = "adjective";
-  } else if (kind === "adjective") {
-    modifierKind = "adverb";
+  switch (kind) {
+    case "noun":
+      modifierKind = "adjective";
+      break;
+    case "adjective":
+      modifierKind = "adverb";
+      break;
   }
   const headWord = wordUnitAs(kind, phrase.headWord);
   const modifierNoName = phrase.modifiers
@@ -199,83 +206,92 @@ function translateMultiplePhrases(
   translator: (phrase: Phrase) => TranslationOutput,
   level = 2,
 ): TranslationOutput {
-  if (phrases.type === "single") {
-    return translator(phrases.phrase);
-  } else if (phrases.type === "and conjunction" || phrases.type === "anu") {
-    let conjunction: string;
-    if (phrases.type === "and conjunction") {
-      conjunction = "and";
-    } else {
-      conjunction = "or";
+  switch (phrases.type) {
+    case "single":
+      return translator(phrases.phrase);
+    case "and conjunction":
+    case "anu": {
+      let conjunction: string;
+      if (phrases.type === "and conjunction") {
+        conjunction = "and";
+      } else {
+        conjunction = "or";
+      }
+      const translations = Output.combine(
+        ...phrases.phrases.map((phrases) =>
+          translateMultiplePhrases(phrases, translator, level - 1)
+        ),
+      );
+      switch (level) {
+        case 2:
+          return translations.map((phrases) => {
+            if (phrases.length === 2) {
+              return [phrases[0], conjunction, phrases[1]].join(" ");
+            } else {
+              const comma = phrases.slice(0, phrases.length - 1);
+              const last = phrases[phrases.length - 1];
+              return [
+                comma.map((translation) => [translation, ", "].join("")).join(
+                  "",
+                ),
+                conjunction,
+                " ",
+                last,
+              ]
+                .join("");
+            }
+          });
+        case 1:
+          return translations
+            .map((phrases) => phrases.join([" ", conjunction, " "].join("")));
+        default:
+          throw new UnreachableError();
+      }
     }
-    const translations = Output.combine(
-      ...phrases.phrases.map((phrases) =>
-        translateMultiplePhrases(phrases, translator, level - 1)
-      ),
-    );
-    if (level === 2) {
-      return translations.map((phrases) => {
-        if (phrases.length === 2) {
-          return [phrases[0], conjunction, phrases[1]].join(" ");
-        } else {
-          const comma = phrases.slice(0, phrases.length - 1);
-          const last = phrases[phrases.length - 1];
-          return [
-            comma.map((translation) => [translation, ", "].join("")).join(""),
-            conjunction,
-            " ",
-            last,
-          ]
-            .join("");
-        }
-      });
-    } else if (level === 1) {
-      return translations
-        .map((phrases) => phrases.join([" ", conjunction, " "].join("")));
-    } else {
-      throw new UnreachableError();
-    }
-  } else {
-    throw new UnreachableError();
   }
 }
 /** Translates a clause. */
 function translateClause(clause: Clause): TranslationOutput {
-  if (clause.type === "phrases") {
-    const hasEn = (phrases: MultiplePhrases): boolean => {
-      if (phrases.type === "single") {
-        return false;
-      } else if (phrases.type === "and conjunction") {
-        return true;
-      } else if (phrases.type === "anu") {
-        return phrases.phrases.some(hasEn);
-      } else {
-        throw new UnreachableError();
-      }
-    };
-    const phrases = clause.phrases;
-    const translations = translateMultiplePhrases(
-      phrases,
-      (phrase) => phraseAs("noun", phrase),
-    );
-    if (hasEn(phrases)) {
-      return translations;
-    } else {
-      return Output.concat(
-        translateMultiplePhrases(
-          phrases,
-          (phrase) => phraseAs("adjective", phrase),
-        ),
-        translations,
+  switch (clause.type) {
+    case "phrases": {
+      const hasEn = (phrases: MultiplePhrases): boolean => {
+        switch (phrases.type) {
+          case "single":
+            return false;
+          case "and conjunction":
+            return true;
+          case "anu":
+            return phrases.phrases.some(hasEn);
+        }
+      };
+      const phrases = clause.phrases;
+      const translations = translateMultiplePhrases(
+        phrases,
+        (phrase) => phraseAs("noun", phrase),
       );
+      if (hasEn(phrases)) {
+        return translations;
+      } else {
+        return Output.concat(
+          translateMultiplePhrases(
+            phrases,
+            (phrase) => phraseAs("adjective", phrase),
+          ),
+          translations,
+        );
+      }
     }
-  } else if (clause.type === "o vocative") {
-    return translateMultiplePhrases(
-      clause.phrases,
-      (phrase) => phraseAs("noun", phrase).map((phrase) => `hey ${phrase}`),
-    );
-  } else {
-    return new Output(new TodoError(`translation for ${clause.type}`));
+    case "o vocative":
+      return translateMultiplePhrases(
+        clause.phrases,
+        (phrase) => phraseAs("noun", phrase).map((phrase) => `hey ${phrase}`),
+      );
+    // case "li clause":
+    // case "o clause":
+    // case "prepositions":
+    // case "quotation":
+    default:
+      return new Output(new TodoError(`translation for ${clause.type}`));
   }
 }
 /** Translates a full clause. */

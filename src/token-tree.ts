@@ -3,8 +3,6 @@
  * stores array of token trees hence the name token tree.
  */
 
-import { UnreachableError } from "./error.ts";
-
 /**
  * Represents token tree.
  */
@@ -43,28 +41,27 @@ export type TokenTree =
   | { type: "punctuation"; punctuation: string };
 
 export function describe(tokenTree: TokenTree): string {
-  if (tokenTree.type === "word") {
-    return `"${tokenTree.word}"`;
-  } else if (tokenTree.type === "combined glyphs") {
-    return `combined glyphs "${tokenTree.words.join(" ")}"`;
-  } else if (
-    tokenTree.type === "long glyph" ||
-    tokenTree.type === "long glyph space"
-  ) {
-    return "long glyph";
-  } else if (tokenTree.type === "multiple a") {
-    return new Array(tokenTree.count).fill("a").join(" ");
-  } else if (tokenTree.type === "x ala x") {
-    return `"${tokenTree.word} ala ${tokenTree.word}"`;
-  } else if (tokenTree.type === "proper word") {
-    return "proper word or cartouche";
-  } else if (tokenTree.type === "quotation") {
-    return "quotation";
-  } else if (tokenTree.type === "comma") {
-    return "comma";
-  } else if (tokenTree.type === "punctuation") {
-    return "punctuation mark";
-  } else {
-    throw new UnreachableError();
+  switch (tokenTree.type) {
+    case "word":
+      return `"${tokenTree.word}"`;
+    case "combined glyphs":
+      return `combined glyphs "${tokenTree.words.join(" ")}"`;
+    case "long glyph":
+    case "long glyph space":
+    case "underline lon":
+      return "long glyph";
+    case "multiple a":
+      return new Array(tokenTree.count).fill("a").join(" ");
+    case "long word":
+    case "x ala x":
+      return `"${tokenTree.word} ala ${tokenTree.word}"`;
+    case "proper word":
+      return "proper word or cartouche";
+    case "quotation":
+      return "quotation";
+    case "comma":
+      return "comma";
+    case "punctuation":
+      return "punctuation mark";
   }
 }

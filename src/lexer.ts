@@ -342,19 +342,26 @@ function quotation(
     closeQuotationMark(),
   )
     .map(([leftMark, tokenTree, rightMark]) => {
-      if (leftMark === '"' || leftMark === "“") {
-        if (rightMark !== '"' && rightMark !== "”") {
-          throw new UnrecognizedError("Mismatched quotation marks");
-        }
-      } else if (leftMark === "«") {
-        if (rightMark !== "»") {
-          throw new UnrecognizedError("Mismatched quotation marks");
-        }
-      } else if (leftMark === "「") {
-        if (rightMark !== "」") {
-          throw new UnrecognizedError("Mismatched quotation marks");
-        }
-      } else throw new UnreachableError();
+      switch (leftMark) {
+        case '"':
+        case "“":
+          if (rightMark !== '"' && rightMark !== "”") {
+            throw new UnrecognizedError("Mismatched quotation marks");
+          }
+          break;
+        case "«":
+          if (rightMark !== "»") {
+            throw new UnrecognizedError("Mismatched quotation marks");
+          }
+          break;
+        case "「":
+          if (rightMark !== "」") {
+            throw new UnrecognizedError("Mismatched quotation marks");
+          }
+          break;
+        default:
+          throw new UnreachableError();
+      }
       return { type: "quotation", tokenTree, leftMark, rightMark };
     });
 }

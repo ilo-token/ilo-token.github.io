@@ -1,7 +1,6 @@
 /** Module for describing Toki Pona AST. */
 
-import { UnreachableError } from "./error.ts";
-
+/** */
 export type ModifyingParticle =
   | { type: "word"; word: string }
   | { type: "long word"; word: string; length: number }
@@ -123,23 +122,23 @@ export function someModifierInPhrase(
   whenQuotation: boolean,
   checker: (modifier: Modifier) => boolean,
 ): boolean {
-  if (phrase.type === "default") {
-    return phrase.modifiers.some(checker);
-  } else if (phrase.type === "preverb") {
-    return phrase.modifiers.some(checker) ||
-      someModifierInPhrase(phrase.phrase, whenQuotation, checker);
-  } else if (phrase.type === "preposition") {
-    const preposition = phrase.preposition;
-    return preposition.modifiers.some(checker) ||
-      someModifierInMultiplePhrases(
-        preposition.phrases,
-        whenQuotation,
-        checker,
-      );
-  } else if (phrase.type === "quotation") {
-    return whenQuotation;
-  } else {
-    throw new UnreachableError();
+  switch (phrase.type) {
+    case "default":
+      return phrase.modifiers.some(checker);
+    case "preverb":
+      return phrase.modifiers.some(checker) ||
+        someModifierInPhrase(phrase.phrase, whenQuotation, checker);
+    case "preposition": {
+      const preposition = phrase.preposition;
+      return preposition.modifiers.some(checker) ||
+        someModifierInMultiplePhrases(
+          preposition.phrases,
+          whenQuotation,
+          checker,
+        );
+    }
+    case "quotation":
+      return whenQuotation;
   }
 }
 /**
@@ -151,15 +150,15 @@ export function someModifierInMultiplePhrases(
   whenQuotation: boolean,
   checker: (modifier: Modifier) => boolean,
 ): boolean {
-  if (phrases.type === "single") {
-    return someModifierInPhrase(phrases.phrase, whenQuotation, checker);
-  } else if (phrases.type === "and conjunction" || phrases.type === "anu") {
-    return phrases.phrases
-      .some((phrases) =>
-        someModifierInMultiplePhrases(phrases, whenQuotation, checker)
-      );
-  } else {
-    throw new UnreachableError();
+  switch (phrases.type) {
+    case "single":
+      return someModifierInPhrase(phrases.phrase, whenQuotation, checker);
+    case "and conjunction":
+    case "anu":
+      return phrases.phrases
+        .some((phrases) =>
+          someModifierInMultiplePhrases(phrases, whenQuotation, checker)
+        );
   }
 }
 /**
@@ -170,13 +169,13 @@ export function somePhraseInMultiplePhrases(
   phrases: MultiplePhrases,
   checker: (modifier: Phrase) => boolean,
 ): boolean {
-  if (phrases.type === "single") {
-    return checker(phrases.phrase);
-  } else if (phrases.type === "and conjunction" || phrases.type === "anu") {
-    return phrases.phrases
-      .some((phrases) => somePhraseInMultiplePhrases(phrases, checker));
-  } else {
-    throw new UnreachableError();
+  switch (phrases.type) {
+    case "single":
+      return checker(phrases.phrase);
+    case "and conjunction":
+    case "anu":
+      return phrases.phrases
+        .some((phrases) => somePhraseInMultiplePhrases(phrases, checker));
   }
 }
 /**
@@ -187,18 +186,20 @@ export function someObjectInMultiplePredicate(
   predicate: MultiplePredicates,
   checker: (object: Phrase) => boolean,
 ): boolean {
-  if (predicate.type === "single") {
-    return false;
-  } else if (predicate.type === "associated") {
-    if (predicate.objects) {
-      return somePhraseInMultiplePhrases(predicate.objects, checker);
-    } else {
+  switch (predicate.type) {
+    case "single":
       return false;
-    }
-  } else if (predicate.type === "and conjunction" || predicate.type === "anu") {
-    return predicate.predicates
-      .some((predicates) => someObjectInMultiplePredicate(predicates, checker));
-  } else {
-    throw new UnreachableError();
+    case "associated":
+      if (predicate.objects) {
+        return somePhraseInMultiplePhrases(predicate.objects, checker);
+      } else {
+        return false;
+      }
+    case "and conjunction":
+    case "anu":
+      return predicate.predicates
+        .some((predicates) =>
+          someObjectInMultiplePredicate(predicates, checker)
+        );
   }
 }

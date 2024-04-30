@@ -8,30 +8,34 @@ async function build(options: Emit.BundleOptions): Promise<void> {
   const { code } = result;
   await Deno.writeTextFile(DESTINATION, code);
 }
-if (Deno.args[0] === "build") {
-  console.log("Building telo misikeke...");
-  await TeloMisikeke.build();
-  console.log("Building main.js...");
-  await build({ minify: true, type: "classic" });
-  console.log("Building done!");
-} else if (Deno.args[0] === "watch") {
-  const builder = Debounce.debounce(async () => {
-    console.log("Starting to build...");
-    try {
-      await build({
-        compilerOptions: { inlineSourceMap: true },
-        type: "classic",
-      });
-      console.log("Building done!");
-    } catch (error) {
-      console.error(error);
-    }
-  }, 500);
-  const watcher = Deno.watchFs(["./src/", "./telo-misikeke/"]);
-  builder();
-  for await (const _ of watcher) {
+switch (Deno.args[0]) {
+  case "build":
+    console.log("Building telo misikeke...");
+    await TeloMisikeke.build();
+    console.log("Building main.js...");
+    await build({ minify: true, type: "classic" });
+    console.log("Building done!");
+    break;
+  case "watch": {
+    const builder = Debounce.debounce(async () => {
+      console.log("Starting to build...");
+      try {
+        await build({
+          compilerOptions: { inlineSourceMap: true },
+          type: "classic",
+        });
+        console.log("Building done!");
+      } catch (error) {
+        console.error(error);
+      }
+    }, 500);
+    const watcher = Deno.watchFs(["./src/", "./telo-misikeke/"]);
     builder();
+    for await (const _ of watcher) {
+      builder();
+    }
+    throw new Error("unreachable");
   }
-} else {
-  throw new Error(`Unrecognized build option, ${Deno.args[0]}`);
+  default:
+    throw new Error(`Unrecognized build option, ${Deno.args[0]}`);
 }
