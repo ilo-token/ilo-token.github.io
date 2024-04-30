@@ -1,6 +1,6 @@
 /**
  * Module for lexer. It is responsible for turning string into array of token
- * tress. It also latinizes UCSUR characters.
+ * trees. It also latinizes UCSUR characters.
  *
  * Note: the words lexer and parser are used interchangeably since they both
  * have the same capabilities.
