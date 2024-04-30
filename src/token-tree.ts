@@ -39,7 +39,7 @@ export type TokenTree =
   }
   | { type: "comma" }
   | { type: "punctuation"; punctuation: string };
-
+/** Describes a token tree. Useful for error messages. */
 export function describe(tokenTree: TokenTree): string {
   switch (tokenTree.type) {
     case "word":
