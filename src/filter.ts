@@ -329,31 +329,31 @@ export const FULL_CLAUSE_RULE: Array<(fullClase: FullClause) => boolean> = [
     }
     return true;
   },
-  // If the clause is just a single phrase, avoid post modifying particles
-  // unless it is "n"
-  (fullClause) => {
-    if (
-      fullClause.type === "default" &&
-      fullClause.postclause != null &&
-      fullClause.postclause.type === "modifying particle"
-    ) {
-      const modifyingParticle = fullClause.postclause.modifyingParticle;
-      if (
-        (modifyingParticle.type === "word" ||
-          modifyingParticle.type === "long word") &&
-        modifyingParticle.word === "n"
-      ) {
-        return true;
-      }
-      if (
-        fullClause.clause.type === "phrases" &&
-        fullClause.clause.phrases.type === "single"
-      ) {
-        throw new CoveredError();
-      }
-    }
-    return true;
-  },
+  // // If the clause is just a single phrase, avoid post modifying particles
+  // // unless it is "n"
+  // (fullClause) => {
+  //   if (
+  //     fullClause.type === "default" &&
+  //     fullClause.postclause != null &&
+  //     fullClause.postclause.type === "modifying particle"
+  //   ) {
+  //     const modifyingParticle = fullClause.postclause.modifyingParticle;
+  //     if (
+  //       (modifyingParticle.type === "word" ||
+  //         modifyingParticle.type === "long word") &&
+  //       modifyingParticle.word === "n"
+  //     ) {
+  //       return true;
+  //     }
+  //     if (
+  //       fullClause.clause.type === "phrases" &&
+  //       fullClause.clause.phrases.type === "single"
+  //     ) {
+  //       throw new CoveredError();
+  //     }
+  //   }
+  //   return true;
+  // },
 ];
 /** Array of filter rules for multiple sentences. */
 export const SENTENCES_RULE: Array<(sentences: Array<Sentence>) => boolean> = [
