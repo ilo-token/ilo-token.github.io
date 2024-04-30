@@ -268,35 +268,33 @@ function number(): AstParser<Array<string>> {
 }
 function pi(): AstParser<Modifier & { type: "pi" }> {
   return choice(
-    specificTokenTree("long glyph")
-      .flatMapValue(
-        (longGlyph) => {
-          if (longGlyph.before.length !== 0) {
-            return new Output(
-              new UnexpectedError("reverse long glyph", "long pi"),
-            );
-          }
-          if (longGlyph.words.length !== 1) {
-            return new Output(
-              new UnexpectedError(
-                describe({ type: "combined glyphs", words: longGlyph.words }),
-                "pi",
-              ),
-            );
-          }
-          if (longGlyph.words[0] !== "pi") {
-            return new Output(
-              new UnexpectedError(`"${longGlyph.words[0]}"`, "pi"),
-            );
-          }
-          return INNER_PHRASE_PARSER.parse(longGlyph.after);
-        },
-      )
-      .map((phrase) => ({ type: "pi", phrase }) as Modifier & { type: "pi" }),
+    specificTokenTree("long glyph").flatMapValue(
+      (longGlyph) => {
+        if (longGlyph.before.length !== 0) {
+          return new Output(
+            new UnexpectedError("reverse long glyph", "long pi"),
+          );
+        }
+        if (longGlyph.words.length !== 1) {
+          return new Output(
+            new UnexpectedError(
+              describe({ type: "combined glyphs", words: longGlyph.words }),
+              "pi",
+            ),
+          );
+        }
+        if (longGlyph.words[0] !== "pi") {
+          return new Output(
+            new UnexpectedError(`"${longGlyph.words[0]}"`, "pi"),
+          );
+        }
+        return INNER_PHRASE_PARSER.parse(longGlyph.after);
+      },
+    ),
     specificWord("pi")
-      .with(phrase())
-      .map((phrase) => ({ type: "pi", phrase }) as Modifier & { type: "pi" }),
+      .with(phrase()),
   )
+    .map((phrase) => ({ type: "pi", phrase }) as Modifier & { type: "pi" })
     .filter(filter(MODIFIER_RULES));
 }
 /** Parses multiple modifiers. */
