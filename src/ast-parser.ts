@@ -811,7 +811,7 @@ const FULL_PARSER = choiceOnlyOne(
       ({ type: "sentences", sentences }) as MultipleSentences
     ),
 );
-/** A Toki Pona parser. */
+/** Turns string into Toki Pona AST. */
 export function parse(src: string): Output<MultipleSentences> {
   return lex(src).flatMap((src) => FULL_PARSER.parse(src));
 }

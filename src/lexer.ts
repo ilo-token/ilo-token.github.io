@@ -90,6 +90,7 @@ function slice(length: number, description: string): Lexer<string> {
     }
   });
 }
+/** Parses a string that exactly matches the given string. */
 function matchString(match: string): Lexer<string> {
   return slice(match.length, `"${match}"`).map((slice) => {
     if (slice === match) {
@@ -220,6 +221,7 @@ function multipleA(): Lexer<number> {
   return sequence(specificWord("a"), allAtLeastOnce(specificWord("a")))
     .map(([a, as]) => [a, ...as].length);
 }
+/** Parses lengthened words. */
 function longWord(): Lexer<TokenTree & { type: "long word" }> {
   return match(/[an]/, 'long "a" or "n"').then(([word, _]) =>
     allAtLeastOnce(matchString(word))
@@ -365,8 +367,12 @@ function quotation(
       return { type: "quotation", tokenTree, leftMark, rightMark };
     });
 }
-// spaces after the first glyph and the last glyph aren't parsed and so must be
-// manually added by the caller if needed
+/**
+ * Parses long glyph container.
+ *
+ * spaces after the first glyph and the last glyph aren't parsed and so must be
+ * manually added by the caller if needed.
+ */
 function longContainer<T>(
   left: string,
   right: string,
@@ -391,6 +397,7 @@ function longContainer<T>(
   )
     .map(([_, inside, _1]) => inside);
 }
+/** Parses long glyph container containing words. */
 function longCharacterContainer(
   allowQuotation: boolean,
   left: string,
@@ -404,6 +411,7 @@ function longCharacterContainer(
     ),
   );
 }
+/** Parses long glyph container containing just spaces. */
 function longSpaceContainer(): Lexer<number> {
   return longContainer(
     START_OF_LONG_GLYPH,
@@ -412,8 +420,12 @@ function longSpaceContainer(): Lexer<number> {
   )
     .skip(spaces());
 }
-// This doesn't parses space on the right and so must be manually added by the
-// caller if needed
+/**
+ * Parses long glyph head.
+ *
+ * This doesn't parses space on the right and so must be manually added by the
+ * caller if needed.
+ */
 function longGlyphHead(): Lexer<Array<string>> {
   return choiceOnlyOne(
     combinedGlyphs(),
@@ -421,6 +433,7 @@ function longGlyphHead(): Lexer<Array<string>> {
       .map((word) => [word]),
   );
 }
+/** Parses long glyph that contains characters. */
 function characterLongGlyph(
   allowQuotation: boolean,
 ): Lexer<TokenTree & { type: "long glyph" }> {
@@ -456,6 +469,7 @@ function characterLongGlyph(
       };
     });
 }
+/** Parses long glyph that only contains spaces. */
 function longSpaceGlyph(): Lexer<TokenTree & { type: "long glyph space" }> {
   return sequence(longGlyphHead(), longSpaceContainer())
     .map(([words, spaceLength]) => ({
@@ -464,6 +478,7 @@ function longSpaceGlyph(): Lexer<TokenTree & { type: "long glyph space" }> {
       spaceLength,
     }));
 }
+/** Parses underline lon. */
 function longLon(
   allowQuotation: boolean,
 ): Lexer<Array<TokenTree>> {
@@ -474,6 +489,7 @@ function longLon(
   )
     .skip(spaces());
 }
+/** Parses all kinds of long glyphs. */
 function longGlyph(allowQuotation: boolean): Lexer<TokenTree> {
   return choiceOnlyOne(
     characterLongGlyph(allowQuotation) as Lexer<TokenTree>,
@@ -528,10 +544,11 @@ function tokenTrees(
 ): Lexer<Array<TokenTree>> {
   return all(tokenTree(nestingSettings));
 }
+/** The final lexer. */
 const FULL_PARSER = spaces()
   .with(tokenTrees({ allowQuotation: true, allowLongGlyph: true }))
   .skip(eol());
-/** Parses multiple token trees. */
+/** Turns string into token trees. */
 export function lex(src: string): Output<Array<TokenTree>> {
   if (/\n/.test(src.trim())) {
     return new Output(new UnrecognizedError("multiline text"));
