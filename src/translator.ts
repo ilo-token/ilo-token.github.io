@@ -25,14 +25,13 @@ function multipleSentences(
         // TODO: Preverb
         // TODO: Content word definition
       ])
-        .map((definition) => ({
-          dependentClauses: [],
-          independentClause: {
-            type: "free form",
-            text: definition,
-          } as English.Clause,
-          punctuation: "",
-        }))
+        .map((definition) =>
+          ({
+            dependentClauses: [],
+            independentClause: { type: "free form", text: definition },
+            punctuation: "",
+          }) as English.Sentence
+        )
         .map((definition) => [definition]);
     }
     case "sentences":
