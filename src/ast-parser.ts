@@ -291,8 +291,7 @@ function pi(): AstParser<Modifier & { type: "pi" }> {
         return INNER_PHRASE_PARSER.parse(longGlyph.after);
       },
     ),
-    specificWord("pi")
-      .with(phrase()),
+    specificWord("pi").with(phrase()),
   )
     .map((phrase) => ({ type: "pi", phrase }) as Modifier & { type: "pi" })
     .filter(filter(MODIFIER_RULES));
