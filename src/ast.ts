@@ -1,6 +1,6 @@
 /** Module for describing Toki Pona AST. */
 
-/** */
+/** Represents a modifying particle. */
 export type ModifyingParticle =
   | { type: "word"; word: string }
   | { type: "long word"; word: string; length: number }
@@ -83,9 +83,11 @@ export type Clause =
   }
   | { type: "prepositions"; prepositions: Array<Preposition> }
   | { type: "quotation"; quotation: Quotation };
+/** Represents constructions found in the start of the clause. */
 export type Preclause =
   | { type: "taso"; taso: WordUnit }
   | { type: "modifying particle"; modifyingParticle: ModifyingParticle };
+/** Represents constructions found in the end of the clause. */
 export type Postclause =
   | { type: "anu seme"; seme: WordUnit }
   | { type: "modifying particle"; modifyingParticle: ModifyingParticle };
@@ -110,6 +112,7 @@ export type Quotation = {
   leftMark: string;
   rightMark: string;
 };
+/** The final representation of whole Toki Pona input text. */
 export type MultipleSentences =
   | { type: "single word"; word: string }
   | { type: "sentences"; sentences: Array<Sentence> };

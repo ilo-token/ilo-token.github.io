@@ -83,6 +83,7 @@ function tokenTree(description: string): AstParser<TokenTree> {
     }
   });
 }
+/** Parses a specific type of token tree. */
 function specificTokenTree<T extends TokenTree["type"]>(
   type: T,
 ): AstParser<TokenTree & { type: T }> {
@@ -131,6 +132,7 @@ function specificWord(thatWord: string): AstParser<string> {
     else throw new UnexpectedError(`"${thisWord}"`, `"${thatWord}"`);
   });
 }
+/** Parses a modifying particle. */
 function modifyingParticle(): AstParser<ModifyingParticle> {
   return choice(
     specificTokenTree("long glyph space").map((longGlyph) => {
@@ -160,6 +162,7 @@ function modifyingParticle(): AstParser<ModifyingParticle> {
       .map((word) => ({ type: "word", word }) as ModifyingParticle),
   );
 }
+/** Parses a side of long X ala X construction. */
 function parseXAlaXSide(tokenTrees: Array<TokenTree>, name: string): TokenTree {
   if (tokenTrees.length !== 1) {
     if (tokenTrees.length === 0) {
@@ -173,6 +176,7 @@ function parseXAlaXSide(tokenTrees: Array<TokenTree>, name: string): TokenTree {
   }
   return tokenTrees[0];
 }
+/** Parses an X ala X construction. */
 function xAlaX(
   word: Set<string>,
   description: string,
@@ -210,7 +214,7 @@ function xAlaX(
       ),
   );
 }
-/** Parses word unit without numbers. */
+/** Parses word unit except numbers. */
 function wordUnit(word: Set<string>, description: string): AstParser<WordUnit> {
   return choice(
     wordFrom(word, description).then((word) =>
@@ -230,6 +234,7 @@ function wordUnit(word: Set<string>, description: string): AstParser<WordUnit> {
   )
     .filter(filter(WORD_UNIT_RULES));
 }
+/** Parses a binary combined glyphs. */
 function binaryWords(
   word: Set<string>,
   description: string,
@@ -246,6 +251,7 @@ function binaryWords(
     }
   });
 }
+/** Parses a word unit or a combined glyphs. */
 function optionalCombined(
   word: Set<string>,
   description: string,
@@ -283,6 +289,7 @@ function number(): AstParser<Array<string>> {
       }
     });
 }
+/** Parses a "pi" construction. */
 function pi(): AstParser<Modifier & { type: "pi" }> {
   return choice(
     specificTokenTree("long glyph").flatMapValue(
@@ -353,6 +360,7 @@ function modifiers(): AstParser<Array<Modifier>> {
     ])
     .filter(filter(MODIFIERS_RULES));
 }
+/** Phrase parser intended for phrases inside long glyphs. */
 const INNER_PHRASE_PARSER = phrase().skip(eol("end of long glyph"));
 /** Parses phrases. */
 function phrase(): AstParser<Phrase> {
@@ -708,6 +716,7 @@ function clause(): AstParser<Clause> {
   )
     .filter(filter(CLAUSE_RULE));
 }
+/** Parses a preclause. */
 function preclause(): AstParser<Preclause> {
   return choice(
     modifyingParticle()
@@ -718,6 +727,7 @@ function preclause(): AstParser<Preclause> {
       .map((taso) => ({ type: "taso", taso }) as Preclause),
   );
 }
+/** Parses a postclause. */
 function postclause(): AstParser<Postclause> {
   return choice(
     modifyingParticle()
@@ -771,6 +781,7 @@ function sentence(): AstParser<Sentence> {
       punctuation,
     }));
 }
+/** Parses a sentence inside quotation. */
 const INNER_QUOTATION_PARSER = all(sentence())
   .skip(eol("end of sentence"))
   .filter(filter(SENTENCES_RULE));
@@ -788,6 +799,7 @@ export function quotation(): AstParser<Quotation> {
       )
   );
 }
+/** A multiple sentence parser for final parser. */
 const FULL_PARSER = choiceOnlyOne(
   wordFrom(TOKI_PONA_WORD, "Toki Pona word")
     .skip(eol("end of sentence"))
@@ -799,7 +811,7 @@ const FULL_PARSER = choiceOnlyOne(
       ({ type: "sentences", sentences }) as MultipleSentences
     ),
 );
-/** A multiple Toki Pona sentence parser. */
+/** A Toki Pona parser. */
 export function parse(src: string): Output<MultipleSentences> {
   return lex(src).flatMap((src) => FULL_PARSER.parse(src));
 }
