@@ -133,6 +133,23 @@ function specificWord(thatWord: string): AstParser<string> {
 }
 function modifyingParticle(): AstParser<ModifyingParticle> {
   return choice(
+    specificTokenTree("long glyph space").map((longGlyph) => {
+      if (longGlyph.words.length !== 1) {
+        throw new UnexpectedError(
+          describe({ type: "combined glyphs", words: longGlyph.words }),
+          '"ala"',
+        );
+      }
+      const word = longGlyph.words[0];
+      if (word !== "n" && word !== "a") {
+        throw new UnexpectedError(`"${word}"`, '"a" or "n"');
+      }
+      return {
+        type: "long word",
+        word,
+        length: longGlyph.spaceLength,
+      } as ModifyingParticle;
+    }),
     specificTokenTree("multiple a")
       .map(({ count }) => ({ type: "multiple a", count }) as ModifyingParticle),
     specificTokenTree("long word")

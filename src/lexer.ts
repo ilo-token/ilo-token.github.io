@@ -457,10 +457,7 @@ function characterLongGlyph(
     });
 }
 function longSpaceGlyph(): Lexer<TokenTree & { type: "long glyph space" }> {
-  return sequence(
-    longGlyphHead(),
-    longSpaceContainer().skip(spaces()),
-  )
+  return sequence(longGlyphHead(), longSpaceContainer())
     .map(([words, spaceLength]) => ({
       type: "long glyph space",
       words,
