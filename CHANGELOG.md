@@ -9,15 +9,18 @@ You may need to force restart the page in order to use the latest version: shift
 
 The latest on-development version can be accessed by building the source code.
 
+This is a huge update, now with configurable settings, UCSUR support, and expanded vocabulary!
+
 - Implement settings dialog. [More info](https://github.com/neverRare/ilo-token/wiki/Settings-Help).
-- All possible errors will now be listed.
-- ilo Token can now use telo misikeke for error messages. You can turn this on from the settings dialog.
+- Changes in error messages:
+  - All possible errors will now be listed.
+  - ilo Token can now use telo misikeke for error messages. You can turn this on from the settings dialog.
 - Implement UCSUR support! It supports:
   - Cartouche with nasin sitelen kalama
   - Combined glyphs
   - Long glyphs
   - (Deprecated characters and combiners are not supported)
-- The vocabulary has been expanded to nimi ku suli plus nimi su! (Some are still unimplemented)
+- The vocabulary has been expanded to _nimi ku suli_ plus _nimi su!_ (Some are still unimplemented)
 - Multiline text will no longer be recognized.
 - Add icons.
 
