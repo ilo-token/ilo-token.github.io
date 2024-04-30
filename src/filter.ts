@@ -166,7 +166,9 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
   },
 ];
 /** Array of filter rules for multiple modifiers. */
-export const MODIFIERS_RULES: Array<(modifier: Array<Modifier>) => boolean> = [
+export const MULTIPLE_MODIFIERS_RULES: Array<
+  (modifier: Array<Modifier>) => boolean
+> = [
   // no multiple pi
   (modifiers) => {
     if (modifiers.filter((modifier) => modifier.type === "pi").length > 1) {
@@ -356,7 +358,9 @@ export const FULL_CLAUSE_RULE: Array<(fullClase: FullClause) => boolean> = [
   // },
 ];
 /** Array of filter rules for multiple sentences. */
-export const SENTENCES_RULE: Array<(sentences: Array<Sentence>) => boolean> = [
+export const MULTIPLE_SENTENCES_RULE: Array<
+  (sentences: Array<Sentence>) => boolean
+> = [
   // Only allow at most 2 sentences
   (sentences) => {
     if (sentences.length > 2) {

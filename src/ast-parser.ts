@@ -29,10 +29,10 @@ import {
   filter,
   FULL_CLAUSE_RULE,
   MODIFIER_RULES,
-  MODIFIERS_RULES,
+  MULTIPLE_MODIFIERS_RULES,
+  MULTIPLE_SENTENCES_RULE,
   PHRASE_RULE,
   PREPOSITION_RULE,
-  SENTENCES_RULE,
   WORD_UNIT_RULES,
 } from "./filter.ts";
 import {
@@ -358,7 +358,7 @@ function modifiers(): AstParser<Array<Modifier>> {
       ...nanpaModifiers,
       ...piModifiers,
     ])
-    .filter(filter(MODIFIERS_RULES));
+    .filter(filter(MULTIPLE_MODIFIERS_RULES));
 }
 /** Phrase parser intended for phrases inside long glyphs. */
 const INNER_PHRASE_PARSER = phrase().skip(eol("end of long glyph"));
@@ -784,7 +784,7 @@ function sentence(): AstParser<Sentence> {
 /** Parses a sentence inside quotation. */
 const INNER_QUOTATION_PARSER = all(sentence())
   .skip(eol("end of sentence"))
-  .filter(filter(SENTENCES_RULE));
+  .filter(filter(MULTIPLE_SENTENCES_RULE));
 /** Parses a quotation. */
 export function quotation(): AstParser<Quotation> {
   return specificTokenTree("quotation").flatMapValue((tokenTree) =>
@@ -806,7 +806,7 @@ const FULL_PARSER = choiceOnlyOne(
     .map((word) => ({ type: "single word", word }) as MultipleSentences),
   allAtLeastOnce(sentence())
     .skip(eol("end of sentence"))
-    .filter(filter(SENTENCES_RULE))
+    .filter(filter(MULTIPLE_SENTENCES_RULE))
     .map((sentences) =>
       ({ type: "sentences", sentences }) as MultipleSentences
     ),
