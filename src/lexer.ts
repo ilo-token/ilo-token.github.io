@@ -299,13 +299,11 @@ function cartoucheElement(): Lexer<string> {
       ),
     )
       .map(([word, dots]) => {
-        const VOWEL = /[aeiou]/;
-        const MORAE = /[aeiou]|[jklmnpstw][aeiou]|n/g;
         let count = dots;
-        if (VOWEL.test(word[0])) {
+        if (/[aeiou]/.test(word[0])) {
           count++;
         }
-        const morae = word.match(MORAE)!;
+        const morae = word.match(/[aeiou]|[jklmnpstw][aeiou]|n/g)!;
         if (morae.length < count) {
           throw new UnrecognizedError("Excess dots");
         }
