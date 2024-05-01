@@ -294,19 +294,22 @@ function ale(): AstParser<string> {
 function number(): AstParser<number> {
   return choice(
     specificWord("ala").map(() => 0),
-    many(
-      sequence(
-        subAleNumber().filter((number) => number !== 0),
-        count(many(ale())),
+    sequence(
+      manyAtLeastOnce(
+        sequence(
+          subAleNumber().filter((number) => number !== 0),
+          count(manyAtLeastOnce(ale())),
+        ),
       ),
+      subAleNumber(),
     )
-      .map((array) =>
-        array.reduce(
+      .map(([rest, last]) =>
+        [...rest, [last, 0]].reduce(
           (result, [sub, ale]) => result + sub * Math.pow(100, ale),
           0,
         )
       ),
-    sequence(count(manyAtLeastOnce(ale())), subAleNumber())
+    sequence(count(many(ale())), subAleNumber())
       .map(([ale, sub]) => ale * 100 + sub),
   );
 }
