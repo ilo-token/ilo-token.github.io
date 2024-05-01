@@ -9,7 +9,9 @@ import * as English from "./english-ast.ts";
 import { TodoError } from "./error.ts";
 import { Output } from "./output.ts";
 
-function sentence(sentence: TokiPona.Sentence): Output<English.Sentence> {
+function sentence(
+  sentence: TokiPona.Sentence,
+): Output<Array<English.Sentence>> {
   return new Output(new TodoError("translation of sentence"));
 }
 function multipleSentences(
@@ -27,15 +29,15 @@ function multipleSentences(
       ])
         .map((definition) =>
           ({
-            dependentClauses: [],
-            independentClause: { type: "free form", text: definition },
+            clause: { type: "free form", text: definition },
             punctuation: "",
           }) as English.Sentence
         )
         .map((definition) => [definition]);
     }
     case "sentences":
-      return Output.combine(...sentences.sentences.map(sentence));
+      return Output.combine(...sentences.sentences.map(sentence))
+        .map((array) => array.flat());
   }
 }
 export function translate(src: string): Output<Array<English.Sentence>> {

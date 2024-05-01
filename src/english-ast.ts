@@ -41,24 +41,19 @@ export type AdjectiveType =
   | "origin"
   | "material"
   | "qualifier";
-export type AdjectivePhrase = {
-  type: AdjectiveType;
-  adverbs: Array<string>;
-  adjective: string;
-};
-export type PredicateAdjective =
+export type AdjectivePhrase =
   | {
     type: "simple";
-    adjective: AdjectivePhrase;
-    preposition: Array<Preposition>;
+    kind: AdjectiveType;
+    adverbs: Array<string>;
+    adjective: string;
   }
   | {
     type: "compound";
     conjunction: string;
-    adjectives: PredicateAdjective;
-    preposition: Array<Preposition>;
+    adjectives: AdjectivePhrase;
   };
-export type Verb =
+export type VerbPhrase =
   | {
     type: "default";
     adverbs: Array<string>;
@@ -67,12 +62,20 @@ export type Verb =
   }
   | {
     type: "linking noun";
+    linkingVerb: string;
     noun: NounPhrase;
     preposition: Array<Preposition>;
   }
   | {
     type: "linking adjective";
-    adjective: PredicateAdjective;
+    linkingVerb: string;
+    adjective: AdjectivePhrase;
+    preposition: Array<Preposition>;
+  }
+  | {
+    type: "compound";
+    conjunction: string;
+    verbs: VerbPhrase;
     preposition: Array<Preposition>;
   };
 export type Clause =
@@ -80,19 +83,14 @@ export type Clause =
   | {
     type: "default";
     subject: NounPhrase;
-    verb: Verb;
-    object: NounPhrase;
+    verb: VerbPhrase;
+    object: null | NounPhrase;
     preposition: Array<Preposition>;
   }
   | { type: "subject phrase"; subject: NounPhrase }
   | {
-    type: "implied it's noun";
-    noun: NounPhrase;
-    preposition: Array<Preposition>;
-  }
-  | {
-    type: "implied it's adjective";
-    adjective: PredicateAdjective;
+    type: "implied it's";
+    verb: VerbPhrase;
     preposition: Array<Preposition>;
   }
   | { type: "interjection"; interjection: string }
@@ -102,17 +100,13 @@ export type Clause =
     conjunction: string;
     clauses: Array<Clause>;
     preposition: Array<Preposition>;
-  };
-export type DependentClause = {
-  conjunction: string;
-  clause: Clause;
-};
+  }
+  | { type: "dependent"; conjunction: string; clause: Clause };
 export type Preposition = {
   preposition: string;
   object: NounPhrase;
 };
 export type Sentence = {
-  dependentClauses: Array<DependentClause>;
-  independentClause: Clause;
+  clause: Clause;
   punctuation: string;
 };
