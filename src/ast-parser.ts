@@ -20,6 +20,7 @@ import { CoveredError, UnexpectedError, UnrecognizedError } from "./error.ts";
 import { Output } from "./output.ts";
 import {
   CONTENT_WORD,
+  NUMERAL,
   PREPOSITION,
   PREVERB,
   TOKI_PONA_WORD,
@@ -271,23 +272,44 @@ function optionalCombined(
       ),
   );
 }
-/** Parses number words in order. */
-function number(): AstParser<Array<string>> {
+/**
+ * Parses number words other than "ale" and "ala". This can parse nothing and
+ * return 0.
+ */
+function subAleNumber(): AstParser<number> {
   return sequence(
-    many(choice(specificWord("ale"), specificWord("ali"))),
     many(specificWord("mute")),
     many(specificWord("luka")),
     many(specificWord("tu")),
     many(specificWord("wan")),
   )
-    .map((array) => {
-      const output = array.flat();
-      if (output.length >= 2) {
-        return output;
-      } else {
-        throw new CoveredError();
+    .map((array) => array.flat())
+    .map((array) => array.reduce((number, word) => number + NUMERAL[word], 0));
+}
+/**
+ * Parses "ale" with optional sub-ale numbers before it which is part of "nasin
+ * nanpa pona".
+ */
+function ale(): AstParser<number> {
+  return sequence(
+    subAleNumber(),
+    manyAtLeastOnce(choice(specificWord("ale"), specificWord("ali"))),
+  )
+    .map(([sub, ale]) => {
+      let number = sub;
+      if (sub === 0) {
+        number = 1;
       }
+      return number * Math.pow(100, ale.length);
     });
+}
+/** Parses number words including "nasin nanpa pona". */
+function number(): AstParser<number> {
+  return choice(
+    specificWord("ala").map(() => 0),
+    sequence(many(ale()), subAleNumber())
+      .map(([supers, sub]) => [...supers, sub].reduce((a, b) => a + b)),
+  );
 }
 /** Parses a "pi" construction. */
 function pi(): AstParser<Modifier & { type: "pi" }> {
@@ -332,10 +354,10 @@ function modifiers(): AstParser<Array<Modifier>> {
           .map((words) => ({ type: "proper words", words }) as Modifier)
           .filter(filter(MODIFIER_RULES)),
         number()
-          .map((numbers) =>
+          .map((number) =>
             ({
               type: "default",
-              word: { type: "numbers", numbers },
+              word: { type: "number", number },
             }) as Modifier
           )
           .filter(filter(MODIFIER_RULES)),
@@ -366,10 +388,10 @@ const INNER_PHRASE_PARSER = phrase().skip(eol("end of long glyph"));
 function phrase(): AstParser<Phrase> {
   return choice(
     sequence(number(), lazy(modifiers), optional(modifyingParticle()))
-      .map(([numbers, modifiers, modifyingParticle]) =>
+      .map(([number, modifiers, modifyingParticle]) =>
         ({
           type: "default",
-          headWord: { type: "numbers", numbers },
+          headWord: { type: "number", number },
           modifiers,
           modifyingParticle,
         }) as Phrase

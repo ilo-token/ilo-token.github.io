@@ -14,7 +14,7 @@ export type WordUnit =
   }
   | { type: "x ala x"; word: string }
   | { type: "reduplication"; word: string; count: number }
-  | { type: "numbers"; numbers: Array<string> };
+  | { type: "number"; number: number };
 /** Represents a single modifier. */
 export type Modifier =
   | { type: "default"; word: WordUnit }

@@ -222,10 +222,7 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
     if (phrase.type === "default") {
       const headWord = phrase.headWord;
       if (
-        (headWord.type === "numbers" ||
-          (headWord.type === "default" &&
-            (headWord.word === "wan" || headWord.word === "tu"))) &&
-        phrase.modifiers.some(modifierIsNumeric)
+        headWord.type === "number" && phrase.modifiers.some(modifierIsNumeric)
       ) {
         throw new UnrecognizedError("Multiple number words");
       }
@@ -377,13 +374,7 @@ export function filter<T>(
 }
 /** Helper function for checking whether a modifier is numeric. */
 function modifierIsNumeric(modifier: Modifier): boolean {
-  if (modifier.type === "default") {
-    const word = modifier.word;
-    return word.type === "numbers" ||
-      (word.type === "default" &&
-        (word.word === "wan" || word.word === "tu"));
-  }
-  return false;
+  return modifier.type === "default" && modifier.word.type === "number";
 }
 /**
  * Helper function for checking if the modifiers is exactly just "ala" or nothing.

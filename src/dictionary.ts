@@ -129,6 +129,15 @@ export const PREVERB_DEFINITION: { [word: string]: Array<never> } = {
   wile: [],
 };
 PREVERB_DEFINITION.alasa = PREVERB_DEFINITION.lukin;
+export const NUMERAL: { [word: string]: number } = {
+  ala: 0,
+  wan: 1,
+  tu: 2,
+  luka: 5,
+  mute: 20,
+  ale: 100,
+  ali: 100,
+};
 export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   akesi: [
     noun("reptile(s)"),
@@ -137,7 +146,6 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjective("amphibian", "qualifier"),
   ],
   ala: [
-    numeral(0),
     determiner("no", "quantifier", "zero"),
     indefinitePronoun("nothing"),
   ],
@@ -146,7 +154,6 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     verb("search(ed)", "searching"),
   ],
   ale: [
-    numeral(100),
     indefinitePronoun("everything"),
     indefinitePronoun("anything"),
     singularNoun("entirety"),
@@ -525,7 +532,6 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     verb("exist(ed)", "existing"),
   ],
   luka: [
-    numeral(5),
     noun("hand(s)"),
     noun("arm(s)"),
     adjectiveNounPhrase([adjective("tactile", "qualifier")], noun("organ(s)")),
@@ -682,7 +688,6 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     verbObjectPhrase(verb("have/had", "having"), singularNoun("fun")),
   ],
   mute: [
-    numeral(20),
     determiner("many", "quantifier", "plural"),
     determiner("several", "quantifier", "plural"),
     adverb("very"),
@@ -1076,7 +1081,6 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjective("transgender", "qualifier"),
   ],
   tu: [
-    numeral(2),
     verb("separate(d)", "separating"),
     verb("divide(d)", "dividing"),
     verb("split", "splitting"),
@@ -1124,7 +1128,6 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjectiveNounPhrase([adjective("light", "color")], singularNoun("gray")),
   ],
   wan: [
-    numeral(1),
     adjective("singular", "opinion"),
     verb("combine(d)", "combining"),
     verb("mix(ed)", "mixing"),
@@ -1214,7 +1217,6 @@ export type Definition =
     kind: DeterminerType;
     quantity: DeterminerQuantity;
   }
-  | { type: "numeral"; number: number }
   | { type: "adverb"; adverb: string }
   | {
     type: "verb";
@@ -1398,9 +1400,6 @@ function adjective(
   kind: AdjectiveType,
 ): Definition & { type: "adjective" } {
   return { type: "adjective", adjective: word, kind };
-}
-function numeral(number: number): Definition & { type: "numeral" } {
-  return { type: "numeral", number };
 }
 function determiner(
   determiner: string,
