@@ -311,9 +311,10 @@ function number(): AstParser<number> {
       ),
     sequence(
       count(many(ale())),
-      subAleNumber().filter((number) => number !== 0),
+      subAleNumber(),
     )
-      .map(([ale, sub]) => ale * 100 + sub),
+      .map(([ale, sub]) => ale * 100 + sub)
+      .filter((number) => number !== 0),
   );
 }
 /** Parses a "pi" construction. */
