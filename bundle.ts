@@ -1,4 +1,4 @@
-import { Debounce, Emit, TeloMisikeke } from "./dev-deps.ts";
+import { Emit, TeloMisikeke } from "./dev-deps.ts";
 
 const SOURCE = new URL("./src/main.ts", import.meta.url);
 const DESTINATION = new URL("./main.js", import.meta.url);
@@ -17,7 +17,7 @@ switch (Deno.args[0]) {
     console.log("Building done!");
     break;
   case "watch": {
-    const builder = Debounce.debounce(async () => {
+    const builder = debounce(async () => {
       console.log("Starting to build...");
       try {
         await build({
@@ -42,4 +42,22 @@ switch (Deno.args[0]) {
   }
   default:
     throw new Error(`Unrecognized build option, ${Deno.args[0]}`);
+}
+function debounce(callback: () => Promise<void>, delay: number): () => void {
+  let previous = { aborted: true };
+  let current = Promise.resolve();
+  return () => {
+    previous.aborted = true;
+    const newPrevious = { aborted: false };
+    setTimeout(() => {
+      if (!newPrevious.aborted) {
+        current = current
+          .then(() => callback())
+          .catch((error) => {
+            throw error;
+          });
+      }
+    }, delay);
+    previous = newPrevious;
+  };
 }
