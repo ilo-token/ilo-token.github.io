@@ -41,6 +41,7 @@ import {
   allAtLeastOnce,
   choice,
   choiceOnlyOne,
+  count,
   lazy,
   many,
   manyAtLeastOnce,
@@ -219,11 +220,11 @@ function xAlaX(
 function wordUnit(word: Set<string>, description: string): AstParser<WordUnit> {
   return choice(
     wordFrom(word, description).then((word) =>
-      manyAtLeastOnce(specificWord(word)).map((words) =>
+      count(manyAtLeastOnce(specificWord(word))).map((count) =>
         ({
           type: "reduplication",
           word,
-          count: words.length + 1,
+          count: count + 1,
         }) as WordUnit
       )
     ),
@@ -296,7 +297,7 @@ function number(): AstParser<number> {
     many(
       sequence(
         subAleNumber().filter((number) => number !== 0),
-        many(ale()).map((array) => array.length),
+        count(many(ale())),
       ),
     )
       .map((array) =>
@@ -305,10 +306,7 @@ function number(): AstParser<number> {
           0,
         )
       ),
-    sequence(
-      manyAtLeastOnce(ale()).map((array) => array.length),
-      subAleNumber(),
-    )
+    sequence(count(manyAtLeastOnce(ale())), subAleNumber())
       .map(([ale, sub]) => ale * 100 + sub),
   );
 }

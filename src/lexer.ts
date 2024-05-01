@@ -16,6 +16,7 @@ import {
   all,
   allAtLeastOnce,
   choiceOnlyOne,
+  count,
   empty,
   nothing,
   optionalAll,
@@ -223,12 +224,12 @@ function multipleA(): Lexer<number> {
 /** Parses lengthened words. */
 function longWord(): Lexer<TokenTree & { type: "long word" }> {
   return match(/[an]/, 'long "a" or "n"').then(([word, _]) =>
-    allAtLeastOnce(matchString(word))
+    count(allAtLeastOnce(matchString(word)))
       .skip(spaces())
-      .map((array) => ({
+      .map((count) => ({
         type: "long word",
         word,
-        length: 1 + array.length,
+        length: count + 1,
       }))
   );
 }
@@ -282,7 +283,7 @@ function cartoucheElement(): Lexer<string> {
     ),
     sequence(
       singleUcsurWord(),
-      allAtLeastOnce(
+      count(allAtLeastOnce(
         choiceOnlyOne(
           match(/([・。／])\s*/, "full width dot").map(([_, dot]) => dot),
           specificUcsurCharacter("󱦜", "middle dot", {
@@ -290,8 +291,7 @@ function cartoucheElement(): Lexer<string> {
             allowSpace: true,
           }),
         ),
-      )
-        .map((dots) => dots.length),
+      )),
     )
       .map(([word, dots]) => {
         const VOWEL = /[aeiou]/;

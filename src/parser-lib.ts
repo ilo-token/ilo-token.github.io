@@ -199,3 +199,6 @@ export function allAtLeastOnce<T, U>(
   return sequence<T, [U, Array<U>]>(parser, all(parser))
     .map(([first, rest]) => [first, ...rest]);
 }
+export function count<T, U>(parser: Parser<T, Array<U>>): Parser<T, number> {
+  return parser.map((array) => array.length);
+}
