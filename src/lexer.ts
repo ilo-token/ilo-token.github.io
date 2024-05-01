@@ -223,15 +223,18 @@ function multipleA(): Lexer<number> {
 }
 /** Parses lengthened words. */
 function longWord(): Lexer<TokenTree & { type: "long word" }> {
-  return match(/[an]/, 'long "a" or "n"').then(([word, _]) =>
-    count(allAtLeastOnce(matchString(word)))
-      .skip(spaces())
-      .map((count) => ({
-        type: "long word",
-        word,
-        length: count + 1,
-      }))
-  );
+  return match(/[an]/, 'long "a" or "n"')
+    .then(([word, _]) =>
+      count(allAtLeastOnce(matchString(word)))
+        .map((count) =>
+          ({
+            type: "long word",
+            word,
+            length: count + 1,
+          }) as TokenTree & { type: "long word" }
+        )
+    )
+    .skip(spaces());
 }
 /** Parses X ala X constructions. */
 function xAlaX(): Lexer<string> {
@@ -283,15 +286,17 @@ function cartoucheElement(): Lexer<string> {
     ),
     sequence(
       singleUcsurWord(),
-      count(allAtLeastOnce(
-        choiceOnlyOne(
-          match(/([・。／])\s*/, "full width dot").map(([_, dot]) => dot),
-          specificUcsurCharacter("󱦜", "middle dot", {
-            allowVariation: true,
-            allowSpace: true,
-          }),
+      count(
+        allAtLeastOnce(
+          choiceOnlyOne(
+            match(/([・。／])\s*/, "full width dot").map(([_, dot]) => dot),
+            specificUcsurCharacter("󱦜", "middle dot", {
+              allowVariation: true,
+              allowSpace: true,
+            }),
+          ),
         ),
-      )),
+      ),
     )
       .map(([word, dots]) => {
         const VOWEL = /[aeiou]/;
