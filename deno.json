@@ -9,22 +9,10 @@
     "watch": "deno run --allow-read --allow-write --allow-env --allow-net ./bundle.ts watch"
   },
   "fmt": {
-    "include": [
-      "./src/**/*.ts",
-      "./telo-misikeke/**/*",
-      "./bundle.ts",
-      "./dev-deps.ts",
-      "./deps.ts"
-    ]
+    "include": ["./src/**/*.ts", "./telo-misikeke/**/*", "./bundle.ts"]
   },
   "lint": {
-    "include": [
-      "./src/**/*.ts",
-      "./telo-misikeke/**/*",
-      "./bundle.ts",
-      "./dev-deps.ts",
-      "./deps.ts"
-    ]
+    "include": ["./src/**/*.ts", "./telo-misikeke/**/*", "./bundle.ts"]
   },
   "imports": {
     "@deno/emit": "jsr:@deno/emit@^0.40.2"
