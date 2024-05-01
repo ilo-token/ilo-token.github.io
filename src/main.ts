@@ -1,6 +1,5 @@
 /** Module for main execution in the browser. */
 
-import { CoveredError } from "./error.ts";
 import { translate } from "./old-translator.ts";
 import { settings } from "./settings.ts";
 import { TeloMisikeke } from "../deps.ts";
@@ -107,9 +106,7 @@ function updateOutput(): void {
       if (error.length === 0) {
         error = [
           ...new Set(
-            translations.errors
-              .filter((x) => !(x instanceof CoveredError))
-              .map((x) => x.message),
+            translations.errors.map((x) => x.message),
           ),
         ];
       }

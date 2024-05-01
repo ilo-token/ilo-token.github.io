@@ -301,12 +301,9 @@ function number(): AstParser<number> {
     sequence(
       ale(),
       many(
-        sequence(subAleNumber(), ale()).filter(([sub, ale]) => {
-          if (ale !== 0 && sub === 0) {
-            throw new CoveredError();
-          }
-          return true;
-        }),
+        sequence(subAleNumber(), ale()).filter(
+          ([sub, ale]) => ale === 0 || sub !== 0,
+        ),
       ),
     ).map(([first, rest]) =>
       [[1, first], ...rest].reduce(

@@ -17,7 +17,7 @@ import {
   all,
   allAtLeastOnce,
   choiceOnlyOne,
-  error,
+  empty,
   nothing,
   optionalAll,
   Parser,
@@ -505,17 +505,17 @@ function tokenTree(
   if (nestingSettings.allowQuotation) {
     quotationParser = quotation(nestingSettings.allowLongGlyph);
   } else {
-    quotationParser = error(new CoveredError());
+    quotationParser = empty();
   }
   let longGlyphParser: Lexer<TokenTree>;
   if (nestingSettings.allowLongGlyph) {
     longGlyphParser = longGlyph(nestingSettings.allowQuotation);
   } else {
-    longGlyphParser = error(new CoveredError());
+    longGlyphParser = empty();
   }
   let xAlaXParser: Lexer<TokenTree>;
   if (settings.get("x-ala-x-partial-parsing")) {
-    xAlaXParser = error(new CoveredError());
+    xAlaXParser = empty();
   } else {
     xAlaXParser = xAlaX()
       .map((word) => ({ type: "x ala x", word }) as TokenTree);
