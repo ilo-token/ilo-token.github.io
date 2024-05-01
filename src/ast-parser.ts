@@ -300,17 +300,14 @@ function number(): AstParser<number> {
     specificWord("ala").map(() => 0),
     sequence(
       ale(),
-      many(
-        sequence(subAleNumber(), ale()).filter(
-          ([sub, ale]) => ale === 0 || sub !== 0,
-        ),
+      many(sequence(subAleNumber(), ale()).filter(([sub, _]) => sub !== 0)),
+    )
+      .map(([first, rest]) =>
+        [[1, first], ...rest].reduce(
+          (result, [sub, ale]) => result + sub * Math.pow(100, ale),
+          0,
+        )
       ),
-    ).map(([first, rest]) =>
-      [[1, first], ...rest].reduce(
-        (result, [sub, ale]) => result + sub * Math.pow(100, ale),
-        0,
-      )
-    ),
   );
 }
 /** Parses a "pi" construction. */
