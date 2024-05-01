@@ -309,7 +309,10 @@ function number(): AstParser<number> {
           0,
         )
       ),
-    sequence(count(many(ale())), subAleNumber())
+    sequence(
+      count(many(ale())),
+      subAleNumber().filter((number) => number !== 0),
+    )
       .map(([ale, sub]) => ale * 100 + sub),
   );
 }
