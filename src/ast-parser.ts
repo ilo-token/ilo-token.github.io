@@ -311,7 +311,7 @@ function number(): AstParser<number> {
     )
       .map(([rest, last]) =>
         [...rest, [last, 0]].reduce(
-          (result, [sub, ale]) => result + sub * Math.pow(100, ale),
+          (result, [sub, ale]) => result + sub * 100 ** ale,
           0,
         )
       ),
