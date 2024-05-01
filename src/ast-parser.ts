@@ -273,8 +273,8 @@ function optionalCombined(
       ),
   );
 }
-/** Parses number words other than "ale" and "ala". This can parse nothing and
- * return 0.
+/** Parses number words in order other than "ale" and "ala". This can parse
+ * nothing and return 0.
  */
 function subAleNumber(): AstParser<number> {
   return sequence(
