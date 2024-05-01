@@ -15,6 +15,7 @@ import {
 } from "./ast.ts";
 import { UnrecognizedError } from "./error.ts";
 import { settings } from "./settings.ts";
+import { describe } from "./token-tree.ts";
 
 /** Array of filter rules for a word unit. */
 export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
@@ -61,7 +62,23 @@ export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
           (modifyingParticle.type === "long word" &&
             modifyingParticle.word === "n"));
       if (hasN) {
-        throw new UnrecognizedError('"n" modifying a word');
+        throw new UnrecognizedError(
+          `${describe(modifyingParticle)} modifying a word`,
+        );
+      }
+    }
+    return true;
+  },
+  // multiple "a" cannot modify a word
+  (wordUnit) => {
+    if (wordUnit.type === "default") {
+      const modifyingParticle = wordUnit.modifyingParticle;
+      if (
+        modifyingParticle != null && modifyingParticle.type === "multiple a"
+      ) {
+        throw new UnrecognizedError(
+          `${describe(modifyingParticle)} modifying a word`,
+        );
       }
     }
     return true;
@@ -270,17 +287,32 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
     phrase.modifyingParticle == null ||
     phrase.modifiers.length !== 0,
   // "n" cannot modify a phrase
-  (phrase) => {
-    if (phrase.type === "default") {
-      const modifyingParticle = phrase.modifyingParticle;
-      if (
-        modifyingParticle != null &&
+  (wordUnit) => {
+    if (wordUnit.type === "default" || wordUnit.type === "preverb") {
+      const modifyingParticle = wordUnit.modifyingParticle;
+      const hasN = modifyingParticle != null &&
         ((modifyingParticle.type === "word" &&
           modifyingParticle.word === "n") ||
           (modifyingParticle.type === "long word" &&
-            modifyingParticle.word === "n"))
+            modifyingParticle.word === "n"));
+      if (hasN) {
+        throw new UnrecognizedError(
+          `${describe(modifyingParticle)} modifying a word`,
+        );
+      }
+    }
+    return true;
+  },
+  // multiple "a" cannot modify a phrase
+  (wordUnit) => {
+    if (wordUnit.type === "default" || wordUnit.type === "preverb") {
+      const modifyingParticle = wordUnit.modifyingParticle;
+      if (
+        modifyingParticle != null && modifyingParticle.type === "multiple a"
       ) {
-        throw new UnrecognizedError('"n" modifying a phrase');
+        throw new UnrecognizedError(
+          `${describe(modifyingParticle)} modifying a word`,
+        );
       }
     }
     return true;
@@ -301,6 +333,31 @@ export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
       somePhraseInMultiplePhrases(preposition.phrases, hasPrepositionInPhrase)
     ) {
       throw new UnrecognizedError("Preposition inside preposition");
+    }
+    return true;
+  },
+  // "n" cannot modify a preposition
+  (wordUnit) => {
+    const modifyingParticle = wordUnit.modifyingParticle;
+    const hasN = modifyingParticle != null &&
+      ((modifyingParticle.type === "word" &&
+        modifyingParticle.word === "n") ||
+        (modifyingParticle.type === "long word" &&
+          modifyingParticle.word === "n"));
+    if (hasN) {
+      throw new UnrecognizedError(
+        `${describe(modifyingParticle)} modifying a word`,
+      );
+    }
+    return true;
+  },
+  // multiple "a" cannot modify a preposition
+  (wordUnit) => {
+    const modifyingParticle = wordUnit.modifyingParticle;
+    if (modifyingParticle != null && modifyingParticle.type === "multiple a") {
+      throw new UnrecognizedError(
+        `${describe(modifyingParticle)} modifying a word`,
+      );
     }
     return true;
   },
