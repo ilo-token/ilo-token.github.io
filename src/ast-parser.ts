@@ -16,7 +16,7 @@ import {
   Sentence,
   WordUnit,
 } from "./ast.ts";
-import { CoveredError, UnexpectedError, UnrecognizedError } from "./error.ts";
+import { UnexpectedError, UnrecognizedError } from "./error.ts";
 import { Output } from "./output.ts";
 import {
   CONTENT_WORD,
@@ -608,13 +608,15 @@ function associatedPredicates(
     ),
     many(optionalComma().with(preposition())),
   )
-    .map(([predicates, objects, prepositions]) => {
-      if (!objects && prepositions.length === 0) {
-        throw new CoveredError();
-      } else {
-        return { type: "associated", predicates, objects, prepositions };
-      }
-    });
+    .filter(([_, objects, prepositions]) =>
+      objects != null || prepositions.length !== 0
+    )
+    .map(([predicates, objects, prepositions]) => ({
+      type: "associated",
+      predicates,
+      objects,
+      prepositions,
+    }));
 }
 /** Parses multiple predicates without "li" nor "o" at the beginning. */
 function multiplePredicates(
@@ -696,13 +698,11 @@ function clause(): AstParser<Clause> {
           prepositions: [preposition, ...morePreposition],
         }) as Clause
       ),
-    subjectPhrases().map((phrases) => {
-      if (phrases.type === "single" && phrases.phrase.type === "quotation") {
-        throw new CoveredError();
-      } else {
-        return { type: "phrases", phrases } as Clause;
-      }
-    }),
+    subjectPhrases()
+      .filter((phrases) =>
+        phrases.type !== "single" || phrases.phrase.type !== "quotation"
+      )
+      .map((phrases) => ({ type: "phrases", phrases }) as Clause),
     subjectPhrases()
       .skip(specificWord("o"))
       .map((phrases) => ({ type: "o vocative", phrases }) as Clause),

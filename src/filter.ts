@@ -13,7 +13,7 @@ import {
   somePhraseInMultiplePhrases,
   WordUnit,
 } from "./ast.ts";
-import { CoveredError, UnrecognizedError } from "./error.ts";
+import { UnrecognizedError } from "./error.ts";
 import { settings } from "./settings.ts";
 
 /** Array of filter rules for a word unit. */
@@ -230,15 +230,10 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
     return true;
   },
   // If the phrase has no modifiers, avoid modifying particle
-  (phrase) => {
-    if (
-      phrase.type === "default" && phrase.modifyingParticle != null &&
-      phrase.modifiers.length === 0
-    ) {
-      throw new CoveredError();
-    }
-    return true;
-  },
+  (phrase) =>
+    phrase.type !== "default" ||
+    phrase.modifyingParticle == null ||
+    phrase.modifiers.length !== 0,
   // "n" cannot modify a phrase
   (phrase) => {
     if (phrase.type === "default") {

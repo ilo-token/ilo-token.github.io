@@ -8,8 +8,6 @@ export class UnreachableError extends Error {
     super("Reached unreachable error.");
   }
 }
-/** Represents errors expected to be covered by other errors. */
-export class CoveredError extends OutputError {}
 /** Represents Error with unexpected and expected elements. */
 export class UnexpectedError extends OutputError {
   constructor(unexpected: string, expected: string) {

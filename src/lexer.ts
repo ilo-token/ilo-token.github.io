@@ -8,7 +8,6 @@
 
 import { Output } from "./output.ts";
 import {
-  CoveredError,
   UnexpectedError,
   UnreachableError,
   UnrecognizedError,
@@ -161,7 +160,7 @@ function ucsurWord(
   return ucsur(trailingSettings).map((word) => {
     const latin = UCSUR_TO_LATIN[word];
     if (latin == null) {
-      throw new CoveredError();
+      throw new UnexpectedError(word, "UCSUR glyph");
     } else {
       return latin;
     }
@@ -444,7 +443,8 @@ function characterLongGlyph(
         START_OF_REVERSE_LONG_GLYPH,
         END_OF_REVERSE_LONG_GLYPH,
       ),
-    ),
+    )
+      .map((before) => before ?? []),
     longGlyphHead(),
     optionalAll(
       longCharacterContainer(
@@ -452,22 +452,17 @@ function characterLongGlyph(
         START_OF_LONG_GLYPH,
         END_OF_LONG_GLYPH,
       ),
-    ),
+    )
+      .map((before) => before ?? []),
   )
     .skip(spaces())
-    .map(([beforeNull, words, afterNull]) => {
-      const before = beforeNull ?? [];
-      const after = afterNull ?? [];
-      if (before.length === 0 && after.length === 0) {
-        throw new CoveredError();
-      }
-      return {
-        type: "long glyph",
-        before: before ?? [],
-        words,
-        after: after ?? [],
-      };
-    });
+    .filter(([before, _, after]) => before.length !== 0 || after.length !== 0)
+    .map(([before, words, after]) => ({
+      type: "long glyph",
+      before: before ?? [],
+      words,
+      after: after ?? [],
+    }));
 }
 /** Parses long glyph that only contains spaces. */
 function longSpaceGlyph(): Lexer<TokenTree & { type: "long glyph space" }> {

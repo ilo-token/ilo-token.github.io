@@ -1,6 +1,6 @@
 /** Module containing the Output data type. */
 
-import { CoveredError, OutputError } from "./error.ts";
+import { OutputError } from "./error.ts";
 /** Represents possibilities and error. */
 export class Output<T> {
   /** Represents possibilities, considered error when the array is empty. */
@@ -10,8 +10,6 @@ export class Output<T> {
   constructor(output?: undefined | null | Array<T> | OutputError) {
     if (Array.isArray(output)) {
       this.output = output;
-    } else if (output instanceof CoveredError) {
-      this.output = [];
     } else if (output instanceof OutputError) {
       this.output = [];
       this.errors.push(output);
@@ -63,9 +61,7 @@ export class Output<T> {
           wholeOutput.push(value);
         }
       } catch (error) {
-        if (error instanceof CoveredError) {
-          // Do nothing
-        } else if (error instanceof OutputError) {
+        if (error instanceof OutputError) {
           wholeOutput.pushError(error);
         } else {
           throw error;
@@ -87,9 +83,7 @@ export class Output<T> {
       try {
         wholeOutput.push(mapper(value));
       } catch (error) {
-        if (error instanceof CoveredError) {
-          // Do nothing
-        } else if (error instanceof OutputError) {
+        if (error instanceof OutputError) {
           wholeOutput.pushError(error);
         } else {
           throw error;
