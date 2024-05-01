@@ -56,7 +56,7 @@ function match(
   regex: RegExp,
   description: string,
 ): Lexer<RegExpMatchArray> {
-  const newRegex = new RegExp("^" + regex.source, regex.flags);
+  const newRegex = new RegExp(`^${regex.source}`, regex.flags);
   return new Parser((src) => {
     const match = src.match(newRegex);
     if (match != null) {

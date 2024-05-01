@@ -117,7 +117,7 @@ function updateOutput(): void {
     if (unreachableError instanceof Error) {
       error = unreachableError.message;
     } else {
-      error = unreachableError?.toString() + "";
+      error = `${unreachableError?.toString()}`;
     }
     error += " (please report this)";
     outputErrors([error]);
@@ -132,8 +132,9 @@ if (typeof document !== "undefined") {
     // Auto resize
     function resizeTextarea() {
       elements!.input.style.height = "auto";
-      elements!.input.style.height =
-        Math.max(50, elements!.input.scrollHeight + 20) + "px";
+      elements!.input.style.height = `${
+        Math.max(50, elements!.input.scrollHeight + 20)
+      }px`;
     }
     resizeTextarea();
     elements!.input.addEventListener("input", resizeTextarea);
