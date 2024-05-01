@@ -287,28 +287,33 @@ function subAleNumber(): AstParser<number> {
     .map((array) => array.reduce((number, word) => number + NUMERAL[word], 0));
 }
 /**
- * Parses "ale" with optional sub-ale numbers before it which is part of "nasin
- * nanpa pona".
+ * Parses multiple "ale" and returns the count. This can parse nothing and
+ * return 0.
  */
 function ale(): AstParser<number> {
-  return sequence(
-    subAleNumber(),
-    manyAtLeastOnce(choice(specificWord("ale"), specificWord("ali"))),
-  )
-    .map(([sub, ale]) => {
-      let number = sub;
-      if (sub === 0) {
-        number = 1;
-      }
-      return number * Math.pow(100, ale.length);
-    });
+  return many(choice(specificWord("ale"), specificWord("ali")))
+    .map((array) => array.length);
 }
 /** Parses number words including "nasin nanpa pona". */
 function number(): AstParser<number> {
   return choice(
     specificWord("ala").map(() => 0),
-    sequence(many(ale()), subAleNumber())
-      .map(([supers, sub]) => [...supers, sub].reduce((a, b) => a + b)),
+    sequence(
+      ale(),
+      many(
+        sequence(subAleNumber(), ale()).filter(([sub, ale]) => {
+          if (ale !== 0 && sub === 0) {
+            throw new CoveredError();
+          }
+          return true;
+        }),
+      ),
+    ).map(([first, rest]) =>
+      [[1, first], ...rest].reduce(
+        (result, [sub, ale]) => result + sub * Math.pow(100, ale),
+        0,
+      )
+    ),
   );
 }
 /** Parses a "pi" construction. */
