@@ -219,13 +219,12 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
   },
   // No multiple number words
   (phrase) => {
-    if (phrase.type === "default") {
-      const headWord = phrase.headWord;
-      if (
-        headWord.type === "number" && phrase.modifiers.some(modifierIsNumeric)
-      ) {
-        throw new UnrecognizedError("Multiple number words");
-      }
+    if (
+      phrase.type === "default" &&
+      phrase.headWord.type === "number" &&
+      phrase.modifiers.some(modifierIsNumeric)
+    ) {
+      throw new UnrecognizedError("Multiple number words");
     }
     return true;
   },
