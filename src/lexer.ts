@@ -7,11 +7,7 @@
  */
 
 import { Output } from "./output.ts";
-import {
-  UnexpectedError,
-  UnreachableError,
-  UnrecognizedError,
-} from "./error.ts";
+import { UnexpectedError, UnrecognizedError } from "./error.ts";
 import {
   all,
   allAtLeastOnce,
@@ -64,12 +60,14 @@ function match(
     } else if (src === "") {
       return new Output(new UnexpectedError("end of sentence", description));
     } else {
-      const token = src.match(/[^\s]*/)?.[0];
-      if (token != null) {
-        return new Output(new UnexpectedError(`"${token}"`, description));
+      const token = src.match(/[^\s]*/)![0];
+      let tokenDescription: string;
+      if (token === "") {
+        tokenDescription = "space";
       } else {
-        throw new UnreachableError();
+        tokenDescription = `"${token}"`;
       }
+      return new Output(new UnexpectedError(tokenDescription, description));
     }
   });
 }
@@ -363,8 +361,6 @@ function quotation(
             throw new UnrecognizedError("Mismatched quotation marks");
           }
           break;
-        default:
-          throw new UnreachableError();
       }
       return { type: "quotation", tokenTree, leftMark, rightMark };
     });

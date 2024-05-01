@@ -5,7 +5,6 @@ import {
   DeterminerQuantity,
   DeterminerType,
 } from "./english-ast.ts";
-import { UnreachableError } from "./error.ts";
 
 export const PARTICLE_DEFINITION: { [word: string]: Array<string> } = {
   a: [
@@ -1320,9 +1319,6 @@ function verb(
   gerund?: string,
 ): Definition & { type: "verb" } {
   if (typeof word === "string") {
-    if (typeof gerund !== "string") {
-      throw new UnreachableError();
-    }
     const { past, present, condensed } = parseVerb(word);
     return {
       type: "verb",
@@ -1330,7 +1326,7 @@ function verb(
       past,
       pastParticiple: past,
       condensed,
-      gerund,
+      gerund: gerund as string,
       object: true,
     };
   } else {
@@ -1369,9 +1365,6 @@ function intransitiveVerb(
   gerund?: string,
 ): Definition & { type: "verb" } {
   if (typeof word === "string") {
-    if (typeof gerund !== "string") {
-      throw new UnreachableError();
-    }
     const { past, present, condensed } = parseVerb(word);
     return {
       type: "verb",
@@ -1379,7 +1372,7 @@ function intransitiveVerb(
       past,
       pastParticiple: past,
       condensed,
-      gerund,
+      gerund: gerund as string,
       object: false,
     };
   } else {

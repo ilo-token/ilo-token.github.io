@@ -2,12 +2,6 @@
 
 /** Represents Error used by `Output`. */
 export class OutputError extends Error {}
-/** Represents errors that cannot be reached. */
-export class UnreachableError extends Error {
-  constructor() {
-    super("Reached unreachable error.");
-  }
-}
 /** Represents Error with unexpected and expected elements. */
 export class UnexpectedError extends OutputError {
   constructor(unexpected: string, expected: string) {

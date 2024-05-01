@@ -12,7 +12,7 @@ import {
 } from "./ast.ts";
 import { Output } from "./output.ts";
 import { parse } from "./ast-parser.ts";
-import { OutputError, TodoError, UnreachableError } from "./error.ts";
+import { OutputError, TodoError } from "./error.ts";
 import { DEFINITION } from "./old-definition.ts";
 
 /** A special kind of Output that translators returns. */
@@ -204,7 +204,7 @@ function phraseAs(
 function translateMultiplePhrases(
   phrases: MultiplePhrases,
   translator: (phrase: Phrase) => TranslationOutput,
-  level = 2,
+  level: 1 | 2 = 2,
 ): TranslationOutput {
   switch (phrases.type) {
     case "single":
@@ -219,7 +219,7 @@ function translateMultiplePhrases(
       }
       const translations = Output.combine(
         ...phrases.phrases.map((phrases) =>
-          translateMultiplePhrases(phrases, translator, level - 1)
+          translateMultiplePhrases(phrases, translator, 1)
         ),
       );
       switch (level) {
@@ -244,8 +244,6 @@ function translateMultiplePhrases(
         case 1:
           return translations
             .map((phrases) => phrases.join([" ", conjunction, " "].join("")));
-        default:
-          throw new UnreachableError();
       }
     }
   }
