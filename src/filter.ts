@@ -25,16 +25,16 @@ export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
     }
     return true;
   },
-  // avoid reduplication of "wan" and "tu"
-  (wordUnit) => {
-    if (
-      wordUnit.type === "reduplication" &&
-      (wordUnit.word === "wan" || wordUnit.word === "tu")
-    ) {
-      throw new UnrecognizedError(`reduplication of ${wordUnit.word}`);
-    }
-    return true;
-  },
+  // // avoid reduplication of "wan" and "tu"
+  // (wordUnit) => {
+  //   if (
+  //     wordUnit.type === "reduplication" &&
+  //     (wordUnit.word === "wan" || wordUnit.word === "tu")
+  //   ) {
+  //     throw new UnrecognizedError(`reduplication of ${wordUnit.word}`);
+  //   }
+  //   return true;
+  // },
   // disallow "anu" as content word only when turned off in settings
   (wordUnit) => {
     if (settings.get("anu-as-content-word")) {
@@ -197,6 +197,42 @@ export const MULTIPLE_MODIFIERS_RULES: Array<
   (modifiers) => {
     if (modifiers.filter(modifierIsNumeric).length > 1) {
       throw new UnrecognizedError("multiple number words");
+    }
+    return true;
+  },
+  // avoid duplicate modifiers
+  (modifiers) => {
+    const set = new Set<string>();
+    for (const modifier of modifiers) {
+      let word: string;
+      switch (modifier.type) {
+        case "default":
+          if (modifier.word.type !== "number") {
+            word = modifier.word.word;
+            break;
+          } else {
+            continue;
+          }
+        case "pi":
+          if (
+            modifier.phrase.type === "default" &&
+            modifier.phrase.headWord.type !== "number"
+          ) {
+            word = modifier.phrase.headWord.word;
+            break;
+          } else {
+            continue;
+          }
+        case "quotation":
+        case "proper words":
+        case "nanpa":
+          continue;
+      }
+      if (set.has(word)) {
+        throw new UnrecognizedError(`duplicate "${word}" in modifier`);
+      } else {
+        set.add(word);
+      }
     }
     return true;
   },
