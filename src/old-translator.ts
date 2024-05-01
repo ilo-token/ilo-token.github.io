@@ -48,8 +48,8 @@ function wordUnitAs(
   switch (word.type) {
     case "default":
       return definition(kind, word.word);
-    case "numbers":
-      return new Output([number(word.numbers).toString()]);
+    case "number":
+      return new Output([word.number.toString()]);
     case "reduplication":
       return definition(kind, word.word)
         .map((noun) => new Array(word.count).fill(noun).join(" "));
