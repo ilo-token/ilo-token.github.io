@@ -219,14 +219,20 @@ function xAlaX(
 /** Parses word unit except numbers. */
 function wordUnit(word: Set<string>, description: string): AstParser<WordUnit> {
   return choice(
-    wordFrom(word, description).then((word) =>
-      count(manyAtLeastOnce(specificWord(word))).map((count) =>
-        ({
-          type: "reduplication",
-          word,
-          count: count + 1,
-        }) as WordUnit
-      )
+    sequence(
+      wordFrom(word, description)
+        .then((word) =>
+          count(manyAtLeastOnce(specificWord(word)))
+            .map((count) => [word, count + 1] as [string, number])
+        ),
+      optional(modifyingParticle()),
+    ).map(([[word, count], modifyingParticle]) =>
+      ({
+        type: "reduplication",
+        word,
+        count,
+        modifyingParticle,
+      }) as WordUnit
     ),
     xAlaX(word, description),
     sequence(wordFrom(word, description), optional(modifyingParticle()))

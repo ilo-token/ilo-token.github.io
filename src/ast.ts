@@ -13,7 +13,12 @@ export type WordUnit =
     modifyingParticle: null | ModifyingParticle;
   }
   | { type: "x ala x"; word: string }
-  | { type: "reduplication"; word: string; count: number }
+  | {
+    type: "reduplication";
+    word: string;
+    count: number;
+    modifyingParticle: null | ModifyingParticle;
+  }
   | { type: "number"; number: number };
 /** Represents a single modifier. */
 export type Modifier =

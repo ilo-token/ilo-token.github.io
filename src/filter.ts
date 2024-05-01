@@ -54,7 +54,7 @@ export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
   },
   // "n" cannot modify a word
   (wordUnit) => {
-    if (wordUnit.type === "default") {
+    if (wordUnit.type === "default" || wordUnit.type === "reduplication") {
       const modifyingParticle = wordUnit.modifyingParticle;
       const hasN = modifyingParticle != null &&
         ((modifyingParticle.type === "word" &&
@@ -71,7 +71,7 @@ export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
   },
   // multiple "a" cannot modify a word
   (wordUnit) => {
-    if (wordUnit.type === "default") {
+    if (wordUnit.type === "default" || wordUnit.type === "reduplication") {
       const modifyingParticle = wordUnit.modifyingParticle;
       if (
         modifyingParticle != null && modifyingParticle.type === "multiple a"
