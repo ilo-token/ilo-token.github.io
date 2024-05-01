@@ -29,7 +29,7 @@ async function buildFile(
   //write the code
   await Deno.writeTextFile(destination, file);
 }
-export async function build(): Promise<void> {
+export async function buildTeloMisikeke(): Promise<void> {
   await Promise.all(
     SOURCE
       .map((file) => buildFile(file.source, file.destination, file.exportItem)),

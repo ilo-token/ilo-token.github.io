@@ -25,5 +25,8 @@
       "./dev-deps.ts",
       "./deps.ts"
     ]
+  },
+  "imports": {
+    "@deno/emit": "jsr:@deno/emit@^0.40.2"
   }
 }
