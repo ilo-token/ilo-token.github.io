@@ -30,9 +30,13 @@ switch (Deno.args[0]) {
       }
     }, 500);
     const watcher = Deno.watchFs(["./src/", "./telo-misikeke/"]);
-    builder();
-    for await (const _ of watcher) {
+    try {
       builder();
+      for await (const _ of watcher) {
+        builder();
+      }
+    } finally {
+      watcher.close();
     }
     throw new Error("unreachable");
   }
