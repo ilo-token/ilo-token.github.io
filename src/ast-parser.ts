@@ -272,8 +272,7 @@ function optionalCombined(
       ),
   );
 }
-/**
- * Parses number words other than "ale" and "ala". This can parse nothing and
+/** Parses number words other than "ale" and "ala". This can parse nothing and
  * return 0.
  */
 function subAleNumber(): AstParser<number> {
@@ -286,28 +285,31 @@ function subAleNumber(): AstParser<number> {
     .map((array) => array.flat())
     .map((array) => array.reduce((number, word) => number + NUMERAL[word], 0));
 }
-/**
- * Parses multiple "ale" and returns the count. This can parse nothing and
- * return 0.
- */
-function ale(): AstParser<number> {
-  return many(choice(specificWord("ale"), specificWord("ali")))
-    .map((array) => array.length);
+/** Parses "ale" or "ali". */
+function ale(): AstParser<string> {
+  return choice(specificWord("ale"), specificWord("ali"));
 }
 /** Parses number words including "nasin nanpa pona". */
 function number(): AstParser<number> {
   return choice(
     specificWord("ala").map(() => 0),
-    sequence(
-      ale(),
-      many(sequence(subAleNumber(), ale()).filter(([sub, _]) => sub !== 0)),
+    many(
+      sequence(
+        subAleNumber().filter((number) => number !== 0),
+        many(ale()).map((array) => array.length),
+      ),
     )
-      .map(([first, rest]) =>
-        [[1, first], ...rest].reduce(
+      .map((array) =>
+        array.reduce(
           (result, [sub, ale]) => result + sub * Math.pow(100, ale),
           0,
         )
       ),
+    sequence(
+      manyAtLeastOnce(ale()).map((array) => array.length),
+      subAleNumber(),
+    )
+      .map(([ale, sub]) => ale * 100 + sub),
   );
 }
 /** Parses a "pi" construction. */
