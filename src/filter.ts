@@ -4,6 +4,7 @@ import {
   Clause,
   FullClause,
   Modifier,
+  ModifyingParticle,
   MultiplePhrases,
   Phrase,
   Preposition,
@@ -52,34 +53,15 @@ export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
       return true;
     }
   },
-  // "n" cannot modify a word
+  // "n" and multiple "a" cannot modify a word
   (wordUnit) => {
-    if (wordUnit.type === "default" || wordUnit.type === "reduplication") {
-      const modifyingParticle = wordUnit.modifyingParticle;
-      const hasN = modifyingParticle != null &&
-        ((modifyingParticle.type === "word" &&
-          modifyingParticle.word === "n") ||
-          (modifyingParticle.type === "long word" &&
-            modifyingParticle.word === "n"));
-      if (hasN) {
-        throw new UnrecognizedError(
-          `${describe(modifyingParticle)} modifying a word`,
-        );
-      }
-    }
-    return true;
-  },
-  // multiple "a" cannot modify a word
-  (wordUnit) => {
-    if (wordUnit.type === "default" || wordUnit.type === "reduplication") {
-      const modifyingParticle = wordUnit.modifyingParticle;
-      if (
-        modifyingParticle != null && modifyingParticle.type === "multiple a"
-      ) {
-        throw new UnrecognizedError(
-          `${describe(modifyingParticle)} modifying a word`,
-        );
-      }
+    if (
+      (wordUnit.type === "default" || wordUnit.type === "reduplication") &&
+      isMultipleAOrN(wordUnit.modifyingParticle)
+    ) {
+      throw new UnrecognizedError(
+        `${describe(wordUnit.modifyingParticle!)} modifying a word`,
+      );
     }
     return true;
   },
@@ -286,34 +268,15 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
     phrase.type !== "default" ||
     phrase.modifyingParticle == null ||
     phrase.modifiers.length !== 0,
-  // "n" cannot modify a phrase
+  // "n" and multiple "a" cannot modify a phrase
   (wordUnit) => {
-    if (wordUnit.type === "default" || wordUnit.type === "preverb") {
-      const modifyingParticle = wordUnit.modifyingParticle;
-      const hasN = modifyingParticle != null &&
-        ((modifyingParticle.type === "word" &&
-          modifyingParticle.word === "n") ||
-          (modifyingParticle.type === "long word" &&
-            modifyingParticle.word === "n"));
-      if (hasN) {
-        throw new UnrecognizedError(
-          `${describe(modifyingParticle)} modifying a word`,
-        );
-      }
-    }
-    return true;
-  },
-  // multiple "a" cannot modify a phrase
-  (wordUnit) => {
-    if (wordUnit.type === "default" || wordUnit.type === "preverb") {
-      const modifyingParticle = wordUnit.modifyingParticle;
-      if (
-        modifyingParticle != null && modifyingParticle.type === "multiple a"
-      ) {
-        throw new UnrecognizedError(
-          `${describe(modifyingParticle)} modifying a word`,
-        );
-      }
+    if (
+      (wordUnit.type === "default" || wordUnit.type === "preverb") &&
+      isMultipleAOrN(wordUnit.modifyingParticle)
+    ) {
+      throw new UnrecognizedError(
+        `${describe(wordUnit.modifyingParticle!)} modifying a word`,
+      );
     }
     return true;
   },
@@ -336,27 +299,11 @@ export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
     }
     return true;
   },
-  // "n" cannot modify a preposition
+  // "n" and multiple "a" cannot modify a preposition
   (wordUnit) => {
-    const modifyingParticle = wordUnit.modifyingParticle;
-    const hasN = modifyingParticle != null &&
-      ((modifyingParticle.type === "word" &&
-        modifyingParticle.word === "n") ||
-        (modifyingParticle.type === "long word" &&
-          modifyingParticle.word === "n"));
-    if (hasN) {
+    if (isMultipleAOrN(wordUnit.modifyingParticle)) {
       throw new UnrecognizedError(
-        `${describe(modifyingParticle)} modifying a word`,
-      );
-    }
-    return true;
-  },
-  // multiple "a" cannot modify a preposition
-  (wordUnit) => {
-    const modifyingParticle = wordUnit.modifyingParticle;
-    if (modifyingParticle != null && modifyingParticle.type === "multiple a") {
-      throw new UnrecognizedError(
-        `${describe(modifyingParticle)} modifying a word`,
+        `${describe(wordUnit.modifyingParticle!)} modifying a word`,
       );
     }
     return true;
@@ -490,4 +437,11 @@ function hasPrepositionInPhrase(phrase: Phrase): boolean {
     case "quotation":
       return false;
   }
+}
+function isMultipleAOrN(modifyingParticle: null | ModifyingParticle): boolean {
+  return modifyingParticle != null &&
+    (modifyingParticle.type === "multiple a" ||
+      ((modifyingParticle.type === "word" ||
+        modifyingParticle.type === "long word") &&
+        modifyingParticle.word === "n"));
 }
