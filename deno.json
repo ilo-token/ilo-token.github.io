@@ -1,5 +1,4 @@
 {
-  "lock": false,
   "compilerOptions": {
     "target": "esnext",
     "lib": ["dom", "dom.iterable", "dom.asynciterable", "deno.ns"]
@@ -15,6 +14,6 @@
     "include": ["./src/**/*.ts", "./telo-misikeke/**/*", "./bundle.ts"]
   },
   "imports": {
-    "@deno/emit": "jsr:@deno/emit@^0.40.2"
+    "@deno/emit": "jsr:@deno/emit@0.40.2"
   }
 }
