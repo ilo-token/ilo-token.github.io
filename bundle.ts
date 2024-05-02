@@ -2,7 +2,7 @@ import { bundle, BundleOptions } from "@deno/emit";
 import { buildTeloMisikeke } from "./telo-misikeke/build.ts";
 
 const SOURCE = new URL("./src/main.ts", import.meta.url);
-const DESTINATION = new URL("./main.js", import.meta.url);
+const DESTINATION = new URL("./dist/main.js", import.meta.url);
 
 async function buildCode(options: BundleOptions): Promise<void> {
   const result = await bundle(SOURCE, options);
