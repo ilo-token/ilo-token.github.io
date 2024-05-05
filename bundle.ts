@@ -1,5 +1,5 @@
 import { bundle, BundleOptions } from "@deno/emit";
-import { buildTeloMisikeke } from "telo-misikeke/build.ts";
+import { buildTeloMisikeke } from "./telo-misikeke/build.ts";
 
 const SOURCE = new URL("./src/main.ts", import.meta.url);
 const DESTINATION = new URL("./dist/main.js", import.meta.url);
