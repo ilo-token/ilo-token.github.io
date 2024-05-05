@@ -458,9 +458,9 @@ function characterLongGlyph(
     .filter(([before, _, after]) => before.length !== 0 || after.length !== 0)
     .map(([before, words, after]) => ({
       type: "long glyph",
-      before: before ?? [],
+      before,
       words,
-      after: after ?? [],
+      after,
     }));
 }
 /** Parses long glyph that only contains spaces. */
