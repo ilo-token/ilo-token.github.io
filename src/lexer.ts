@@ -443,7 +443,7 @@ function characterLongGlyph(
         END_OF_REVERSE_LONG_GLYPH,
       ),
     )
-      .map((before) => before ?? []),
+      .map((array) => array ?? []),
     longGlyphHead(),
     optionalAll(
       longCharacterContainer(
@@ -452,7 +452,7 @@ function characterLongGlyph(
         END_OF_LONG_GLYPH,
       ),
     )
-      .map((before) => before ?? []),
+      .map((array) => array ?? []),
   )
     .skip(spaces())
     .filter(([before, _, after]) => before.length !== 0 || after.length !== 0)
