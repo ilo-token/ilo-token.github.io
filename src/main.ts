@@ -117,7 +117,7 @@ function updateOutput(): void {
     if (unreachableError instanceof Error) {
       error = unreachableError.message;
     } else {
-      error = `${unreachableError?.toString()}`;
+      error = `${unreachableError}`;
     }
     error += " (please report this)";
     outputErrors([error]);
