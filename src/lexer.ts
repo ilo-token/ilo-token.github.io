@@ -254,45 +254,21 @@ function comma(): Lexer<string> {
 }
 /** Parses a punctuation. */
 function punctuation(): Lexer<string> {
-  return choiceOnlyOne(
-    match(/([.,:;?!])\s*/, "punctuation")
-      .map(([_, punctuation]) => punctuation),
-    // NOTE: maybe these mapping are unnecessary
-    specificUcsurCharacter("󱦜", "middle dot", {
-      allowVariation: true,
-      allowSpace: true,
-    })
-      .map(() => "."),
-    specificUcsurCharacter("󱦝", "middle dot", {
-      allowVariation: true,
-      allowSpace: true,
-    })
-      .map(() => ":"),
-  );
+  return match(/([.,:;?!󱦜󱦝])\s*/u, "punctuation")
+    .map(([_, punctuation]) => punctuation);
 }
 /** Parses cartouche element and returns the phonemes or letters it represents. */
 function cartoucheElement(): Lexer<string> {
   return choiceOnlyOne(
-    singleUcsurWord().skip(
-      choiceOnlyOne(
-        match(/(\uff1a)\s*/, "full width colon").map(([_, dot]) => dot),
-        specificUcsurCharacter("󱦝", "colon", {
-          allowVariation: true,
-          allowSpace: true,
-        }),
+    singleUcsurWord()
+      .skip(
+        match(/([\uff1a󱦝])\s*/u, "full width colon").map(([_, dot]) => dot),
       ),
-    ),
     sequence(
       singleUcsurWord(),
       count(
         allAtLeastOnce(
-          choiceOnlyOne(
-            match(/([・。／])\s*/, "full width dot").map(([_, dot]) => dot),
-            specificUcsurCharacter("󱦜", "middle dot", {
-              allowVariation: true,
-              allowSpace: true,
-            }),
-          ),
+          match(/([・。／󱦜])\s*/u, "full width dot").map(([_, dot]) => dot),
         ),
       ),
     )
