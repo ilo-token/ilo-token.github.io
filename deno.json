@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "target": "esnext",
     "lib": ["dom", "dom.iterable", "dom.asynciterable", "deno.ns"]
   },
   "tasks": {
@@ -14,6 +13,7 @@
     "include": ["./src/**/*.ts", "./telo-misikeke/**/*", "./bundle.ts"]
   },
   "imports": {
-    "@deno/emit": "jsr:@deno/emit@0.40.2"
+    "@deno/emit": "jsr:@deno/emit@0.40.2",
+    "esbuild": "https://deno.land/x/esbuild@v0.20.2/wasm.js"
   }
 }

@@ -1,30 +1,31 @@
-import { bundle, BundleOptions } from "@deno/emit";
+import { bundle } from "@deno/emit";
 import { buildTeloMisikeke } from "./telo-misikeke/build.ts";
 
 const SOURCE = new URL("./src/main.ts", import.meta.url);
 const DESTINATION = new URL("./dist/main.js", import.meta.url);
 
-async function buildCode(options: BundleOptions): Promise<void> {
-  const result = await bundle(SOURCE, options);
-  const { code } = result;
-  await Deno.writeTextFile(DESTINATION, code);
-}
 switch (Deno.args[0]) {
-  case "build":
+  case "build": {
     console.log("Building telo misikeke...");
     await buildTeloMisikeke();
     console.log("Building main.js...");
-    await buildCode({ minify: true, type: "classic" });
+    const bundled = await bundle(SOURCE, { type: "classic" });
+    const { stop, transform } = await import("esbuild");
+    const minified = await transform(bundled.code, { minify: true });
+    await stop();
+    await Deno.writeTextFile(DESTINATION, minified.code);
     console.log("Building done!");
     break;
+  }
   case "watch": {
     const builder = debounce(async () => {
       console.log("Starting to build...");
       try {
-        await buildCode({
+        const { code } = await bundle(SOURCE, {
           compilerOptions: { inlineSourceMap: true },
           type: "classic",
         });
+        await Deno.writeTextFile(DESTINATION, code);
         console.log("Building done!");
       } catch (error) {
         console.error(error);

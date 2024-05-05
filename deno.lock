@@ -66,7 +66,9 @@
       }
     }
   },
-  "remote": {},
+  "remote": {
+    "https://deno.land/x/esbuild@v0.20.2/wasm.js": "5a887c1e38ad1056af11c58d45b6084d33bd33a62afa480d805801739370eed0"
+  },
   "workspace": {
     "dependencies": [
       "jsr:@deno/emit@0.40.2"
