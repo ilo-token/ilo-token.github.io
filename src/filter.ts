@@ -135,7 +135,7 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
   // pi must follow phrases with modifier
   (modifier) => {
     if (modifier.type === "pi") {
-      const phrase = modifier.phrase;
+      const { phrase } = modifier;
       if (phrase.type === "default" && phrase.modifiers.length === 0) {
         throw new UnrecognizedError("pi followed by one word");
       }
@@ -351,7 +351,7 @@ export const FULL_CLAUSE_RULE: Array<(fullClase: FullClause) => boolean> = [
   // Prevent "taso ala taso"
   (fullClause) => {
     if (fullClause.type === "default") {
-      const preclause = fullClause.preclause;
+      const { preclause } = fullClause;
       if (
         preclause != null &&
         preclause.type === "taso" &&

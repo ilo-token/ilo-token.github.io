@@ -262,7 +262,7 @@ function translateClause(clause: Clause): TranslationOutput {
             return phrases.phrases.some(hasEn);
         }
       };
-      const phrases = clause.phrases;
+      const { phrases } = clause;
       const translations = translateMultiplePhrases(
         phrases,
         (phrase) => phraseAs("noun", phrase),
@@ -295,7 +295,7 @@ function translateClause(clause: Clause): TranslationOutput {
 /** Translates a full clause. */
 function translateFullClause(fullClause: FullClause): TranslationOutput {
   // let but = "";
-  // const taso = fullClause.taso;
+  // const {taso} = fullClause
   // if (taso) {
   //   if (taso.type === "default") {
   //     but = "but ";
@@ -304,7 +304,7 @@ function translateFullClause(fullClause: FullClause): TranslationOutput {
   //   }
   // }
   // let isntIt = "";
-  // const anuSeme = fullClause.anuSeme;
+  // const {anuSeme} = fullClause
   // if (anuSeme) {
   //   if (anuSeme.type === "default") {
   //     isntIt = ", isn't it";

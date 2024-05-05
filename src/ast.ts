@@ -137,7 +137,7 @@ export function someModifierInPhrase(
       return phrase.modifiers.some(checker) ||
         someModifierInPhrase(phrase.phrase, whenQuotation, checker);
     case "preposition": {
-      const preposition = phrase.preposition;
+      const { preposition } = phrase;
       return preposition.modifiers.some(checker) ||
         someModifierInMultiplePhrases(
           preposition.phrases,

@@ -19,7 +19,7 @@ function multipleSentences(
 ): Output<Array<English.Sentence>> {
   switch (sentences.type) {
     case "single word": {
-      const word = sentences.word;
+      const { word } = sentences;
       return new Output([
         ...PARTICLE_DEFINITION[word] ?? [],
         ...SPECIAL_CONTENT_WORD_DEFINITION[word] ?? [],

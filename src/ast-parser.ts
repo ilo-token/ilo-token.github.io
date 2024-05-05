@@ -198,7 +198,7 @@ function xAlaX(
       if (leftGlyph.type !== "word") {
         throw new UnexpectedError(describe(leftGlyph), "word");
       }
-      const word = leftGlyph.word;
+      const { word } = leftGlyph;
       const rightGlyph = parseXAlaXSide(longGlyph.after, "forward long glyph");
       if (rightGlyph.type !== "word" || rightGlyph.word !== word) {
         throw new UnexpectedError(describe(rightGlyph), `"${word}"`);
