@@ -478,9 +478,9 @@ function nestedPhrasesOnly(
     return sequence(
       nestedPhrases(rest),
       manyAtLeastOnce(
-        optionalComma().with(specificWord(first)).with(
-          nestedPhrases(rest),
-        ),
+        optionalComma()
+          .with(specificWord(first))
+          .with(nestedPhrases(rest)),
       ),
     )
       .map(([group, moreGroups]) => ({
@@ -612,9 +612,9 @@ function associatedPredicates(
   return sequence(
     nestedPhrasesOnly(nestingRule),
     optional(
-      optionalComma().with(specificWord("e")).with(
-        nestedPhrases(["e", "anu"]),
-      ),
+      optionalComma()
+        .with(specificWord("e"))
+        .with(nestedPhrases(["e", "anu"])),
     ),
     many(optionalComma().with(preposition())),
   )
@@ -655,12 +655,14 @@ function multiplePredicates(
           multiplePredicates(rest),
         ),
         manyAtLeastOnce(
-          optionalComma().with(specificWord(first)).with(
-            choice(
-              associatedPredicates(nestingRule),
-              multiplePredicates(rest),
+          optionalComma()
+            .with(specificWord(first))
+            .with(
+              choice(
+                associatedPredicates(nestingRule),
+                multiplePredicates(rest),
+              ),
             ),
-          ),
         ),
       )
         .map(([group, moreGroups]) =>
@@ -718,9 +720,9 @@ function clause(): AstParser<Clause> {
       .map((phrases) => ({ type: "o vocative", phrases }) as Clause),
     sequence(
       subjectPhrases(),
-      optionalComma().with(specificWord("li")).with(
-        multiplePredicates(["li", "anu"]),
-      ),
+      optionalComma()
+        .with(specificWord("li"))
+        .with(multiplePredicates(["li", "anu"])),
     )
       .map(([subjects, predicates]) =>
         ({
@@ -737,9 +739,9 @@ function clause(): AstParser<Clause> {
       ),
     sequence(
       subjectPhrases(),
-      optionalComma().with(specificWord("o")).with(
-        multiplePredicates(["o", "anu"]),
-      ),
+      optionalComma()
+        .with(specificWord("o"))
+        .with(multiplePredicates(["o", "anu"])),
     )
       .map(([subjects, predicates]) =>
         ({ type: "o clause", subjects, predicates }) as Clause
