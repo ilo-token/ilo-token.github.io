@@ -72,17 +72,23 @@ function outputTranslations(output: Array<string>): void {
     elements!.output.appendChild(list);
   }
 }
-function outputErrors(errors: Array<string>): void {
+function outputErrors(errors: Array<string>, asHtml: boolean): void {
+  let property: "innerText" | "innerHTML";
+  if (asHtml) {
+    property = "innerHTML";
+  } else {
+    property = "innerText";
+  }
   if (errors.length === 0) {
     elements!.error.innerText =
       "An unknown error has occurred (Errors should be known, please report this)";
   } else if (errors.length === 1) {
-    elements!.error.innerText = errors[0];
+    elements!.error[property] = errors[0];
   } else {
     elements!.error.innerText = "Multiple errors has been found:";
     for (const errorMessage of errors) {
       const list = document.createElement("li");
-      list.innerText = errorMessage;
+      list[property] = errorMessage;
       elements!.errorList.appendChild(list);
     }
   }
@@ -99,6 +105,7 @@ function updateOutput(): void {
       }
       outputTranslations(output);
     } else {
+      let asHtml = true;
       let error: Array<string> = [];
       if (settings.get("use-telo-misikeke")) {
         error = errors(source);
@@ -109,8 +116,9 @@ function updateOutput(): void {
             translations.errors.map((x) => x.message),
           ),
         ];
+        asHtml = false;
       }
-      outputErrors(error);
+      outputErrors(error, asHtml);
     }
   } catch (unreachableError) {
     let error: string;
@@ -120,7 +128,7 @@ function updateOutput(): void {
       error = `${unreachableError}`;
     }
     error += " (please report this)";
-    outputErrors([error]);
+    outputErrors([error], false);
     throw unreachableError;
   }
 }
