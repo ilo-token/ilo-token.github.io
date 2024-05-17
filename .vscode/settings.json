@@ -2,7 +2,7 @@
   "cSpell.customDictionaries": {
     "nimi-ku-suli": {
       "name": "ku-suli",
-      "path": "${workspaceRoot}/nimi-ku-suli.txt",
+      "path": "${workspaceRoot}/.vscode/nimi-ku-suli.txt",
       "description": "nimi ku suli",
       "addWords": false
     }
