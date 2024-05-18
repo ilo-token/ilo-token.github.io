@@ -21,6 +21,7 @@ This is a huge update, now with configurable settings, UCSUR support, and expand
   - Long glyphs
   - (Deprecated characters and combiners are not supported)
 - The vocabulary has been expanded to _nimi ku suli_ plus _nimi su!_ (Some are still unimplemented)
+- Implement [nasin nanpa pona](https://sona.pona.la/wiki/nasin_nanpa_pona).
 - Multiline text will no longer be recognized.
 - Add icons.
 
