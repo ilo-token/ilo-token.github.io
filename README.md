@@ -2,7 +2,7 @@
 
 A rule-based Toki Pona to English translator that translates into multiple sentences. This emphasizes how broad Toki Pona can be. Everything is hardcoded, no machine learning involved.
 
-[Try it](https://neverrare.github.io/ilo-token/)
+[Try it](https://ilo-token.github.io/)
 
 **It is work in progress!** [We welcome contributors however!](./CONTRIBUTING.md)
 

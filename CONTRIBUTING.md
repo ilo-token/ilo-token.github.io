@@ -6,6 +6,6 @@ Unless you want to edit the dictionary in `./src/dictionary.ts` or it is just a 
 
 If you want to edit the dictionary, just go ahead and contribute! We provide useful guidelines in the wiki!
 
-## [The wiki](https://github.com/neverRare/ilo-token/wiki)
+## [The wiki](https://github.com/ilo-token/ilo-token.github.io/wiki)
 
 The wiki provides useful information for contributors, although it's not complete yet. Check it out!

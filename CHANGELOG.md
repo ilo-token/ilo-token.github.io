@@ -11,7 +11,7 @@ The latest on-development version can be accessed by building the source code.
 
 This is a huge update, now with configurable settings, UCSUR support, and expanded vocabulary!
 
-- Implement settings dialog. [More info](https://github.com/neverRare/ilo-token/wiki/Settings-Help).
+- Implement settings dialog. [More info](https://github.com/ilo-token/ilo-token.github.io/wiki/Settings-Help).
 - Changes in error messages:
   - All possible errors will now be listed.
   - ilo Token can now use telo misikeke for error messages. You can turn this on from the settings dialog.
