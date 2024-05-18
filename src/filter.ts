@@ -346,6 +346,29 @@ export const CLAUSE_RULE: Array<(clause: Clause) => boolean> = [
     }
     return true;
   },
+  // disallow "mi li" or "sina li"
+  (clause) => {
+    if (
+      clause.type === "li clause" &&
+      clause.explicitLi &&
+      clause.subjects.type === "single"
+    ) {
+      const phrase = clause.subjects.phrase;
+      if (
+        phrase.type === "default" &&
+        phrase.headWord.type === "default" &&
+        phrase.headWord.modifyingParticle == null &&
+        phrase.modifiers.length === 0 &&
+        phrase.modifyingParticle == null
+      ) {
+        const word = phrase.headWord.word;
+        if (word === "mi" || word === "sina") {
+          throw new UnrecognizedError(`"${word} li"`);
+        }
+      }
+    }
+    return true;
+  },
 ];
 export const FULL_CLAUSE_RULE: Array<(fullClase: FullClause) => boolean> = [
   // Prevent "taso ala taso"
