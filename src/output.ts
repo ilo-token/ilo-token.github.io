@@ -124,7 +124,7 @@ export class Output<T> {
   }
   /**
    * Combines all permutations of all Outputs into an Output of a single tuple
-   * or array.
+   * or array. If some of the Output is an error, all errors are aggregated.
    */
   static combine<T extends Array<unknown>>(
     ...outputs: { [I in keyof T]: Output<T[I]> } & { length: T["length"] }
@@ -133,8 +133,12 @@ export class Output<T> {
     return outputs.reduce(
       // deno-lint-ignore no-explicit-any
       (output: Output<any>, newOutput) => {
-        if (output.isError() || newOutput.isError()) {
+        if (output.isError() && newOutput.isError()) {
           return Output.concat(output, newOutput);
+        } else if (output.isError()) {
+          return output;
+        } else if (newOutput.isError()) {
+          return newOutput;
         } else {
           return output
             .flatMap((left) => newOutput.map((right) => [...left, right]));
