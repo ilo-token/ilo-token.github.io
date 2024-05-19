@@ -138,7 +138,7 @@ export class Output<T> {
         } else if (output.isError()) {
           return Output.newErrors(output.errors);
         } else if (newOutput.isError()) {
-          return newOutput;
+          return Output.newErrors(newOutput.errors);
         } else {
           return output
             .flatMap((left) => newOutput.map((right) => [...left, right]));
