@@ -359,12 +359,6 @@ function modifiers(): AstParser<Array<Modifier>> {
   return sequence(
     many(
       choice(
-        wordUnit(CONTENT_WORD, "modifier")
-          .map((word) => ({ type: "default", word }) as Modifier)
-          .filter(filter(MODIFIER_RULES)),
-        properWords()
-          .map((words) => ({ type: "proper words", words }) as Modifier)
-          .filter(filter(MODIFIER_RULES)),
         number()
           .map((number) =>
             ({
@@ -372,6 +366,12 @@ function modifiers(): AstParser<Array<Modifier>> {
               word: { type: "number", number },
             }) as Modifier
           )
+          .filter(filter(MODIFIER_RULES)),
+        wordUnit(CONTENT_WORD, "modifier")
+          .map((word) => ({ type: "default", word }) as Modifier)
+          .filter(filter(MODIFIER_RULES)),
+        properWords()
+          .map((words) => ({ type: "proper words", words }) as Modifier)
           .filter(filter(MODIFIER_RULES)),
         quotation()
           .map((quotation) => ({ type: "quotation", quotation }) as Modifier)
