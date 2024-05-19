@@ -136,7 +136,7 @@ export class Output<T> {
         if (output.isError() && newOutput.isError()) {
           return Output.concat(output, newOutput);
         } else if (output.isError()) {
-          return output;
+          return Output.newErrors(output.errors);
         } else if (newOutput.isError()) {
           return newOutput;
         } else {
