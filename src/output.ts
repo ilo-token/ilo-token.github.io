@@ -104,6 +104,16 @@ export class Output<T> {
     for (const value of this.output) wholeOutput.append(mapper(value));
     return wholeOutput;
   }
+  sort(comparer: (left: T, right: T) => number): Output<T> {
+    if (this.isError()) {
+      return Output.newErrors(this.errors);
+    } else {
+      return new Output(this.output.slice().sort(comparer));
+    }
+  }
+  sortBy(mapper: (value: T) => number): Output<T> {
+    return this.sort((left, right) => mapper(left) - mapper(right));
+  }
   /** Combines all outputs. */
   static concat<U>(...outputs: Array<Output<U>>): Output<U> {
     const wholeOutput = new Output<U>();

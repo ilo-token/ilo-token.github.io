@@ -53,6 +53,14 @@ export class Parser<T, U> {
       this.parser(src).flatMap(({ value, rest }) => mapper(value).parser(rest))
     );
   }
+  sort(comparer: (left: U, right: U) => number): Parser<T, U> {
+    return new Parser((src) =>
+      this.parser(src).sort((left, right) => comparer(left.value, right.value))
+    );
+  }
+  sortBy(mapper: (value: U) => number): Parser<T, U> {
+    return this.sort((left, right) => mapper(left) - mapper(right));
+  }
   /** Takes another parser and discards the parsing result of `this`. */
   with<V>(parser: Parser<T, V>): Parser<T, V> {
     return sequence<T, [U, V]>(this, parser).map(([_, output]) => output);

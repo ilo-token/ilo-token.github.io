@@ -392,7 +392,10 @@ function modifiers(): AstParser<Array<Modifier>> {
       ...nanpaModifiers,
       ...piModifiers,
     ])
-    .filter(filter(MULTIPLE_MODIFIERS_RULES));
+    .filter(filter(MULTIPLE_MODIFIERS_RULES))
+    .sortBy((modifiers) =>
+      modifiers.filter((modifier) => modifier.type === "nanpa").length
+    );
 }
 /** Phrase parser intended for phrases inside long glyphs. */
 const INNER_PHRASE_PARSER = phrase().skip(eol("end of long glyph"));
@@ -621,6 +624,7 @@ function associatedPredicates(
     .filter(([_, objects, prepositions]) =>
       objects != null || prepositions.length !== 0
     )
+    .sortBy(([_, _1, prepositions]) => prepositions.length)
     .map(([predicates, objects, prepositions]) => ({
       type: "associated",
       predicates,
