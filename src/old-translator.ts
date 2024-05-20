@@ -18,14 +18,6 @@ import { DEFINITION } from "./old-definition.ts";
 /** A special kind of Output that translators returns. */
 export type TranslationOutput = Output<string>;
 
-const WORD_TO_NUMBER: { [word: string]: number } = {
-  ale: 100,
-  ali: 100,
-  mute: 20,
-  luka: 5,
-  tu: 2,
-  wan: 1,
-};
 // TODO: -like and -related suffixes for nouns as adjectives
 // TODO: "and" in "of" and "in X way"
 
@@ -37,9 +29,6 @@ function definition(
     new Output(new OutputError(`No ${kind} translation found for ${word}.`)),
     new Output(DEFINITION[word][kind]),
   );
-}
-function number(words: Array<string>): number {
-  return words.reduce((number, word) => number + WORD_TO_NUMBER[word], 0);
 }
 function wordUnitAs(
   kind: "noun" | "adjective" | "adverb",
