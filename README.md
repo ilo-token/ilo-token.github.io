@@ -56,3 +56,7 @@ Some parts of the code make use of sitelen pona UCSUR characters. To display pro
 Oftentimes, you don't need to be able to type UCSUR in the source codes. We reduce UCSUR used in code and prefer to use latin letters instead.
 
 Also, take note that UCSUR characters are two characters wide in JavaScript string. Be careful with string and regex manipulation. If you're using regex, use the [`u` flag](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/unicode).
+
+## About the branches
+
+ilo Token has two branches: "master" and "release". "master" is for development and "release" is for public releases.
