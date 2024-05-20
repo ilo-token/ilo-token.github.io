@@ -59,4 +59,4 @@ Also, take note that UCSUR characters are two characters wide in JavaScript stri
 
 ## About the branches
 
-ilo Token has two branches: "master" and "release". "master" is for development and "release" is for public releases.
+ilo Token has two main branches: "master" and "release". "master" is for development and "release" is for public releases.
