@@ -10,8 +10,9 @@ switch (Deno.args[0]) {
     await buildTeloMisikeke();
     console.log("Building main.js...");
     const bundled = await bundle(SOURCE, { type: "classic" });
+    const useStrict = addUseStrict(bundled.code);
     const { stop, transform } = await import("esbuild");
-    const minified = await transform(bundled.code, { minify: true });
+    const minified = await transform(useStrict, { minify: true });
     await stop();
     await Deno.writeTextFile(DESTINATION, minified.code);
     console.log("Building done!");
@@ -25,7 +26,8 @@ switch (Deno.args[0]) {
           compilerOptions: { inlineSourceMap: true },
           type: "classic",
         });
-        await Deno.writeTextFile(DESTINATION, code);
+        const useStrict = addUseStrict(code);
+        await Deno.writeTextFile(DESTINATION, useStrict);
         console.log("Building done!");
       } catch (error) {
         console.error(error);
@@ -44,6 +46,9 @@ switch (Deno.args[0]) {
   }
   default:
     throw new Error(`Unrecognized build option, ${Deno.args[0]}`);
+}
+function addUseStrict(src: string): string {
+  return src.replace(/\(\s*function\s*\(\s*\)\s*\{/, '$&"use strict";');
 }
 function debounce(callback: () => Promise<void>, delay: number): () => void {
   let previous = { aborted: true };
