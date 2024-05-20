@@ -1,7 +1,5 @@
 # Changelog
 
-You may need to force restart the page in order to use the latest version: shift + click the restart button; or ctrl + shift + R.
-
 <details>
 <summary>On development changelog</summary>
 
