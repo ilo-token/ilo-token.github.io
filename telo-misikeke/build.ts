@@ -6,25 +6,25 @@ const SOURCE = [
     source:
       "https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/-/raw/main/public/rules.js?ref_type=heads&inline=false",
     destination: new URL("./rules.js", import.meta.url),
-    exportItem: "build_rules",
+    exportItems: ["build_rules", "getMessage"],
   },
   {
     source:
       "https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/-/raw/main/public/Parser.js?ref_type=heads&inline=false",
     destination: new URL("./Parser.js", import.meta.url),
-    exportItem: "ParserWithCallbacks",
+    exportItems: ["ParserWithCallbacks"],
   },
-] as const;
+];
 async function buildFile(
   source: string,
   destination: URL,
-  exportItem: string,
+  exportItems: Array<string>,
 ): Promise<void> {
   // fetch source code
   let file = await (await fetch(source)).text();
 
   // add `export`
-  file = file + `export{${exportItem}};`;
+  file = file + `export{${exportItems.join(",")}};`;
 
   //write the code
   await Deno.writeTextFile(destination, file);
@@ -32,6 +32,8 @@ async function buildFile(
 export async function buildTeloMisikeke(): Promise<void> {
   await Promise.all(
     SOURCE
-      .map((file) => buildFile(file.source, file.destination, file.exportItem)),
+      .map((file) =>
+        buildFile(file.source, file.destination, file.exportItems)
+      ),
   );
 }
