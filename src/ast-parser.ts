@@ -396,11 +396,11 @@ function modifiers(): AstParser<Array<Modifier>> {
     .filter(filter(MULTIPLE_MODIFIERS_RULES));
 }
 /** Phrase parser intended for phrases inside long glyphs. */
-const INNER_PHRASE_PARSER = phrase().skip(eol("end of long glyph"));
+const INNER_PHRASE_PARSER = phrase_().skip(eol("end of long glyph"));
 /** Parses phrases. */
-function phrase(): AstParser<Phrase> {
+function phrase_(): AstParser<Phrase> {
   return choice(
-    sequence(number(), lazy(modifiers), optional(modifyingParticle()))
+    sequence(number(), modifiers(), optional(modifyingParticle()))
       .map(([number, modifiers, modifyingParticle]) =>
         ({
           type: "default",
@@ -425,8 +425,8 @@ function phrase(): AstParser<Phrase> {
     ),
     sequence(
       optionalCombined(PREVERB, "preverb"),
-      lazy(modifiers),
-      lazy(phrase),
+      modifiers(),
+      phrase(),
       optional(modifyingParticle()),
     )
       .map(([[preverb, modifier], modifiers, phrase, modifyingParticle]) =>
@@ -438,11 +438,11 @@ function phrase(): AstParser<Phrase> {
           modifyingParticle,
         }) as Phrase
       ),
-    lazy(preposition)
+    preposition()
       .map((preposition) => ({ type: "preposition", preposition }) as Phrase),
     sequence(
       optionalCombined(CONTENT_WORD, "content word"),
-      lazy(modifiers),
+      modifiers(),
       optional(modifyingParticle()),
     )
       .map(([[headWord, modifier], modifiers, modifyingParticle]) =>
@@ -457,6 +457,9 @@ function phrase(): AstParser<Phrase> {
       .map((quotation) => ({ type: "quotation", quotation }) as Phrase),
   )
     .filter(filter(PHRASE_RULE));
+}
+function phrase(): AstParser<Phrase> {
+  return lazy(phrase_);
 }
 /**
  * Parses nested phrases with given nesting rule, only accepting the top level
