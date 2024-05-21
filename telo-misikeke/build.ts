@@ -21,7 +21,11 @@ async function buildFile(
   exportItems: Array<string>,
 ): Promise<void> {
   // fetch source code
-  let file = await (await fetch(source)).text();
+  const response = await fetch(source);
+  if (!response.ok) {
+    throw new Error(`unable to fetch ${source}`);
+  }
+  let file = await response.text();
 
   // add `export`
   file = file + `\nexport{${exportItems.join(",")}};`;
