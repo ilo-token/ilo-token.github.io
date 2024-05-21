@@ -57,12 +57,8 @@ function setVersion(): void {
   }
 }
 function clearOutput(): void {
-  while (elements!.output.children.length > 0) {
-    elements!.output.removeChild(elements!.output.children[0]);
-  }
-  while (elements!.errorList.children.length > 0) {
-    elements!.errorList.removeChild(elements!.errorList.children[0]);
-  }
+  elements!.output.innerHTML = "";
+  elements!.errorList.innerHTML = "";
   elements!.error.innerText = "";
 }
 function outputTranslations(output: Array<string>): void {
