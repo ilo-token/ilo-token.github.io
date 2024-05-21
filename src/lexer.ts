@@ -274,7 +274,7 @@ function cartoucheElement(): Lexer<string> {
     )
       .map(([word, dots]) => {
         let count = dots;
-        if (/[aeiou]/.test(word[0])) {
+        if (/^[aeiou]/.test(word)) {
           count++;
         }
         const morae = word.match(/[aeiou]|[jklmnpstw][aeiou]|n/g)!;
