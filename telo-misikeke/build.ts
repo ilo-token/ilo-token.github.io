@@ -24,7 +24,7 @@ async function buildFile(
   let file = await (await fetch(source)).text();
 
   // add `export`
-  file = file + `export{${exportItems.join(",")}};`;
+  file = file + `\nexport{${exportItems.join(",")}};`;
 
   //write the code
   await Deno.writeTextFile(destination, file);
