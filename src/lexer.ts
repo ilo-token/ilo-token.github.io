@@ -497,8 +497,12 @@ function tokenTree(
     comma().map(() => ({ type: "comma" }) as TokenTree),
     quotationParser,
     longGlyphParser,
-    choiceOnlyOne(cartouches(), properWords())
-      .map((words) => ({ type: "proper word", words }) as TokenTree),
+    cartouches().map((words) =>
+      ({ type: "proper word", words, kind: "cartouche" }) as TokenTree
+    ),
+    properWords().map((words) =>
+      ({ type: "proper word", words, kind: "latin" }) as TokenTree
+    ),
     combinedGlyphs()
       .skip(spaces())
       .map((words) => ({ type: "combined glyphs", words }) as TokenTree),

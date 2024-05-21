@@ -30,7 +30,7 @@ export type TokenTree =
   | { type: "multiple a"; count: number }
   | { type: "long word"; word: string; length: number }
   | { type: "x ala x"; word: string }
-  | { type: "proper word"; words: string }
+  | { type: "proper word"; words: string; kind: "cartouche" | "latin" }
   | {
     type: "quotation";
     tokenTree: Array<TokenTree>;
@@ -57,7 +57,14 @@ export function describe(tokenTree: TokenTree): string {
     case "x ala x":
       return `"${tokenTree.word} ala ${tokenTree.word}"`;
     case "proper word":
-      return "proper word or cartouche";
+      switch (tokenTree.kind) {
+        case "cartouche":
+          return "cartouche";
+        case "latin":
+          return "proper word";
+      }
+      // this is unreachable
+      // fallthrough
     case "quotation":
       return "quotation";
     case "comma":
