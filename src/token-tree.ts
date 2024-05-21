@@ -51,8 +51,9 @@ export function describe(tokenTree: TokenTree): string {
     case "underline lon":
       return "long glyph";
     case "multiple a":
-      return new Array(tokenTree.count).fill("a").join(" ");
+      return `"${new Array(tokenTree.count).fill("a").join(" ")}"`;
     case "long word":
+      return `"${new Array(tokenTree.length).fill(tokenTree.word).join("")}"`;
     case "x ala x":
       return `"${tokenTree.word} ala ${tokenTree.word}"`;
     case "proper word":
