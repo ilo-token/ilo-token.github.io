@@ -128,7 +128,7 @@ export const PREVERB_DEFINITION: { [word: string]: Array<never> } = {
   wile: [],
 };
 PREVERB_DEFINITION.alasa = PREVERB_DEFINITION.lukin;
-export const NUMERAL: { [word: string]: number } = {
+export const NUMERAL_DEFINITION: { [word: string]: number } = {
   ala: 0,
   wan: 1,
   tu: 2,

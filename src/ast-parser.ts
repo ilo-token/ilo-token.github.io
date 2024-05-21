@@ -20,7 +20,7 @@ import { UnexpectedError, UnrecognizedError } from "./error.ts";
 import { Output } from "./output.ts";
 import {
   CONTENT_WORD,
-  NUMERAL,
+  NUMERAL_DEFINITION,
   PREPOSITION,
   PREVERB,
   TOKI_PONA_WORD,
@@ -290,7 +290,9 @@ function subAleNumber(): AstParser<number> {
     many(specificWord("wan")),
   )
     .map((array) => array.flat())
-    .map((array) => array.reduce((number, word) => number + NUMERAL[word], 0));
+    .map((array) =>
+      array.reduce((number, word) => number + NUMERAL_DEFINITION[word], 0)
+    );
 }
 /** Parses "ale" or "ali". */
 function ale(): AstParser<string> {
