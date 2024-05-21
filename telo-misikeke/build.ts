@@ -23,7 +23,9 @@ async function buildFile(
   // fetch source code
   const response = await fetch(source);
   if (!response.ok) {
-    throw new Error(`unable to fetch ${source}`);
+    throw new Error(
+      `unable to fetch ${source} (${response.status} ${response.statusText})`,
+    );
   }
   let file = await response.text();
 
