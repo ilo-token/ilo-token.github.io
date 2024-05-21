@@ -770,6 +770,15 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
       pluralObject: "them",
       pluralPossessive: "their",
     },
+    {
+      type: "personal pronoun",
+      singularSubject: "it",
+      singularObject: "it",
+      singularPossessive: "its",
+      pluralSubject: null,
+      pluralObject: null,
+      pluralPossessive: null,
+    },
   ],
   open: [
     noun("beginning(s)"),
@@ -1192,9 +1201,9 @@ export type Definition =
     singularSubject: null | string;
     singularObject: null | string;
     singularPossessive: null | string;
-    pluralSubject: string;
-    pluralObject: string;
-    pluralPossessive: string;
+    pluralSubject: null | string;
+    pluralObject: null | string;
+    pluralPossessive: null | string;
   }
   | {
     type: "indefinite pronoun";
