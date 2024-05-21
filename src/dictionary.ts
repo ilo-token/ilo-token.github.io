@@ -605,15 +605,14 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjective("mediocre", "opinion"),
   ],
   mi: [
-    {
-      type: "personal pronoun",
+    personalPronoun({
       singularSubject: "I",
       singularObject: "me",
       singularPossessive: "my",
       pluralSubject: "we",
       pluralObject: "us",
       pluralPossessive: "our",
-    },
+    }),
   ],
   mije: [
     noun("man/men"),
@@ -761,24 +760,16 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     verb("respect(ed)", "respecting"),
   ],
   ona: [
-    {
-      type: "personal pronoun",
-      singularSubject: null,
-      singularObject: null,
-      singularPossessive: null,
+    personalPronoun({
       pluralSubject: "they",
       pluralObject: "them",
       pluralPossessive: "their",
-    },
-    {
-      type: "personal pronoun",
+    }),
+    personalPronoun({
       singularSubject: "it",
       singularObject: "it",
       singularPossessive: "its",
-      pluralSubject: null,
-      pluralObject: null,
-      pluralPossessive: null,
-    },
+    }),
   ],
   open: [
     noun("beginning(s)"),
@@ -948,15 +939,11 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adverb("newly"),
   ],
   sina: [
-    {
-      type: "personal pronoun",
-      singularSubject: null,
-      singularObject: null,
-      singularPossessive: null,
+    personalPronoun({
       pluralSubject: "you",
       pluralObject: "you",
       pluralPossessive: "your",
-    },
+    }),
   ],
   sinpin: [
     noun("face(s)"),
@@ -1267,6 +1254,24 @@ function singularNoun(word: string): Definition & { type: "noun" } {
 }
 function pluralNoun(word: string): Definition & { type: "noun" } {
   return { type: "noun", singular: null, plural: word, condensed: word };
+}
+function personalPronoun(option: {
+  singularSubject?: undefined | null | string;
+  singularObject?: undefined | null | string;
+  singularPossessive?: undefined | null | string;
+  pluralSubject?: undefined | null | string;
+  pluralObject?: undefined | null | string;
+  pluralPossessive?: undefined | null | string;
+}): Definition & { type: "personal pronoun" } {
+  return {
+    type: "personal pronoun",
+    singularSubject: option.singularSubject ?? null,
+    singularObject: option.singularObject ?? null,
+    singularPossessive: option.singularPossessive ?? null,
+    pluralSubject: option.pluralSubject ?? null,
+    pluralObject: option.pluralObject ?? null,
+    pluralPossessive: option.pluralPossessive ?? null,
+  };
 }
 function indefinitePronoun(
   pronoun: string,
