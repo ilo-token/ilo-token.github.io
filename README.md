@@ -47,7 +47,7 @@ With some exception, most source codes in `./src/` are runtime agnostic. Meaning
 - `main.ts` needs to access the web page DOM. It detects if `document` is available, otherwise it will do nothing.
 - `settings.ts` will access DOM and local storage unless you don't use methods marked as browser-only.
 
-If adding `Deno.test`, please use `if (typeof Deno !== "undefined")` so the code can be run on browser.
+If adding `Deno.test`, please use `if (typeof Deno !== "undefined")` so the code can be run on browser. Also use [dynamic import `import(...)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import) instead of static import to avoid being included in the bundle.
 
 ### UCSUR included
 
