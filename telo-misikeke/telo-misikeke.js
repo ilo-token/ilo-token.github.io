@@ -12,8 +12,12 @@ export function errors(text) {
     .tokenize(text)
     .filter((token) => RULES[token.ruleName].category === "error")
     .map((token) => {
+      const src = token.text
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll("&", "&amp;");
       const message = getMessage(token.ruleName, token.match)
         .replace(/\n/g, "<br>");
-      return `"${token.text}" ${message}`;
+      return `"${src}" ${message}`;
     });
 }
