@@ -1,11 +1,6 @@
 /** Module for describing word to word translations. */
 
-import {
-  AdjectiveType,
-  DeterminerQuantity,
-  DeterminerType,
-} from "./english-ast.ts";
-
+/** */
 export const PARTICLE_DEFINITION: { [word: string]: Array<string> } = {
   a: [
     "ah",
@@ -1170,6 +1165,12 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
 };
 CONTENT_WORD_DEFINITION.ali = CONTENT_WORD_DEFINITION.ale;
 CONTENT_WORD_DEFINITION.oko = CONTENT_WORD_DEFINITION.lukin;
+
+import {
+  AdjectiveType,
+  DeterminerQuantity,
+  DeterminerType,
+} from "./english-ast.ts";
 
 export type Definition =
   | {
