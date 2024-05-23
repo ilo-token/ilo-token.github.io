@@ -1,15 +1,19 @@
 import { bundle } from "@deno/emit";
-import { buildTeloMisikeke } from "./telo-misikeke/build.ts";
+import { buildTeloMisikeke } from "telo-misikeke/build.ts";
 
 const SOURCE = new URL("./src/main.ts", import.meta.url);
 const DESTINATION = new URL("./dist/main.js", import.meta.url);
+const IMPORT_MAP = new URL("./deno.json", import.meta.url);
 
 switch (Deno.args[0]) {
   case "build": {
     console.log("Building telo misikeke...");
     await buildTeloMisikeke();
     console.log("Building main.js...");
-    const bundled = await bundle(SOURCE, { type: "classic" });
+    const bundled = await bundle(SOURCE, {
+      type: "classic",
+      importMap: IMPORT_MAP,
+    });
     const useStrict = addUseStrict(bundled.code);
     const { stop, transform } = await import("esbuild");
     const minified = await transform(useStrict, { minify: true });
@@ -25,6 +29,7 @@ switch (Deno.args[0]) {
         const { code } = await bundle(SOURCE, {
           compilerOptions: { inlineSourceMap: true },
           type: "classic",
+          importMap: IMPORT_MAP,
         });
         const useStrict = addUseStrict(code);
         await Deno.writeTextFile(DESTINATION, useStrict);
