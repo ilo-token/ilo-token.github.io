@@ -14,7 +14,6 @@ import {
   choiceOnlyOne,
   count,
   empty,
-  nothing,
   optionalAll,
   Parser,
   sequence as rawSequence,
