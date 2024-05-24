@@ -120,31 +120,22 @@ function variationSelector(): Lexer<string> {
   return match(/[\uFE00-\uFE0F]/, "variation selector")
     .map(([character]) => character);
 }
-/** Parses an UCSUR character with optional variation selector and space. */
-function ucsur(
-  settings: { allowVariation: boolean; allowSpace: boolean },
-): Lexer<string> {
-  let variationParser: Lexer<null>;
-  if (settings.allowVariation) {
-    variationParser = optionalAll(variationSelector()).map(() => null);
-  } else {
-    variationParser = nothing();
-  }
-  let spaceParser: Lexer<null>;
-  if (settings.allowSpace) {
-    spaceParser = spaces().map(() => null);
-  } else {
-    spaceParser = nothing();
-  }
-  return slice(2, "UCSUR character").skip(variationParser).skip(spaceParser);
+/**
+ * Parses an UCSUR character, this doesn't parse space and so must be manually
+ * added if needed.
+ */
+function ucsur(): Lexer<string> {
+  return slice(2, "UCSUR character");
 }
-/** Parses a specific UCSUR character. */
+/**
+ * Parses a specific UCSUR character, this doesn't parse space and so must be
+ * manually added if needed
+ */
 function specificUcsurCharacter(
   character: string,
   description: string,
-  settings: { allowVariation: boolean; allowSpace: boolean },
 ): Lexer<string> {
-  return ucsur(settings).filter((word) => {
+  return ucsur().filter((word) => {
     if (word === character) {
       return true;
     } else {
@@ -152,11 +143,12 @@ function specificUcsurCharacter(
     }
   });
 }
-/** Parses UCSUR word. */
-function ucsurWord(
-  trailingSettings: { allowVariation: boolean; allowSpace: boolean },
-): Lexer<string> {
-  return ucsur(trailingSettings).map((word) => {
+/**
+ * Parses UCSUR word, this doesn't parse space and so must be manually added if
+ * needed
+ */
+function ucsurWord(): Lexer<string> {
+  return ucsur().map((word) => {
     const latin = UCSUR_TO_LATIN[word];
     if (latin == null) {
       throw new UnexpectedError(word, "UCSUR glyph");
@@ -167,20 +159,14 @@ function ucsurWord(
 }
 /** Parses a single UCSUR word. */
 function singleUcsurWord(): Lexer<string> {
-  return ucsurWord({ allowVariation: true, allowSpace: true });
+  return ucsurWord().skip(optionalAll(variationSelector())).skip(spaces());
 }
 /** Parses a joiner. */
 function joiner(): Lexer<string> {
   return choiceOnlyOne(
     match(/\u200D/, "zero width joiner").map(([_, joiner]) => joiner),
-    specificUcsurCharacter(STACKING_JOINER, "stacking joiner", {
-      allowVariation: false,
-      allowSpace: false,
-    }),
-    specificUcsurCharacter(SCALING_JOINER, "scaling joiner", {
-      allowVariation: false,
-      allowSpace: false,
-    }),
+    specificUcsurCharacter(STACKING_JOINER, "stacking joiner"),
+    specificUcsurCharacter(SCALING_JOINER, "scaling joiner"),
   );
 }
 /**
@@ -189,9 +175,9 @@ function joiner(): Lexer<string> {
  */
 function combinedGlyphs(): Lexer<Array<string>> {
   return sequence(
-    ucsurWord({ allowVariation: false, allowSpace: false }),
+    ucsurWord(),
     allAtLeastOnce(
-      joiner().with(ucsurWord({ allowVariation: false, allowSpace: false })),
+      joiner().with(ucsurWord()),
     ),
   )
     .map(([first, rest]) => [first, ...rest]);
@@ -287,15 +273,10 @@ function cartoucheElement(): Lexer<string> {
 /** Parses a single cartouche. */
 function cartouche(): Lexer<string> {
   return sequence(
-    specificUcsurCharacter(START_OF_CARTOUCHE, "start of cartouche", {
-      allowVariation: false,
-      allowSpace: true,
-    }),
+    specificUcsurCharacter(START_OF_CARTOUCHE, "start of cartouche")
+      .skip(spaces()),
     allAtLeastOnce(cartoucheElement()),
-    specificUcsurCharacter(END_OF_CARTOUCHE, "end of cartouche", {
-      allowVariation: false,
-      allowSpace: true,
-    }),
+    specificUcsurCharacter(END_OF_CARTOUCHE, "end of cartouche").skip(spaces()),
   )
     .map(([_, words, _1]) => {
       const word = words.join("");
@@ -355,15 +336,9 @@ function longContainer<T>(
     [END_OF_REVERSE_LONG_GLYPH]: "end of reverse long glyph",
   };
   return sequence(
-    specificUcsurCharacter(left, description[left], {
-      allowSpace: false,
-      allowVariation: false,
-    }),
+    specificUcsurCharacter(left, description[left]),
     inside,
-    specificUcsurCharacter(right, description[right], {
-      allowSpace: false,
-      allowVariation: false,
-    }),
+    specificUcsurCharacter(right, description[right]),
   )
     .map(([_, inside, _1]) => inside);
 }
@@ -399,8 +374,7 @@ function longSpaceContainer(): Lexer<number> {
 function longGlyphHead(): Lexer<Array<string>> {
   return choiceOnlyOne(
     combinedGlyphs(),
-    ucsurWord({ allowSpace: false, allowVariation: false })
-      .map((word) => [word]),
+    ucsurWord().map((word) => [word]),
   );
 }
 /** Parses long glyph that contains characters. */
