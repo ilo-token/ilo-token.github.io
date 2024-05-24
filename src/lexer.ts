@@ -32,7 +32,7 @@ import {
   UCSUR_TO_LATIN,
 } from "./ucsur.ts";
 
-export type Lexer<T> = Parser<string, T>;
+type Lexer<T> = Parser<string, T>;
 
 /** Takes all parser and applies them one after another. */
 // Had to redeclare this function, Typescript really struggles with inferring
