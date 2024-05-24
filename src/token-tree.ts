@@ -37,7 +37,6 @@ export type TokenTree =
     leftMark: string;
     rightMark: string;
   }
-  | { type: "comma" }
   | { type: "punctuation"; punctuation: string };
 /** Describes a token tree. Useful for error messages. */
 export function describe(tokenTree: TokenTree): string {
@@ -67,8 +66,6 @@ export function describe(tokenTree: TokenTree): string {
       // fallthrough
     case "quotation":
       return "quotation";
-    case "comma":
-      return "comma";
     case "punctuation":
       return "punctuation mark";
   }

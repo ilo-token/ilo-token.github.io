@@ -248,10 +248,6 @@ function openQuotationMark(): Lexer<string> {
 function closeQuotationMark(): Lexer<string> {
   return match(/(["”»」])\s*/, "close quotation mark").map(([_, mark]) => mark);
 }
-/** Parses a comma. */
-function comma(): Lexer<string> {
-  return match(/,\s*/, "comma").map(() => ",");
-}
 /** Parses a punctuation. */
 function punctuation(): Lexer<string> {
   return match(/([.,:;?!󱦜󱦝])\s*/u, "punctuation")
@@ -494,7 +490,6 @@ function tokenTree(
     punctuation().map((punctuation) =>
       ({ type: "punctuation", punctuation }) as TokenTree
     ),
-    comma().map(() => ({ type: "comma" }) as TokenTree),
     quotationParser,
     longGlyphParser,
     cartouches().map((words) =>

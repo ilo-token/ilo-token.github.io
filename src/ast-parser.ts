@@ -99,7 +99,9 @@ function specificTokenTree<T extends TokenTree["type"]>(
 }
 /** Parses comma. */
 function comma(): AstParser<string> {
-  return specificTokenTree("comma").map(() => ",");
+  return specificTokenTree("punctuation")
+    .map(({ punctuation }) => punctuation)
+    .filter((punctuation) => punctuation === ",");
 }
 /** Parses an optional comma. */
 function optionalComma(): AstParser<null | string> {
