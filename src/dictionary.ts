@@ -1,4 +1,7 @@
-/** Module for describing word to word translations. */
+/**
+ * Module for describing word to word translations. More information here:
+ * https://github.com/ilo-token/ilo-token.github.io/wiki/Guidelines-for-editing-dictionary
+ */
 
 /** */
 export const PARTICLE_DEFINITION: { [word: string]: Array<string> } = {
