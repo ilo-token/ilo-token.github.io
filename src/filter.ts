@@ -280,6 +280,9 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
     }
     return true;
   },
+  // For preverbs, inner phrase must not have modifying particle
+  (phrase) =>
+    phrase.type !== "preverb" || !phraseHasModifyingParticle(phrase.phrase),
 ];
 /** Array of filter rules for preposition. */
 export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
@@ -308,6 +311,13 @@ export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
     }
     return true;
   },
+  // Preposition with "anu" must not have modifying particle
+  (preposition) =>
+    preposition.modifyingParticle == null || preposition.phrases.type !== "anu",
+  // Inner phrase must not have modifying particle
+  (preposition) =>
+    preposition.phrases.type !== "single" ||
+    !phraseHasModifyingParticle(preposition.phrases.phrase),
 ];
 /** Array of filter rules for clauses. */
 export const CLAUSE_RULE: Array<(clause: Clause) => boolean> = [
@@ -467,4 +477,15 @@ function isMultipleAOrN(modifyingParticle: null | ModifyingParticle): boolean {
       ((modifyingParticle.type === "word" ||
         modifyingParticle.type === "long word") &&
         modifyingParticle.word === "n"));
+}
+function phraseHasModifyingParticle(phrase: Phrase): boolean {
+  switch (phrase.type) {
+    case "default":
+    case "preverb":
+      return phrase.modifyingParticle != null;
+    case "preposition":
+      return phrase.preposition.modifyingParticle != null;
+    case "quotation":
+      return false;
+  }
 }
