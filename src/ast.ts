@@ -56,9 +56,8 @@ export type MultiplePhrases =
 export type Preposition = {
   preposition: WordUnit;
   modifiers: Array<Modifier>;
-  /** This cannot be an "and conjunction": only "anu" or "single". */
   phrases: MultiplePhrases;
-  modifyingParticle: null | ModifyingParticle;
+  modifyingParticle: null | ModifyingParticle & { type: "single" | "anu" };
 };
 /** Represents multiple predicates. */
 export type MultiplePredicates =
