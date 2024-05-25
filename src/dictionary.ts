@@ -1310,7 +1310,7 @@ function adjectiveNounPhrase(
   } else {
     useAdjective = [adjectives];
   }
-  return { ...noun, type: "noun", adjectives: useAdjective };
+  return { ...noun, adjectives: useAdjective };
 }
 function adverbAdjectivePhrase(
   adverbs:
@@ -1324,7 +1324,7 @@ function adverbAdjectivePhrase(
   } else {
     useAdverb = [adverbs];
   }
-  return { ...adjective, type: "adjective", adverbs: useAdverb };
+  return { ...adjective, adverbs: useAdverb };
 }
 function compoundAdjective(
   adjectives: Array<Definition & { type: "adjective" }>,
@@ -1398,7 +1398,7 @@ function verbObjectPhrase(
   verb: Definition & { type: "verb" },
   object: Definition & { type: "noun" },
 ): Definition & { type: "verb" } {
-  return { ...verb, type: "verb", object };
+  return { ...verb, object };
 }
 type IntransitiveVerbOption = {
   presentPast: string;
