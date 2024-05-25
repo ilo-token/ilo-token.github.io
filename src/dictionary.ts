@@ -219,7 +219,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
   ike: [
     adjectiveNounPhrase(
-      [adjective("negative", "opinion")],
+      adjective("negative", "opinion"),
       noun("quality/qualities"),
     ),
     adjective("bad", "opinion"),
@@ -262,17 +262,17 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   jelo: [
     singularNoun("yellow"),
     adjectiveNounPhrase(
-      [adjective("lime", "color")],
+      adjective("lime", "color"),
       singularNoun("yellow"),
     ),
     adjectiveNounPhrase(
-      [adjective("yellowish", "color")],
+      adjective("yellowish", "color"),
       singularNoun("orange"),
     ),
     adjective("yellow", "color"),
     adjective("golden", "color"),
-    adverbAdjectivePhrase([adverb("lime")], adjective("yellow", "color")),
-    adverbAdjectivePhrase([adverb("yellowish")], adjective("orange", "color")),
+    adverbAdjectivePhrase(adverb("lime"), adjective("yellow", "color")),
+    adverbAdjectivePhrase(adverb("yellowish"), adjective("orange", "color")),
   ],
   jo: [
     // verb("have/had", "having"),
@@ -282,7 +282,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
   kala: [
     noun("fish(es)"),
-    adjectiveNounPhrase([adjective("sea", "qualifier")], noun("creature(s)")),
+    adjectiveNounPhrase(adjective("sea", "qualifier"), noun("creature(s)")),
     intransitiveVerb("swim/swam", "swimming"),
   ],
   kalama: [
@@ -334,7 +334,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
   kiwen: [
     adjectiveNounPhrase(
-      [adjective("hard", "material")],
+      adjective("hard", "material"),
       noun("object(s)"),
     ),
     noun("metal(s)"),
@@ -360,11 +360,11 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("essence(s)"),
     noun("spirit(s)"),
     adjectiveNounPhrase(
-      [adjective("hidden", "physical quality")],
+      adjective("hidden", "physical quality"),
       noun("reality/realities"),
     ),
     adjectiveNounPhrase(
-      [adjective("unseen", "physical quality")],
+      adjective("unseen", "physical quality"),
       noun("agent(s)"),
     ),
   ],
@@ -418,13 +418,13 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     singularNoun("green"),
     singularNoun("cyan"),
     singularNoun("indigo"),
-    adjectiveNounPhrase([adjective("lime", "color")], singularNoun("green")),
+    adjectiveNounPhrase(adjective("lime", "color"), singularNoun("green")),
     adjective("turquoise", "color"),
     adjective("blue", "color"),
     adjective("green", "color"),
     adjective("cyan", "color"),
     adjective("indigo", "color"),
-    adverbAdjectivePhrase([adverb("lime")], adjective("green", "color")),
+    adverbAdjectivePhrase(adverb("lime"), adjective("green", "color")),
   ],
   lawa: [
     noun("head(s)"),
@@ -478,10 +478,13 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     determiner("few", "quantifier", "plural"),
   ],
   linja: [
-    adjectiveNounPhrase([
-      adjective("long", "size"),
-      adjective("flexible", "material"),
-    ], noun("thing(s)")),
+    adjectiveNounPhrase(
+      [
+        adjective("long", "size"),
+        adjective("flexible", "material"),
+      ],
+      noun("thing(s)"),
+    ),
     noun("cord(s)"),
     singularNoun("hair"),
     noun("rope(s)"),
@@ -494,7 +497,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
   lipu: [
     adjectiveNounPhrase(
-      [adjective("flat", "size")],
+      adjective("flat", "size"),
       noun("object(s)"),
     ),
     noun("book(s)"),
@@ -512,7 +515,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     singularNoun("pink"),
     singularNoun("rust-color"),
     adjectiveNounPhrase(
-      [adjective("reddish", "color")],
+      adjective("reddish", "color"),
       singularNoun("orange"),
     ),
     adjective("red", "color"),
@@ -520,7 +523,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     adjective("scarlet", "color"),
     adjective("pink", "color"),
     adjective("rust-color", "color"),
-    adverbAdjectivePhrase([adverb("reddish")], adjective("orange", "color")),
+    adverbAdjectivePhrase(adverb("reddish"), adjective("orange", "color")),
   ],
   lon: [
     singularNoun("truth"),
@@ -531,14 +534,14 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   luka: [
     noun("hand(s)"),
     noun("arm(s)"),
-    adjectiveNounPhrase([adjective("tactile", "qualifier")], noun("organ(s)")),
-    adjectiveNounPhrase([adjective("grasping", "qualifier")], noun("organ(s)")),
+    adjectiveNounPhrase(adjective("tactile", "qualifier"), noun("organ(s)")),
+    adjectiveNounPhrase(adjective("grasping", "qualifier"), noun("organ(s)")),
   ],
   lukin: [
     noun("appearance(s)"),
     noun("visual(s)"),
     noun("eye(s)"),
-    adjectiveNounPhrase([adjective("seeing", "qualifier")], noun("organ(s)")),
+    adjectiveNounPhrase(adjective("seeing", "qualifier"), noun("organ(s)")),
     verb({
       presentPast: "look(ed)",
       gerund: "looking",
@@ -582,16 +585,19 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     singularNoun("cash"),
     pluralNoun("savings"),
     singularNoun("wealth"),
-    adjectiveNounPhrase([
-      adjective("large", "size"),
-      adjective("domestic", "qualifier"),
-    ], noun("animal(s)")),
+    adjectiveNounPhrase(
+      [
+        adjective("large", "size"),
+        adjective("domestic", "qualifier"),
+      ],
+      noun("animal(s)"),
+    ),
   ],
   meli: [
     noun("woman/women"),
     // noun("female(s)"), // this sounds dehumanizing
     adjectiveNounPhrase(
-      [adjective("feminine", "qualifier")],
+      adjective("feminine", "qualifier"),
       noun("person/people"),
     ),
     noun("wife/wives"),
@@ -616,7 +622,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("man/men"),
     // noun("male(s)"), // this sounds dehumanizing
     adjectiveNounPhrase(
-      [adjective("masculine", "qualifier")],
+      adjective("masculine", "qualifier"),
       noun("person/people"),
     ),
     noun("husband(s)"),
@@ -662,12 +668,12 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   mun: [
     singularNoun("moon"),
     adjectiveNounPhrase(
-      [adjective("night sky", "origin")],
+      adjective("night sky", "origin"),
       noun("object(s)"),
     ),
     noun("star(s)"),
     adjectiveNounPhrase(
-      [adjective("celestial", "origin")],
+      adjective("celestial", "origin"),
       noun("body/bodies"),
     ),
   ],
@@ -731,7 +737,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("leg(s)"),
     noun("root(s)"),
     adjectiveNounPhrase(
-      [adjective("locomotive", "qualifier")],
+      adjective("locomotive", "qualifier"),
       noun("organ(s)"),
     ),
   ],
@@ -750,10 +756,13 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
         gerund: "having",
         usePreposition: "with",
       }),
-      adjectiveNounPhrase([
-        adjective("strong", "opinion"),
-        adjective("emotional", "qualifier"),
-      ], singularNoun("bond")),
+      adjectiveNounPhrase(
+        [
+          adjective("strong", "opinion"),
+          adjective("emotional", "qualifier"),
+        ],
+        singularNoun("bond"),
+      ),
     ),
     verb("respect(ed)", "respecting"),
   ],
@@ -795,8 +804,8 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
   pan: [
     noun("grain(s)"),
-    adjectiveNounPhrase([adjective("starchy", "material")], noun("food(s)")),
-    adjectiveNounPhrase([adjective("baked", "qualifier")], pluralNoun("goods")),
+    adjectiveNounPhrase(adjective("starchy", "material"), noun("food(s)")),
+    adjectiveNounPhrase(adjective("baked", "qualifier"), pluralNoun("goods")),
   ],
   pana: [
     verb("give/gave", "giving"),
@@ -818,10 +827,13 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     intransitiveVerb("work/worked", "working"),
   ],
   palisa: [
-    adjectiveNounPhrase([
-      adjective("long", "size"),
-      adjective("hard", "material"),
-    ], noun("thing(s)")),
+    adjectiveNounPhrase(
+      [
+        adjective("long", "size"),
+        adjective("hard", "material"),
+      ],
+      noun("thing(s)"),
+    ),
     noun("branch(es)"),
     noun("rod(s)"),
     noun("stick(s)"),
@@ -834,7 +846,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
   pimeja: [
     singularNoun("darkness"),
-    adjectiveNounPhrase([adjective("dark", "color")], noun("color(s)")),
+    adjectiveNounPhrase(adjective("dark", "color"), noun("color(s)")),
     adjective("dark", "color"),
     adjective("unlit", "color"),
     adjective("black", "color"),
@@ -882,23 +894,23 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   seli: [
     singularNoun("fire"),
     adjectiveNounPhrase(
-      [adjective("cooking", "qualifier")],
+      adjective("cooking", "qualifier"),
       noun("element(s)"),
     ),
     adjectiveNounPhrase(
-      [adjective("chemical", "qualifier")],
+      adjective("chemical", "qualifier"),
       noun("reaction(s)"),
     ),
     adjectiveNounPhrase(
-      [adjective("heat", "qualifier")],
+      adjective("heat", "qualifier"),
       noun("source(s)"),
     ),
     adjective("hot", "material"),
     verb("heat(ed)", "heating"),
   ],
   selo: [
-    adjectiveNounPhrase([adjective("outer", "origin")], noun("form(s)")),
-    adjectiveNounPhrase([adjective("outer", "origin")], noun("layer(s)")),
+    adjectiveNounPhrase(adjective("outer", "origin"), noun("form(s)")),
+    adjectiveNounPhrase(adjective("outer", "origin"), noun("layer(s)")),
     singularNoun("skin"),
     noun("boundary/boundaries"),
   ],
@@ -908,7 +920,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
   sewi: [
     // TODO: area above, something elevated
-    adjectiveNounPhrase([adjective("highest", "origin")], noun("part(s)")),
+    adjectiveNounPhrase(adjective("highest", "origin"), noun("part(s)")),
     verb("elevate(d)", "elevating"),
     adjective("awe-inspiring", "opinion"),
     adjective("divine", "opinion"),
@@ -917,12 +929,12 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
   sijelo: [
     noun("body/bodies"),
-    adjectiveNounPhrase([adjective("physical", "qualifier")], noun("state(s)")),
+    adjectiveNounPhrase(adjective("physical", "qualifier"), noun("state(s)")),
     singularNoun("torso"),
   ],
   sike: [
     adjectiveNounPhrase(
-      [adjective("round", "physical quality")],
+      adjective("round", "physical quality"),
       noun("thing(s)"),
     ),
     noun("cycle(s)"),
@@ -964,11 +976,11 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
   soweli: [
     adjectiveNounPhrase(
-      [adjective("fuzzy", "physical quality")],
+      adjective("fuzzy", "physical quality"),
       noun("creature(s)"),
     ),
     adjectiveNounPhrase(
-      [adjective("land", "origin")],
+      adjective("land", "origin"),
       noun("animal(s)"),
     ),
     noun("beast(s)"),
@@ -988,12 +1000,12 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     singularNoun("brightness"),
     singularNoun("glow"),
     noun("radiance(s)"),
-    adjectiveNounPhrase([adjective("light", "qualifier")], noun("source(s)")),
+    adjectiveNounPhrase(adjective("light", "qualifier"), noun("source(s)")),
     adjective("shining", "color"),
   ],
   supa: [
     adjectiveNounPhrase(
-      [adjective("horizontal", "physical quality")],
+      adjective("horizontal", "physical quality"),
       noun("surface(s)"),
     ),
   ],
@@ -1022,7 +1034,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   telo: [
     singularNoun("water"),
     singularNoun("liquid"),
-    adjectiveNounPhrase([adjective("wet", "material")], noun("substance(s)")),
+    adjectiveNounPhrase(adjective("wet", "material"), noun("substance(s)")),
     noun("beverage(s)"),
     adjective("liquid", "material"),
     adjective("wet", "material"),
@@ -1053,19 +1065,19 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   ],
   tonsi: [
     adjectiveNounPhrase(
-      [adjective("non-binary", "qualifier")],
+      adjective("non-binary", "qualifier"),
       noun("person/people"),
     ),
     adjectiveNounPhrase(
-      [adjective("gender nonconforming", "qualifier")],
+      adjective("gender nonconforming", "qualifier"),
       noun("person/people"),
     ),
     adjectiveNounPhrase(
-      [adjective("genderqueer", "qualifier")],
+      adjective("genderqueer", "qualifier"),
       noun("person/people"),
     ),
     adjectiveNounPhrase(
-      [adjective("transgender", "qualifier")],
+      adjective("transgender", "qualifier"),
       noun("person/people"),
     ),
     adjective("non-binary", "qualifier"),
@@ -1096,7 +1108,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     singularNoun("mouth"),
     pluralNoun("lips"),
     adjectiveNounPhrase(
-      [adjective("oral", "qualifier")],
+      adjective("oral", "qualifier"),
       noun("cavity/cavities"),
     ),
     noun("jaw(s)"),
@@ -1116,9 +1128,9 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     }),
   ],
   walo: [
-    adjectiveNounPhrase([adjective("light", "color")], noun("color(s)")),
+    adjectiveNounPhrase(adjective("light", "color"), noun("color(s)")),
     singularNoun("white"),
-    adjectiveNounPhrase([adjective("light", "color")], singularNoun("gray")),
+    adjectiveNounPhrase(adjective("light", "color"), singularNoun("gray")),
   ],
   wan: [
     adjective("singular", "opinion"),
@@ -1129,11 +1141,11 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
   waso: [
     noun("bird(s)"),
     adjectiveNounPhrase(
-      [adjective("flying", "qualifier")],
+      adjective("flying", "qualifier"),
       noun("creature(s)"),
     ),
     adjectiveNounPhrase(
-      [adjective("winged", "qualifier")],
+      adjective("winged", "qualifier"),
       noun("animal(s)"),
     ),
     intransitiveVerb({
@@ -1178,14 +1190,10 @@ import {
 export type Definition =
   | {
     type: "noun";
+    adjectives: Array<Definition & { type: "adjective" }>;
     singular: null | string;
     plural: null | string;
     condensed: string;
-  }
-  | {
-    type: "adjective noun phrase";
-    adjectives: Array<Definition & { type: "adjective" }>;
-    noun: Definition & { type: "noun" };
   }
   | {
     type: "personal pronoun";
@@ -1200,15 +1208,15 @@ export type Definition =
     type: "indefinite pronoun";
     pronoun: string;
   }
-  | { type: "adjective"; adjective: string; kind: AdjectiveType }
+  | {
+    type: "adjective";
+    adverbs: Array<Definition & { type: "adverb" }>;
+    adjective: string;
+    kind: AdjectiveType;
+  }
   | {
     type: "compound adjective";
     adjectives: Array<Definition & { type: "adjective" }>;
-  }
-  | {
-    type: "adverb adjective phrase";
-    adverbs: Array<Definition & { type: "adverb" }>;
-    adjective: Definition & { type: "adjective" };
   }
   | {
     type: "determiner";
@@ -1224,12 +1232,8 @@ export type Definition =
     condensed: string;
     pastParticiple: string;
     gerund: string;
-    object: boolean | string;
-  }
-  | {
-    type: "verb object phrase";
-    verb: Definition & { type: "verb" };
-    object: Definition & { type: "noun" | "adjective noun phrase" };
+    forObject: boolean | string;
+    object: null | Definition & { type: "noun" };
   }
   | { type: "interjection"; interjection: string };
 export const PARTICLE = new Set(Object.keys(PARTICLE_DEFINITION));
@@ -1251,13 +1255,25 @@ function noun(word: string): Definition & { type: "noun" } {
   } else {
     throw new Error(`${word} must either contain parenthesis or slash`);
   }
-  return { type: "noun", singular, plural, condensed: word };
+  return { adjectives: [], type: "noun", singular, plural, condensed: word };
 }
 function singularNoun(word: string): Definition & { type: "noun" } {
-  return { type: "noun", singular: word, plural: null, condensed: word };
+  return {
+    adjectives: [],
+    type: "noun",
+    singular: word,
+    plural: null,
+    condensed: word,
+  };
 }
 function pluralNoun(word: string): Definition & { type: "noun" } {
-  return { type: "noun", singular: null, plural: word, condensed: word };
+  return {
+    adjectives: [],
+    type: "noun",
+    singular: null,
+    plural: word,
+    condensed: word,
+  };
 }
 function personalPronoun(option: {
   singularSubject?: undefined | null | string;
@@ -1283,16 +1299,32 @@ function indefinitePronoun(
   return { type: "indefinite pronoun", pronoun };
 }
 function adjectiveNounPhrase(
-  adjectives: Array<Definition & { type: "adjective" }>,
+  adjectives:
+    | Definition & { type: "adjective" }
+    | Array<Definition & { type: "adjective" }>,
   noun: Definition & { type: "noun" },
-): Definition & { type: "adjective noun phrase" } {
-  return { type: "adjective noun phrase", adjectives, noun };
+): Definition & { type: "noun" } {
+  let useAdjective: Array<Definition & { type: "adjective" }>;
+  if (Array.isArray(adjectives)) {
+    useAdjective = adjectives;
+  } else {
+    useAdjective = [adjectives];
+  }
+  return { ...noun, type: "noun", adjectives: useAdjective };
 }
 function adverbAdjectivePhrase(
-  adverbs: Array<Definition & { type: "adverb" }>,
+  adverbs:
+    | Definition & { type: "adverb" }
+    | Array<Definition & { type: "adverb" }>,
   adjective: Definition & { type: "adjective" },
-): Definition & { type: "adverb adjective phrase" } {
-  return { type: "adverb adjective phrase", adverbs, adjective };
+): Definition & { type: "adjective" } {
+  let useAdverb: Array<Definition & { type: "adverb" }>;
+  if (Array.isArray(adverbs)) {
+    useAdverb = adverbs;
+  } else {
+    useAdverb = [adverbs];
+  }
+  return { ...adjective, type: "adjective", adverbs: useAdverb };
 }
 function compoundAdjective(
   adjectives: Array<Definition & { type: "adjective" }>,
@@ -1345,7 +1377,8 @@ function verb(
       pastParticiple: past,
       condensed,
       gerund: gerund as string,
-      object: true,
+      forObject: true,
+      object: null,
     };
   } else {
     const { past, present, condensed } = parseVerb(word.presentPast);
@@ -1356,15 +1389,16 @@ function verb(
       pastParticiple: word.pastParticiple ?? past,
       condensed,
       gerund: word.gerund,
-      object: word.usePreposition ?? true,
+      forObject: word.usePreposition ?? true,
+      object: null,
     };
   }
 }
 function verbObjectPhrase(
   verb: Definition & { type: "verb" },
-  object: Definition & { type: "noun" | "adjective noun phrase" },
-): Definition & { type: "verb object phrase" } {
-  return { type: "verb object phrase", verb, object };
+  object: Definition & { type: "noun" },
+): Definition & { type: "verb" } {
+  return { ...verb, type: "verb", object };
 }
 type IntransitiveVerbOption = {
   presentPast: string;
@@ -1391,7 +1425,8 @@ function intransitiveVerb(
       pastParticiple: past,
       condensed,
       gerund: gerund as string,
-      object: false,
+      forObject: false,
+      object: null,
     };
   } else {
     const { past, present, condensed } = parseVerb(word.presentPast);
@@ -1402,7 +1437,8 @@ function intransitiveVerb(
       pastParticiple: word.pastParticiple,
       condensed,
       gerund: word.gerund,
-      object: false,
+      forObject: false,
+      object: null,
     };
   }
 }
@@ -1410,7 +1446,7 @@ function adjective(
   word: string,
   kind: AdjectiveType,
 ): Definition & { type: "adjective" } {
-  return { type: "adjective", adjective: word, kind };
+  return { adverbs: [], type: "adjective", adjective: word, kind };
 }
 function determiner(
   determiner: string,
