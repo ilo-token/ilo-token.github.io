@@ -37,6 +37,8 @@ You **don't** have to do this if:
 - It is a contribution to the dictionary
 - It is a minor edit e.g. a typo fix
 
+[The wiki](https://github.com/ilo-token/ilo-token.github.io/wiki) contains useful for contributors.
+
 As a thank you for contributing, you'll get a shout out in the changelog!
 
 ## Alternative contact options
