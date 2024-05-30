@@ -96,7 +96,7 @@ export type FullClause =
   | {
     type: "default";
     startingParticle: null | ModifyingParticle;
-    taso: null | WordUnit;
+    kinTaso: null | WordUnit;
     clause: Clause;
     anuSeme: null | WordUnit;
     endingParticle: null | ModifyingParticle;

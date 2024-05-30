@@ -769,7 +769,9 @@ function fullClause(): AstParser<FullClause> {
   return choice(
     sequence(
       optional(modifyingParticle().skip(optionalComma())),
-      optional(wordUnit(new Set(["taso"]), '"taso"').skip(optionalComma())),
+      optional(
+        wordUnit(new Set(["kin", "taso"]), "taso/kin").skip(optionalComma()),
+      ),
       clause(),
       optional(
         optionalComma()
@@ -778,11 +780,11 @@ function fullClause(): AstParser<FullClause> {
       ),
       optional(optionalComma().with(modifyingParticle())),
     )
-      .map(([startingParticle, taso, clause, anuSeme, endingParticle]) =>
+      .map(([startingParticle, kinTaso, clause, anuSeme, endingParticle]) =>
         ({
           type: "default",
           startingParticle,
-          taso,
+          kinTaso,
           clause,
           anuSeme,
           endingParticle,
