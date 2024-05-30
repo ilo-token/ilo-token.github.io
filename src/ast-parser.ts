@@ -12,6 +12,7 @@ import {
   Preposition,
   Quotation,
   Sentence,
+  SimpleWordUnit,
   WordUnit,
 } from "./ast.ts";
 import { UnexpectedError, UnrecognizedError } from "./error.ts";
@@ -164,6 +165,9 @@ function modifyingParticle(): AstParser<ModifyingParticle> {
       .map((word) => ({ type: "word", word }) as ModifyingParticle),
   );
 }
+function optionalModifyingParticle(): AstParser<null | ModifyingParticle> {
+  return optional(modifyingParticle());
+}
 /** Parses a side of long X ala X construction. */
 function parseXAlaXSide(tokenTrees: Array<TokenTree>, name: string): TokenTree {
   if (tokenTrees.length !== 1) {
@@ -182,7 +186,7 @@ function parseXAlaXSide(tokenTrees: Array<TokenTree>, name: string): TokenTree {
 function xAlaX(
   word: Set<string>,
   description: string,
-): AstParser<WordUnit & { type: "x ala x" }> {
+): AstParser<SimpleWordUnit & { type: "x ala x" }> {
   return choice(
     specificTokenTree("long glyph").map((longGlyph) => {
       if (longGlyph.words.length !== 1) {
@@ -216,8 +220,10 @@ function xAlaX(
       ),
   );
 }
-/** Parses word unit except numbers. */
-function wordUnit(word: Set<string>, description: string): AstParser<WordUnit> {
+function simpleWordUnit(
+  word: Set<string>,
+  description: string,
+): AstParser<SimpleWordUnit> {
   return choice(
     sequence(
       wordFrom(word, description)
@@ -225,21 +231,29 @@ function wordUnit(word: Set<string>, description: string): AstParser<WordUnit> {
           count(manyAtLeastOnce(specificWord(word)))
             .map((count) => [word, count + 1] as [string, number])
         ),
-      optional(modifyingParticle()),
-    ).map(([[word, count], modifyingParticle]) =>
-      ({
-        type: "reduplication",
-        word,
-        count,
-        modifyingParticle,
-      }) as WordUnit
-    ),
-    xAlaX(word, description),
-    sequence(wordFrom(word, description), optional(modifyingParticle()))
-      .map(([word, modifyingParticle]) =>
-        ({ type: "default", word, modifyingParticle }) as WordUnit
+    )
+      .map(([[word, count]]) =>
+        ({
+          type: "reduplication",
+          word,
+          count,
+        }) as SimpleWordUnit
       ),
+    xAlaX(word, description),
+    wordFrom(word, description)
+      .map((word) => ({ type: "default", word }) as WordUnit),
+  );
+}
+/** Parses word unit except numbers. */
+function wordUnit(word: Set<string>, description: string): AstParser<WordUnit> {
+  return sequence(
+    simpleWordUnit(word, description),
+    optionalModifyingParticle(),
   )
+    .map(([wordUnit, modifyingParticle]) => ({
+      ...wordUnit,
+      modifyingParticle,
+    }))
     .filter(filter(WORD_UNIT_RULES));
 }
 /** Parses a binary combined glyphs. */
@@ -361,7 +375,7 @@ function modifiers(): AstParser<Array<Modifier>> {
   return sequence(
     many(
       choice(
-        sequence(number(), optional(modifyingParticle()))
+        sequence(number(), optionalModifyingParticle())
           .map(([number, modifyingParticle]) =>
             ({
               type: "default",
@@ -404,9 +418,9 @@ function phrase_(): AstParser<Phrase> {
   return choice(
     sequence(
       number(),
-      optional(modifyingParticle()),
+      optionalModifyingParticle(),
       modifiers(),
-      optional(modifyingParticle()),
+      optionalModifyingParticle(),
     )
       .map(([number, wordModifier, modifiers, phraseModifier]) =>
         ({
@@ -434,7 +448,7 @@ function phrase_(): AstParser<Phrase> {
       optionalCombined(PREVERB, "preverb"),
       modifiers(),
       phrase(),
-      optional(modifyingParticle()),
+      optionalModifyingParticle(),
     )
       .map(([[preverb, modifier], modifiers, phrase, modifyingParticle]) =>
         ({
@@ -452,7 +466,7 @@ function phrase_(): AstParser<Phrase> {
     sequence(
       optionalCombined(CONTENT_WORD, "content word"),
       modifiers(),
-      optional(modifyingParticle()),
+      optionalModifyingParticle(),
     )
       .map(([[headWord, modifier], modifiers, modifyingParticle]) =>
         ({
@@ -603,7 +617,7 @@ function preposition(): AstParser<Preposition> {
       optionalCombined(PREPOSITION, "preposition"),
       modifiers(),
       nestedPhrases(["anu"]),
-      optional(modifyingParticle()),
+      optionalModifyingParticle(),
     )
       .map(([[preposition, modifier], modifiers, phrases, modifyingParticle]) =>
         ({
