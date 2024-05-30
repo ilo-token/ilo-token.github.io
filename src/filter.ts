@@ -6,12 +6,10 @@ import {
   Modifier,
   ModifyingParticle,
   MultiplePhrases,
+  MultiplePredicates,
   Phrase,
   Preposition,
   Sentence,
-  someModifierInPhrase,
-  someObjectInMultiplePredicate,
-  somePhraseInMultiplePhrases,
   WordUnit,
 } from "./ast.ts";
 import { UnrecognizedError } from "./error.ts";
@@ -433,6 +431,96 @@ export function filter<T>(
   rules: Array<(value: T) => boolean>,
 ): (value: T) => boolean {
   return (value) => rules.every((rule) => rule(value));
+}
+/**
+ * Helper function for checking whether some modifier passes the test
+ * function.
+ */
+export function someModifierInPhrase(
+  phrase: Phrase,
+  whenQuotation: boolean,
+  checker: (modifier: Modifier) => boolean,
+): boolean {
+  switch (phrase.type) {
+    case "default":
+      return phrase.modifiers.some(checker);
+    case "preverb":
+      return phrase.modifiers.some(checker) ||
+        someModifierInPhrase(phrase.phrase, whenQuotation, checker);
+    case "preposition": {
+      const { preposition } = phrase;
+      return preposition.modifiers.some(checker) ||
+        someModifierInMultiplePhrases(
+          preposition.phrases,
+          whenQuotation,
+          checker,
+        );
+    }
+    case "quotation":
+      return whenQuotation;
+  }
+}
+/**
+ * Helper function for checking whether some modifier passes the test
+ * function.
+ */
+export function someModifierInMultiplePhrases(
+  phrases: MultiplePhrases,
+  whenQuotation: boolean,
+  checker: (modifier: Modifier) => boolean,
+): boolean {
+  switch (phrases.type) {
+    case "single":
+      return someModifierInPhrase(phrases.phrase, whenQuotation, checker);
+    case "and conjunction":
+    case "anu":
+      return phrases.phrases
+        .some((phrases) =>
+          someModifierInMultiplePhrases(phrases, whenQuotation, checker)
+        );
+  }
+}
+/**
+ * Helper function for checking whether some phrase passes the test
+ * function.
+ */
+export function somePhraseInMultiplePhrases(
+  phrases: MultiplePhrases,
+  checker: (modifier: Phrase) => boolean,
+): boolean {
+  switch (phrases.type) {
+    case "single":
+      return checker(phrases.phrase);
+    case "and conjunction":
+    case "anu":
+      return phrases.phrases
+        .some((phrases) => somePhraseInMultiplePhrases(phrases, checker));
+  }
+}
+/**
+ * Helper function for checking whether some object phrase passes the test
+ * function.
+ */
+export function someObjectInMultiplePredicate(
+  predicate: MultiplePredicates,
+  checker: (object: Phrase) => boolean,
+): boolean {
+  switch (predicate.type) {
+    case "single":
+      return false;
+    case "associated":
+      if (predicate.objects) {
+        return somePhraseInMultiplePhrases(predicate.objects, checker);
+      } else {
+        return false;
+      }
+    case "and conjunction":
+    case "anu":
+      return predicate.predicates
+        .some((predicates) =>
+          someObjectInMultiplePredicate(predicates, checker)
+        );
+  }
 }
 /** Helper function for checking whether a modifier is numeric. */
 function modifierIsNumeric(modifier: Modifier): boolean {
