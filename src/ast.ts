@@ -93,7 +93,7 @@ export type FullClause =
     anuSeme: null | WordUnit;
     endingParticle: null | ModifyingParticle;
   }
-  | { type: "modifying particle"; modifyingParticle: ModifyingParticle };
+  | { type: "filler"; modifyingParticle: ModifyingParticle };
 /** Represents a single full sentence. */
 export type Sentence = {
   laClauses: Array<FullClause>;
