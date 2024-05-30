@@ -24,10 +24,10 @@ function multipleSentences(
       const { word } = sentences;
       return new Output([
         ...PARTICLE_DEFINITION[word] ?? [],
-        ...SPECIAL_CONTENT_WORD_DEFINITION[word] ?? [],
         ...PREPOSITION_DEFINITION[word] ?? [],
         ...nullableAsArray(NUMERAL_DEFINITION[word]).map((num) => `${num}`),
         // TODO: Preverb
+        ...SPECIAL_CONTENT_WORD_DEFINITION[word] ?? [],
         // TODO: Content word definition
       ])
         .map((definition) =>
