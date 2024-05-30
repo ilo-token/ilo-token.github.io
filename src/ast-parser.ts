@@ -361,11 +361,11 @@ function modifiers(): AstParser<Array<Modifier>> {
   return sequence(
     many(
       choice(
-        number()
-          .map((number) =>
+        sequence(number(), optional(modifyingParticle()))
+          .map(([number, modifyingParticle]) =>
             ({
               type: "default",
-              word: { type: "number", number },
+              word: { type: "number", number, modifyingParticle },
             }) as Modifier
           )
           .filter(filter(MODIFIER_RULES)),
@@ -402,13 +402,18 @@ const INNER_PHRASE_PARSER = phrase_().skip(eol("end of long glyph"));
 /** Parses phrases. */
 function phrase_(): AstParser<Phrase> {
   return choice(
-    sequence(number(), modifiers(), optional(modifyingParticle()))
-      .map(([number, modifiers, modifyingParticle]) =>
+    sequence(
+      number(),
+      optional(modifyingParticle()),
+      modifiers(),
+      optional(modifyingParticle()),
+    )
+      .map(([number, wordModifier, modifiers, phraseModifier]) =>
         ({
           type: "default",
-          headWord: { type: "number", number },
+          headWord: { type: "number", number, modifyingParticle: wordModifier },
           modifiers,
-          modifyingParticle,
+          modifyingParticle: phraseModifier,
         }) as Phrase
       ),
     binaryWords(PREVERB, "preveb").map(([preverb, phrase]) =>

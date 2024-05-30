@@ -19,7 +19,11 @@ export type WordUnit =
     count: number;
     modifyingParticle: null | ModifyingParticle;
   }
-  | { type: "number"; number: number };
+  | {
+    type: "number";
+    number: number;
+    modifyingParticle: null | ModifyingParticle;
+  };
 /** Represents a single modifier. */
 export type Modifier =
   | { type: "default"; word: WordUnit }
