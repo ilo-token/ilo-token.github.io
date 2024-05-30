@@ -160,7 +160,7 @@ function modifyingParticle(): AstParser<ModifyingParticle> {
       .map(({ word, length }) =>
         ({ type: "long word", word, length }) as ModifyingParticle
       ),
-    wordFrom(new Set(["a", "n", "kin"]), "a/n/kin")
+    wordFrom(new Set(["a", "n"]), "a/n")
       .map((word) => ({ type: "word", word }) as ModifyingParticle),
   );
 }

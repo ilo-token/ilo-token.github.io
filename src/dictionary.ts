@@ -30,11 +30,7 @@ export const PARTICLE_DEFINITION: { [word: string]: Array<string> } = {
     "[separates multiple subjects]",
   ],
   kin: [
-    "too",
-    "also",
-    "as well",
-    "additionally",
-    "[after phrase or at sentence start]",
+    "[at sentence start]",
   ],
   la: [
     "[mark the previous statement as context to a following statement]",
@@ -79,6 +75,11 @@ export const SPECIAL_CONTENT_WORD_DEFINITION: {
 } = {
   jasima: [
     "opposite of",
+  ],
+  kin: [
+    "too",
+    "as well",
+    "additionally",
   ],
   kokosila: [
     "to speak a non-Toki Pona language in an environment where Toki Pona is \
@@ -324,6 +325,9 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
     noun("fruit(s)"),
     noun("vegetable(s)"),
     noun("mushroom(s)"),
+  ],
+  kin: [
+    adverb("also"),
   ],
   kipisi: [
     adjective("sharp", "physical quality"),
