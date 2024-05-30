@@ -384,12 +384,7 @@ export const FULL_CLAUSE_RULE: Array<(fullClase: FullClause) => boolean> = [
   // Prevent "taso ala taso"
   (fullClause) => {
     if (fullClause.type === "default") {
-      const { preclause } = fullClause;
-      if (
-        preclause != null &&
-        preclause.type === "taso" &&
-        preclause.taso.type === "x ala x"
-      ) {
+      if (fullClause.taso != null && fullClause.taso.type === "x ala x") {
         throw new UnrecognizedError('"taso ala taso"');
       }
     }

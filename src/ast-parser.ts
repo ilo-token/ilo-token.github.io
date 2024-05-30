@@ -9,8 +9,6 @@ import {
   MultiplePredicates,
   MultipleSentences,
   Phrase,
-  Postclause,
-  Preclause,
   Preposition,
   Quotation,
   Sentence,
@@ -761,39 +759,29 @@ function clause(): AstParser<Clause> {
   )
     .filter(filter(CLAUSE_RULE));
 }
-/** Parses a preclause. */
-function preclause(): AstParser<Preclause> {
-  return choice(
-    modifyingParticle()
-      .map((modifyingParticle) =>
-        ({ type: "modifying particle", modifyingParticle }) as Preclause
-      ),
-    wordUnit(new Set(["taso"]), '"taso"')
-      .map((taso) => ({ type: "taso", taso }) as Preclause),
-  );
-}
-/** Parses a postclause. */
-function postclause(): AstParser<Postclause> {
-  return choice(
-    modifyingParticle()
-      .map((modifyingParticle) =>
-        ({ type: "modifying particle", modifyingParticle }) as Postclause
-      ),
-    specificWord("anu")
-      .with(wordUnit(new Set(["seme"]), '"seme"'))
-      .map((seme) => ({ type: "anu seme", seme }) as Postclause),
-  );
-}
 /** Parses a single clause including preclause and postclause. */
 function fullClause(): AstParser<FullClause> {
   return choice(
     sequence(
-      optional(preclause().skip(optionalComma())),
+      optional(modifyingParticle().skip(optionalComma())),
+      optional(wordUnit(new Set(["taso"]), '"taso"').skip(optionalComma())),
       clause(),
-      optional(optionalComma().with(postclause())),
+      optional(
+        optionalComma()
+          .with(specificWord("anu"))
+          .with(wordUnit(new Set(["seme"]), '"seme"')),
+      ),
+      optional(optionalComma().with(modifyingParticle())),
     )
-      .map(([preclause, clause, postclause]) =>
-        ({ type: "default", preclause, clause, postclause }) as FullClause
+      .map(([startingParticle, taso, clause, anuSeme, endingParticle]) =>
+        ({
+          type: "default",
+          startingParticle,
+          taso,
+          clause,
+          anuSeme,
+          endingParticle,
+        }) as FullClause
       ),
     modifyingParticle()
       .map((modifyingParticle) =>

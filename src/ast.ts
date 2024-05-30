@@ -87,21 +87,15 @@ export type Clause =
   }
   | { type: "prepositions"; prepositions: Array<Preposition> }
   | { type: "quotation"; quotation: Quotation };
-/** Represents constructions found in the start of the clause. */
-export type Preclause =
-  | { type: "taso"; taso: WordUnit }
-  | { type: "modifying particle"; modifyingParticle: ModifyingParticle };
-/** Represents constructions found in the end of the clause. */
-export type Postclause =
-  | { type: "anu seme"; seme: WordUnit }
-  | { type: "modifying particle"; modifyingParticle: ModifyingParticle };
-/** Represents a clause including preclause and postclause. */
+/** Represents a clause including preclauses and postclauses. */
 export type FullClause =
   | {
     type: "default";
-    preclause: null | Preclause;
-    postclause: null | Postclause;
+    startingParticle: null | ModifyingParticle;
+    taso: null | WordUnit;
     clause: Clause;
+    anuSeme: null | WordUnit;
+    endingParticle: null | ModifyingParticle;
   }
   | { type: "modifying particle"; modifyingParticle: ModifyingParticle };
 /** Represents a single full sentence. */
