@@ -1,12 +1,14 @@
 import { parse } from "./ast-parser.ts";
 import * as TokiPona from "./ast.ts";
 import {
+  NUMERAL_DEFINITION,
   PARTICLE_DEFINITION,
   PREPOSITION_DEFINITION,
   SPECIAL_CONTENT_WORD_DEFINITION,
 } from "./dictionary.ts";
 import * as English from "./english-ast.ts";
 import { TodoError } from "./error.ts";
+import { nullableAsArray } from "./misc.ts";
 import { Output } from "./output.ts";
 
 function sentence(
@@ -24,7 +26,7 @@ function multipleSentences(
         ...PARTICLE_DEFINITION[word] ?? [],
         ...SPECIAL_CONTENT_WORD_DEFINITION[word] ?? [],
         ...PREPOSITION_DEFINITION[word] ?? [],
-        // TODO: Numeral
+        ...nullableAsArray(NUMERAL_DEFINITION[word]).map((num) => `${num}`),
         // TODO: Preverb
         // TODO: Content word definition
       ])
