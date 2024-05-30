@@ -272,7 +272,8 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
   },
   // For preverbs, inner phrase must not have modifying particle
   (phrase) =>
-    phrase.type !== "preverb" || !phraseHasModifyingParticle(phrase.phrase),
+    phrase.type !== "preverb" ||
+    !phraseHasTopLevelModifyingParticle(phrase.phrase),
 ];
 /** Array of filter rules for preposition. */
 export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
@@ -307,7 +308,7 @@ export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
   // Inner phrase must not have modifying particle
   (preposition) =>
     preposition.phrases.type !== "single" ||
-    !phraseHasModifyingParticle(preposition.phrases.phrase),
+    !phraseHasTopLevelModifyingParticle(preposition.phrases.phrase),
 ];
 /** Array of filter rules for clauses. */
 export const CLAUSE_RULE: Array<(clause: Clause) => boolean> = [
@@ -528,7 +529,7 @@ function isMultipleAOrN(modifyingParticle: null | ModifyingParticle): boolean {
         modifyingParticle.type === "long word") &&
         modifyingParticle.word === "n"));
 }
-function phraseHasModifyingParticle(phrase: Phrase): boolean {
+function phraseHasTopLevelModifyingParticle(phrase: Phrase): boolean {
   switch (phrase.type) {
     case "default":
     case "preverb":
