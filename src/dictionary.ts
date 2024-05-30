@@ -1185,7 +1185,6 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
 CONTENT_WORD_DEFINITION.ali = CONTENT_WORD_DEFINITION.ale;
 CONTENT_WORD_DEFINITION.oko = CONTENT_WORD_DEFINITION.lukin;
 
-import { version } from "https://deno.land/x/esbuild@v0.20.2/wasm.js";
 import {
   AdjectiveType,
   DeterminerQuantity,
