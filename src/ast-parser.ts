@@ -794,7 +794,7 @@ function fullClause(): AstParser<FullClause> {
       ),
     modifyingParticle()
       .map((modifyingParticle) =>
-        ({ type: "modifying particle", modifyingParticle }) as FullClause
+        ({ type: "filler", modifyingParticle }) as FullClause
       ),
   )
     .filter(filter(FULL_CLAUSE_RULE));
