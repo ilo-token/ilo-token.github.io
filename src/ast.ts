@@ -60,8 +60,8 @@ export type MultiplePhrases =
 export type Preposition = {
   preposition: WordUnit;
   modifiers: Array<Modifier>;
-  phrases: MultiplePhrases;
-  modifyingParticle: null | ModifyingParticle & { type: "single" | "anu" };
+  phrases: MultiplePhrases & { type: "single" | "anu" };
+  modifyingParticle: null | ModifyingParticle;
 };
 /** Represents multiple predicates. */
 export type MultiplePredicates =
