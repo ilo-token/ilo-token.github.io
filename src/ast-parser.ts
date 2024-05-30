@@ -782,11 +782,11 @@ function fullClause(): AstParser<FullClause> {
       ),
       optional(optionalComma().with(modifyingParticle())),
     )
-      .map(([startingParticle, kinTaso, clause, anuSeme, endingParticle]) =>
+      .map(([startingParticle, kinOrTaso, clause, anuSeme, endingParticle]) =>
         ({
           type: "default",
           startingParticle,
-          kinTaso,
+          kinOrTaso,
           clause,
           anuSeme,
           endingParticle,

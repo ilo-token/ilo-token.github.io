@@ -88,7 +88,7 @@ export type FullClause =
   | {
     type: "default";
     startingParticle: null | ModifyingParticle;
-    kinTaso: null | WordUnit;
+    kinOrTaso: null | WordUnit;
     clause: Clause;
     anuSeme: null | WordUnit;
     endingParticle: null | ModifyingParticle;

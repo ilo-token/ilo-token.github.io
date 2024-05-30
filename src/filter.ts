@@ -370,7 +370,9 @@ export const FULL_CLAUSE_RULE: Array<(fullClase: FullClause) => boolean> = [
   // Prevent "taso ala taso"
   (fullClause) => {
     if (fullClause.type === "default") {
-      if (fullClause.kinTaso != null && fullClause.kinTaso.type === "x ala x") {
+      if (
+        fullClause.kinOrTaso != null && fullClause.kinOrTaso.type === "x ala x"
+      ) {
         throw new UnrecognizedError('"taso ala taso"');
       }
     }
