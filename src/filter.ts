@@ -44,7 +44,9 @@ export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
   // "n" and multiple "a" cannot modify a word
   (wordUnit) => {
     if (
-      (wordUnit.type === "default" || wordUnit.type === "reduplication") &&
+      (wordUnit.type === "default" ||
+        wordUnit.type === "reduplication" ||
+        wordUnit.type === "number") &&
       isMultipleAOrN(wordUnit.modifyingParticle)
     ) {
       throw new UnrecognizedError(
