@@ -376,7 +376,7 @@ function modifiers(): AstParser<Array<Modifier>> {
           .map((words) => ({ type: "proper words", words }) as Modifier)
           .filter(filter(MODIFIER_RULES)),
         quotation()
-          .map((quotation) => ({ type: "quotation", quotation }) as Modifier)
+          .map((quotation) => ({ type: "quotation", ...quotation }) as Modifier)
           .filter(filter(MODIFIER_RULES)),
       ),
     ),
@@ -446,7 +446,9 @@ function phrase_(): AstParser<Phrase> {
         }) as Phrase
       ),
     preposition()
-      .map((preposition) => ({ type: "preposition", preposition }) as Phrase),
+      .map((preposition) =>
+        ({ ...preposition, type: "preposition" }) as Phrase
+      ),
     sequence(
       optionalCombined(CONTENT_WORD, "content word"),
       modifiers(),
@@ -461,7 +463,7 @@ function phrase_(): AstParser<Phrase> {
         }) as Phrase
       ),
     quotation()
-      .map((quotation) => ({ type: "quotation", quotation }) as Phrase),
+      .map((quotation) => ({ ...quotation, type: "quotation" }) as Phrase),
   )
     .filter(filter(PHRASE_RULE));
 }
@@ -759,7 +761,7 @@ function clause(): AstParser<Clause> {
         ({ type: "o clause", subjects, predicates }) as Clause
       ),
     quotation().map((quotation) =>
-      ({ type: "quotation", quotation }) as Clause
+      ({ ...quotation, type: "quotation" }) as Clause
     ),
   )
     .filter(filter(CLAUSE_RULE));

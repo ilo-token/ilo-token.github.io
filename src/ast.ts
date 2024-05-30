@@ -5,23 +5,15 @@ export type ModifyingParticle =
   | { type: "word"; word: string }
   | { type: "long word"; word: string; length: number }
   | { type: "multiple a"; count: number };
+export type SimpleWordUnit =
+  | { type: "default"; word: string }
+  | { type: "x ala x"; word: string }
+  | { type: "reduplication"; word: string; count: number }
+  | { type: "number"; number: number };
 /** Represents a word unit. */
 export type WordUnit =
-  | {
-    type: "default";
-    word: string;
-    modifyingParticle: null | ModifyingParticle;
-  }
-  | { type: "x ala x"; word: string }
-  | {
-    type: "reduplication";
-    word: string;
-    count: number;
-    modifyingParticle: null | ModifyingParticle;
-  }
-  | {
-    type: "number";
-    number: number;
+  & SimpleWordUnit
+  & {
     modifyingParticle: null | ModifyingParticle;
   };
 /** Represents a single modifier. */
@@ -30,7 +22,7 @@ export type Modifier =
   | { type: "proper words"; words: string }
   | { type: "pi"; phrase: Phrase }
   | { type: "nanpa"; nanpa: WordUnit; phrase: Phrase }
-  | { type: "quotation"; quotation: Quotation };
+  | ({ type: "quotation" } & Quotation);
 /**
  * Represents a phrase including preverbial phrases, quotations, and
  * prepositional phrases intended for predicate.
@@ -49,8 +41,8 @@ export type Phrase =
     phrase: Phrase;
     modifyingParticle: null | ModifyingParticle;
   }
-  | { type: "preposition"; preposition: Preposition }
-  | { type: "quotation"; quotation: Quotation };
+  | ({ type: "preposition" } & Preposition)
+  | ({ type: "quotation" } & Quotation);
 /** Represents multiple phrases separated by repeated particle or "anu". */
 export type MultiplePhrases =
   | { type: "single"; phrase: Phrase }
@@ -90,7 +82,7 @@ export type Clause =
     predicates: MultiplePredicates;
   }
   | { type: "prepositions"; prepositions: Array<Preposition> }
-  | { type: "quotation"; quotation: Quotation };
+  | ({ type: "quotation" } & Quotation);
 /** Represents a clause including preclauses and postclauses. */
 export type FullClause =
   | {

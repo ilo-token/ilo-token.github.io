@@ -43,12 +43,7 @@ export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
   },
   // "n" and multiple "a" cannot modify a word
   (wordUnit) => {
-    if (
-      (wordUnit.type === "default" ||
-        wordUnit.type === "reduplication" ||
-        wordUnit.type === "number") &&
-      isMultipleAOrN(wordUnit.modifyingParticle)
-    ) {
+    if (isMultipleAOrN(wordUnit.modifyingParticle)) {
       throw new UnrecognizedError(
         `${describe(wordUnit.modifyingParticle!)} modifying a word`,
       );
@@ -416,10 +411,9 @@ export function someModifierInPhrase(
       return phrase.modifiers.some(checker) ||
         someModifierInPhrase(phrase.phrase, whenQuotation, checker);
     case "preposition": {
-      const { preposition } = phrase;
-      return preposition.modifiers.some(checker) ||
+      return phrase.modifiers.some(checker) ||
         someModifierInMultiplePhrases(
-          preposition.phrases,
+          phrase.phrases,
           whenQuotation,
           checker,
         );
@@ -533,9 +527,8 @@ function phraseHasTopLevelModifyingParticle(phrase: Phrase): boolean {
   switch (phrase.type) {
     case "default":
     case "preverb":
-      return phrase.modifyingParticle != null;
     case "preposition":
-      return phrase.preposition.modifyingParticle != null;
+      return phrase.modifyingParticle != null;
     case "quotation":
       return false;
   }
