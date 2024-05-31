@@ -148,6 +148,23 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
     }
     return true;
   },
+  // pi cannot have modifying particle
+  (modifier) => {
+    if (modifier.type === "pi") {
+      const phrase = modifier.phrase;
+      if (
+        (
+          phrase.type === "default" ||
+          phrase.type === "preverb" ||
+          phrase.type === "preposition"
+        ) &&
+        phrase.modifyingParticle != null
+      ) {
+        return false;
+      }
+    }
+    return true;
+  },
 ];
 /** Array of filter rules for multiple modifiers. */
 export const MULTIPLE_MODIFIERS_RULES: Array<
