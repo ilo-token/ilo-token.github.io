@@ -34,7 +34,8 @@ export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
       wordUnit.type === "default" ||
       wordUnit.type === "reduplication" ||
       wordUnit.type === "x ala x"
-    ) && wordUnit.word === "anu";
+    ) &&
+      wordUnit.word === "anu";
     if (isAnu) {
       throw new UnrecognizedError("anu as content word");
     } else {
