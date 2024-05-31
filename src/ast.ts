@@ -1,7 +1,7 @@
 /** Module for describing Toki Pona AST. */
 
-/** Represents a modifying particle. */
-export type ModifyingParticle =
+/** Represents an emphasis particle. */
+export type Emphasis =
   | { type: "word"; word: string }
   | { type: "long word"; word: string; length: number }
   | { type: "multiple a"; count: number };
@@ -14,7 +14,7 @@ export type SimpleWordUnit =
 export type WordUnit =
   & SimpleWordUnit
   & {
-    modifyingParticle: null | ModifyingParticle;
+    emphasis: null | Emphasis;
   };
 /** Represents a single modifier. */
 export type Modifier =
@@ -32,14 +32,14 @@ export type Phrase =
     type: "default";
     headWord: WordUnit;
     modifiers: Array<Modifier>;
-    modifyingParticle: null | ModifyingParticle;
+    emphasis: null | Emphasis;
   }
   | {
     type: "preverb";
     preverb: WordUnit;
     modifiers: Array<Modifier>;
     phrase: Phrase;
-    modifyingParticle: null | ModifyingParticle;
+    emphasis: null | Emphasis;
   }
   | ({ type: "preposition" } & Preposition)
   | ({ type: "quotation" } & Quotation);
@@ -53,7 +53,7 @@ export type Preposition = {
   preposition: WordUnit;
   modifiers: Array<Modifier>;
   phrases: MultiplePhrases & { type: "single" | "anu" };
-  modifyingParticle: null | ModifyingParticle;
+  emphasis: null | Emphasis;
 };
 /** Represents multiple predicates. */
 export type MultiplePredicates =
@@ -87,13 +87,13 @@ export type Clause =
 export type FullClause =
   | {
     type: "default";
-    startingParticle: null | ModifyingParticle;
+    startingParticle: null | Emphasis;
     kinOrTaso: null | WordUnit;
     clause: Clause;
     anuSeme: null | WordUnit;
-    endingParticle: null | ModifyingParticle;
+    endingParticle: null | Emphasis;
   }
-  | { type: "filler"; modifyingParticle: ModifyingParticle };
+  | { type: "filler"; emphasis: Emphasis };
 /** Represents a single full sentence. */
 export type Sentence = {
   laClauses: Array<FullClause>;

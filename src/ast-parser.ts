@@ -4,7 +4,7 @@ import {
   Clause,
   FullClause,
   Modifier,
-  ModifyingParticle,
+  Emphasis,
   MultiplePhrases,
   MultiplePredicates,
   MultipleSentences,
@@ -135,8 +135,8 @@ function specificWord(thatWord: string): AstParser<string> {
     else throw new UnexpectedError(`"${thisWord}"`, `"${thatWord}"`);
   });
 }
-/** Parses a modifying particle. */
-function modifyingParticle(): AstParser<ModifyingParticle> {
+/** Parses an emphasis particle. */
+function emphasis(): AstParser<Emphasis> {
   return choice(
     specificTokenTree("long glyph space").map((longGlyph) => {
       if (longGlyph.words.length !== 1) {
@@ -153,20 +153,20 @@ function modifyingParticle(): AstParser<ModifyingParticle> {
         type: "long word",
         word,
         length: longGlyph.spaceLength,
-      } as ModifyingParticle;
+      } as Emphasis;
     }),
     specificTokenTree("multiple a")
-      .map(({ count }) => ({ type: "multiple a", count }) as ModifyingParticle),
+      .map(({ count }) => ({ type: "multiple a", count }) as Emphasis),
     specificTokenTree("long word")
       .map(({ word, length }) =>
-        ({ type: "long word", word, length }) as ModifyingParticle
+        ({ type: "long word", word, length }) as Emphasis
       ),
     wordFrom(new Set(["a", "n"]), "a/n")
-      .map((word) => ({ type: "word", word }) as ModifyingParticle),
+      .map((word) => ({ type: "word", word }) as Emphasis),
   );
 }
-function optionalModifyingParticle(): AstParser<null | ModifyingParticle> {
-  return optional(modifyingParticle());
+function optionalEmphasis(): AstParser<null | Emphasis> {
+  return optional(emphasis());
 }
 /** Parses a side of long X ala X construction. */
 function parseXAlaXSide(tokenTrees: Array<TokenTree>, name: string): TokenTree {
@@ -248,11 +248,11 @@ function simpleWordUnit(
 function wordUnit(word: Set<string>, description: string): AstParser<WordUnit> {
   return sequence(
     simpleWordUnit(word, description),
-    optionalModifyingParticle(),
+    optionalEmphasis(),
   )
-    .map(([wordUnit, modifyingParticle]) => ({
+    .map(([wordUnit, emphasis]) => ({
       ...wordUnit,
-      modifyingParticle,
+      emphasis,
     }))
     .filter(filter(WORD_UNIT_RULES));
 }
@@ -375,11 +375,11 @@ function modifiers(): AstParser<Array<Modifier>> {
   return sequence(
     many(
       choice(
-        sequence(number(), optionalModifyingParticle())
-          .map(([number, modifyingParticle]) =>
+        sequence(number(), optionalEmphasis())
+          .map(([number, emphasis]) =>
             ({
               type: "default",
-              word: { type: "number", number, modifyingParticle },
+              word: { type: "number", number, emphasis },
             }) as Modifier
           )
           .filter(filter(MODIFIER_RULES)),
@@ -418,45 +418,45 @@ function phrase_(): AstParser<Phrase> {
   return choice(
     sequence(
       number(),
-      optionalModifyingParticle(),
+      optionalEmphasis(),
       modifiers(),
-      optionalModifyingParticle(),
+      optionalEmphasis(),
     )
       .map(([number, wordModifier, modifiers, phraseModifier]) =>
         ({
           type: "default",
-          headWord: { type: "number", number, modifyingParticle: wordModifier },
+          headWord: { type: "number", number, emphasis: wordModifier },
           modifiers,
-          modifyingParticle: phraseModifier,
+          emphasis: phraseModifier,
         }) as Phrase
       ),
     binaryWords(PREVERB, "preveb").map(([preverb, phrase]) =>
       ({
         type: "preverb",
-        preverb: { type: "default", word: preverb, modifyingParticle: null },
+        preverb: { type: "default", word: preverb, emphasis: null },
         modifiers: [],
         phrase: {
           type: "default",
-          headWord: { type: "default", word: phrase, modifyingParticle: null },
+          headWord: { type: "default", word: phrase, emphasis: null },
           modifiers: [],
-          modifyingParticle: null,
+          emphasis: null,
         },
-        modifyingParticle: null,
+        emphasis: null,
       }) as Phrase
     ),
     sequence(
       optionalCombined(PREVERB, "preverb"),
       modifiers(),
       phrase(),
-      optionalModifyingParticle(),
+      optionalEmphasis(),
     )
-      .map(([[preverb, modifier], modifiers, phrase, modifyingParticle]) =>
+      .map(([[preverb, modifier], modifiers, phrase, emphasis]) =>
         ({
           type: "preverb",
           preverb,
           modifiers: [...modifier, ...modifiers],
           phrase,
-          modifyingParticle,
+          emphasis,
         }) as Phrase
       ),
     preposition()
@@ -466,14 +466,14 @@ function phrase_(): AstParser<Phrase> {
     sequence(
       optionalCombined(CONTENT_WORD, "content word"),
       modifiers(),
-      optionalModifyingParticle(),
+      optionalEmphasis(),
     )
-      .map(([[headWord, modifier], modifiers, modifyingParticle]) =>
+      .map(([[headWord, modifier], modifiers, emphasis]) =>
         ({
           type: "default",
           headWord,
           modifiers: [...modifier, ...modifiers],
-          modifyingParticle,
+          emphasis,
         }) as Phrase
       ),
     quotation()
@@ -548,11 +548,11 @@ function preposition(): AstParser<Preposition> {
           preposition: {
             type: "default",
             word: "lon",
-            modifyingParticle: null,
+            emphasis: null,
           },
           modifiers: [],
           phrases: { type: "single", phrase },
-          modifyingParticle: null,
+          emphasis: null,
         }) as Preposition
       ),
     specificTokenTree("long glyph").flatMapValue((tokenTrees) => {
@@ -594,7 +594,7 @@ function preposition(): AstParser<Preposition> {
         preposition: {
           type: "default",
           word: preposition,
-          modifyingParticle: null,
+          emphasis: null,
         },
         modifiers: [],
         phrases: {
@@ -604,27 +604,27 @@ function preposition(): AstParser<Preposition> {
             headWord: {
               type: "default",
               word: phrase,
-              modifyingParticle: null,
+              emphasis: null,
             },
             modifiers: [],
-            modifyingParticle: null,
+            emphasis: null,
           },
         },
-        modifyingParticle: null,
+        emphasis: null,
       }) as Preposition
     ),
     sequence(
       optionalCombined(PREPOSITION, "preposition"),
       modifiers(),
       nestedPhrases(["anu"]),
-      optionalModifyingParticle(),
+      optionalEmphasis(),
     )
-      .map(([[preposition, modifier], modifiers, phrases, modifyingParticle]) =>
+      .map(([[preposition, modifier], modifiers, phrases, emphasis]) =>
         ({
           preposition,
           modifiers: [...modifier, ...modifiers],
           phrases,
-          modifyingParticle,
+          emphasis,
         }) as Preposition
       ),
   )
@@ -717,11 +717,11 @@ function clause(): AstParser<Clause> {
               headWord: {
                 type: "default",
                 word: subject,
-                modifyingParticle: null,
+                emphasis: null,
               },
               alaQuestion: false,
               modifiers: [],
-              modifyingParticle: null,
+              emphasis: null,
             },
           },
           predicates,
@@ -784,7 +784,7 @@ function clause(): AstParser<Clause> {
 function fullClause(): AstParser<FullClause> {
   return choice(
     sequence(
-      optional(modifyingParticle().skip(optionalComma())),
+      optional(emphasis().skip(optionalComma())),
       optional(
         wordUnit(new Set(["kin", "taso"]), "taso/kin").skip(optionalComma()),
       ),
@@ -794,7 +794,7 @@ function fullClause(): AstParser<FullClause> {
           .with(specificWord("anu"))
           .with(wordUnit(new Set(["seme"]), '"seme"')),
       ),
-      optional(optionalComma().with(modifyingParticle())),
+      optional(optionalComma().with(emphasis())),
     )
       .map(([startingParticle, kinOrTaso, clause, anuSeme, endingParticle]) =>
         ({
@@ -806,9 +806,9 @@ function fullClause(): AstParser<FullClause> {
           endingParticle,
         }) as FullClause
       ),
-    modifyingParticle()
-      .map((modifyingParticle) =>
-        ({ type: "filler", modifyingParticle }) as FullClause
+    emphasis()
+      .map((emphasis) =>
+        ({ type: "filler", emphasis }) as FullClause
       ),
   )
     .filter(filter(FULL_CLAUSE_RULE));

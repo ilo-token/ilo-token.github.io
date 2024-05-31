@@ -4,7 +4,7 @@ import {
   Clause,
   FullClause,
   Modifier,
-  ModifyingParticle,
+  Emphasis,
   MultiplePhrases,
   MultiplePredicates,
   Phrase,
@@ -44,9 +44,9 @@ export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
   },
   // "n" and multiple "a" cannot modify a word
   (wordUnit) => {
-    if (isMultipleAOrN(wordUnit.modifyingParticle)) {
+    if (isMultipleAOrN(wordUnit.emphasis)) {
       throw new UnrecognizedError(
-        `${describe(wordUnit.modifyingParticle!)} modifying a word`,
+        `${describe(wordUnit.emphasis!)} modifying a word`,
       );
     }
     return true;
@@ -149,7 +149,7 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
     }
     return true;
   },
-  // pi cannot have modifying particle
+  // pi cannot have emphasis particle
   (modifier) => {
     if (modifier.type === "pi") {
       const phrase = modifier.phrase;
@@ -159,14 +159,14 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
           phrase.type === "preverb" ||
           phrase.type === "preposition"
         ) &&
-        phrase.modifyingParticle != null
+        phrase.emphasis != null
       ) {
         return false;
       }
     }
     return true;
   },
-  // nanpa cannot have modifying particle
+  // nanpa cannot have emphasis particle
   (modifier) => {
     if (modifier.type === "nanpa") {
       const phrase = modifier.phrase;
@@ -176,7 +176,7 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
           phrase.type === "preverb" ||
           phrase.type === "preposition"
         ) &&
-        phrase.modifyingParticle != null
+        phrase.emphasis != null
       ) {
         return false;
       }
@@ -283,27 +283,27 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
     }
     return true;
   },
-  // If the phrase has no modifiers, avoid modifying particle
+  // If the phrase has no modifiers, avoid emphasis particle
   (phrase) =>
     phrase.type !== "default" ||
-    phrase.modifyingParticle == null ||
+    phrase.emphasis == null ||
     phrase.modifiers.length !== 0,
   // "n" and multiple "a" cannot modify a phrase
   (wordUnit) => {
     if (
       (wordUnit.type === "default" || wordUnit.type === "preverb") &&
-      isMultipleAOrN(wordUnit.modifyingParticle)
+      isMultipleAOrN(wordUnit.emphasis)
     ) {
       throw new UnrecognizedError(
-        `${describe(wordUnit.modifyingParticle!)} modifying a word`,
+        `${describe(wordUnit.emphasis!)} modifying a word`,
       );
     }
     return true;
   },
-  // For preverbs, inner phrase must not have modifying particle
+  // For preverbs, inner phrase must not have emphasis particle
   (phrase) =>
     phrase.type !== "preverb" ||
-    !phraseHasTopLevelModifyingParticle(phrase.phrase),
+    !phraseHasTopLevelEmphasis(phrase.phrase),
 ];
 /** Array of filter rules for preposition. */
 export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
@@ -325,20 +325,20 @@ export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
   },
   // "n" and multiple "a" cannot modify a preposition
   (wordUnit) => {
-    if (isMultipleAOrN(wordUnit.modifyingParticle)) {
+    if (isMultipleAOrN(wordUnit.emphasis)) {
       throw new UnrecognizedError(
-        `${describe(wordUnit.modifyingParticle!)} modifying a word`,
+        `${describe(wordUnit.emphasis!)} modifying a word`,
       );
     }
     return true;
   },
-  // Preposition with "anu" must not have modifying particle
+  // Preposition with "anu" must not have emphasis particle
   (preposition) =>
-    preposition.modifyingParticle == null || preposition.phrases.type !== "anu",
-  // Inner phrase must not have modifying particle
+    preposition.emphasis == null || preposition.phrases.type !== "anu",
+  // Inner phrase must not have emphasis particle
   (preposition) =>
     preposition.phrases.type !== "single" ||
-    !phraseHasTopLevelModifyingParticle(preposition.phrases.phrase),
+    !phraseHasTopLevelEmphasis(preposition.phrases.phrase),
 ];
 /** Array of filter rules for clauses. */
 export const CLAUSE_RULE: Array<(clause: Clause) => boolean> = [
@@ -388,9 +388,9 @@ export const CLAUSE_RULE: Array<(clause: Clause) => boolean> = [
       if (
         phrase.type === "default" &&
         phrase.headWord.type === "default" &&
-        phrase.headWord.modifyingParticle == null &&
+        phrase.headWord.emphasis == null &&
         phrase.modifiers.length === 0 &&
-        phrase.modifyingParticle == null
+        phrase.emphasis == null
       ) {
         const word = phrase.headWord.word;
         if (word === "mi" || word === "sina") {
@@ -553,19 +553,19 @@ function hasPrepositionInPhrase(phrase: Phrase): boolean {
       return false;
   }
 }
-function isMultipleAOrN(modifyingParticle: null | ModifyingParticle): boolean {
-  return modifyingParticle != null &&
-    (modifyingParticle.type === "multiple a" ||
-      ((modifyingParticle.type === "word" ||
-        modifyingParticle.type === "long word") &&
-        modifyingParticle.word === "n"));
+function isMultipleAOrN(emphasis: null | Emphasis): boolean {
+  return emphasis != null &&
+    (emphasis.type === "multiple a" ||
+      ((emphasis.type === "word" ||
+        emphasis.type === "long word") &&
+        emphasis.word === "n"));
 }
-function phraseHasTopLevelModifyingParticle(phrase: Phrase): boolean {
+function phraseHasTopLevelEmphasis(phrase: Phrase): boolean {
   switch (phrase.type) {
     case "default":
     case "preverb":
     case "preposition":
-      return phrase.modifyingParticle != null;
+      return phrase.emphasis != null;
     case "quotation":
       return false;
   }
