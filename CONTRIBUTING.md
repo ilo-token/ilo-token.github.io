@@ -1,6 +1,6 @@
 # Contributing
 
-Thank you so much for considering to contribute! Here are useful information about the pages to get you started. Remember you can always ask for help in the [discussion](#Discussion) or privately through my email: [contactneverrare@gmail.com](mailto:contactneverrare@gmail.com)
+Thank you so much for considering to contribute! Here are useful information about the pages to get you started. Remember you can always ask for help in the [discussion](#Discussion) or privately through my email: [neverrare@proton.me](mailto:neverrare@proton.me)
 
 ## [Wiki](https://github.com/ilo-token/ilo-token.github.io/wiki)
 
@@ -46,7 +46,7 @@ As a thank you for contributing, you'll get a shout out in the changelog!
 If you have no github account or want to provide feedback privately, these are alternative contact options:
 
 - [Google forms](https://docs.google.com/forms/d/e/1FAIpQLSfdDEMbde9mieybZdbZr8haRzNzGsg0BVkuTIzuHaATCdcrlw/viewform?usp=sf_link)
-- Email: [contactneverrare@gmail.com](mailto:contactneverrare@gmail.com)
+- Email: [neverrare@proton.me](mailto:neverrare@proton.me)
 
 ilo Token have a dedicated space for the following Discord server. Although these server themselves serves as a space for broader topics, not just ilo Token.
 
