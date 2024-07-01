@@ -1470,4 +1470,3 @@ function adverb(word: string): Definition & { type: "adverb" } {
 function interjection(word: string): Definition & { type: "interjection" } {
   return { type: "interjection", interjection: word };
 }
-console.log(parseVerb("break/broke up"));
