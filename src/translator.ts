@@ -16,32 +16,32 @@ import { settings } from "./settings.ts";
 function clause(clause: TokiPona.Clause): Output<Array<English.Clause>> {
   return new Output(new TodoError("translation of clause"));
 }
-function filler(filler: TokiPona.Emphasis): Output<string> {
+function filler(filler: TokiPona.Emphasis): Array<string> {
   switch (filler.type) {
     case "word":
       switch (filler.word as "a" | "n") {
         case "a":
-          return new Output(["ah", "oh", "ha", "eh", "um", "oy"]);
+          return ["ah", "oh", "ha", "eh", "um", "oy"];
         case "n":
-          return new Output(["hm", "uh", "mm", "er", "um"]);
+          return ["hm", "uh", "mm", "er", "um"];
       }
       // unreachable
       // fallthrough
     case "long word": {
-      let output: Output<string>;
+      let output: Array<string>;
       switch (filler.word as "a" | "n") {
         case "a":
-          output = new Output(["ah", "oh", "ha", "eh", "um"]);
+          output = ["ah", "oh", "ha", "eh", "um"];
           break;
         case "n":
-          output = new Output(["hm", "uh", "mm", "um"]);
+          output = ["hm", "uh", "mm", "um"];
           break;
       }
       return output
         .map(([first, second]) => `${first}${repeat(second, filler.length)}`);
     }
     case "multiple a":
-      return new Output([repeat("ha", filler.count)]);
+      return [repeat("ha", filler.count)];
   }
 }
 function sentence(
@@ -51,7 +51,7 @@ function sentence(
     if (sentence.laClauses.length !== 0) {
       return new Output(new UnrecognizedError('filler with "la"'));
     }
-    return filler(sentence.finalClause.emphasis)
+    return new Output(filler(sentence.finalClause.emphasis))
       .map((interjection) =>
         ({
           clause: {
