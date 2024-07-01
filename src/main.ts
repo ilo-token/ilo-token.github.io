@@ -1,6 +1,6 @@
 /** Module for main execution in the browser. */
 
-import { translate } from "./old-translator.ts";
+import { translate } from "./composer.ts";
 import { settings } from "./settings.ts";
 import { errors } from "telo-misikeke/telo-misikeke.js";
 
