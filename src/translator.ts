@@ -1,6 +1,7 @@
 import { parse } from "./ast-parser.ts";
 import * as TokiPona from "./ast.ts";
 import {
+  CONTENT_WORD_DEFINITION,
   NUMERAL_DEFINITION,
   PARTICLE_DEFINITION,
   PREPOSITION_DEFINITION,
@@ -10,6 +11,7 @@ import * as English from "./english-ast.ts";
 import { TodoError, UnrecognizedError } from "./error.ts";
 import { nullableAsArray, repeat } from "./misc.ts";
 import { Output } from "./output.ts";
+import { settings } from "./settings.ts";
 
 function clause(clause: TokiPona.Clause): Output<Array<English.Clause>> {
   return new Output(new TodoError("translation of clause"));
@@ -64,6 +66,80 @@ function sentence(
     return new Output(new TodoError("translation of sentence"));
   }
 }
+function allDefinition(word: string): Array<string> {
+  return CONTENT_WORD_DEFINITION[word].flatMap((definition) => {
+    switch (definition.type) {
+      case "noun": {
+        let nouns: Array<string>;
+        switch (settings.get("number-settings")) {
+          case "both":
+            nouns = [
+              ...nullableAsArray(definition.singular),
+              ...nullableAsArray(definition.plural),
+            ];
+            break;
+          case "condensed":
+            nouns = [definition.condensed];
+            break;
+          case "default only":
+            if (definition.singular != null) {
+              nouns = [definition.singular];
+            } else {
+              nouns = [definition.plural!];
+            }
+        }
+        return nouns.map((noun) =>
+          `${
+            definition.adjectives
+              .map((adjective) => adjective.adjective)
+              .join(" ")
+          } ${noun}`
+        );
+      }
+      case "personal pronoun":
+        return [
+          ...nullableAsArray(definition.singularSubject),
+          ...nullableAsArray(definition.singularObject),
+          ...nullableAsArray(definition.pluralSubject),
+          ...nullableAsArray(definition.pluralObject),
+        ];
+      case "indefinite pronoun":
+        return [definition.pronoun];
+      case "adjective":
+        return [
+          `${
+            definition.adverbs.map((adverb) => adverb.adverb).join(" ")
+          } ${definition.adjective}`,
+        ];
+      case "compound adjective": {
+        const { adjectives } = definition;
+        if (adjectives.length === 2) {
+          return [
+            adjectives
+              .map((adjective) => adjective.adjective)
+              .join(" and "),
+          ];
+        } else {
+          const lastIndex = adjectives.length - 1;
+          const init = adjectives.slice(0, lastIndex);
+          const last = adjectives[lastIndex];
+          return `${
+            init.map((adjective) => adjective.adjective).join(", ")
+          }, and ${last.adjective}`;
+        }
+      }
+      case "determiner":
+        return [definition.determiner];
+      case "adverb":
+        return [definition.adverb];
+      case "verb":
+        // TODO
+        return [];
+      case "interjection":
+        return [definition.interjection];
+    }
+  });
+}
 function multipleSentences(
   sentences: TokiPona.MultipleSentences,
 ): Output<Array<English.Sentence>> {
@@ -76,7 +152,7 @@ function multipleSentences(
         ...nullableAsArray(NUMERAL_DEFINITION[word]).map((num) => `${num}`),
         // TODO: Preverb
         ...SPECIAL_CONTENT_WORD_DEFINITION[word] ?? [],
-        // TODO: Content word definition
+        ...allDefinition(word),
       ])
         .map((definition) =>
           ({
