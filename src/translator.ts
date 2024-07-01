@@ -14,30 +14,33 @@ import { Output } from "./output.ts";
 function clause(clause: TokiPona.Clause): Output<Array<English.Clause>> {
   return new Output(new TodoError("translation of clause"));
 }
-function filler(
-  filler: TokiPona.Emphasis,
-): string {
+function filler(filler: TokiPona.Emphasis): Output<string> {
   switch (filler.type) {
     case "word":
       switch (filler.word as "a" | "n") {
         case "a":
-          return "ah";
+          return new Output(["ah", "oh", "ha", "eh", "um", "oy"]);
         case "n":
-          return "hm";
+          return new Output(["hm", "uh", "mm", "er", "um"]);
       }
       // unreachable
       // fallthrough
-    case "long word":
+    case "long word": {
+      let output: Output<string>;
       switch (filler.word as "a" | "n") {
         case "a":
-          return `${repeat("a", filler.length)}h`;
+          output = new Output(["ah", "oh", "ha", "eh", "um"]);
+          break;
         case "n":
-          return `h${repeat("m", filler.length)}`;
+          output = new Output(["hm", "uh", "mm", "um"]);
+          break;
       }
-      // unreachable
-      // fallthrough
+      return output.map(
+        ([first, second]) => `${first}${repeat(second, filler.length)}`,
+      );
+    }
     case "multiple a":
-      return repeat("ha", filler.count);
+      return new Output([repeat("ha", filler.count)]);
   }
 }
 function sentence(
@@ -47,13 +50,17 @@ function sentence(
     if (sentence.laClauses.length !== 0) {
       return new Output(new UnrecognizedError('filler with "la"'));
     }
-    return new Output([[{
-      clause: {
-        type: "interjection",
-        interjection: filler(sentence.finalClause.emphasis),
-      },
-      punctuation: sentence.punctuation,
-    }]]);
+    return filler(sentence.finalClause.emphasis)
+      .map((interjection) =>
+        ({
+          clause: {
+            type: "interjection",
+            interjection,
+          },
+          punctuation: sentence.punctuation,
+        }) as English.Sentence
+      )
+      .map((sentence) => [sentence]);
   } else {
     return new Output(new TodoError("translation of sentence"));
   }
