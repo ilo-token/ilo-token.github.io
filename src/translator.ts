@@ -40,15 +40,6 @@ function filler(
       return repeat("ha", filler.count);
   }
 }
-function extractEmphasis(sentence: TokiPona.Sentence): {
-  preEmphasis: TokiPona.Emphasis;
-  laClauses: Array<TokiPona.Clause>;
-  finalClause: TokiPona.Clause;
-  postEmphasis: TokiPona.Emphasis;
-  punctuation: string;
-} {
-  throw new Error("todo");
-}
 function sentence(
   sentence: TokiPona.Sentence,
 ): Output<Array<English.Sentence>> {
@@ -64,7 +55,6 @@ function sentence(
       punctuation: sentence.punctuation,
     }]]);
   } else {
-    const extracted = extractEmphasis(sentence);
     return new Output(new TodoError("translation of sentence"));
   }
 }
