@@ -5,3 +5,6 @@ export function nullableAsArray<T>(value?: T | null | undefined): Array<T> {
     return [value];
   }
 }
+export function repeat(text: string, count: number): string {
+  return new Array(count).fill(text).join("");
+}
