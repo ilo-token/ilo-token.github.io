@@ -82,11 +82,8 @@ function allDefinition(word: string): Array<string> {
             nouns = [definition.condensed];
             break;
           case "default only":
-            if (definition.singular != null) {
-              nouns = [definition.singular];
-            } else {
-              nouns = [definition.plural!];
-            }
+            nouns = [definition.singular ?? definition.plural!];
+            break;
         }
         return nouns.map((noun) =>
           `${
