@@ -67,7 +67,11 @@ function sentence(
   }
 }
 function allDefinition(word: string): Array<string> {
-  return CONTENT_WORD_DEFINITION[word].flatMap((definition) => {
+  const definitions = CONTENT_WORD_DEFINITION[word];
+  if (definitions == null) {
+    return [];
+  }
+  return definitions.flatMap((definition) => {
     switch (definition.type) {
       case "noun": {
         let nouns: Array<string>;
