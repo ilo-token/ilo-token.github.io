@@ -1247,7 +1247,7 @@ export const PREPOSITION = new Set(Object.keys(PREPOSITION_DEFINITION));
 export const TOKI_PONA_WORD = new Set([...PARTICLE, ...CONTENT_WORD]);
 
 function noun(word: string): Definition & { type: "noun" } {
-  const paren = word.match(/([a-z]*)\(([a-z]*)\)/);
+  const paren = word.match(/^([a-z ]+)\(([a-z]+)\)$/);
   let singular: string;
   let plural: string;
   if (paren != null) {
@@ -1340,7 +1340,7 @@ function parseVerb(word: string): {
   present: string;
   condensed: string;
 } {
-  const paren = word.match(/([a-z]*)\(([a-z]*)\)(| [a-z]*)/);
+  const paren = word.match(/^([a-z]+)\(([a-z]+)\)( [a-z]+|)$/);
   let present: string;
   let past: string;
   if (paren != null) {
@@ -1348,7 +1348,7 @@ function parseVerb(word: string): {
     present = first + third;
     past = first + second + third;
   } else {
-    const slash = word.match(/([a-z*])\/([a-z]*)(| [a-z]*)/);
+    const slash = word.match(/^([a-z]+)\/([a-z]+)( [a-z]+|)$/);
     if (slash != null) {
       const [_, first, second, third] = slash;
       present = first + third;
@@ -1470,3 +1470,4 @@ function adverb(word: string): Definition & { type: "adverb" } {
 function interjection(word: string): Definition & { type: "interjection" } {
   return { type: "interjection", interjection: word };
 }
+console.log(parseVerb("break/broke up"));
