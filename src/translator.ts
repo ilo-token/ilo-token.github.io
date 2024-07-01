@@ -23,7 +23,7 @@ function filler(filler: TokiPona.Emphasis): Array<string> {
         case "a":
           return ["ah", "oh", "ha", "eh", "um", "oy"];
         case "n":
-          return ["hm", "uh", "mm", "er", "um"];
+          return ["hm", "uh", "mm", "er", "umm"];
       }
       // unreachable
       // fallthrough
