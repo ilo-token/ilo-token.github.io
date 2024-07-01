@@ -133,9 +133,25 @@ function allDefinition(word: string): Array<string> {
         return [definition.determiner];
       case "adverb":
         return [definition.adverb];
-      case "verb":
-        // TODO
-        return [];
+      case "verb": {
+        let verbs: Array<string>;
+        switch (settings.get("tense-settings")) {
+          case "both":
+            verbs = [
+              definition.past,
+              definition.present,
+              `will ${definition.present}`,
+            ];
+            break;
+          case "condensed":
+            verbs = [`(will) ${definition.condensed}`];
+            break;
+          case "default only":
+            verbs = [definition.present];
+            break;
+        }
+        return [...verbs, definition.pastParticiple, definition.gerund];
+      }
       case "interjection":
         return [definition.interjection];
     }
