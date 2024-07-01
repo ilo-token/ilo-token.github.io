@@ -150,7 +150,11 @@ function allDefinition(word: string): Array<string> {
             verbs = [definition.present];
             break;
         }
-        return [...verbs, definition.pastParticiple, definition.gerund];
+        let pastParticiple: null | string = null;
+        if (definition.pastParticiple !== definition.past) {
+          pastParticiple = definition.pastParticiple;
+        }
+        return [...verbs, ...nullableAsArray(pastParticiple), definition.gerund];
       }
       case "interjection":
         return [definition.interjection];
