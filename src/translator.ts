@@ -35,9 +35,8 @@ function filler(filler: TokiPona.Emphasis): Output<string> {
           output = new Output(["hm", "uh", "mm", "um"]);
           break;
       }
-      return output.map(
-        ([first, second]) => `${first}${repeat(second, filler.length)}`,
-      );
+      return output
+        .map(([first, second]) => `${first}${repeat(second, filler.length)}`);
     }
     case "multiple a":
       return new Output([repeat("ha", filler.count)]);
