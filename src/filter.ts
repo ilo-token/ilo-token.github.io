@@ -2,9 +2,9 @@
 
 import {
   Clause,
+  Emphasis,
   FullClause,
   Modifier,
-  Emphasis,
   MultiplePhrases,
   MultiplePredicates,
   Phrase,
@@ -409,6 +409,17 @@ export const FULL_CLAUSE_RULE: Array<(fullClase: FullClause) => boolean> = [
         fullClause.kinOrTaso != null && fullClause.kinOrTaso.type === "x ala x"
       ) {
         throw new UnrecognizedError('"taso ala taso"');
+      }
+    }
+    return true;
+  },
+];
+export const SENTENCE_RULE: Array<(sentence: Sentence) => boolean> = [
+  // If the final clause is a filler, there must be no "la" clauses
+  (sentence) => {
+    if (sentence.finalClause.type === "filler") {
+      if (sentence.laClauses.length !== 0) {
+        throw new UnrecognizedError('filler with "la"');
       }
     }
     return true;

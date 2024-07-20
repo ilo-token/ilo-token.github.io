@@ -8,7 +8,7 @@ import {
   SPECIAL_CONTENT_WORD_DEFINITION,
 } from "./dictionary.ts";
 import * as English from "./english-ast.ts";
-import { TodoError, UnrecognizedError } from "./error.ts";
+import { TodoError } from "./error.ts";
 import { nullableAsArray, repeat } from "./misc.ts";
 import { Output } from "./output.ts";
 import { settings } from "./settings.ts";
@@ -48,9 +48,6 @@ function sentence(
   sentence: TokiPona.Sentence,
 ): Output<Array<English.Sentence>> {
   if (sentence.finalClause.type === "filler") {
-    if (sentence.laClauses.length !== 0) {
-      return new Output(new UnrecognizedError('filler with "la"'));
-    }
     return new Output(filler(sentence.finalClause.emphasis))
       .map((interjection) =>
         ({
@@ -154,7 +151,11 @@ function allDefinition(word: string): Array<string> {
         if (definition.pastParticiple !== definition.past) {
           pastParticiple = definition.pastParticiple;
         }
-        return [...verbs, ...nullableAsArray(pastParticiple), definition.gerund];
+        return [
+          ...verbs,
+          ...nullableAsArray(pastParticiple),
+          definition.gerund,
+        ];
       }
       case "interjection":
         return [definition.interjection];

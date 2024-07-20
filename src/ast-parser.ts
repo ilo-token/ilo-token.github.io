@@ -2,9 +2,9 @@
 
 import {
   Clause,
+  Emphasis,
   FullClause,
   Modifier,
-  Emphasis,
   MultiplePhrases,
   MultiplePredicates,
   MultipleSentences,
@@ -33,6 +33,7 @@ import {
   MULTIPLE_SENTENCES_RULE,
   PHRASE_RULE,
   PREPOSITION_RULE,
+  SENTENCE_RULE,
   WORD_UNIT_RULES,
 } from "./filter.ts";
 import {
@@ -807,9 +808,7 @@ function fullClause(): AstParser<FullClause> {
         }) as FullClause
       ),
     emphasis()
-      .map((emphasis) =>
-        ({ type: "filler", emphasis }) as FullClause
-      ),
+      .map((emphasis) => ({ type: "filler", emphasis }) as FullClause),
   )
     .filter(filter(FULL_CLAUSE_RULE));
 }
@@ -835,7 +834,8 @@ function sentence(): AstParser<Sentence> {
       laClauses,
       finalClause,
       punctuation,
-    }));
+    }))
+    .filter(filter(SENTENCE_RULE));
 }
 /** Parses a sentence inside quotation. */
 const INNER_QUOTATION_PARSER = all(sentence())
