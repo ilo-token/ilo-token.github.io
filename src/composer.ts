@@ -5,7 +5,7 @@ import { Output } from "./output.ts";
 import { translate as translateToAst } from "./translator.ts";
 
 function clause(clause: Clause): string {
-  switch(clause.type) {
+  switch (clause.type) {
     case "free form":
       return clause.text;
     case "interjection":
@@ -23,7 +23,7 @@ export function translate(src: string): Output<string> {
       .map((sentences) => sentences.map(sentence).join(""));
   } catch (error) {
     if (error instanceof OutputError) {
-      return new Output(error)
+      return new Output(error);
     } else {
       throw error;
     }
