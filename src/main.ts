@@ -79,7 +79,10 @@ function outputErrors(errors: Array<string>, asHtml: boolean): void {
     elements!.error.innerText =
       "An unknown error has occurred (Errors should be known, please report this)";
   } else if (errors.length === 1) {
-    elements!.error[property] = errors[0];
+    elements!.error.innerText = "An error has been found:";
+    const list = document.createElement("li");
+    list[property] = errors[0];
+    elements!.errorList.appendChild(list);
   } else {
     elements!.error.innerText = "Multiple errors has been found:";
     for (const errorMessage of errors) {
