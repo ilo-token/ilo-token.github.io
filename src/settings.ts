@@ -160,7 +160,7 @@ const redundancyUpdater: Updater<RedundancySettings> = {
 };
 export const settings = new Setter<Settings>({
   "use-telo-misikeke": {
-    default: false,
+    default: true,
     updater: boolUpdater,
   },
   "randomize": {
