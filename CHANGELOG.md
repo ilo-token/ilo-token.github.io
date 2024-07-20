@@ -12,7 +12,7 @@ This is a huge update, now with configurable settings, UCSUR support, and expand
 - Implement settings dialog. [More info](https://github.com/ilo-token/ilo-token.github.io/wiki/Settings-Help).
 - Changes in error messages:
   - All possible errors will now be listed.
-  - ilo Token can now use telo misikeke for error messages. You can turn this on from the settings dialog.
+  - ilo Token now uses telo misikeke for error messages. This can be disabled from the settings.
 - Implement UCSUR support! It supports:
   - Cartouche with nasin sitelen kalama
   - Combined glyphs
