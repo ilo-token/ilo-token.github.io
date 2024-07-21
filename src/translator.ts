@@ -49,6 +49,7 @@ function sentence(
   sentence: TokiPona.Sentence,
 ): Output<Array<English.Sentence>> {
   if (sentence.finalClause.type === "filler") {
+    // This assumes there is no "la". Otherwise it is filtered.
     return new Output(filler(sentence.finalClause.emphasis))
       .map((interjection) =>
         ({
