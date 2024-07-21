@@ -400,7 +400,7 @@ function characterLongGlyph(
       .map((array) => array ?? []),
   )
     .skip(spaces())
-    .filter(([before, _, after]) => before.length !== 0 || after.length !== 0)
+    .filter(([before, _, after]) => before.length > 0 || after.length > 0)
     .map(([before, words, after]) => ({
       type: "long glyph",
       before,

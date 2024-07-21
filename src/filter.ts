@@ -287,7 +287,7 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
   (phrase) =>
     phrase.type !== "default" ||
     phrase.emphasis == null ||
-    phrase.modifiers.length !== 0,
+    phrase.modifiers.length > 0,
   // "n" and multiple "a" cannot modify a phrase
   (wordUnit) => {
     if (

@@ -345,7 +345,7 @@ function pi(): AstParser<Modifier & { type: "pi" }> {
   return choice(
     specificTokenTree("long glyph").flatMapValue(
       (longGlyph) => {
-        if (longGlyph.before.length !== 0) {
+        if (longGlyph.before.length > 0) {
           return new Output(
             new UnexpectedError("reverse long glyph", "long pi"),
           );
@@ -557,7 +557,7 @@ function preposition(): AstParser<Preposition> {
         }) as Preposition
       ),
     specificTokenTree("long glyph").flatMapValue((tokenTrees) => {
-      if (tokenTrees.before.length !== 0) {
+      if (tokenTrees.before.length > 0) {
         return new Output(
           new UnexpectedError("reverse long glyph", "forward long glyph"),
         );
@@ -647,7 +647,7 @@ function associatedPredicates(
     many(optionalComma().with(preposition())),
   )
     .filter(([_, objects, prepositions]) =>
-      objects != null || prepositions.length !== 0
+      objects != null || prepositions.length > 0
     )
     .sortBy(([_, _1, prepositions]) => -prepositions.length)
     .map(([predicates, objects, prepositions]) => ({

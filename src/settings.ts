@@ -34,7 +34,7 @@ const LOCAL_STORAGE_AVAILABLE = (() => {
         e.name === "NS_ERROR_DOM_QUOTA_REACHED") &&
       // acknowledge QuotaExceededError only if there's something already stored
       localStorage &&
-      localStorage.length !== 0
+      localStorage.length > 0
     );
   }
 })();
