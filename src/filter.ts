@@ -432,8 +432,7 @@ export const SENTENCE_RULE: Array<(sentence: Sentence) => boolean> = [
     if (sentence.laClauses.length > 0) {
       for (const clause of [...sentence.laClauses, sentence.finalClause]) {
         if (clause.type === "default" && clause.kinOrTaso != null) {
-          // TODO: better error message
-          throw new UnrecognizedError('"kin" or "taso" with "la"');
+          throw new UnrecognizedError(`${clause.kinOrTaso.word} particle with "la"`);
         }
       }
     }
@@ -445,8 +444,7 @@ export const SENTENCE_RULE: Array<(sentence: Sentence) => boolean> = [
       const clause of [...sentence.laClauses, sentence.finalClause].slice(1)
     ) {
       if (clause.type === "default" && clause.startingParticle != null) {
-        // TODO: better error message
-        throw new UnrecognizedError("starting particle inside sentence");
+        throw new UnrecognizedError("emphasis phrase inside sentence");
       }
     }
     return true;
@@ -455,8 +453,7 @@ export const SENTENCE_RULE: Array<(sentence: Sentence) => boolean> = [
   (sentence) => {
     for (const clause of sentence.laClauses) {
       if (clause.type === "default" && clause.endingParticle != null) {
-        // TODO: better error message
-        throw new UnrecognizedError("ending particle inside sentence");
+        throw new UnrecognizedError("emphasis phrase inside sentence");
       }
     }
     return true;
