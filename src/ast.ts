@@ -93,7 +93,7 @@ export type FullClause =
     startingParticle: null | Emphasis;
     kinOrTaso: null | HeadedWordUnit;
     clause: Clause;
-    anuSeme: null | WordUnit;
+    anuSeme: null | HeadedWordUnit;
     endingParticle: null | Emphasis;
   }
   | { type: "filler"; emphasis: Emphasis };
