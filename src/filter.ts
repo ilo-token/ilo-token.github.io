@@ -402,13 +402,14 @@ export const CLAUSE_RULE: Array<(clause: Clause) => boolean> = [
   },
 ];
 export const FULL_CLAUSE_RULE: Array<(fullClase: FullClause) => boolean> = [
-  // Prevent "taso ala taso"
+  // Prevent "taso ala taso" or "kin ala kin"
   (fullClause) => {
     if (fullClause.type === "default") {
       if (
         fullClause.kinOrTaso != null && fullClause.kinOrTaso.type === "x ala x"
       ) {
-        throw new UnrecognizedError('"taso ala taso"');
+        const word = fullClause.kinOrTaso.word;
+        throw new UnrecognizedError(`"${word} ala ${word}"`);
       }
     }
     return true;
