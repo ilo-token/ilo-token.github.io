@@ -416,11 +416,49 @@ export const FULL_CLAUSE_RULE: Array<(fullClase: FullClause) => boolean> = [
   },
 ];
 export const SENTENCE_RULE: Array<(sentence: Sentence) => boolean> = [
-  // If the final clause is a filler, there must be no "la" clauses
+  // If there is "la", there must be no filler
   (sentence) => {
-    if (sentence.finalClause.type === "filler") {
-      if (sentence.laClauses.length !== 0) {
-        throw new UnrecognizedError('filler with "la"');
+    if (sentence.laClauses.length > 0) {
+      for (const clause of [...sentence.laClauses, sentence.finalClause]) {
+        if (clause.type === "filler") {
+          throw new UnrecognizedError('filler with "la"');
+        }
+      }
+    }
+    return true;
+  },
+  // If there is "la", there can't be "taso" or "kin"
+  (sentence) => {
+    if (sentence.laClauses.length > 0) {
+      for (const clause of [...sentence.laClauses, sentence.finalClause]) {
+        if (clause.type === "default" && clause.kinOrTaso != null) {
+          // TODO: better error message
+          throw new UnrecognizedError('"kin" or "taso" with "la"');
+        }
+      }
+    }
+    return true;
+  },
+  // Only the first clause can have starting particle
+  (sentence) => {
+    for (
+      const clause of [...sentence.laClauses, sentence.finalClause].slice(1)
+    ) {
+      if (clause.type === "default" && clause.startingParticle != null) {
+        // TODO: better error message
+        throw new UnrecognizedError("starting particle inside sentence");
+      }
+    }
+    return true;
+  },
+  // Only the last clause can have ending particle
+  (sentence) => {
+    for (
+      const clause of [...sentence.laClauses, sentence.finalClause].slice(0, -1)
+    ) {
+      if (clause.type === "default" && clause.endingParticle != null) {
+        // TODO: better error message
+        throw new UnrecognizedError("ending particle inside sentence");
       }
     }
     return true;
