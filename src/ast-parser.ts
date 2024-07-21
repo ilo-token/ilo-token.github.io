@@ -4,6 +4,7 @@ import {
   Clause,
   Emphasis,
   FullClause,
+  HeadedWordUnit,
   Modifier,
   MultiplePhrases,
   MultiplePredicates,
@@ -12,6 +13,7 @@ import {
   Preposition,
   Quotation,
   Sentence,
+  SimpleHeadedWordUnit,
   SimpleWordUnit,
   WordUnit,
 } from "./ast.ts";
@@ -224,7 +226,7 @@ function xAlaX(
 function simpleWordUnit(
   word: Set<string>,
   description: string,
-): AstParser<SimpleWordUnit> {
+): AstParser<SimpleHeadedWordUnit> {
   return choice(
     sequence(
       wordFrom(word, description)
@@ -238,15 +240,18 @@ function simpleWordUnit(
           type: "reduplication",
           word,
           count,
-        }) as SimpleWordUnit
+        }) as SimpleHeadedWordUnit
       ),
     xAlaX(word, description),
     wordFrom(word, description)
-      .map((word) => ({ type: "default", word }) as WordUnit),
+      .map((word) => ({ type: "default", word }) as SimpleHeadedWordUnit),
   );
 }
 /** Parses word unit except numbers. */
-function wordUnit(word: Set<string>, description: string): AstParser<WordUnit> {
+function wordUnit(
+  word: Set<string>,
+  description: string,
+): AstParser<HeadedWordUnit> {
   return sequence(
     simpleWordUnit(word, description),
     optionalEmphasis(),

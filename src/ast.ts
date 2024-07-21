@@ -5,17 +5,20 @@ export type Emphasis =
   | { type: "word"; word: string }
   | { type: "long word"; word: string; length: number }
   | { type: "multiple a"; count: number };
-export type SimpleWordUnit =
+export type SimpleHeadedWordUnit =
   | { type: "default"; word: string }
   | { type: "x ala x"; word: string }
-  | { type: "reduplication"; word: string; count: number }
+  | { type: "reduplication"; word: string; count: number };
+export type SimpleWordUnit =
+  | SimpleHeadedWordUnit
   | { type: "number"; number: number };
+export type HeadedWordUnit =
+  & SimpleHeadedWordUnit
+  & { emphasis: null | Emphasis };
 /** Represents a word unit. */
 export type WordUnit =
   & SimpleWordUnit
-  & {
-    emphasis: null | Emphasis;
-  };
+  & { emphasis: null | Emphasis };
 /** Represents a single modifier. */
 export type Modifier =
   | { type: "default"; word: WordUnit }
@@ -36,7 +39,7 @@ export type Phrase =
   }
   | {
     type: "preverb";
-    preverb: WordUnit;
+    preverb: HeadedWordUnit;
     modifiers: Array<Modifier>;
     phrase: Phrase;
     emphasis: null | Emphasis;
@@ -50,7 +53,7 @@ export type MultiplePhrases =
   | { type: "anu"; phrases: Array<MultiplePhrases> };
 /** Represents a single prepositional phrase. */
 export type Preposition = {
-  preposition: WordUnit;
+  preposition: HeadedWordUnit;
   modifiers: Array<Modifier>;
   phrases: MultiplePhrases & { type: "single" | "anu" };
   emphasis: null | Emphasis;
@@ -88,7 +91,7 @@ export type FullClause =
   | {
     type: "default";
     startingParticle: null | Emphasis;
-    kinOrTaso: null | WordUnit;
+    kinOrTaso: null | HeadedWordUnit;
     clause: Clause;
     anuSeme: null | WordUnit;
     endingParticle: null | Emphasis;
