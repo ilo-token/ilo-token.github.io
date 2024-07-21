@@ -453,9 +453,7 @@ export const SENTENCE_RULE: Array<(sentence: Sentence) => boolean> = [
   },
   // Only the last clause can have ending particle
   (sentence) => {
-    for (
-      const clause of [...sentence.laClauses, sentence.finalClause].slice(0, -1)
-    ) {
+    for (const clause of sentence.laClauses) {
       if (clause.type === "default" && clause.endingParticle != null) {
         // TODO: better error message
         throw new UnrecognizedError("ending particle inside sentence");
