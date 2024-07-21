@@ -77,7 +77,7 @@ class Setter<T extends { [name: string]: unknown }> {
     for (const name of Object.keys(this.settings)) {
       const settings = this.settings[name];
       const src = localStorage.getItem(name);
-      if (typeof src === "string") {
+      if (src != null) {
         settings.value = settings.updater.parse(src) ?? settings.default;
       } else {
         settings.value = settings.default;
