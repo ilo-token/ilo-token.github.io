@@ -9,18 +9,18 @@ The latest on-development version can be accessed by building the source code.
 
 This is a huge update, now with configurable settings, UCSUR support, and expanded vocabulary!
 
-- Implement settings dialog. [More info](https://github.com/ilo-token/ilo-token.github.io/wiki/Settings-Help).
-- Changes in error messages:
-  - All possible errors will now be listed.
-  - ilo Token now uses telo misikeke for error messages. This can be disabled from the settings.
+- Reimplement the word "a". This were dropped due to parser rewrite. 
+- The vocabulary has been expanded to _nimi ku suli_ plus _nimi su!_ (Some are still unimplemented).
 - Implement UCSUR support! It supports:
   - Cartouche with nasin sitelen kalama
   - Combined glyphs
   - Long glyphs
   - (Deprecated characters and combiners are not supported)
-- Reimplement the word "a". This were dropped due to parser rewrite. 
-- The vocabulary has been expanded to _nimi ku suli_ plus _nimi su!_ (Some are still unimplemented)
 - Implement [nasin nanpa pona](https://sona.pona.la/wiki/nasin_nanpa_pona).
+- Implement settings dialog. [More info](https://github.com/ilo-token/ilo-token.github.io/wiki/Settings-Help).
+- Changes in error messages:
+  - All possible errors will now be listed.
+  - ilo Token now uses telo misikeke for error messages. This can be disabled from the settings.
 - Multiline text will no longer be recognized.
 - Add icons.
 
