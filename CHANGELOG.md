@@ -5,7 +5,7 @@
 
 ## 0.3.0 (On development)
 
-The latest on-development version can be accessed by building the source code.
+The latest on-development version can be accessed by building the source code. On this on-development version, things can be broken.
 
 This is a huge update, now with configurable settings, UCSUR support, and expanded vocabulary!
 
