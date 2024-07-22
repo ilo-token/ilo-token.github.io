@@ -438,6 +438,15 @@ export const SENTENCE_RULE: Array<(sentence: Sentence) => boolean> = [
     }
     return true;
   },
+  // Only the last clause can have anu seme
+  (sentence) => {
+    for (const clause of sentence.laClauses) {
+      if (clause.type === "default" && clause.anuSeme != null) {
+        throw new UnrecognizedError("anu seme inside sentence");
+      }
+    }
+    return true;
+  },
   // Only the first clause can have starting particle
   (sentence) => {
     for (
