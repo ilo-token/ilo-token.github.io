@@ -15,12 +15,12 @@ function clause(clause: Clause): string {
   }
 }
 function sentence(sentence: Sentence): string {
-  return `${clause(sentence.clause)}${sentence.punctuation} `;
+  return `${clause(sentence.clause)}${sentence.punctuation}`;
 }
 export function translate(src: string): Output<string> {
   try {
     return translateToAst(src)
-      .map((sentences) => sentences.map(sentence).join("").trim());
+      .map((sentences) => sentences.map(sentence).join(" "));
   } catch (error) {
     if (error instanceof OutputError) {
       return new Output(error);
