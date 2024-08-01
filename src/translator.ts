@@ -14,7 +14,7 @@ import { nullableAsArray, repeat } from "./misc.ts";
 import { Output } from "./output.ts";
 import { settings } from "./settings.ts";
 
-function clause(clause: TokiPona.Clause): Output<Array<English.Clause>> {
+function clause(clause: TokiPona.Clause): Output<English.Clause> {
   return new Output(new TodoError("translation of clause"));
 }
 function filler(filler: TokiPona.Emphasis): Array<string> {
@@ -45,24 +45,149 @@ function filler(filler: TokiPona.Emphasis): Array<string> {
       return [repeat("ha", filler.count)];
   }
 }
+function emphasisAsPunctuation(
+  emphasis: null | TokiPona.Emphasis,
+): null | string {
+  if (emphasis == null) {
+    return null;
+  } else {
+    switch (emphasis.type) {
+      case "word":
+        switch (emphasis.word as "a" | "n") {
+          case "a":
+            return "!";
+          case "n":
+            return null;
+        }
+        // unreachable
+        // fallthrough
+      case "long word":
+        switch (emphasis.word as "a" | "n") {
+          case "a":
+            return repeat("!", emphasis.length);
+          case "n":
+            return null;
+        }
+        // unreachable
+        // fallthrough
+      case "multiple a":
+        return null;
+    }
+  }
+}
+function interjection(clause: TokiPona.Clause): Output<English.Clause> {
+  let interjection: Output<English.Clause> = new Output();
+  if (
+    clause.type === "phrases" &&
+    clause.phrases.type === "single"
+  ) {
+    const phrase = clause.phrases.phrase;
+    if (
+      phrase.type === "default" &&
+      phrase.modifiers.length === 0 &&
+      phrase.headWord.type === "default" &&
+      phrase.headWord.emphasis == null
+    ) {
+      interjection = new Output(CONTENT_WORD_DEFINITION[phrase.headWord.word])
+        .flatMap((definition) => {
+          if (definition.type === "interjection") {
+            return new Output([definition.interjection]);
+          } else {
+            return new Output();
+          }
+        })
+        .map((interjection) =>
+          ({ type: "interjection", interjection }) as English.Clause
+        );
+    }
+  }
+  return interjection;
+}
 function sentence(
   sentence: TokiPona.Sentence,
-): Output<Array<English.Sentence>> {
+): Output<English.Sentence> {
+  // This relies on sentence filter, if some of those filters were disabled,
+  // this function might break.
   if (sentence.finalClause.type === "filler") {
-    // This assumes there is no "la". Otherwise it is filtered.
     return new Output(filler(sentence.finalClause.emphasis))
       .map((interjection) =>
         ({
-          clause: {
+          clauses: [{
             type: "interjection",
             interjection,
-          },
+          }],
           punctuation: sentence.punctuation,
         }) as English.Sentence
-      )
-      .map((sentence) => [sentence]);
+      );
   } else {
-    return new Output(new TodoError("translation of sentence"));
+    const startingParticle = ((sentence.laClauses[0] ?? sentence.finalClause) as
+      & TokiPona.FullClause
+      & { type: "default" })
+      .startingParticle;
+    let startingFiller: Output<null | English.Clause>;
+    if (startingParticle == null) {
+      startingFiller = new Output([null]);
+    } else {
+      startingFiller = new Output(filler(startingParticle))
+        .map((interjection) => ({ type: "interjection", interjection }));
+    }
+    const laClauses =
+      (sentence.laClauses as Array<TokiPona.FullClause & { type: "default" }>)
+        .map(({ clause }) => clause);
+    const givenClauses = Output
+      .combine(...laClauses.map(clause))
+      .map((clauses) =>
+        clauses.map((clause) =>
+          ({
+            type: "dependent",
+            conjunction: "given",
+            clause,
+          }) as English.Clause
+        )
+      );
+    const { kinOrTaso, clause: lastTpClause, anuSeme, endingParticle } =
+      sentence.finalClause;
+    if (kinOrTaso != null) {
+      return new Output(
+        new TodoError(`translation of "${kinOrTaso.word}" preclause`),
+      );
+    }
+    if (anuSeme != null) {
+      return new Output(new TodoError('translation of "anu seme"'));
+    }
+    const lastEngClause = clause(lastTpClause);
+    let interjectionClause: Output<English.Clause>;
+    if (sentence.laClauses.length === 0) {
+      interjectionClause = interjection(lastTpClause);
+    } else {
+      interjectionClause = new Output();
+    }
+    const engClauses = Output.combine(
+      startingFiller,
+      givenClauses,
+      Output.concat(lastEngClause, interjectionClause),
+    ).map((
+      [filler, givenClauses, lastClause],
+    ) => [...nullableAsArray(filler), ...givenClauses, lastClause]);
+    let endingFiller: Output<null | English.Clause>;
+    if (endingParticle == null) {
+      endingFiller = new Output([null]);
+    } else {
+      endingFiller = new Output(filler(endingParticle))
+        .map((interjection) => ({ type: "interjection", interjection }));
+    }
+    return Output.concat(
+      Output.combine(
+        engClauses,
+        new Output(nullableAsArray(emphasisAsPunctuation(endingParticle))),
+      )
+        .map(([clauses, punctuation]) => ({ clauses, punctuation })),
+      Output.combine(engClauses, endingFiller)
+        .map(([clauses, filler]) => ({
+          clauses: [...clauses, ...nullableAsArray(filler)],
+          punctuation: sentence.punctuation,
+        })),
+    );
   }
 }
 function nounAsPlainString(
@@ -193,15 +318,14 @@ function multipleSentences(
       ])
         .map((definition) =>
           ({
-            clause: { type: "free form", text: definition },
+            clauses: [{ type: "free form", text: definition }],
             punctuation: "",
           }) as English.Sentence
         )
         .map((definition) => [definition]);
     }
     case "sentences":
-      return Output.combine(...sentences.sentences.map(sentence))
-        .map((array) => array.flat());
+      return Output.combine(...sentences.sentences.map(sentence));
   }
 }
 export function translate(src: string): Output<Array<English.Sentence>> {

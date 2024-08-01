@@ -107,6 +107,6 @@ export type Preposition = {
   object: NounPhrase;
 };
 export type Sentence = {
-  clause: Clause;
+  clauses: Array<Clause>;
   punctuation: string;
 };

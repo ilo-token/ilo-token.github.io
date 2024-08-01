@@ -15,7 +15,7 @@ function clause(clause: Clause): string {
   }
 }
 function sentence(sentence: Sentence): string {
-  return `${clause(sentence.clause)}${sentence.punctuation}`;
+  return `${sentence.clauses.map(clause).join(", ")}${sentence.punctuation}`;
 }
 export function translate(src: string): Output<string> {
   try {
