@@ -15,7 +15,15 @@ import { Output } from "./output.ts";
 import { settings } from "./settings.ts";
 
 function clause(clause: TokiPona.Clause): Output<English.Clause> {
-  return new Output(new TodoError("translation of clause"));
+  switch (clause.type) {
+    case "phrases":
+    case "o vocative":
+    case "prepositions":
+    case "li clause":
+    case "o clause":
+    case "quotation":
+      return new Output(new TodoError(`translation of ${clause.type}`));
+  }
 }
 function filler(filler: TokiPona.Emphasis): Array<string> {
   switch (filler.type) {
