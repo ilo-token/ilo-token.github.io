@@ -166,9 +166,12 @@ function sentence(
       startingFiller,
       givenClauses,
       Output.concat(lastEngClause, interjectionClause),
-    ).map((
-      [filler, givenClauses, lastClause],
-    ) => [...nullableAsArray(filler), ...givenClauses, lastClause]);
+    )
+      .map(([filler, givenClauses, lastClause]) => [
+        ...nullableAsArray(filler),
+        ...givenClauses,
+        lastClause,
+      ]);
     let endingFiller: Output<null | English.Clause>;
     if (endingParticle == null) {
       endingFiller = new Output([null]);
