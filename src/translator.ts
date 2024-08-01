@@ -54,7 +54,7 @@ function filler(filler: TokiPona.Emphasis): Array<string> {
   }
 }
 function emphasisAsPunctuation(
-  emphasis: null | TokiPona.Emphasis,
+  emphasis?: undefined | null | TokiPona.Emphasis,
 ): null | string {
   if (emphasis == null) {
     return null;
