@@ -265,7 +265,7 @@ function nounAsPlainString(
     } ${noun}`
   );
 }
-function allDefinition(word: string): Array<string> {
+function allDefinitionAsPlainString(word: string): Array<string> {
   const definitions = CONTENT_WORD_DEFINITION[word];
   if (definitions == null) {
     return [];
@@ -363,7 +363,7 @@ function multipleSentences(
         ...nullableAsArray(NUMERAL_DEFINITION[word]).map((num) => `${num}`),
         // TODO: Preverb
         ...SPECIAL_CONTENT_WORD_DEFINITION[word] ?? [],
-        ...allDefinition(word),
+        ...allDefinitionAsPlainString(word),
       ])
         .map((definition) =>
           ({
