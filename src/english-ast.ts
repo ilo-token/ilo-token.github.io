@@ -23,13 +23,13 @@ export type DeterminerType =
   | "possessive"
   | "quantifier"
   | "relative";
-export type DeterminerQuantity = "zero" | "singular" | "plural" | "both";
+export type Quantity = "zero" | "singular" | "plural" | "both" | "condensed";
 export type Determiner =
   | {
     type: "default";
     kind: DeterminerType;
     word: string;
-    quantity: DeterminerQuantity;
+    quantity: Quantity;
   }
   | { type: "numeral"; number: number };
 export type AdjectiveType =

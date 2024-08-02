@@ -1185,11 +1185,7 @@ export const CONTENT_WORD_DEFINITION: { [word: string]: Array<Definition> } = {
 CONTENT_WORD_DEFINITION.ali = CONTENT_WORD_DEFINITION.ale;
 CONTENT_WORD_DEFINITION.oko = CONTENT_WORD_DEFINITION.lukin;
 
-import {
-  AdjectiveType,
-  DeterminerQuantity,
-  DeterminerType,
-} from "./english-ast.ts";
+import { AdjectiveType, DeterminerType, Quantity } from "./english-ast.ts";
 
 export type Definition =
   | {
@@ -1226,7 +1222,7 @@ export type Definition =
     type: "determiner";
     determiner: string;
     kind: DeterminerType;
-    quantity: DeterminerQuantity;
+    quantity: Quantity;
   }
   | { type: "adverb"; adverb: string }
   | {
@@ -1460,7 +1456,7 @@ function adjective(
 function determiner(
   determiner: string,
   kind: DeterminerType,
-  quantity: DeterminerQuantity,
+  quantity: Quantity,
 ): Definition & { type: "determiner" } {
   return { type: "determiner", determiner, kind, quantity };
 }

@@ -14,9 +14,40 @@ import { nullableAsArray, repeat } from "./misc.ts";
 import { Output } from "./output.ts";
 import { settings } from "./settings.ts";
 
+type PhraseTranslation =
+  | { type: "noun"; noun: English.NounPhrase; number: English.Quantity }
+  | { type: "adjective"; adjective: English.AdjectivePhrase };
+function phrase(phrase: TokiPona.Phrase): Output<PhraseTranslation> {
+  return new Output(new TodoError("translation of phrase"));
+}
+function multiplePhrases(
+  phrase: TokiPona.MultiplePhrases,
+): Output<PhraseTranslation> {
+  return new Output(new TodoError("translation of phrase"));
+}
 function clause(clause: TokiPona.Clause): Output<English.Clause> {
   switch (clause.type) {
     case "phrases":
+      return multiplePhrases(clause.phrases).map((phrase) => {
+        switch (phrase.type) {
+          case "noun":
+            return {
+              type: "subject phrase",
+              subject: phrase.noun,
+            } as English.Clause;
+          case "adjective":
+            return {
+              type: "implied it's",
+              verb: {
+                type: "linking adjective",
+                linkingVerb: "is",
+                adjective: phrase.adjective,
+                preposition: [],
+              },
+              preposition: [],
+            } as English.Clause;
+        }
+      });
     case "o vocative":
     case "prepositions":
     case "li clause":
