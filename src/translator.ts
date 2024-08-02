@@ -14,6 +14,8 @@ import { nullableAsArray, repeat } from "./misc.ts";
 import { Output } from "./output.ts";
 import { settings } from "./settings.ts";
 
+const CONJUNCTION = { "and conjunction": "and", "anu": "or" } as const;
+
 type PhraseTranslation =
   | { type: "noun"; noun: English.NounPhrase; number: English.Quantity }
   | { type: "adjective"; adjective: English.AdjectivePhrase };
@@ -21,9 +23,15 @@ function phrase(phrase: TokiPona.Phrase): Output<PhraseTranslation> {
   return new Output(new TodoError("translation of phrase"));
 }
 function multiplePhrases(
-  phrase: TokiPona.MultiplePhrases,
+  phrases: TokiPona.MultiplePhrases,
 ): Output<PhraseTranslation> {
-  return new Output(new TodoError("translation of phrase"));
+  switch (phrases.type) {
+    case "single":
+      return phrase(phrases.phrase);
+    case "and conjunction":
+    case "anu":
+      return new Output(new TodoError("translation of conjunctions"));
+  }
 }
 function clause(clause: TokiPona.Clause): Output<English.Clause> {
   switch (clause.type) {
