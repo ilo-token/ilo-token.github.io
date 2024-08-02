@@ -49,6 +49,13 @@ function clause(clause: TokiPona.Clause): Output<English.Clause> {
         }
       });
     case "o vocative":
+      return multiplePhrases(clause.phrases).filterMap((phrase) => {
+        if (phrase.type === "noun") {
+          return { type: "vocative", call: "hey", addressee: phrase.noun };
+        } else {
+          return null;
+        }
+      });
     case "prepositions":
     case "li clause":
     case "o clause":
