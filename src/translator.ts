@@ -20,7 +20,13 @@ type PhraseTranslation =
   | { type: "noun"; noun: English.NounPhrase }
   | { type: "adjective"; adjective: English.AdjectivePhrase };
 function phrase(phrase: TokiPona.Phrase): Output<PhraseTranslation> {
-  return new Output(new TodoError("translation of phrase"));
+  switch (phrase.type) {
+    case "default":
+    case "preverb":
+    case "preposition":
+    case "quotation":
+      return new Output(new TodoError(`translation of ${phrase.type}`));
+  }
 }
 function multiplePhrases(
   phrases: TokiPona.MultiplePhrases,
