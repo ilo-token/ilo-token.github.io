@@ -104,6 +104,27 @@ export class Output<T> {
     for (const value of this.output) wholeOutput.append(mapper(value));
     return wholeOutput;
   }
+  filterMap<U>(mapper: (value: T) => U): Output<NonNullable<U>> {
+    if (this.isError()) {
+      return Output.newErrors(this.errors);
+    }
+    const wholeOutput = new Output<NonNullable<U>>();
+    for (const value of this.output) {
+      try {
+        const newValue = mapper(value);
+        if (newValue != null) {
+          wholeOutput.push(newValue);
+        }
+      } catch (error) {
+        if (error instanceof OutputError) {
+          wholeOutput.pushError(error);
+        } else {
+          throw error;
+        }
+      }
+    }
+    return wholeOutput;
+  }
   sort(comparer: (left: T, right: T) => number): Output<T> {
     if (this.isError()) {
       return Output.newErrors(this.errors);

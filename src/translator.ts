@@ -128,11 +128,11 @@ function interjection(clause: TokiPona.Clause): Output<English.Clause> {
       phrase.headWord.emphasis == null
     ) {
       interjection = new Output(CONTENT_WORD_DEFINITION[phrase.headWord.word])
-        .flatMap((definition) => {
+        .filterMap((definition) => {
           if (definition.type === "interjection") {
-            return new Output([definition.interjection]);
+            return definition.interjection;
           } else {
-            return new Output();
+            return null;
           }
         })
         .map((interjection) =>
