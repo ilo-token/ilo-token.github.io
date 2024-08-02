@@ -1,18 +1,21 @@
 /** Module for describing English AST. */
 
 /** */
+export type Quantity = "zero" | "singular" | "plural" | "both" | "condensed";
 export type NounPhrase =
   | {
     type: "simple";
     determiners: Array<Determiner>;
     adjectives: Array<AdjectivePhrase>;
     noun: string;
+    quantity: Quantity;
     preposition: Array<Preposition>;
   }
   | {
     type: "compound";
     conjunction: string;
-    subjects: NounPhrase;
+    nouns: Array<NounPhrase>;
+    quantity: Quantity;
     preposition: Array<Preposition>;
   };
 export type DeterminerType =
@@ -23,7 +26,6 @@ export type DeterminerType =
   | "possessive"
   | "quantifier"
   | "relative";
-export type Quantity = "zero" | "singular" | "plural" | "both" | "condensed";
 export type Determiner =
   | {
     type: "default";
@@ -51,7 +53,7 @@ export type AdjectivePhrase =
   | {
     type: "compound";
     conjunction: string;
-    adjectives: AdjectivePhrase;
+    adjectives: Array<AdjectivePhrase>;
   };
 export type VerbPhrase =
   | {

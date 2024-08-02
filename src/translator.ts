@@ -17,7 +17,7 @@ import { settings } from "./settings.ts";
 const CONJUNCTION = { "and conjunction": "and", "anu": "or" } as const;
 
 type PhraseTranslation =
-  | { type: "noun"; noun: English.NounPhrase; number: English.Quantity }
+  | { type: "noun"; noun: English.NounPhrase }
   | { type: "adjective"; adjective: English.AdjectivePhrase };
 function phrase(phrase: TokiPona.Phrase): Output<PhraseTranslation> {
   return new Output(new TodoError("translation of phrase"));
@@ -29,8 +29,67 @@ function multiplePhrases(
     case "single":
       return phrase(phrases.phrase);
     case "and conjunction":
-    case "anu":
-      return new Output(new TodoError("translation of conjunctions"));
+    case "anu": {
+      const conjunction = CONJUNCTION[phrases.type];
+      return Output
+        .combine(...phrases.phrases.map(multiplePhrases))
+        .filterMap((phrases) => {
+          if (phrases.every((phrase) => phrase.type === "noun")) {
+            const nouns = phrases
+              .map((noun) => noun.noun)
+              .flatMap((noun) => {
+                if (
+                  noun.type === "compound" &&
+                  noun.conjunction === conjunction
+                ) {
+                  return noun.nouns;
+                } else {
+                  return [noun];
+                }
+              });
+            let quantity: English.Quantity;
+            switch (conjunction) {
+              case "and":
+                quantity = "plural";
+                break;
+              case "or":
+                quantity = nouns[nouns.length - 1].quantity;
+                break;
+            }
+            return {
+              type: "noun",
+              noun: {
+                type: "compound",
+                conjunction,
+                nouns,
+                preposition: [],
+                quantity,
+              },
+            } as PhraseTranslation;
+          } else if (phrases.every((phrase) => phrase.type === "adjective")) {
+            return {
+              type: "adjective",
+              adjective: {
+                type: "compound",
+                adjectives: phrases
+                  .map((adjective) => adjective.adjective)
+                  .flatMap((adjective) => {
+                    if (
+                      adjective.type === "compound" &&
+                      adjective.conjunction === conjunction
+                    ) {
+                      return adjective.adjectives;
+                    } else {
+                      return [adjective];
+                    }
+                  }),
+              },
+            } as PhraseTranslation;
+          } else {
+            return null;
+          }
+        });
+    }
   }
 }
 function clause(clause: TokiPona.Clause): Output<English.Clause> {
