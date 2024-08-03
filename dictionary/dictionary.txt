@@ -1,0 +1,930 @@
+a:
+  ah/ahh/ahhh(f);
+  oh/ohh/ohhh(f);
+  ha/haa/haaa(f);
+  eh/ehh/ehhh(f);
+  um/umm/ummm(f);
+  oy/oyy/oyyy(f);
+  [placed after something for emphasis or emotion](particle);
+
+akesi:
+  reptile(n);
+  amphibian(n);
+  reptilian(aj qualifier);
+  amphibian(aj qualifier);
+
+ala:
+  not(adhoc);
+  no(d quantifier plural);
+  nothing(n plural);
+  [negates a word or phrase](particle);
+  [forms a yes-no question](particle);
+  0(num);
+
+alasa:
+  hunt(tra v);
+  search(tra v);
+
+ale, ali:
+  everything(n singular);
+  anything(n singular);
+  entirety(n singular);
+  all(d distributive plural);
+  every(d distributive);
+  completely(av);
+  100(num);
+
+anpa:
+  bottom(n singular);
+  below(n singular);
+  floor(n singular);
+  downward(aj origin);
+  humble(aj opinion);
+  lowly(aj opinion);
+  dependent(aj opinion);
+  low(aj size);
+  lower(aj origin);
+  bottom(aj origin);
+  down(aj origin);
+  bow down(tra v);
+
+ante:
+  change(n);
+  difference(n);
+  modification(n);
+  different(aj opinion);
+  other(aj opinion);
+  change(tra v);
+  alter(tra v);
+
+anu:
+  or(particle);
+  [separates multiple possibilities, replacing another particle](particle);
+  choose(tra v);
+  decide(int v);
+
+awen:
+  wait(int v);
+  stay(int v);
+  endure(int v);
+  keep(tra v);
+  protect(tra v);
+
+e:
+  [marks the start of a direct object](particle);
+
+en:
+  [separates multiple subjects](particle);
+
+epiku:
+  epic(aj opinion);
+  cool(aj opinion);
+  awesome(aj opinion);
+  amazing(aj opinion);
+
+esun:
+  shop(n);
+  trade(tra v);
+  barter(tra v);
+  exchange(tra v);
+  swap(tra v);
+  buy(tra v);
+  sell(tra v);
+
+ijo:
+  phenomenon(n);
+  object(n);
+  matter(n);
+
+ike:
+  negative(aj opinion) quality(n);
+  bad(aj opinion);
+  unpleasant(aj opinion);
+  harmful(aj opinion);
+  unneeded(aj opinion);
+  badly(av);
+  unpleasantly(av);
+  harmfully(av);
+
+ilo:
+  tool(n);
+  implement(n);
+  machine(n);
+
+insa:
+  center(n singular);
+  content(n);
+  inside(n);
+
+jaki:
+  obscenity(n);
+  disgusting(aj opinion);
+  sickly(aj opinion);
+  toxic(aj opinion);
+  unclean(aj opinion);
+
+jan:
+  human being(n singular);
+  person(n);
+  somebody(n singular);
+
+jasima:
+  opposite(n) of(pp);
+  reflection(n);
+  mirror(n);
+  reflect(tra v);
+  resound(tra v);
+  mirror(tra v);
+
+jelo:
+  yellow(n singular);
+  lime(aj color) yellow(n singular);
+  yellowish(aj color) orange(n singular);
+  yellow(aj color);
+  golden(aj color);
+  lime(av) yellow(aj color);
+  yellowish(av) orange(aj color);
+
+jo:
+  carry(tra v);
+  contain(tra v);
+  hold(tra v);
+
+kala:
+  fish(n);
+  sea(aj qualifier) creature(n);
+  swim(int v);
+
+kalama:
+  sound(n);
+  make(v) sound(n);
+
+kama:
+  future(n singular);
+  future(aj age);
+  summon(tra v);
+  arrive(int v);
+
+kasi:
+  plant(n);
+  herb(n);
+  leaf(n);
+
+ken:
+  ability(n);
+  possibility(n);
+
+kepeken:
+  using(pp);
+  by means of(pp);
+  use(tra v);
+
+kijetesantakalu:
+  raccoon(n);
+  coati(n);
+  kinkajou(n);
+  olingo(n);
+  ringtail(n);
+  cacomistle(n);
+  weasel(n);
+  otter(n);
+  skunk(n);
+  red panda(n);
+
+kili:
+  fruit(n);
+  vegetable(n);
+  mushroom(n);
+
+kin:
+  also(adhoc);
+  too(adhoc);
+  additionally(adhoc);
+  [at sentence start](particle);
+
+kipisi:
+  sharp(aj physical quality);
+  split(tra v);
+  cut(tra v);
+  slice(tra v);
+  sever(tra v);
+
+kiwen:
+  hard(aj material) object(n);
+  metal(n);
+  rock(n);
+  stone(n);
+  hard(aj material);
+
+ko:
+  semi-solid(n singular);
+  paste(n singular);
+  powder(n singular);
+  goo(n singular);
+  sand(n singular);
+  soil(n singular);
+  clay(n singular);
+  squishy(aj material);
+  moldable(aj material);
+
+kokosila:
+  speak(v) a(d article singular) non-Toki Pona(aj) language(n singular);
+
+kon:
+  air(n singular);
+  breath(n singular);
+  essence(n);
+  spirit(n);
+  hidden(aj physical quality) reality(n);
+  unseen(aj physical quality) agent(n);
+
+ku:
+  interact(v) with(pp) the(d article) Toki Pona Dictionary(n singular);
+
+kule:
+  color(n);
+  pigment(n);
+  category(n);
+  flavor(n);
+  queerness(n singular);
+  colorful(aj color);
+  queer(aj qualifier);
+  colorfully(av);
+
+kulupu:
+  community(n);
+  company(n);
+  group(n);
+  nation(n);
+  society(n);
+  tribe(n);
+
+kute:
+  ear(n);
+  listen(v) at(pp);
+
+la:
+  [mark the previous statement as context to a following statement](particle);
+
+lanpan:
+  take(tra v);
+  seize(tra v);
+  catch(tra v);
+  receive(tra v);
+
+lape:
+  sleep(n singular);
+  rest(n singular);
+  sleep(int v);
+  rest(int v);
+
+laso:
+  turquoise(n singular);
+  blue(n singular);
+  green(n singular);
+  cyan(n singular);
+  indigo(n singular);
+  lime(aj color) green(n singular);
+  turquoise(aj color);
+  blue(aj color);
+  green(aj color);
+  cyan(aj color);
+  indigo(aj color);
+  lime(av) green(aj color);
+
+lawa:
+  head(n);
+  mind(n);
+  guide(n);
+  plan(n);
+  rule(n);
+  control(tra v);
+  direct(tra v);
+  guide(tra v);
+  lead(tra v);
+  own(tra v);
+  regulate(tra v);
+  rule(tra v);
+
+leko:
+  stairs(n plural);
+  square(n);
+  block(n);
+  corner(n);
+  cube(n);
+
+len:
+  clothing(n);
+  fabric(n);
+  cover(tra v);
+  hide(tra v);
+
+lete:
+  coldness(n singular);
+  cool(aj physical quality);
+  cold(aj physical quality);
+  cool(tra v);
+  freeze(tra v);
+
+li:
+  [marks the start of an indicative verb (statement)](particle);
+
+lili:
+  smallness(n singular);
+  small(aj size);
+  short(aj size);
+  young(aj age);
+  few(d quantifier plural);
+  piece(n) of(pp);
+  part(n) of(pp);
+
+linja:
+  long(aj size) flexible(aj material) thing(n);
+  cord(n);
+  hair(n singular);
+  rope(n);
+  line(n);
+  connection(n);
+  long(aj size) and(c) flexible(aj material);
+
+lipu:
+  flat(aj size) object(n);
+  book(n);
+  document(n);
+  card(n);
+  paper(n);
+  record(n);
+  website(n);
+  flat(aj size);
+
+loje:
+  red(n singular);
+  magenta(n singular);
+  scarlet(n singular);
+  pink(n singular);
+  rust-color(n singular);
+  reddish(aj color) orange(n singular);
+  red(aj color);
+  magenta(aj color);
+  scarlet(aj color);
+  pink(aj color);
+  rust-color(aj color);
+  reddish(av) orange(aj color);
+
+lon:
+  truth(n singular);
+  real(aj opinion);
+  truthfully(av);
+  exist(tra v);
+  located at(pp);
+  in(pp);
+  during(pp);
+  in the context of(pp);
+
+luka:
+  hand(n);
+  arm(n);
+  tactile(aj qualifier) organ(n);
+  grasping(aj qualifier) organ(n);
+  5(num);
+
+lukin:
+  appearance(n);
+  visual(n);
+  eye(n);
+  seeing(aj qualifier) organ(n);
+  look(v) at(pp);
+  read(tra v);
+  watch(tra v);
+
+lupa:
+  hole(n);
+  pit(n singular);
+  cave(n);
+  doorway(n);
+  window(n);
+  portal(n);
+
+ma:
+  earth(n singular);
+  land(n singular);
+  world(n singular);
+  country(n);
+  territory(n);
+  soil(n singular);
+
+majuna:
+  old(aj age);
+  aged(aj age);
+  ancient(aj age);
+
+mama:
+  parent(n);
+  ancestor(n);
+  creator(n);
+  originator(n);
+  caretaker(n);
+  sustainer(n);
+  guardian(n);
+
+mani:
+  money(n singular);
+  cash(n singular);
+  savings(n plural);
+  wealth(n singular);
+  large(aj size) domestic(aj qualifier) animal(n);
+
+meli:
+  woman(n);
+  feminine(aj qualifier) person(n);
+  wife(n);
+
+meso:
+  midpoint(n);
+  midpoint(aj opinion);
+  medium(aj size);
+  mediocre(aj opinion);
+
+mi:
+  I/me/we/us(pn);
+
+mije:
+  man(n);
+  masculine(aj qualifier) person(n);
+  husband(n);
+
+misikeke:
+  medicine(n);
+  medical(aj qualifier);
+
+moku:
+  food(n);
+  drink(n);
+  eat(tra v);
+  drink(tra v);
+  consume(tra v);
+  ingest(tra v);
+
+moli:
+  death(n singular);
+  dead(aj age);
+  kill(tra v);
+
+monsi:
+  back(n singular);
+  behind(n singular);
+  rear(n singular);
+
+monsuta:
+  monster(n);
+  predator(n);
+  threat(n);
+  danger(n);
+  scary(aj opinion);
+
+mu:
+  \(animal noise or communication, onomatopoeia\)(adhoc);
+
+mun:
+  moon(n singular);
+  night sky(aj origin) object(n);
+  star(n);
+  celestial(aj origin) body(n);
+
+musi:
+  fun(n singular);
+  game(n);
+  entertainment(n);
+  art(n);
+  fun(aj opinion);
+  amusing(aj opinion);
+  interesting(aj opinion);
+  comical(aj opinion);
+  silly(aj opinion);
+  have(v) fun(n singular);
+
+mute:
+  many(d quantifier plural);
+  several(d quantifier plural);
+  very(av);
+  20(num);
+
+n:
+  hm/hmm/hmmm(f);
+  uh/uhh/uhhh(f);
+  mm/mmm/mmmm(f);
+  er/err/errr(f);
+  um/umm/ummm(f);
+  [indicate thinking or pause](particle);
+
+nanpa:
+  number(n);
+  -th(particle);
+  [ordinal number](particle);
+
+nasa:
+  silliness(n singular);
+  strangeness(n singular);
+  unusual(aj opinion);
+  strange(aj opinion);
+  silly(aj opinion);
+  drunk(aj opinion);
+  intoxicate(tra v);
+  strangely(av);
+
+nasin:
+  way(n);
+  custom(n);
+  doctrine(n);
+  method(n);
+  path(n);
+
+nena:
+  bump(n);
+  hill(n);
+  mountain(n);
+  nose(n);
+  protuberance(n);
+
+ni:
+  this(n);
+  that(n);
+  this(d demonstrative);
+  that(d demonstrative);
+  these(d demonstrative);
+  those(d demonstrative);
+
+nimi:
+  name(n);
+  word(n);
+
+noka:
+  foot(n);
+  leg(n);
+  root(n);
+  locomotive(aj qualifier) organ(n);
+
+o:
+  should(particle);
+  [marks the end of a vocative \(who is being spoken to\)](particle);
+  [marks the start of an imperative \(command, wish, instruction\)](particle);
+
+oko:
+  appearance(n);
+  visual(n);
+  eye(n);
+  seeing(aj qualifier) organ(n);
+  look(v) at(pp);
+  read(tra v);
+  watch(tra v);
+
+olin:
+  affection(n singular);
+  appreciation(n singular);
+  respect(n singular);
+  relationship(n);
+  platonic(aj qualifier);
+  romantic(aj qualifier);
+  familial(aj qualifier);
+  have(v) strong(aj opinion) emotional(aj opinion) bond(n singular) with(pp);
+  respect(tra v);
+
+ona:
+  they/them(pn plural);
+  it/it(pn singular);
+
+open:
+  beginning(n);
+  start(n singular);
+  open(aj physical quality);
+  start(tra v);
+  turn on(tra v);
+  open(tra v);
+
+pakala:
+  mess(n singular);
+  damage(n);
+  botch(tra v);
+  break(tra v);
+  damage(tra v);
+  harm(tra v);
+  mess up(tra v);
+  fuck(i);
+
+pali:
+  build(tra v);
+  make(tra v);
+  prepare(tra v);
+  do(int v);
+  work(int v);
+
+palisa:
+  long(aj size) and(c) hard(aj material);
+  long(aj size) hard(aj material) thing(n);
+  branch(n);
+  rod(n);
+  stick(n);
+
+pan:
+  grain(n);
+  starchy(aj material) food(n);
+  baked(aj qualifier) goods(n plural);
+
+pana:
+  give(tra v);
+  send(tra v);
+  emit(tra v);
+  provide(tra v);
+  put(tra v);
+  release(tra v);
+
+pi:
+  [modify the next word with one or more following words](particle);
+
+pilin:
+  heart(n);
+  feeling(n);
+  touch(tra v);
+  feel(tra v);
+
+pimeja:
+  darkness(n singular);
+  dark(aj color) color(n);
+  dark(aj color);
+  unlit(aj color);
+  black(aj color);
+  purple(aj color);
+  brown(aj color);
+
+pini:
+  past(n singular);
+  past(aj age);
+  end(tra v);
+
+pipi:
+  insect(n);
+  bug(n);
+
+poka:
+  hip(n);
+  side(n);
+  vicinity(n);
+  nearby(aj origin);
+
+poki:
+  container(n);
+
+pona:
+  goodness(n singular);
+  simplicity(n singular);
+  good(aj opinion);
+  positive(aj opinion);
+  useful(aj opinion);
+  friendly(aj opinion);
+  peaceful(aj opinion);
+  simple(aj opinion);
+  nicely(av);
+
+pu:
+  interact(v) with(pp) the(d article) Toki Pona: The Language of Good(adj qualifier) book(n singular);
+
+sama:
+  similarity(n);
+  sibling(n);
+  peer(n);
+  fellow(n);
+  same(aj opinion);
+  similar(aj opinion);
+  similar to(pp);
+  same as(pp);
+
+seli:
+  fire(n singular);
+  cooking(aj qualifier) element(n);
+  chemical(aj qualifier) reaction(n);
+  heat(aj qualifier) source(n);
+  hot(aj material);
+  heat(tra v);
+
+selo:
+  outer(aj origin) form(n);
+  outer(aj origin) layer(n);
+  skin(n singular);
+  boundary(n);
+
+seme:
+  [indicate a question by marking missing info in a sentence](particle);
+  what(n);
+  which(n);
+  what(d interrogative);
+  which(d interrogative);
+
+sewi:
+  highest(aj origin) part(n);
+  elevate(tra v);
+  awe-inspiring(aj opinion);
+  divine(aj opinion);
+  sacred(aj opinion);
+  supernatural(aj opinion);
+
+sijelo:
+  body(n);
+  physical(aj qualifier) state(n);
+  torso(n singular);
+
+sike:
+  round(aj physical quality) thing(n);
+  cycle(n);
+  round(aj physical quality);
+
+sin:
+  newness(n singular);
+  new(aj age);
+  fresh(aj opinion);
+  additional(aj origin);
+  extra(aj origin);
+  newly(av);
+
+sina:
+  you/you(pn plural);
+
+sinpin:
+  face(n);
+  wall(n);
+  foremost(aj origin);
+
+sitelen:
+  image(n);
+  picture(n);
+  representation(n);
+  symbol(n);
+  mark(n);
+  writing(n);
+
+soko:
+  fungus(n);
+
+sona:
+  knowledge(n singular);
+
+soweli:
+  fuzzy(aj physical quality) creature(n);
+  land(aj origin) animal(n);
+  beast(n);
+
+su:
+  interact(v) with(pp) Sonja's(d possessive) story(aj qualifier) book(aj qualifier) series(n singular);
+
+suli:
+  hugeness(n singular);
+  importance(n singular);
+  big(aj size);
+  heavy(aj size);
+  important(aj opinion);
+  adult(aj age);
+
+suno:
+  sun(n singular);
+  light(n);
+  brightness(n singular);
+  glow(n singular);
+  radiance(n);
+  light(aj qualifier) source(n);
+  shining(aj color);
+
+supa:
+  horizontal(aj physical quality) surface(n);
+
+suwi:
+  sweetness(n singular);
+  cuteness(n singular);
+  innocence(n singular);
+  sweet(aj material);
+  cute(aj opinion);
+  innocent(aj opinion);
+  sweetly(av);
+
+tan:
+  from(pp);
+  because of(pp);
+  origin(n);
+  cause(n);
+
+taso:
+  taso(adhoc);
+  but(particle);
+  however(particle);
+  [marks a sentence as qualifying or contradictory](particle);
+
+tawa:
+  motion(n);
+  travel(n singular);
+  shake(tra v);
+  walk(int v);
+  to(pp);
+  for(pp);
+  going to(pp);
+  from the perspective of(pp);
+
+telo:
+  water(n singular);
+  liquid(n singular);
+  wet(aj material) substance(n);
+  beverage(n);
+  liquid(aj material);
+  wet(aj material);
+
+tenpo:
+  time(n singular);
+  duration(n singular);
+  moment(n);
+  occasion(n);
+  period(n);
+  situation(n);
+
+toki:
+  communication(n);
+  language(n);
+  communicate(v) about(pp);
+  hello(i);
+
+tomo:
+  building(n);
+  home(n singular);
+  house(n);
+  room(n);
+
+tonsi:
+  non-binary(aj qualifier) person(n);
+  gender nonconforming(aj qualifier) person(n);
+  genderqueer(aj qualifier) person(n);
+  transgender(aj qualifier) person(n);
+  non-binary(aj qualifier);
+  gender nonconforming(aj qualifier);
+  genderqueer(aj qualifier);
+  transgender(aj qualifier);
+
+tu:
+  2(num);
+  separate(tra v);
+  divide(tra v);
+  split(tra v);
+  multiply(tra v);
+  duplicate(tra v);
+
+unpa:
+  sexual(aj qualifier);
+  sexually(av);
+  have(v) sex(n singular) with(pp);
+
+uta:
+  mouth(n singular);
+  lips(n plural);
+  oral(aj qualifier) cavity(n);
+  jaw(n);
+
+utala:
+  battle(n);
+  challenge(n);
+  compete(v) against(pp);
+  struggle(v) against(pp);
+
+walo:
+  light(aj color) color(n);
+  white(n singular);
+  light(aj color) gray(n singular);
+
+wan:
+  1(num);
+  singular(aj opinion);
+  combine(tra v);
+  mix(tra v);
+  fuse(tra v);
+
+waso:
+  bird(n);
+  flying(aj qualifier) creature(n);
+  winged(aj qualifier) animal(n);
+  fly(int v);
+
+wawa:
+  power(n singular);
+  confidence(n singular);
+  energy(n singular);
+  intensity(n singular);
+  strong(aj opinion);
+  powerful(aj opinion);
+  confident(aj opinion);
+  energetic(aj opinion);
+  intense(aj opinion);
+  powerfully(av);
+
+weka:
+  absent(aj origin);
+  away(aj origin);
+  ignore(tra v);
+  leave(int v);
+
+wile:
+  want(n);
+  need(n);
