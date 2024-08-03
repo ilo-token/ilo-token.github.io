@@ -240,6 +240,7 @@ kon:
 
 ku:
   interact(v) with(pp) the(d article) Toki Pona Dictionary(n singular);
+  related to(pp) the(d article) Toki Pona Dictionary(n singular);
 
 kule:
   color(n);
@@ -690,6 +691,7 @@ pona:
 
 pu:
   interact(v) with(pp) the(d article) Toki Pona: The Language of Good(adj qualifier) book(n singular);
+  related to(pp) the(d article) Toki Pona: The Language of Good(adj qualifier) book(n singular);
 
 sama:
   similarity(n);
@@ -778,6 +780,7 @@ soweli:
 
 su:
   interact(v) with(pp) Sonja's(d possessive) story(aj qualifier) book(aj qualifier) series(n singular);
+  related to(pp) Sonja's(d possessive) story(aj qualifier) book(aj qualifier) series(n singular);
 
 suli:
   hugeness(n singular);
