@@ -447,6 +447,7 @@ meso:
 
 mi:
   I/me/we/us(pn);
+  my/our(d possessive);
 
 mije:
   man(n);
@@ -592,6 +593,8 @@ olin:
 ona:
   they/them(pn plural);
   it/it(pn singular);
+  their(possessive);
+  its(possessive);
 
 open:
   beginning(n);
@@ -747,6 +750,7 @@ sin:
 
 sina:
   you/you(pn plural);
+  your(d possessive);
 
 sinpin:
   face(n);
