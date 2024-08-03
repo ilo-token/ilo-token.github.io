@@ -48,6 +48,14 @@ export type Definition =
     plural: null | { subject: string; object: string };
   }
   | ({ type: "determiner" } & Determiner)
+  | {
+    type: "quantified determiner";
+    singular: string;
+    plural: string;
+    condensed: string;
+    kind: DeterminerType;
+    number: Quantity;
+  }
   | { type: "numeral"; numeral: number }
   | ({ type: "adjective" } & Adjective)
   | { type: "compound adjective"; adjective: Array<Adjective> }
