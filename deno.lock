@@ -3,7 +3,7 @@
   "packages": {
     "specifiers": {
       "jsr:@deno/cache-dir@0.8": "jsr:@deno/cache-dir@0.8.0",
-      "jsr:@deno/emit@0.40.2": "jsr:@deno/emit@0.40.2",
+      "jsr:@deno/emit@0.44.0": "jsr:@deno/emit@0.44.0",
       "jsr:@std/assert@^0.218.2": "jsr:@std/assert@0.218.2",
       "jsr:@std/assert@^0.223.0": "jsr:@std/assert@0.223.0",
       "jsr:@std/bytes@^0.218.2": "jsr:@std/bytes@0.218.2",
@@ -23,8 +23,8 @@
           "jsr:@std/path@^0.218.2"
         ]
       },
-      "@deno/emit@0.40.2": {
-        "integrity": "892d50a17eeb7c3f597cbfc2e0463c065836ddcbfecdfcb4e2f4d430b49d2305",
+      "@deno/emit@0.44.0": {
+        "integrity": "0750d6b39780a2975915a8a0a513b817338c21749022545a713c49af52e21961",
         "dependencies": [
           "jsr:@deno/cache-dir@0.8",
           "jsr:@std/path@^0.223.0"
@@ -67,11 +67,12 @@
     }
   },
   "remote": {
-    "https://deno.land/x/esbuild@v0.20.2/wasm.js": "5a887c1e38ad1056af11c58d45b6084d33bd33a62afa480d805801739370eed0"
+    "https://deno.land/x/esbuild@v0.20.2/wasm.js": "5a887c1e38ad1056af11c58d45b6084d33bd33a62afa480d805801739370eed0",
+    "https://deno.land/x/esbuild@v0.23.0/wasm.js": "3ae25d5ac47af19b2aff2801107aa848339a3ee04431a44b73e93a0991fa5160"
   },
   "workspace": {
     "dependencies": [
-      "jsr:@deno/emit@0.40.2"
+      "jsr:@deno/emit@0.44.0"
     ]
   }
 }

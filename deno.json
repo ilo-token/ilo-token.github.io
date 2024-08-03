@@ -13,8 +13,8 @@
     "include": ["./src/**/*.ts", "./telo-misikeke/**/*", "./bundle.ts"]
   },
   "imports": {
-    "@deno/emit": "jsr:@deno/emit@0.40.2",
-    "esbuild": "https://deno.land/x/esbuild@v0.20.2/wasm.js",
+    "@deno/emit": "jsr:@deno/emit@0.44.0",
+    "esbuild": "https://deno.land/x/esbuild@v0.23.0/wasm.js",
     "telo-misikeke/": "./telo-misikeke/"
   }
 }
