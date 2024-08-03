@@ -63,5 +63,6 @@ export type Definition =
     preposition: null | string;
   }
   | { type: "preposition"; preposition: string }
+  | { type: "preposition object"; preposition: string; object: Noun }
   | { type: "interjection"; interjection: string }
   | { type: "adhoc"; definition: string };
