@@ -7,10 +7,10 @@
     "watch": "deno run --allow-read --allow-write --allow-env --allow-net ./bundle.ts watch"
   },
   "fmt": {
-    "include": ["./src/**/*.ts", "./telo-misikeke/**/*", "./bundle.ts"]
+    "include": ["./**/*.ts", "./**/*.js"]
   },
   "lint": {
-    "include": ["./src/**/*.ts", "./telo-misikeke/**/*", "./bundle.ts"]
+    "include": ["./**/*.ts", "./**/*.js"]
   },
   "imports": {
     "@deno/emit": "jsr:@deno/emit@0.44.0",
