@@ -58,9 +58,9 @@ export type Definition =
     presentPlural: string;
     past: string;
     condensed: string;
+    preposition: null | string;
     object: null | Noun;
     forObject: boolean | string;
-    preposition: null | string;
   }
   | { type: "preposition"; preposition: string }
   | { type: "preposition object"; preposition: string; object: Noun }
