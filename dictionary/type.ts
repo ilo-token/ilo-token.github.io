@@ -1,8 +1,8 @@
 export type Noun = {
   determiner: Array<Determiner>;
   adjective: Array<Adjective>;
-  singular: string;
-  plural: string;
+  singular: null | string;
+  plural: null | string;
   condensed: string;
 };
 export type DeterminerType =
