@@ -25,7 +25,7 @@ import {
   PREPOSITION,
   PREVERB,
   TOKI_PONA_WORD,
-} from "./dictionary.ts";
+} from "./old-dictionary.ts";
 import {
   CLAUSE_RULE,
   filter,

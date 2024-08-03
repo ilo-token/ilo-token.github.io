@@ -1,13 +1,13 @@
 import { parse } from "./parser.ts";
 import * as TokiPona from "./ast.ts";
-import { Definition } from "./dictionary.ts";
+import { Definition } from "./old-dictionary.ts";
 import {
   CONTENT_WORD_DEFINITION,
   NUMERAL_DEFINITION,
   PARTICLE_DEFINITION,
   PREPOSITION_DEFINITION,
   SPECIAL_CONTENT_WORD_DEFINITION,
-} from "./dictionary.ts";
+} from "./old-dictionary.ts";
 import * as English from "./english-ast.ts";
 import { TodoError } from "./error.ts";
 import { nullableAsArray, repeat } from "./misc.ts";
