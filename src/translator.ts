@@ -1,4 +1,4 @@
-import { parse } from "./ast-parser.ts";
+import { parse } from "./parser.ts";
 import * as TokiPona from "./ast.ts";
 import { Definition } from "./dictionary.ts";
 import {
@@ -11,7 +11,7 @@ import {
 import * as English from "./english-ast.ts";
 import { TodoError } from "./error.ts";
 import { nullableAsArray, repeat } from "./misc.ts";
-import { Output } from "./output.ts";
+import { Output } from "output-parser/output.ts";
 import { settings } from "./settings.ts";
 
 const CONJUNCTION = { "and conjunction": "and", "anu": "or" } as const;

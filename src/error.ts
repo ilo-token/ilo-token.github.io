@@ -1,7 +1,7 @@
 /** Module for Error datatypes. */
 
-/** Represents Error used by `Output`. */
-export class OutputError extends Error {}
+import { OutputError } from "output-parser/output.ts";
+
 /** Represents Error with unexpected and expected elements. */
 export class UnexpectedError extends OutputError {
   constructor(unexpected: string, expected: string) {

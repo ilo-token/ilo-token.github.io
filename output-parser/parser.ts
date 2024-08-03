@@ -3,8 +3,7 @@
  * and AST parser.
  */
 
-import { OutputError } from "./error.ts";
-import { Output } from "./output.ts";
+import { Output, OutputError } from "./output.ts";
 
 /** A single parsing result. */
 export type ValueRest<T, U> = { rest: T; value: U };

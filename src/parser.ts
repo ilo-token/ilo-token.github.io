@@ -18,7 +18,7 @@ import {
   WordUnit,
 } from "./ast.ts";
 import { UnexpectedError, UnrecognizedError } from "./error.ts";
-import { Output } from "./output.ts";
+import { Output } from "output-parser/output.ts";
 import {
   CONTENT_WORD,
   NUMERAL_DEFINITION,
@@ -50,7 +50,7 @@ import {
   optional,
   Parser,
   sequence as rawSequence,
-} from "./parser-lib.ts";
+} from "../output-parser/parser.ts";
 import { describe, TokenTree } from "./token-tree.ts";
 import { lex } from "./lexer.ts";
 

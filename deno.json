@@ -15,6 +15,7 @@
   "imports": {
     "@deno/emit": "jsr:@deno/emit@0.44.0",
     "esbuild": "https://deno.land/x/esbuild@v0.23.0/wasm.js",
+    "output-parser/": "./output-parser/",
     "telo-misikeke/": "./telo-misikeke/"
   }
 }

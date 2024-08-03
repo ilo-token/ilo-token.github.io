@@ -6,7 +6,7 @@
  * have the same capabilities.
  */
 
-import { Output } from "./output.ts";
+import { Output } from "output-parser/output.ts";
 import { UnexpectedError, UnrecognizedError } from "./error.ts";
 import {
   all,
@@ -17,7 +17,7 @@ import {
   optionalAll,
   Parser,
   sequence as rawSequence,
-} from "./parser-lib.ts";
+} from "../output-parser/parser.ts";
 import { TokenTree } from "./token-tree.ts";
 import { settings } from "./settings.ts";
 import {

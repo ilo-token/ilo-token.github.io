@@ -1,6 +1,7 @@
 /** Module containing the Output data type. */
 
-import { OutputError } from "./error.ts";
+/** Represents Error used by `Output`. */
+export class OutputError extends Error {}
 /** Represents possibilities and error. */
 export class Output<T> {
   /** Represents possibilities, considered error when the array is empty. */
