@@ -48,7 +48,7 @@ function textSequence<T extends Array<unknown>>(
 }
 function space(): TextParser<null> {
   return all(
-    choiceOnlyOne(match(/\s/, "space"), match(/\/\/[^\n]*\n/, "comment")),
+    choiceOnlyOne(match(/\s/, "space"), match(/\/\/[^\n]*/, "comment")),
   )
     .map((_) => null);
 }
