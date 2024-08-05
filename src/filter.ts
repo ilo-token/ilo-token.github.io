@@ -432,7 +432,9 @@ export const SENTENCE_RULE: Array<(sentence: Sentence) => boolean> = [
     if (sentence.laClauses.length > 0) {
       for (const clause of [...sentence.laClauses, sentence.finalClause]) {
         if (clause.type === "default" && clause.kinOrTaso != null) {
-          throw new UnrecognizedError(`${clause.kinOrTaso.word} particle with "la"`);
+          throw new UnrecognizedError(
+            `${clause.kinOrTaso.word} particle with "la"`,
+          );
         }
       }
     }
