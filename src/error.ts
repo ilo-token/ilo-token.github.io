@@ -1,6 +1,6 @@
 /** Module for Error datatypes. */
 
-import { OutputError } from "output-parser/output.ts";
+import { OutputError } from "./output.ts";
 
 /** Represents Error with unexpected and expected elements. */
 export class UnexpectedError extends OutputError {

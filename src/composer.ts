@@ -1,7 +1,7 @@
 import { Clause } from "./english-ast.ts";
 import { Sentence } from "./english-ast.ts";
 import { TodoError } from "./error.ts";
-import { Output, OutputError } from "output-parser/output.ts";
+import { Output, OutputError } from "./output.ts";
 import { translate as translateToAst } from "./translator.ts";
 
 function clause(clause: Clause): string {
