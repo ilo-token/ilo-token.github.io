@@ -3,6 +3,7 @@
  * and AST parser.
  */
 
+import { UnexpectedError } from "./error.ts";
 import { Output, OutputError } from "./output.ts";
 
 /** A single parsing result. */
@@ -208,4 +209,32 @@ export function allAtLeastOnce<T, U>(
 }
 export function count<T, U>(parser: Parser<T, Array<U>>): Parser<T, number> {
   return parser.map((array) => array.length);
+}
+/**
+ * Uses Regular Expression to create parser. The parser outputs
+ * RegExpMatchArray, which is what `string.match( ... )` returns.
+ */
+export function match(
+  regex: RegExp,
+  description: string,
+  eolDescription: string,
+): Parser<string, RegExpMatchArray> {
+  const newRegex = new RegExp(`^${regex.source}`, regex.flags);
+  return new Parser((src) => {
+    const match = src.match(newRegex);
+    if (match != null) {
+      return new Output([{ value: match, rest: src.slice(match[0].length) }]);
+    } else if (src === "") {
+      return new Output(new UnexpectedError(eolDescription, description));
+    } else {
+      const token = src.match(/[^\s]*/)![0];
+      let tokenDescription: string;
+      if (token === "") {
+        tokenDescription = "space";
+      } else {
+        tokenDescription = `"${token}"`;
+      }
+      return new Output(new UnexpectedError(tokenDescription, description));
+    }
+  });
 }

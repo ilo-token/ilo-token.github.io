@@ -14,6 +14,7 @@ import {
   choiceOnlyOne,
   count,
   empty,
+  match as rawMatch,
   optionalAll,
   Parser,
   sequence as rawSequence,
@@ -51,24 +52,7 @@ function match(
   regex: RegExp,
   description: string,
 ): Lexer<RegExpMatchArray> {
-  const newRegex = new RegExp(`^${regex.source}`, regex.flags);
-  return new Parser((src) => {
-    const match = src.match(newRegex);
-    if (match != null) {
-      return new Output([{ value: match, rest: src.slice(match[0].length) }]);
-    } else if (src === "") {
-      return new Output(new UnexpectedError("end of sentence", description));
-    } else {
-      const token = src.match(/[^\s]*/)![0];
-      let tokenDescription: string;
-      if (token === "") {
-        tokenDescription = "space";
-      } else {
-        tokenDescription = `"${token}"`;
-      }
-      return new Output(new UnexpectedError(tokenDescription, description));
-    }
-  });
+  return rawMatch(regex, description, "end of sentence");
 }
 /** parses space. */
 function spaces(): Lexer<string> {
