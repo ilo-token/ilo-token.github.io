@@ -69,8 +69,9 @@ function head(): TextParser<Array<string>> {
     .skip(lex(match(/:/, "colon")))
     .map(([init, last]) => [...init, last]);
 }
-function dictionary(): TextParser<Dictionary> {
-  return all(textSequence(head(), all(definition()))).map((entries) => {
+const dictionary = space()
+  .with(all(textSequence(head(), all(definition()))))
+  .map((entries) => {
     const dictionary: Dictionary = {};
     for (const [words, definitions] of entries) {
       for (const word of words) {
@@ -79,9 +80,8 @@ function dictionary(): TextParser<Dictionary> {
     }
     return dictionary;
   });
-}
 export async function build(): Promise<void> {
-  const output = dictionary().parse(await Deno.readTextFile(SOURCE));
+  const output = dictionary.parse(await Deno.readTextFile(SOURCE));
   if (output.isError()) {
     throw new AggregateError(output.errors);
   } else {
