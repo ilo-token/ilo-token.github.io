@@ -240,15 +240,18 @@ function insideDefinition(): TextParser<Definition> {
     determiner().map((determiner) => {
       const forms = determiner.determiner.split("/");
       switch (forms.length) {
-        case 1:
+        case 1: {
+          const singular = forms[0].trim();
+          const plural = forms[1].trim();
           return {
             type: "quantified determiner",
-            singular: forms[0],
-            plural: forms[1],
-            condensed: condense(forms[0], forms[1]),
+            singular,
+            plural,
+            condensed: condense(singular, plural),
             kind: determiner.kind,
             number: determiner.number,
           } as Definition;
+        }
         case 2:
           return { type: "determiner", ...determiner } as Definition;
         default:
