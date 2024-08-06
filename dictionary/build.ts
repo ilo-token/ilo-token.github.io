@@ -527,7 +527,7 @@ const dictionary = space()
   });
 const insideDefinitionParser = space().with(definition()).skip(eol(";"));
 
-export async function build(): Promise<boolean> {
+export async function buildDictionary(): Promise<boolean> {
   const sourceText = await Deno.readTextFile(SOURCE);
   const output = dictionary.parse(sourceText);
   if (output.isError()) {
@@ -556,4 +556,3 @@ export async function build(): Promise<boolean> {
     return true;
   }
 }
-await build();

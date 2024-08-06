@@ -1,5 +1,6 @@
 import { bundle } from "@deno/emit";
 import { buildTeloMisikeke } from "telo-misikeke/build.ts";
+import { buildDictionary } from "dictionary/build.ts";
 
 const SOURCE = new URL("./src/main.ts", import.meta.url);
 const DESTINATION = new URL("./dist/main.js", import.meta.url);
@@ -9,6 +10,10 @@ switch (Deno.args[0]) {
   case "build": {
     console.log("Building telo misikeke...");
     await buildTeloMisikeke();
+    console.log("Building dictionary");
+    if (!buildDictionary) {
+      break;
+    }
     console.log("Building main.js...");
     const bundled = await bundle(SOURCE, {
       type: "classic",
