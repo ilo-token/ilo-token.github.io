@@ -266,23 +266,32 @@ function adjective(): TextParser<Adjective> {
       kind: adjective.tag.kind,
     }));
 }
-function insideDefinition(): TextParser<Definition> {
+function semicolon(): TextParser<null> {
+  return lex(match(/;/, "semicolon")).map((_) => null);
+}
+function definition(): TextParser<Definition> {
   return choiceOnlyOne(
     // TODO: improve this
-    specificUnit("filler").map((unit) =>
-      ({
-        type: "filler",
-        before: unit.word[0],
-        repeat: unit.word[1],
-        after: "",
-      }) as Definition
-    ),
+    specificUnit("filler")
+      .skip(semicolon())
+      .map((unit) =>
+        ({
+          type: "filler",
+          before: unit.word[0],
+          repeat: unit.word[1],
+          after: "",
+        }) as Definition
+      ),
     specificUnit("particle")
+      .skip(semicolon())
       .map((unit) =>
         ({ type: "particle", definition: unit.word }) as Definition
       ),
-    noun().map((noun) => ({ type: "noun", ...noun }) as Definition),
+    noun()
+      .skip(semicolon())
+      .map((noun) => ({ type: "noun", ...noun }) as Definition),
     sequence(noun(), specificUnit("preposition"))
+      .skip(semicolon())
       .map(([noun, preposition]) =>
         ({
           type: "noun preposition",
@@ -290,88 +299,98 @@ function insideDefinition(): TextParser<Definition> {
           preposition: preposition.word,
         }) as Definition
       ),
-    specificUnit("personal pronoun").map((unit) => {
-      const forms = unit.word.split("/").map((form) => form.trim());
-      const number = unit.tag.number;
-      switch (number) {
-        case null:
-          if (forms.length !== 4) {
-            throw new UnrecognizedError(
-              `personal pronoun with ${forms.length} forms`,
-            );
-          }
-          return {
-            type: "personal pronoun",
-            singular: {
+    specificUnit("personal pronoun")
+      .skip(semicolon())
+      .map((unit) => {
+        const forms = unit.word.split("/").map((form) => form.trim());
+        const number = unit.tag.number;
+        switch (number) {
+          case null:
+            if (forms.length !== 4) {
+              throw new UnrecognizedError(
+                `personal pronoun with ${forms.length} forms`,
+              );
+            }
+            return {
+              type: "personal pronoun",
+              singular: {
+                subject: forms[0],
+                object: forms[1],
+              },
+              plural: {
+                subject: forms[2],
+                object: forms[3],
+              },
+              condensed: {
+                subject: condense(forms[0], forms[2]),
+                object: condense(forms[1], forms[3]),
+              },
+            } as Definition;
+          case "singular":
+          case "plural": {
+            if (forms.length !== 2) {
+              throw new UnrecognizedError(
+                `${number} personal pronoun with ${forms.length} forms`,
+              );
+            }
+            const pronoun = {
               subject: forms[0],
               object: forms[1],
-            },
-            plural: {
-              subject: forms[2],
-              object: forms[3],
-            },
-            condensed: {
-              subject: condense(forms[0], forms[2]),
-              object: condense(forms[1], forms[3]),
-            },
-          } as Definition;
-        case "singular":
-        case "plural": {
-          if (forms.length !== 2) {
-            throw new UnrecognizedError(
-              `${number} personal pronoun with ${forms.length} forms`,
-            );
+            };
+            return {
+              type: "personal pronoun",
+              singular: null,
+              plural: null,
+              [number]: pronoun,
+              condensed: pronoun,
+            } as Definition;
           }
-          const pronoun = {
-            subject: forms[0],
-            object: forms[1],
-          };
-          return {
-            type: "personal pronoun",
-            singular: null,
-            plural: null,
-            [number]: pronoun,
-            condensed: pronoun,
-          } as Definition;
         }
-      }
-    }),
-    determiner().map((determiner) => {
-      const forms = determiner.determiner.split("/");
-      switch (forms.length) {
-        case 1:
-          return { type: "determiner", ...determiner } as Definition;
-        case 2: {
-          const singular = forms[0].trim();
-          const plural = forms[1].trim();
-          return {
-            type: "quantified determiner",
-            singular,
-            plural,
-            condensed: condense(singular, plural),
-            kind: determiner.kind,
-            number: determiner.number,
-          } as Definition;
+      }),
+    determiner()
+      .skip(semicolon())
+      .map((determiner) => {
+        const forms = determiner.determiner.split("/");
+        switch (forms.length) {
+          case 1:
+            return { type: "determiner", ...determiner } as Definition;
+          case 2: {
+            const singular = forms[0].trim();
+            const plural = forms[1].trim();
+            return {
+              type: "quantified determiner",
+              singular,
+              plural,
+              condensed: condense(singular, plural),
+              kind: determiner.kind,
+              number: determiner.number,
+            } as Definition;
+          }
+          default:
+            throw new UnrecognizedError(
+              `determiner with ${forms.length} forms`,
+            );
         }
-        default:
-          throw new UnrecognizedError(`determiner with ${forms.length} forms`);
-      }
-    }),
-    specificUnit("numeral").map((unit) => {
-      const numeral = Number.parseInt(unit.word);
-      if (Number.isNaN(numeral)) {
-        throw new UnrecognizedError("non-number on numeral");
-      } else {
-        return { type: "numeral", numeral } as Definition;
-      }
-    }),
+      }),
+    specificUnit("numeral")
+      .skip(semicolon())
+      .map((unit) => {
+        const numeral = Number.parseInt(unit.word);
+        if (Number.isNaN(numeral)) {
+          throw new UnrecognizedError("non-number on numeral");
+        } else {
+          return { type: "numeral", numeral } as Definition;
+        }
+      }),
     adjective()
+      .skip(semicolon())
       .map((adjective) => ({ type: "adjective", ...adjective }) as Definition),
     sequence(
       specificUnit("adjective"),
       specificUnit("conjunction").filter((unit) => unit.word === "and"),
       specificUnit("adjective"),
     )
+      .skip(semicolon())
       .map(([left, _, right]) =>
         ({
           type: "compound adjective",
@@ -384,8 +403,10 @@ function insideDefinition(): TextParser<Definition> {
         }) as Definition
       ),
     specificUnit("adverb")
+      .skip(semicolon())
       .map((unit) => ({ type: "adverb", adverb: unit.word }) as Definition),
     specificUnit("verb")
+      .skip(semicolon())
       .filter((unit) => unit.tag.kind != null)
       .map((unit) =>
         ({
@@ -400,6 +421,7 @@ function insideDefinition(): TextParser<Definition> {
       specificUnit("verb").filter((unit) => unit.tag.kind == null),
       noun(),
     )
+      .skip(semicolon())
       .map(([verb, directObject]) =>
         ({
           type: "verb",
@@ -414,6 +436,7 @@ function insideDefinition(): TextParser<Definition> {
       specificUnit("preposition"),
       noun(),
     )
+      .skip(semicolon())
       .map(([verb, preposition, object]) =>
         ({
           type: "verb",
@@ -430,6 +453,7 @@ function insideDefinition(): TextParser<Definition> {
       specificUnit("verb").filter((unit) => unit.tag.kind == null),
       specificUnit("preposition"),
     )
+      .skip(semicolon())
       .map(([verb, preposition]) =>
         ({
           type: "verb",
@@ -444,6 +468,7 @@ function insideDefinition(): TextParser<Definition> {
       noun(),
       specificUnit("preposition"),
     )
+      .skip(semicolon())
       .map(([verb, directObject, preposition]) =>
         ({
           type: "verb",
@@ -454,10 +479,12 @@ function insideDefinition(): TextParser<Definition> {
         }) as Definition
       ),
     specificUnit("preposition")
+      .skip(semicolon())
       .map((unit) =>
         ({ type: "preposition", preposition: unit.word }) as Definition
       ),
     sequence(specificUnit("preposition"), noun())
+      .skip(semicolon())
       .map(([preposition, object]) =>
         ({
           type: "preposition object",
@@ -466,15 +493,14 @@ function insideDefinition(): TextParser<Definition> {
         }) as Definition
       ),
     specificUnit("interjection")
+      .skip(semicolon())
       .map((unit) =>
         ({ type: "interjection", interjection: unit.word }) as Definition
       ),
     specificUnit("adhoc")
+      .skip(semicolon())
       .map((unit) => ({ type: "adhoc", definition: unit.word }) as Definition),
   );
-}
-function definition(): TextParser<Definition> {
-  return insideDefinition().skip(lex(match(/;/, "semicolon")));
 }
 function singleWord(): TextParser<string> {
   return lex(match(/[a-z]+/, "word")).map(([word]) => word);
@@ -499,7 +525,7 @@ const dictionary = space()
     }
     return dictionary;
   });
-const insideDefinitionParser = space().with(insideDefinition()).skip(eol(";"));
+const insideDefinitionParser = space().with(definition()).skip(eol(";"));
 
 export async function build(): Promise<boolean> {
   const sourceText = await Deno.readTextFile(SOURCE);
@@ -508,8 +534,8 @@ export async function build(): Promise<boolean> {
     const rawTexts = all(
       optionalAll(head())
         .with(
-          lex(match(/([^;]*);/, "definition"))
-            .map(([_, definition]) => definition),
+          lex(match(/[^;]*;/, "definition"))
+            .map(([definition]) => definition),
         ),
     )
       .skip(eol("EOL"))
