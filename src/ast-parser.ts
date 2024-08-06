@@ -20,13 +20,6 @@ import {
 import { UnexpectedError, UnrecognizedError } from "./error.ts";
 import { Output } from "./output.ts";
 import {
-  CONTENT_WORD,
-  NUMERAL_DEFINITION,
-  PREPOSITION,
-  PREVERB,
-  TOKI_PONA_WORD,
-} from "./old-dictionary.ts";
-import {
   CLAUSE_RULE,
   filter,
   FULL_CLAUSE_RULE,
@@ -53,6 +46,39 @@ import {
 } from "./parser-lib.ts";
 import { describe, TokenTree } from "./token-tree.ts";
 import { lex } from "./lexer.ts";
+import { DICTIONARY } from "dictionary/dictionary.ts";
+
+const CONTENT_WORD = new Set(
+  Object.entries(DICTIONARY).filter(([_, definitions]) =>
+    definitions
+      .filter((definition) =>
+        definition.type !== "filler" && definition.type !== "particle"
+      )
+      .length > 0
+  )
+    .map(([word]) => word),
+);
+const PREPOSITION = new Set(
+  Object.entries(DICTIONARY).filter(([_, definitions]) =>
+    definitions
+      .filter((definition) => definition.type === "preposition")
+      .length > 0
+  )
+    .map(([word]) => word),
+);
+// TODO: rely on dictionary instead
+const PREVERB = new Set([
+  "alasa",
+  "awen",
+  "kama",
+  "ken",
+  "lukin",
+  "open",
+  "pini",
+  "sona",
+  "wile",
+]);
+const TOKI_PONA_WORD = new Set(Object.keys(DICTIONARY));
 
 export type AstParser<T> = Parser<Array<TokenTree>, T>;
 
@@ -299,6 +325,11 @@ function optionalCombined(
       ),
   );
 }
+function wordToNumber(word: string): number {
+  return DICTIONARY[word]
+    .filter((definition) => definition.type === "numeral")[0]
+    .numeral;
+}
 /** Parses number words in order other than "ale" and "ala". This can parse
  * nothing and return 0.
  */
@@ -311,7 +342,7 @@ function subAleNumber(): AstParser<number> {
   )
     .map((array) => array.flat())
     .map((array) =>
-      array.reduce((number, word) => number + NUMERAL_DEFINITION[word], 0)
+      array.reduce((number, word) => number + wordToNumber(word), 0)
     );
 }
 /** Parses "ale" or "ali". */

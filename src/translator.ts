@@ -1,18 +1,12 @@
+import { Definition, Noun } from "dictionary/type.ts";
 import { parse } from "./ast-parser.ts";
 import * as TokiPona from "./ast.ts";
-import { Definition } from "./old-dictionary.ts";
-import {
-  CONTENT_WORD_DEFINITION,
-  NUMERAL_DEFINITION,
-  PARTICLE_DEFINITION,
-  PREPOSITION_DEFINITION,
-  SPECIAL_CONTENT_WORD_DEFINITION,
-} from "./old-dictionary.ts";
 import * as English from "./english-ast.ts";
 import { TodoError } from "./error.ts";
 import { nullableAsArray, repeat } from "./misc.ts";
 import { Output } from "./output.ts";
 import { settings } from "./settings.ts";
+import { DICTIONARY } from "dictionary/dictionary.ts";
 
 const CONJUNCTION = { "and conjunction": "and", "anu": "or" } as const;
 
@@ -207,7 +201,7 @@ function interjection(clause: TokiPona.Clause): Output<English.Clause> {
       phrase.headWord.type === "default" &&
       phrase.headWord.emphasis == null
     ) {
-      interjection = new Output(CONTENT_WORD_DEFINITION[phrase.headWord.word])
+      interjection = new Output(DICTIONARY[phrase.headWord.word])
         .filterMap((definition) => {
           if (definition.type === "interjection") {
             return definition.interjection;
@@ -312,9 +306,7 @@ function sentence(
     );
   }
 }
-function nounAsPlainString(
-  definition: Definition & { type: "noun" },
-): Array<string> {
+function nounAsPlainString(definition: Noun): Array<string> {
   let nouns: Array<string>;
   switch (settings.get("number-settings")) {
     case "both":
@@ -332,97 +324,115 @@ function nounAsPlainString(
   }
   return nouns.map((noun) =>
     `${
-      definition.adjectives
+      definition.adjective
         .map((adjective) => adjective.adjective)
         .join(" ")
     } ${noun}`
   );
 }
-function allDefinitionAsPlainString(word: string): Array<string> {
-  const definitions = CONTENT_WORD_DEFINITION[word];
-  if (definitions == null) {
-    return [];
-  }
-  return definitions.flatMap((definition) => {
-    switch (definition.type) {
-      case "noun":
-        return nounAsPlainString(definition);
-      case "personal pronoun":
+function definitionAsPlainString(definition: Definition): Array<string> {
+  switch (definition.type) {
+    case "noun":
+      return nounAsPlainString(definition);
+    case "personal pronoun":
+      return [
+        ...nullableAsArray(definition.singular?.subject),
+        ...nullableAsArray(definition.singular?.object),
+        ...nullableAsArray(definition.plural?.subject),
+        ...nullableAsArray(definition.plural?.object),
+      ];
+    case "adjective":
+      return [
+        `${definition.adverb.join(" ")} ${definition.adjective}`,
+      ];
+    case "compound adjective": {
+      const { adjective } = definition;
+      if (adjective.length === 2) {
         return [
-          ...nullableAsArray(definition.singularSubject),
-          ...nullableAsArray(definition.singularObject),
-          ...nullableAsArray(definition.pluralSubject),
-          ...nullableAsArray(definition.pluralObject),
+          adjective
+            .map((adjective) => adjective.adjective)
+            .join(" and "),
         ];
-      case "indefinite pronoun":
-        return [definition.pronoun];
-      case "adjective":
+      } else {
+        const lastIndex = adjective.length - 1;
+        const init = adjective.slice(0, lastIndex);
+        const last = adjective[lastIndex];
         return [
           `${
-            definition.adverbs.map((adverb) => adverb.adverb).join(" ")
-          } ${definition.adjective}`,
-        ];
-      case "compound adjective": {
-        const { adjectives } = definition;
-        if (adjectives.length === 2) {
-          return [
-            adjectives
-              .map((adjective) => adjective.adjective)
-              .join(" and "),
-          ];
-        } else {
-          const lastIndex = adjectives.length - 1;
-          const init = adjectives.slice(0, lastIndex);
-          const last = adjectives[lastIndex];
-          return `${
             init.map((adjective) => adjective.adjective).join(", ")
-          }, and ${last.adjective}`;
-        }
+          }, and ${last.adjective}`,
+        ];
       }
-      case "determiner":
-        return [definition.determiner];
-      case "adverb":
-        return [definition.adverb];
-      case "verb": {
-        let objects: null | Array<string> = null;
-        if (definition.object != null) {
-          objects = nounAsPlainString(definition.object);
-        }
-        let verbs: Array<string>;
-        switch (settings.get("tense-settings")) {
-          case "both":
-            verbs = [
-              definition.past,
-              definition.present,
-              `will ${definition.present}`,
-            ];
-            break;
-          case "condensed":
-            verbs = [`(will) ${definition.condensed}`];
-            break;
-          case "default only":
-            verbs = [definition.present];
-            break;
-        }
-        let pastParticiple: null | string = null;
-        if (definition.pastParticiple !== definition.past) {
-          pastParticiple = definition.pastParticiple;
-        }
-        if (objects == null) {
-          return [
-            ...verbs,
-            ...nullableAsArray(pastParticiple),
-            definition.gerund,
-          ];
-        } else {
-          return [...verbs, definition.gerund]
-            .flatMap((verb) => objects.map((object) => `${verb} ${object}`));
-        }
-      }
-      case "interjection":
-        return [definition.interjection];
     }
-  });
+    case "determiner":
+      return [definition.determiner];
+    case "quantified determiner":
+      switch (settings.get("number-settings")) {
+        case "both":
+          return [definition.singular, definition.plural];
+        case "condensed":
+          return [definition.condensed];
+        case "default only":
+          return [definition.singular];
+      }
+      // unreachable
+      // fallthrough
+    case "adverb":
+      return [definition.adverb];
+    case "interjection":
+      return [definition.interjection];
+    case "verb": {
+      let verbs: Array<string>;
+      switch (settings.get("tense-settings")) {
+        case "both":
+          verbs = [
+            definition.past,
+            definition.presentPlural,
+            `will ${definition.presentSingular}`,
+          ];
+          break;
+        case "condensed":
+          verbs = [`(will) ${definition.condensed}`];
+          break;
+        case "default only":
+          verbs = [definition.presentPlural];
+          break;
+      }
+      const directObjects = nullableAsArray(definition.directObject).flatMap(
+        nounAsPlainString,
+      );
+      const indirectObjects = definition.indirectObject
+        .flatMap((object) =>
+          nounAsPlainString(object.object)
+            .map((noun) => `${noun} ${object.preposition}`)
+        );
+      let preposition: Array<string>;
+      if (typeof definition.forObject === "string") {
+        preposition = [definition.forObject];
+      } else {
+        preposition = [];
+      }
+      return verbs
+        .map((verb) =>
+          [verb, ...directObjects, ...indirectObjects, ...preposition].join(" ")
+        );
+    }
+    case "filler":
+      return [`${definition.before}${definition.repeat}${definition.after}`];
+    case "particle":
+      return [definition.definition];
+    case "noun preposition":
+      return nounAsPlainString(definition.noun)
+        .map((noun) => `${noun} ${definition.preposition}`);
+    case "numeral":
+      return [`${definition.numeral}`];
+    case "preposition":
+      return [definition.preposition];
+    case "preposition object":
+      throw new Error("todo");
+    case "adhoc":
+      return [definition.definition];
+  }
 }
 function multipleSentences(
   sentences: TokiPona.MultipleSentences,
@@ -430,14 +440,10 @@ function multipleSentences(
   switch (sentences.type) {
     case "single word": {
       const { word } = sentences;
-      return new Output([
-        ...PARTICLE_DEFINITION[word] ?? [],
-        ...PREPOSITION_DEFINITION[word] ?? [],
-        ...nullableAsArray(NUMERAL_DEFINITION[word]).map((num) => `${num}`),
-        // TODO: Preverb
-        ...SPECIAL_CONTENT_WORD_DEFINITION[word] ?? [],
-        ...allDefinitionAsPlainString(word),
-      ])
+      return new Output(DICTIONARY[word])
+        .flatMap((definition) =>
+          new Output(definitionAsPlainString(definition))
+        )
         .map((definition) =>
           ({
             clauses: [{ type: "free form", text: definition }],
