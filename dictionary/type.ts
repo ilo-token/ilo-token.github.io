@@ -46,6 +46,7 @@ export type Definition =
     type: "personal pronoun";
     singular: null | { subject: string; object: string };
     plural: null | { subject: string; object: string };
+    condensed: { subject: string; object: string };
   }
   | ({ type: "determiner" } & Determiner)
   | {
