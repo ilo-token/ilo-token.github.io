@@ -8,6 +8,8 @@ import {
   sequence as rawSequence,
 } from "../src/parser-lib.ts";
 import { Dictionary } from "./type.ts";
+import { Output } from "../src/output.ts";
+import { UnexpectedError } from "../src/error.ts";
 
 const SOURCE = new URL("./dictionary", import.meta.url);
 const DESTINATION = new URL("./dictionary.ts", import.meta.url);
@@ -34,6 +36,10 @@ type Tag =
 type Unit = { word: string; tag: Tag };
 
 type TextParser<T> = Parser<string, T>;
+
+function rest(): TextParser<string> {
+  return new Parser((src) => new Output([{ value: src, rest: src }]));
+}
 function match(
   regex: RegExp,
   description: string,
@@ -55,11 +61,34 @@ function space(): TextParser<null> {
 function lex<T>(parser: TextParser<T>): TextParser<T> {
   return parser.skip(space());
 }
+function word(): TextParser<string> {
+  return all(
+    choiceOnlyOne(
+      match(/\\(\S)/, "escape sequence").map(([_, character]) => character),
+      match(/[^\\();]/, "word").map(([character]) => character),
+    ),
+  )
+    .map((value) => value.join("").replaceAll(/\s+/, " ").trim());
+}
+function keyword(keyword: string): TextParser<string> {
+  return lex(match(/[a-z]+/, keyword))
+    .map(([keyword]) => keyword)
+    .filter((that) => {
+      if (that === keyword) {
+        return true;
+      } else {
+        throw new UnexpectedError(that, keyword);
+      }
+    });
+}
+function tagInside(): TextParser<Tag> {
+  return choiceOnlyOne();
+}
 function definition(): TextParser<Definition> {
   throw new Error("todo");
 }
 function singleWord(): TextParser<string> {
-  return lex(match(/[a-z]*/, "word")).map(([word]) => word);
+  return lex(match(/[a-z]+/, "word")).map(([word]) => word);
 }
 function head(): TextParser<Array<string>> {
   return textSequence(
