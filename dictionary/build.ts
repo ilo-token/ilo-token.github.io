@@ -240,7 +240,9 @@ function insideDefinition(): TextParser<Definition> {
     determiner().map((determiner) => {
       const forms = determiner.determiner.split("/");
       switch (forms.length) {
-        case 1: {
+        case 1:
+          return { type: "determiner", ...determiner } as Definition;
+        case 2: {
           const singular = forms[0].trim();
           const plural = forms[1].trim();
           return {
@@ -252,8 +254,6 @@ function insideDefinition(): TextParser<Definition> {
             number: determiner.number,
           } as Definition;
         }
-        case 2:
-          return { type: "determiner", ...determiner } as Definition;
         default:
           throw new UnrecognizedError(`determiner with ${forms.length} forms`);
       }
