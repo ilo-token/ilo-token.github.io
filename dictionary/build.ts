@@ -188,8 +188,8 @@ function conjugate(verb: string): {
     throw new OutputError(`no verb conjugation found for ${verb}`);
   }
   return {
-    presentSingular: conjugations.Infinitive,
-    presentPlural: conjugations.PresentTense,
+    presentSingular: conjugations.PresentTense,
+    presentPlural: conjugations.Infinitive,
     past: conjugations.PastTense,
   };
 }
