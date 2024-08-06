@@ -10,8 +10,8 @@ switch (Deno.args[0]) {
   case "build": {
     console.log("Building telo misikeke...");
     await buildTeloMisikeke();
-    console.log("Building dictionary");
-    if (!buildDictionary) {
+    console.log("Building dictionary...");
+    if (!await buildDictionary()) {
       break;
     }
     console.log("Building main.js...");
