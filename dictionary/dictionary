@@ -389,7 +389,7 @@ luka:
   grasping(aj qualifier) organ(n);
   5(num);
 
-lukin:
+lukin, oko:
   appearance(n);
   # visual(n);
   eye(n);
@@ -568,15 +568,6 @@ o:
   should(particle);
   [marks the end of a vocative \(who is being spoken to\)](particle);
   [marks the start of an imperative \(command, wish, instruction\)](particle);
-
-oko:
-  appearance(n);
-  visual(n);
-  eye(n);
-  seeing(aj qualifier) organ(n);
-  look(v) at(pp);
-  read(tra v);
-  watch(tra v);
 
 olin:
   affection(n singular);
