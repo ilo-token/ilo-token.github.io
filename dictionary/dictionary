@@ -433,7 +433,7 @@ mani:
   cash(n singular);
   savings(n plural);
   wealth(n singular);
-  large(aj size) domestic(aj qualifier) animal(n);
+  large(aj size) domestic(aj qualifier) animal/animals(n);
 
 meli:
   woman(n);
@@ -764,7 +764,7 @@ sona:
 
 soweli:
   fuzzy(aj physical quality) creature(n);
-  land(aj origin) animal(n);
+  land(aj origin) animal/animals(n);
   beast(n);
 
 su:
@@ -900,7 +900,7 @@ wan:
 waso:
   bird(n);
   flying(aj qualifier) creature(n);
-  winged(aj qualifier) animal(n);
+  winged(aj qualifier) animal/animals(n);
   fly(int v);
 
 wawa:
