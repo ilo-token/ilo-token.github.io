@@ -185,13 +185,16 @@ function conjugate(verb: string): {
   past: string;
   condensed: string;
 } {
-  const conjugations = nlp(verb).verbs().conjugate()[0] as {
+  const conjugations = nlp(verb).verbs().conjugate()[0] as undefined | {
     Infinitive: string;
     PastTense: string;
     PresentTense: string;
     Gerund: string;
     FutureTense: string;
   };
+  if (conjugations == null) {
+    throw new OutputError(`no verb conjugation found for ${verb}`);
+  }
   const presentSingular = conjugations.Infinitive;
   const past = conjugations.PastTense;
   const [first, ...rest] = presentSingular.split(" ");
@@ -213,6 +216,11 @@ function noun(): TextParser<Noun> {
         case null:
           singular = nlp(noun.word).nouns().toSingular().text();
           plural = nlp(noun.word).nouns().toPlural().text();
+          if (singular === "" || plural === "") {
+            throw new OutputError(
+              `no singular or plural form found for ${noun.word}`,
+            );
+          }
           condensed = condense(singular, plural);
           break;
         case "singular":
