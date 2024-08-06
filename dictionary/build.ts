@@ -51,7 +51,7 @@ function match(
 ): TextParser<RegExpMatchArray> {
   return rawMatch(regex, description, "EOL");
 }
-function textSequence<T extends Array<unknown>>(
+function sequence<T extends Array<unknown>>(
   ...sequence: { [I in keyof T]: TextParser<T[I]> } & { length: T["length"] }
 ): TextParser<T> {
   // deno-lint-ignore no-explicit-any
@@ -87,16 +87,16 @@ function tagInside(): TextParser<Tag> {
   return choiceOnlyOne(
     keyword("f").map((_) => ({ type: "filler" }) as Tag),
     keyword("particle").map((_) => ({ type: "particle" }) as Tag),
-    textSequence(keyword("n"), optionalNumber())
+    sequence(keyword("n"), optionalNumber())
       .map(([_, number]) => ({ type: "noun", number }) as Tag),
-    textSequence(keyword("pn"), optionalNumber())
+    sequence(keyword("pn"), optionalNumber())
       .map(([_, number]) => ({ type: "personal pronoun", number }) as Tag),
-    textSequence(
+    sequence(
       keyword("aj"),
       choiceOnlyOne(
         keyword("opinion"),
         keyword("size"),
-        textSequence(keyword("physical"), keyword("quality")).map((_) =>
+        sequence(keyword("physical"), keyword("quality")).map((_) =>
           "physical quality"
         ),
         keyword("age"),
@@ -107,7 +107,7 @@ function tagInside(): TextParser<Tag> {
       ),
     )
       .map(([_, kind]) => ({ type: "adjective", kind }) as Tag),
-    textSequence(
+    sequence(
       keyword("d"),
       choiceOnlyOne(
         keyword("article"),
@@ -125,7 +125,7 @@ function tagInside(): TextParser<Tag> {
       ),
     keyword("num").map((_) => ({ type: "numeral" }) as Tag),
     keyword("av").map((_) => ({ type: "adverb" }) as Tag),
-    textSequence(
+    sequence(
       optionalAll(choiceOnlyOne(keyword("tra"), keyword("int"))),
       keyword("v"),
     )
@@ -151,7 +151,7 @@ function tagInside(): TextParser<Tag> {
   );
 }
 function tag(): TextParser<Tag> {
-  return textSequence(
+  return sequence(
     lex(match(/\(/, "open parenthesis")),
     tagInside(),
     lex(match(/\)/, "close parenthesis")),
@@ -159,7 +159,7 @@ function tag(): TextParser<Tag> {
     .map(([_, tag]) => tag);
 }
 function unit(): TextParser<Unit> {
-  return textSequence(word(), tag()).map(([word, tag]) => ({ word, tag }));
+  return sequence(word(), tag()).map(([word, tag]) => ({ word, tag }));
 }
 function specificUnit<T extends Tag["type"]>(
   type: T,
@@ -176,7 +176,7 @@ function condense(first: string, second: string): string {
   }
 }
 function noun(): TextParser<Noun> {
-  return textSequence(all(determiner()), all(adjective()), specificUnit("noun"))
+  return sequence(all(determiner()), all(adjective()), specificUnit("noun"))
     .map(([determiner, adjective, noun]) => {
       let singular: null | string = null;
       let plural: null | string = null;
@@ -206,7 +206,7 @@ function determiner(): TextParser<Determiner> {
     }));
 }
 function adjective(): TextParser<Adjective> {
-  return textSequence(
+  return sequence(
     all(specificUnit("adverb").map((unit) => unit.word)),
     specificUnit("adjective"),
   )
@@ -224,7 +224,7 @@ function insideDefinition(): TextParser<Definition> {
         ({ type: "particle", definition: unit.word }) as Definition
       ),
     noun().map((noun) => ({ type: "noun", ...noun }) as Definition),
-    textSequence(noun(), specificUnit("preposition"))
+    sequence(noun(), specificUnit("preposition"))
       .map(([noun, preposition]) =>
         ({
           type: "noun preposition",
@@ -261,7 +261,7 @@ function insideDefinition(): TextParser<Definition> {
     }),
     adjective()
       .map((adjective) => ({ type: "adjective", ...adjective }) as Definition),
-    textSequence(
+    sequence(
       specificUnit("adjective"),
       specificUnit("conjunction").filter((unit) => unit.word === "and"),
       specificUnit("adjective"),
@@ -298,7 +298,7 @@ function singleWord(): TextParser<string> {
   return lex(match(/[a-z]+/, "word")).map(([word]) => word);
 }
 function head(): TextParser<Array<string>> {
-  return textSequence(
+  return sequence(
     all(singleWord().skip(lex(match(/,/, "comma")))),
     singleWord(),
   )
@@ -318,7 +318,7 @@ function eol(): TextParser<null> {
   });
 }
 const dictionary = space()
-  .with(all(textSequence(head(), all(definition()))))
+  .with(all(sequence(head(), all(definition()))))
   .skip(eol())
   .map((entries) => {
     const dictionary: Dictionary = {};
