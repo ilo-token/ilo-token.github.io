@@ -179,6 +179,30 @@ function condense(first: string, second: string): string {
     return `${first}/${second}`;
   }
 }
+function conjugate(verb: string): {
+  presentSingular: string;
+  presentPlural: string;
+  past: string;
+  condensed: string;
+} {
+  const conjugations = nlp(verb).verbs().conjugate()[0] as {
+    Infinitive: string;
+    PastTense: string;
+    PresentTense: string;
+    Gerund: string;
+    FutureTense: string;
+  };
+  const presentSingular = conjugations.Infinitive;
+  const past = conjugations.PastTense;
+  const [first, ...rest] = presentSingular.split(" ");
+  return {
+    presentSingular,
+    presentPlural: conjugations.PresentTense,
+    past,
+    condensed: [condense(first, past.split(" ")[0]), ...rest]
+      .join(" "),
+  };
+}
 function noun(): TextParser<Noun> {
   return sequence(all(determiner()), all(adjective()), specificUnit("noun"))
     .map(([determiner, adjective, noun]) => {
@@ -331,7 +355,74 @@ function insideDefinition(): TextParser<Definition> {
       ),
     specificUnit("adverb")
       .map((unit) => ({ type: "adverb", adverb: unit.word }) as Definition),
-    // TODO: verb
+    specificUnit("verb")
+      .filter((unit) => unit.tag.kind != null)
+      .map((unit) =>
+        ({
+          type: "verb",
+          ...conjugate(unit.word),
+          directObject: null,
+          indirectObject: [],
+          forObject: unit.tag.kind === "transitive",
+        }) as Definition
+      ),
+    sequence(
+      specificUnit("verb").filter((unit) => unit.tag.kind == null),
+      noun(),
+    )
+      .map(([verb, directObject]) =>
+        ({
+          type: "verb",
+          ...conjugate(verb.word),
+          directObject,
+          indirectObject: [],
+          forObject: false,
+        }) as Definition
+      ),
+    sequence(
+      specificUnit("verb").filter((unit) => unit.tag.kind == null),
+      specificUnit("preposition"),
+      noun(),
+    )
+      .map(([verb, preposition, object]) =>
+        ({
+          type: "verb",
+          ...conjugate(verb.word),
+          directObject: null,
+          indirectObject: [{
+            preposition: preposition.word,
+            object,
+          }],
+          forObject: false,
+        }) as Definition
+      ),
+    sequence(
+      specificUnit("verb").filter((unit) => unit.tag.kind == null),
+      specificUnit("preposition"),
+    )
+      .map(([verb, preposition]) =>
+        ({
+          type: "verb",
+          ...conjugate(verb.word),
+          directObject: null,
+          indirectObject: [],
+          forObject: preposition.word,
+        }) as Definition
+      ),
+    sequence(
+      specificUnit("verb").filter((unit) => unit.tag.kind == null),
+      noun(),
+      specificUnit("preposition"),
+    )
+      .map(([verb, directObject, preposition]) =>
+        ({
+          type: "verb",
+          ...conjugate(verb.word),
+          directObject,
+          indirectObject: [],
+          forObject: preposition.word,
+        }) as Definition
+      ),
     specificUnit("preposition")
       .map((unit) =>
         ({ type: "preposition", preposition: unit.word }) as Definition

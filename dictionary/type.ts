@@ -67,8 +67,11 @@ export type Definition =
     presentPlural: string;
     past: string;
     condensed: string;
-    preposition: null | string;
-    object: null | Noun;
+    directObject: null | Noun;
+    indirectObject: Array<{
+      preposition: string;
+      object: Noun;
+    }>;
     forObject: boolean | string;
   }
   | { type: "preposition"; preposition: string }
