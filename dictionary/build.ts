@@ -20,6 +20,7 @@ import {
 import { OutputError } from "../src/output.ts";
 import { UnrecognizedError } from "../src/error.ts";
 import { SENTENCE_RULE } from "../src/filter.ts";
+import { repeat } from "../src/misc.ts";
 
 const SOURCE = new URL("./dictionary", import.meta.url);
 const DESTINATION = new URL("./dictionary.ts", import.meta.url);
@@ -210,6 +211,31 @@ function conjugate(verb: string): {
       .join(" "),
   };
 }
+function detectRepetition(
+  source: string,
+): { before: string; repeat: string; after: string } {
+  const repetitions = source.split("/").map((repetition) => repetition.trim());
+  if (repetitions.length === 1) {
+    return { before: repetitions[0], repeat: "", after: "" };
+  }
+  const [first, ...rest] = repetitions;
+  if (first.length <= 0) {
+    throw new UnrecognizedError('no word before "/"');
+  }
+  for (let i = 0; i < first.length; i++) {
+    const before = first.slice(0, i);
+    const repeatString = first.slice(i, i + 1);
+    const after = first.slice(i + 1);
+    const passed = [...rest.entries()]
+      .every(([i, test]) =>
+        test === `${before}${repeat(repeatString, i + 2)}${after}`
+      );
+    if (passed) {
+      return { before, repeat: repeatString, after };
+    }
+  }
+  throw new OutputError(`${source} has no repetition pattern found`);
+}
 function noun(): TextParser<Noun> {
   return sequence(all(determiner()), all(adjective()), specificUnit("noun"))
     .map(([determiner, adjective, noun]) => {
@@ -288,9 +314,7 @@ function definition(): TextParser<Definition> {
       .map((unit) =>
         ({
           type: "filler",
-          before: unit.word[0],
-          repeat: unit.word[1],
-          after: "",
+          ...detectRepetition(unit.word),
         }) as Definition
       ),
     specificUnit("particle")
