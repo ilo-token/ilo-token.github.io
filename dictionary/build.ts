@@ -290,6 +290,14 @@ function insideDefinition(): TextParser<Definition> {
       .map((unit) =>
         ({ type: "preposition", preposition: unit.word }) as Definition
       ),
+    sequence(specificUnit("preposition"), noun())
+      .map(([preposition, object]) =>
+        ({
+          type: "preposition object",
+          preposition: preposition.word,
+          object,
+        }) as Definition
+      ),
     specificUnit("interjection")
       .map((unit) =>
         ({ type: "interjection", interjection: unit.word }) as Definition
