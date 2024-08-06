@@ -11,12 +11,13 @@ import {
 import {
   all,
   choiceOnlyOne,
+  eol,
   match as rawMatch,
   optionalAll,
   Parser,
   sequence as rawSequence,
 } from "../src/parser-lib.ts";
-import { Output, OutputError } from "../src/output.ts";
+import { OutputError } from "../src/output.ts";
 import { UnrecognizedError } from "../src/error.ts";
 
 const SOURCE = new URL("./dictionary", import.meta.url);
@@ -473,21 +474,9 @@ function head(): TextParser<Array<string>> {
     .skip(lex(match(/:/, "colon")))
     .map(([init, last]) => [...init, last]);
 }
-function eol(): TextParser<null> {
-  return new Parser((src) => {
-    if (src === "") {
-      return new Output([{ value: null, rest: "" }]);
-    } else {
-      const line = src.match(/[^\n]*/)![0].trim();
-      return new Output(
-        new OutputError(`Problem encountered at definition ${line}`),
-      );
-    }
-  });
-}
 const dictionary = space()
   .with(all(sequence(head(), all(definition()))))
-  .skip(eol())
+  .skip(eol("EOL"))
   .map((entries) => {
     const dictionary: Dictionary = {};
     for (const [words, definitions] of entries) {
@@ -497,15 +486,34 @@ const dictionary = space()
     }
     return dictionary;
   });
-export async function build(): Promise<void> {
-  const output = dictionary.parse(await Deno.readTextFile(SOURCE));
+const insideDefinitionParser = space().with(insideDefinition()).skip(eol(";"));
+
+export async function build(): Promise<boolean> {
+  const sourceText = await Deno.readTextFile(SOURCE);
+  const output = dictionary.parse(sourceText);
   if (output.isError()) {
-    throw new AggregateError(output.errors);
+    const rawTexts = all(
+      optionalAll(head())
+        .with(
+          lex(match(/([^;]*);/, "definition"))
+            .map(([_, definition]) => definition),
+        ),
+    )
+      .skip(eol("EOL"))
+      .parse(sourceText);
+    for (const text of rawTexts.output[0]) {
+      const output = insideDefinitionParser.parse(text);
+      for (const error of output.errors) {
+        console.error(error.message);
+      }
+    }
+    return false;
   } else {
     const dictionary = JSON.stringify(output.output[0]);
     await Deno.writeTextFile(
       DESTINATION,
       `import{Dictionary}from"./type.ts";export const DICTIONARY:Dictionary=${dictionary}`,
     );
+    return true;
   }
 }
