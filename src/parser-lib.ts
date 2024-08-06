@@ -238,3 +238,10 @@ export function match(
     }
   });
 }
+/** Parses the end of line (or the end of sentence in context of Toki Pona) */
+export function eol(eolDescription: string): Parser<string, null> {
+  return new Parser((src) => {
+    if (src === "") return new Output([{ value: null, rest: "" }]);
+    else return new Output(new UnexpectedError(`"${src}"`, eolDescription));
+  });
+}

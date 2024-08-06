@@ -228,7 +228,7 @@ ko:
   moldable(aj material);
 
 kokosila:
-  speak(v) a(d article singular) non-Toki Pona(aj) language(n singular);
+  speak(v) a(d article singular) non-Toki Pona(aj qualifier) language(n singular);
 
 kon:
   air(n singular);
@@ -328,7 +328,7 @@ lete:
   freeze(tra v);
 
 li:
-  [marks the start of an indicative verb (statement)](particle);
+  [marks the start of an indicative verb \(statement\)](particle);
 
 lili:
   smallness(n singular);
@@ -594,8 +594,8 @@ olin:
 ona:
   they/them(pn plural);
   it/it(pn singular);
-  their(possessive);
-  its(possessive);
+  their(d possessive);
+  its(d possessive);
 
 open:
   beginning(n);
@@ -690,8 +690,8 @@ pona:
   nicely(av);
 
 pu:
-  interact(v) with(pp) the(d article) Toki Pona: The Language of Good(adj qualifier) book(n singular);
-  related to(pp) the(d article) Toki Pona: The Language of Good(adj qualifier) book(n singular);
+  interact(v) with(pp) the(d article) Toki Pona\: The Language of Good(aj qualifier) book(n singular);
+  related to(pp) the(d article) Toki Pona\: The Language of Good(aj qualifier) book(n singular);
 
 sama:
   similarity(n);

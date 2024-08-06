@@ -14,6 +14,7 @@ import {
   choiceOnlyOne,
   count,
   empty,
+  eol,
   match as rawMatch,
   optionalAll,
   Parser,
@@ -79,13 +80,6 @@ function matchString(match: string): Lexer<string> {
     } else {
       throw new UnexpectedError(`"${slice}"`, `"${match}"`);
     }
-  });
-}
-/** Parses the end of line (or the end of sentence in context of Toki Pona) */
-function eol(): Lexer<null> {
-  return new Parser((src) => {
-    if (src === "") return new Output([{ value: null, rest: "" }]);
-    else return new Output(new UnexpectedError(`"${src}"`, "end of sentence"));
   });
 }
 /** Parses lowercase latin word. */
@@ -473,7 +467,7 @@ function tokenTrees(
 /** The final lexer. */
 const FULL_PARSER = spaces()
   .with(tokenTrees({ allowQuotation: true, allowLongGlyph: true }))
-  .skip(eol());
+  .skip(eol("end of sentence"));
 /** Turns string into token trees. */
 export function lex(src: string): Output<Array<TokenTree>> {
   if (/\n/.test(src.trim())) {
