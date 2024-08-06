@@ -38,7 +38,11 @@ switch (Deno.args[0]) {
         console.error(error);
       }
     }, 500);
-    const watcher = Deno.watchFs(["./src/", "./telo-misikeke/"]);
+    const watcher = Deno.watchFs([
+      "./src/",
+      "./telo-misikeke/",
+      "./dictionary/",
+    ]);
     try {
       builder();
       for await (const _ of watcher) {
