@@ -19,6 +19,7 @@ import {
 } from "../src/parser-lib.ts";
 import { OutputError } from "../src/output.ts";
 import { UnrecognizedError } from "../src/error.ts";
+import { SENTENCE_RULE } from "../src/filter.ts";
 
 const SOURCE = new URL("./dictionary", import.meta.url);
 const DESTINATION = new URL("./dictionary.ts", import.meta.url);
@@ -186,7 +187,9 @@ function conjugate(verb: string): {
   past: string;
   condensed: string;
 } {
-  const conjugations = nlp(`I ${verb}`).verbs().conjugate()[0] as undefined | {
+  const sentence = nlp(verb);
+  sentence.tag("Verb");
+  const conjugations = sentence.verbs().conjugate()[0] as undefined | {
     Infinitive: string;
     PastTense: string;
     PresentTense: string;
@@ -217,16 +220,24 @@ function noun(): TextParser<Noun> {
         case null: {
           const forms = noun.word.split("/").map((noun) => noun.trim());
           switch (forms.length) {
-            case 1:
-              singular = nlp(`${noun.word} is good`).nouns().toSingular()
+            case 1: {
+              const sentence = nlp(noun.word);
+              sentence.tag("Noun");
+              singular = sentence
+                .nouns()
+                .toSingular()
                 .text();
-              plural = nlp(`${noun.word} is good`).nouns().toPlural().text();
+              plural = sentence
+                .nouns()
+                .toPlural()
+                .text();
               if (singular === "" || plural === "") {
                 throw new OutputError(
                   `no singular or plural form found for ${noun.word}`,
                 );
               }
               break;
+            }
             case 2:
               singular = forms[0];
               plural = forms[1];
