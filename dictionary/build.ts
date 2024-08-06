@@ -70,7 +70,7 @@ function word(): TextParser<string> {
   return all(
     choiceOnlyOne(
       match(/\\(\S)/, "escape sequence").map(([_, character]) => character),
-      match(/[^\\():;]/, "word").map(([character]) => character),
+      match(/[^\\():;#]/, "word").map(([character]) => character),
     ),
   )
     .map((value) => value.join("").replaceAll(/\s+/g, " ").trim());
