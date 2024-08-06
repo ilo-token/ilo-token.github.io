@@ -146,6 +146,7 @@ jelo:
   yellowish(av) orange(aj color);
 
 jo:
+  # have(tra v);
   carry(tra v);
   contain(tra v);
   hold(tra v);
@@ -157,6 +158,7 @@ kala:
 
 kalama:
   sound(n);
+  # sound(int v);
   make(v) sound(n);
 
 kama:
@@ -272,6 +274,7 @@ lanpan:
   seize(tra v);
   catch(tra v);
   receive(tra v);
+  # get(tra v);
 
 lape:
   sleep(n singular);
@@ -437,6 +440,7 @@ mani:
 
 meli:
   woman(n);
+  # female(n); # this sounds dehumanizing
   feminine(aj qualifier) person(n);
   wife(n);
 
@@ -452,6 +456,7 @@ mi:
 
 mije:
   man(n);
+  # male(n); # this sounds dehumanizing
   masculine(aj qualifier) person(n);
   husband(n);
 
@@ -714,6 +719,7 @@ seme:
   which(d interrogative);
 
 sewi:
+  # TODO: area above, something elevated
   highest(aj origin) part(n);
   elevate(tra v);
   awe-inspiring(aj opinion);
@@ -807,7 +813,7 @@ tan:
   cause(n);
 
 taso:
-  taso(adhoc);
+  only(adhoc);
   but(particle);
   however(particle);
   [marks a sentence as qualifying or contradictory](particle);
