@@ -1,7 +1,8 @@
 /** Module for describing English AST. */
 
-/** */
-export type Quantity = "zero" | "singular" | "plural" | "both" | "condensed";
+import { AdjectiveType, DeterminerType } from "dictionary/type.ts";
+
+export type Quantity = "singular" | "plural" | "both" | "condensed";
 export type NounPhrase =
   | {
     type: "simple";
@@ -18,14 +19,6 @@ export type NounPhrase =
     quantity: Quantity;
     preposition: Array<Preposition>;
   };
-export type DeterminerType =
-  | "article"
-  | "demonstrative"
-  | "distributive"
-  | "interrogative"
-  | "possessive"
-  | "quantifier"
-  | "relative";
 export type Determiner =
   | {
     type: "default";
@@ -34,15 +27,6 @@ export type Determiner =
     quantity: Quantity;
   }
   | { type: "numeral"; number: number };
-export type AdjectiveType =
-  | "opinion"
-  | "size"
-  | "physical quality"
-  | "age"
-  | "color"
-  | "origin"
-  | "material"
-  | "qualifier";
 export type AdjectivePhrase =
   | {
     type: "simple";
