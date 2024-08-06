@@ -186,7 +186,7 @@ function conjugate(verb: string): {
   past: string;
   condensed: string;
 } {
-  const conjugations = nlp(verb).verbs().conjugate()[0] as undefined | {
+  const conjugations = nlp(`I ${verb}`).verbs().conjugate()[0] as undefined | {
     Infinitive: string;
     PastTense: string;
     PresentTense: string;
@@ -215,8 +215,8 @@ function noun(): TextParser<Noun> {
       let condensed: string;
       switch (noun.tag.number) {
         case null:
-          singular = nlp(noun.word).nouns().toSingular().text();
-          plural = nlp(noun.word).nouns().toPlural().text();
+          singular = nlp(`${noun.word} is good`).nouns().toSingular().text();
+          plural = nlp(`${noun.word} is good`).nouns().toPlural().text();
           if (singular === "" || plural === "") {
             throw new OutputError(
               `no singular or plural form found for ${noun.word}`,
@@ -517,3 +517,4 @@ export async function build(): Promise<boolean> {
     return true;
   }
 }
+await build();
