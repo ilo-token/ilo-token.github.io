@@ -114,7 +114,7 @@ ilo:
 insa:
   center(n singular);
   content(n);
-  inside(n);
+  inside(aj origin) part(n);
 
 jaki:
   obscenity(n);
@@ -391,7 +391,7 @@ luka:
 
 lukin:
   appearance(n);
-  visual(n);
+  # visual(n);
   eye(n);
   seeing(aj qualifier) organ(n);
   look(v) at(pp);
@@ -549,12 +549,10 @@ nena:
   protuberance(n);
 
 ni:
-  this(n);
-  that(n);
-  this(d demonstrative);
-  that(d demonstrative);
-  these(d demonstrative);
-  those(d demonstrative);
+  this/these(n);
+  that/those(n);
+  this/these(d demonstrative);
+  that/those(d demonstrative);
 
 nimi:
   name(n);
@@ -719,8 +717,8 @@ selo:
 
 seme:
   [indicate a question by marking missing info in a sentence](particle);
-  what(n);
-  which(n);
+  what/what(n);
+  which/which(n);
   what(d interrogative);
   which(d interrogative);
 

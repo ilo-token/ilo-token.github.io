@@ -214,16 +214,29 @@ function noun(): TextParser<Noun> {
       let plural: null | string = null;
       let condensed: string;
       switch (noun.tag.number) {
-        case null:
-          singular = nlp(`${noun.word} is good`).nouns().toSingular().text();
-          plural = nlp(`${noun.word} is good`).nouns().toPlural().text();
-          if (singular === "" || plural === "") {
-            throw new OutputError(
-              `no singular or plural form found for ${noun.word}`,
-            );
+        case null: {
+          const forms = noun.word.split("/").map((noun) => noun.trim());
+          switch (forms.length) {
+            case 1:
+              singular = nlp(`${noun.word} is good`).nouns().toSingular()
+                .text();
+              plural = nlp(`${noun.word} is good`).nouns().toPlural().text();
+              if (singular === "" || plural === "") {
+                throw new OutputError(
+                  `no singular or plural form found for ${noun.word}`,
+                );
+              }
+              break;
+            case 2:
+              singular = forms[0];
+              plural = forms[1];
+              break;
+            default:
+              throw new UnrecognizedError(`noun with ${forms.length} forms`);
           }
           condensed = condense(singular, plural);
           break;
+        }
         case "singular":
           condensed = singular = noun.word;
           break;
