@@ -19,7 +19,6 @@ import {
 } from "../src/parser-lib.ts";
 import { OutputError } from "../src/output.ts";
 import { UnrecognizedError } from "../src/error.ts";
-import { SENTENCE_RULE } from "../src/filter.ts";
 import { repeat } from "../src/misc.ts";
 
 const SOURCE = new URL("./dictionary", import.meta.url);
