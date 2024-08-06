@@ -246,7 +246,15 @@ function adjective(): TextParser<Adjective> {
 }
 function insideDefinition(): TextParser<Definition> {
   return choiceOnlyOne(
-    // TODO: filler
+    // TODO: improve this
+    specificUnit("filler").map((unit) =>
+      ({
+        type: "filler",
+        before: unit.word[0],
+        repeat: unit.word[1],
+        after: "",
+      }) as Definition
+    ),
     specificUnit("particle")
       .map((unit) =>
         ({ type: "particle", definition: unit.word }) as Definition
