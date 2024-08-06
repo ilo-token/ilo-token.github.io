@@ -1,5 +1,13 @@
 import nlp from "compromise/three";
-import { AdjectiveType, Definition, DeterminerType } from "./type.ts";
+import {
+  Adjective,
+  AdjectiveType,
+  Definition,
+  Determiner,
+  DeterminerType,
+  Dictionary,
+  Noun,
+} from "./type.ts";
 import {
   all,
   choiceOnlyOne,
@@ -8,9 +16,8 @@ import {
   Parser,
   sequence as rawSequence,
 } from "../src/parser-lib.ts";
-import { Dictionary } from "./type.ts";
 import { Output, OutputError } from "../src/output.ts";
-import { UnexpectedError } from "../src/error.ts";
+import { UnrecognizedError } from "../src/error.ts";
 
 const SOURCE = new URL("./dictionary", import.meta.url);
 const DESTINATION = new URL("./dictionary.ts", import.meta.url);
@@ -74,13 +81,7 @@ function word(): TextParser<string> {
 function keyword<T extends string>(keyword: T): TextParser<T> {
   return lex(match(/[a-z]+/, keyword))
     .map(([keyword]) => keyword)
-    .filter((that) => {
-      if (that === keyword) {
-        return true;
-      } else {
-        throw new UnexpectedError(that, keyword);
-      }
-    }) as TextParser<T>;
+    .filter((that) => that === keyword) as TextParser<T>;
 }
 function optionalNumber(): TextParser<null | "singular" | "plural"> {
   return optionalAll(choiceOnlyOne(keyword("singular"), keyword("plural")));
@@ -163,11 +164,138 @@ function tag(): TextParser<Tag> {
 function unit(): TextParser<Unit> {
   return textSequence(word(), tag()).map(([word, tag]) => ({ word, tag }));
 }
-function definition(): TextParser<Definition> {
-  return all(unit()).skip(lex(match(/;/, "semicolon")))
-    .flatMapValue((definition) => {
-      throw new Error("todo");
+function specificUnit<T extends Tag["type"]>(
+  type: T,
+): TextParser<Unit & { tag: Tag & { type: T } }> {
+  return unit().filter((unit) => unit.tag.type === type) as TextParser<
+    Unit & { tag: Tag & { type: T } }
+  >;
+}
+function condense(first: string, second: string): string {
+  if (second.slice(0, first.length) === first) {
+    return `${first}(${second.slice(first.length)})`;
+  } else {
+    return `${first}/${second}`;
+  }
+}
+function noun(): TextParser<Noun> {
+  return textSequence(all(determiner()), all(adjective()), specificUnit("noun"))
+    .map(([determiner, adjective, noun]) => {
+      let singular: null | string = null;
+      let plural: null | string = null;
+      let condensed: string;
+      switch (noun.tag.number) {
+        case null:
+          singular = nlp(noun.word).nouns().toSingular().text();
+          plural = nlp(noun.word).nouns().toPlural().text();
+          condensed = condense(singular, plural);
+          break;
+        case "singular":
+          condensed = singular = noun.word;
+          break;
+        case "plural":
+          condensed = plural = noun.word;
+          break;
+      }
+      return { determiner, adjective, singular, plural, condensed };
     });
+}
+function determiner(): TextParser<Determiner> {
+  return specificUnit("determiner")
+    .map((unit) => ({
+      determiner: unit.word,
+      kind: unit.tag.kind,
+      number: unit.tag.number ?? "both",
+    }));
+}
+function adjective(): TextParser<Adjective> {
+  return textSequence(
+    all(specificUnit("adverb").map((unit) => unit.word)),
+    specificUnit("adjective"),
+  )
+    .map(([adverb, adjective]) => ({
+      adverb,
+      adjective: adjective.word,
+      kind: adjective.tag.kind,
+    }));
+}
+function insideDefinition(): TextParser<Definition> {
+  return choiceOnlyOne(
+    // TODO: filler
+    specificUnit("particle")
+      .map((unit) =>
+        ({ type: "particle", definition: unit.word }) as Definition
+      ),
+    noun().map((noun) => ({ type: "noun", ...noun }) as Definition),
+    textSequence(noun(), specificUnit("preposition"))
+      .map(([noun, preposition]) =>
+        ({
+          type: "noun preposition",
+          noun,
+          preposition: preposition.word,
+        }) as Definition
+      ),
+    // TODO: personal pronoun
+    determiner().map((determiner) => {
+      const forms = determiner.determiner.split("/");
+      switch (forms.length) {
+        case 1:
+          return {
+            type: "quantified determiner",
+            singular: forms[0],
+            plural: forms[1],
+            condensed: condense(forms[0], forms[1]),
+            kind: determiner.kind,
+            number: determiner.number,
+          } as Definition;
+        case 2:
+          return { type: "determiner", ...determiner } as Definition;
+        default:
+          throw new UnrecognizedError(`determiner with ${forms.length} forms`);
+      }
+    }),
+    specificUnit("numeral").map((unit) => {
+      const numeral = Number.parseInt(unit.word);
+      if (Number.isNaN(numeral)) {
+        throw new UnrecognizedError("non-number on numeral");
+      } else {
+        return { type: "numeral", numeral } as Definition;
+      }
+    }),
+    adjective()
+      .map((adjective) => ({ type: "adjective", ...adjective }) as Definition),
+    textSequence(
+      specificUnit("adjective"),
+      specificUnit("conjunction").filter((unit) => unit.word === "and"),
+      specificUnit("adjective"),
+    )
+      .map(([left, _, right]) =>
+        ({
+          type: "compound adjective",
+          adjective: [left, right].map((unit) => ({
+            adverb: [],
+            adjective: unit.word,
+            kind: unit.tag.kind,
+          })),
+        }) as Definition
+      ),
+    specificUnit("adverb")
+      .map((unit) => ({ type: "adverb", adverb: unit.word }) as Definition),
+    // TODO: verb
+    specificUnit("preposition")
+      .map((unit) =>
+        ({ type: "preposition", preposition: unit.word }) as Definition
+      ),
+    specificUnit("interjection")
+      .map((unit) =>
+        ({ type: "interjection", interjection: unit.word }) as Definition
+      ),
+    specificUnit("adhoc")
+      .map((unit) => ({ type: "adhoc", definition: unit.word }) as Definition),
+  );
+}
+function definition(): TextParser<Definition> {
+  return insideDefinition().skip(lex(match(/;/, "semicolon")));
 }
 function singleWord(): TextParser<string> {
   return lex(match(/[a-z]+/, "word")).map(([word]) => word);
