@@ -13,6 +13,23 @@ const CONJUNCTION = { "and conjunction": "and", "anu": "or" } as const;
 type PhraseTranslation =
   | { type: "noun"; noun: English.NounPhrase }
   | { type: "adjective"; adjective: English.AdjectivePhrase };
+
+function condense(first: string, second: string): string {
+  if (first === second) {
+    return first;
+  } else if (
+    second.length > first.length && second.slice(0, first.length) === first
+  ) {
+    return `${first}(${second.slice(first.length)})`;
+  } else {
+    return `${first}/${second}`;
+  }
+}
+function condenseVerb(present: string, past: string): string {
+  const [first, ...rest] = present.split(" ");
+  const second = past.split(" ")[0];
+  return [condense(first, second), ...rest].join(" ");
+}
 function phrase(phrase: TokiPona.Phrase): Output<PhraseTranslation> {
   switch (phrase.type) {
     case "default":
@@ -316,7 +333,13 @@ function nounAsPlainString(definition: Noun): Array<string> {
       ];
       break;
     case "condensed":
-      nouns = [definition.condensed];
+      if (definition.singular != null && definition.plural != null) {
+        nouns = [condense(definition.singular, definition.plural)];
+      } else if (definition.singular != null) {
+        nouns = [definition.singular];
+      } else {
+        nouns = [definition.plural!];
+      }
       break;
     case "default only":
       nouns = [definition.singular ?? definition.plural!];
@@ -371,7 +394,7 @@ function definitionAsPlainString(definition: Definition): Array<string> {
         case "both":
           return [definition.singular, definition.plural];
         case "condensed":
-          return [definition.condensed];
+          return [condense(definition.singular, definition.plural)];
         case "default only":
           return [definition.singular];
       }
@@ -392,7 +415,9 @@ function definitionAsPlainString(definition: Definition): Array<string> {
           ];
           break;
         case "condensed":
-          verbs = [`(will) ${definition.condensed}`];
+          verbs = [
+            `(will) ${condenseVerb(definition.presentPlural, definition.past)}`,
+          ];
           break;
         case "default only":
           verbs = [definition.presentPlural];

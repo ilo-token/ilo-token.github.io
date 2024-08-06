@@ -170,22 +170,10 @@ function specificUnit<T extends Tag["type"]>(
     Unit & { tag: Tag & { type: T } }
   >;
 }
-function condense(first: string, second: string): string {
-  if (first === second) {
-    return first;
-  } else if (
-    second.length > first.length && second.slice(0, first.length) === first
-  ) {
-    return `${first}(${second.slice(first.length)})`;
-  } else {
-    return `${first}/${second}`;
-  }
-}
 function conjugate(verb: string): {
   presentSingular: string;
   presentPlural: string;
   past: string;
-  condensed: string;
 } {
   const sentence = nlp(verb);
   sentence.tag("Verb");
@@ -199,15 +187,10 @@ function conjugate(verb: string): {
   if (conjugations == null) {
     throw new OutputError(`no verb conjugation found for ${verb}`);
   }
-  const presentSingular = conjugations.Infinitive;
-  const past = conjugations.PastTense;
-  const [first, ...rest] = presentSingular.split(" ");
   return {
-    presentSingular,
+    presentSingular: conjugations.Infinitive,
     presentPlural: conjugations.PresentTense,
-    past,
-    condensed: [condense(first, past.split(" ")[0]), ...rest]
-      .join(" "),
+    past: conjugations.PastTense,
   };
 }
 function detectRepetition(
@@ -240,7 +223,6 @@ function noun(): TextParser<Noun> {
     .map(([determiner, adjective, noun]) => {
       let singular: null | string = null;
       let plural: null | string = null;
-      let condensed: string;
       switch (noun.tag.number) {
         case null: {
           const forms = noun.word.split("/").map((noun) => noun.trim());
@@ -270,17 +252,16 @@ function noun(): TextParser<Noun> {
             default:
               throw new UnrecognizedError(`noun with ${forms.length} forms`);
           }
-          condensed = condense(singular, plural);
           break;
         }
         case "singular":
-          condensed = singular = noun.word;
+          singular = noun.word;
           break;
         case "plural":
-          condensed = plural = noun.word;
+          plural = noun.word;
           break;
       }
-      return { determiner, adjective, singular, plural, condensed };
+      return { determiner, adjective, singular, plural };
     });
 }
 function determiner(): TextParser<Determiner> {
@@ -355,10 +336,6 @@ function definition(): TextParser<Definition> {
                 subject: forms[2],
                 object: forms[3],
               },
-              condensed: {
-                subject: condense(forms[0], forms[2]),
-                object: condense(forms[1], forms[3]),
-              },
             } as Definition;
           case "singular":
           case "plural": {
@@ -376,7 +353,6 @@ function definition(): TextParser<Definition> {
               singular: null,
               plural: null,
               [number]: pronoun,
-              condensed: pronoun,
             } as Definition;
           }
         }
@@ -395,7 +371,6 @@ function definition(): TextParser<Definition> {
               type: "quantified determiner",
               singular,
               plural,
-              condensed: condense(singular, plural),
               kind: determiner.kind,
               number: determiner.number,
             } as Definition;

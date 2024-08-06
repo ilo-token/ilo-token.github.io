@@ -3,7 +3,6 @@ export type Noun = {
   adjective: Array<Adjective>;
   singular: null | string;
   plural: null | string;
-  condensed: string;
 };
 export type DeterminerType =
   | "article"
@@ -46,14 +45,12 @@ export type Definition =
     type: "personal pronoun";
     singular: null | { subject: string; object: string };
     plural: null | { subject: string; object: string };
-    condensed: { subject: string; object: string };
   }
   | ({ type: "determiner" } & Determiner)
   | {
     type: "quantified determiner";
     singular: string;
     plural: string;
-    condensed: string;
     kind: DeterminerType;
     number: Quantity;
   }
@@ -66,7 +63,6 @@ export type Definition =
     presentSingular: string;
     presentPlural: string;
     past: string;
-    condensed: string;
     directObject: null | Noun;
     indirectObject: Array<{
       preposition: string;
