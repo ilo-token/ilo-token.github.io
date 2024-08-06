@@ -45,9 +45,6 @@ type Unit = { word: string; tag: Tag };
 
 type TextParser<T> = Parser<string, T>;
 
-function rest(): TextParser<string> {
-  return new Parser((src) => new Output([{ value: src, rest: src }]));
-}
 function match(
   regex: RegExp,
   description: string,
