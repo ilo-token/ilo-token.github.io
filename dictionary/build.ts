@@ -3,14 +3,13 @@ import { AdjectiveType, Definition, DeterminerType } from "./type.ts";
 import {
   all,
   choiceOnlyOne,
-  eol,
   match as rawMatch,
   optionalAll,
   Parser,
   sequence as rawSequence,
 } from "../src/parser-lib.ts";
 import { Dictionary } from "./type.ts";
-import { Output } from "../src/output.ts";
+import { Output, OutputError } from "../src/output.ts";
 import { UnexpectedError } from "../src/error.ts";
 
 const SOURCE = new URL("./dictionary", import.meta.url);
@@ -181,9 +180,21 @@ function head(): TextParser<Array<string>> {
     .skip(lex(match(/:/, "colon")))
     .map(([init, last]) => [...init, last]);
 }
+function eol(): TextParser<null> {
+  return new Parser((src) => {
+    if (src === "") {
+      return new Output([{ value: null, rest: "" }]);
+    } else {
+      const line = src.match(/[^\n]*/)![0].trim();
+      return new Output(
+        new OutputError(`Problem encountered at definition ${line}`),
+      );
+    }
+  });
+}
 const dictionary = space()
   .with(all(textSequence(head(), all(definition()))))
-  .skip(eol("EOL"))
+  .skip(eol())
   .map((entries) => {
     const dictionary: Dictionary = {};
     for (const [words, definitions] of entries) {
