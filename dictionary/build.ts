@@ -276,11 +276,12 @@ function insideDefinition(): TextParser<Definition> {
       .map(([left, _, right]) =>
         ({
           type: "compound adjective",
-          adjective: [left, right].map((unit) => ({
-            adverb: [],
-            adjective: unit.word,
-            kind: unit.tag.kind,
-          })),
+          adjective: [left, right]
+            .map((unit) => ({
+              adverb: [],
+              adjective: unit.word,
+              kind: unit.tag.kind,
+            })),
         }) as Definition
       ),
     specificUnit("adverb")
