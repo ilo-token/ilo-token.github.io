@@ -49,21 +49,25 @@ import { lex } from "./lexer.ts";
 import { DICTIONARY } from "dictionary/dictionary.ts";
 
 const CONTENT_WORD = new Set(
-  Object.entries(DICTIONARY).filter(([_, definitions]) =>
-    definitions
-      .filter((definition) =>
-        definition.type !== "filler" && definition.type !== "particle"
-      )
-      .length > 0
-  )
+  Object
+    .entries(DICTIONARY)
+    .filter(([_, definitions]) =>
+      definitions
+        .filter((definition) =>
+          definition.type !== "filler" && definition.type !== "particle"
+        )
+        .length > 0
+    )
     .map(([word]) => word),
 );
 const PREPOSITION = new Set(
-  Object.entries(DICTIONARY).filter(([_, definitions]) =>
-    definitions
-      .filter((definition) => definition.type === "preposition")
-      .length > 0
-  )
+  Object
+    .entries(DICTIONARY)
+    .filter(([_, definitions]) =>
+      definitions
+        .filter((definition) => definition.type === "preposition")
+        .length > 0
+    )
     .map(([word]) => word),
 );
 // TODO: rely on dictionary instead
