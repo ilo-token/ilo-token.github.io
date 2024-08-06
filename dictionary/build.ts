@@ -169,7 +169,11 @@ function specificUnit<T extends Tag["type"]>(
   >;
 }
 function condense(first: string, second: string): string {
-  if (second.slice(0, first.length) === first) {
+  if (first === second) {
+    return first;
+  } else if (
+    second.length > first.length && second.slice(0, first.length) === first
+  ) {
     return `${first}(${second.slice(first.length)})`;
   } else {
     return `${first}/${second}`;
