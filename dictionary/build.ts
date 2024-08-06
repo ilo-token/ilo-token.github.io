@@ -236,7 +236,52 @@ function insideDefinition(): TextParser<Definition> {
           preposition: preposition.word,
         }) as Definition
       ),
-    // TODO: personal pronoun
+    specificUnit("personal pronoun").map((unit) => {
+      const forms = unit.word.split("/").map((form) => form.trim());
+      const number = unit.tag.number;
+      switch (number) {
+        case null:
+          if (forms.length !== 4) {
+            throw new UnrecognizedError(
+              `personal pronoun with ${forms.length} forms`,
+            );
+          }
+          return {
+            type: "personal pronoun",
+            singular: {
+              subject: forms[0],
+              object: forms[1],
+            },
+            plural: {
+              subject: forms[2],
+              object: forms[3],
+            },
+            condensed: {
+              subject: condense(forms[0], forms[2]),
+              object: condense(forms[1], forms[3]),
+            },
+          } as Definition;
+        case "singular":
+        case "plural": {
+          if (forms.length !== 2) {
+            throw new UnrecognizedError(
+              `${number} personal pronoun with ${forms.length} forms`,
+            );
+          }
+          const pronoun = {
+            subject: forms[0],
+            object: forms[1],
+          };
+          return {
+            type: "personal pronoun",
+            singular: null,
+            plural: null,
+            [number]: pronoun,
+            condensed: pronoun,
+          } as Definition;
+        }
+      }
+    }),
     determiner().map((determiner) => {
       const forms = determiner.determiner.split("/");
       switch (forms.length) {
