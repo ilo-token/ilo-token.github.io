@@ -445,8 +445,6 @@ function definitionAsPlainString(definition: Definition): Array<string> {
       return [`${definition.numeral}`];
     case "preposition":
       return [definition.preposition];
-    case "preposition object":
-      throw new Error("todo");
     case "adhoc":
       return [definition.definition];
   }
