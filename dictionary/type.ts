@@ -71,7 +71,6 @@ export type Definition =
     forObject: boolean | string;
   }
   | { type: "preposition"; preposition: string }
-  | { type: "preposition object"; preposition: string; object: Noun }
   | { type: "interjection"; interjection: string }
   | { type: "adhoc"; definition: string };
 export type Dictionary = { [word: string]: Array<Definition> };

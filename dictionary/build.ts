@@ -492,15 +492,6 @@ function definition(): TextParser<Definition> {
       .map((unit) =>
         ({ type: "preposition", preposition: unit.word }) as Definition
       ),
-    sequence(specificUnit("preposition"), noun())
-      .skip(semicolon())
-      .map(([preposition, object]) =>
-        ({
-          type: "preposition object",
-          preposition: preposition.word,
-          object,
-        }) as Definition
-      ),
     specificUnit("interjection")
       .skip(semicolon())
       .map((unit) =>
