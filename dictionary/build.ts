@@ -75,7 +75,8 @@ function word(): TextParser<string> {
       match(/[^\\():;#]/, "word").map(([character]) => character),
     ),
   )
-    .map((value) => value.join("").replaceAll(/\s+/g, " ").trim());
+    .map((word) => word.join("").replaceAll(/\s+/g, " ").trim())
+    .filter((word) => word.length > 0);
 }
 function keyword<T extends string>(keyword: T): TextParser<T> {
   return lex(match(/[a-z]+/, keyword))
