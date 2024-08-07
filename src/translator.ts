@@ -150,27 +150,19 @@ function clause(clause: TokiPona.Clause): Output<English.Clause> {
 function filler(filler: TokiPona.Emphasis): Array<string> {
   switch (filler.type) {
     case "word":
-      switch (filler.word as "a" | "n") {
-        case "a":
-          return ["ah", "oh", "ha", "eh", "um", "oy"];
-        case "n":
-          return ["hm", "uh", "mm", "er", "umm"];
-      }
-      // unreachable
-      // fallthrough
-    case "long word": {
-      let output: Array<string>;
-      switch (filler.word as "a" | "n") {
-        case "a":
-          output = ["ah", "oh", "ha", "eh", "um"];
-          break;
-        case "n":
-          output = ["hm", "uh", "mm", "um"];
-          break;
-      }
-      return output
-        .map(([first, second]) => `${first}${repeat(second, filler.length)}`);
-    }
+      return DICTIONARY[filler.word]
+        .filter((definition) => definition.type === "filler")
+        .map((definition) =>
+          `${definition.before}${definition.repeat}${definition.after}`
+        );
+    case "long word":
+      return DICTIONARY[filler.word]
+        .filter((definition) => definition.type === "filler")
+        .map((definition) =>
+          `${definition.before}${
+            repeat(definition.repeat, filler.length)
+          }${definition.after}`
+        );
     case "multiple a":
       return [repeat("ha", filler.count)];
   }
