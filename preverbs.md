@@ -47,3 +47,29 @@
 | ----------- | ------------------- | ------------------ | ---------------- |
 | noun phrase | wanting to be @noun | wanting to be @adj | wanting to @verb |
 | verb phrase | want to be @noun    | want to be @adj    | want to @verb    |
+
+---
+
+```
+alasa:
+try(v) to [predicate verb]
+
+lukin, oko:
+try(v) to [predicate verb]
+
+awen:
+continue(v) to [predicate verb]
+
+kama:
+become(v) [predicate noun]
+began(v) [predicate verb]
+
+ken:
+able(aj) to [predicate verb]
+
+sona:
+know(v) how to [predicate verb]
+
+wile:
+want(v) to [predicate verb]
+```
