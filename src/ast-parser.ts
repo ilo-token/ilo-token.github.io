@@ -53,10 +53,9 @@ const CONTENT_WORD = new Set(
     .entries(DICTIONARY)
     .filter(([_, definitions]) =>
       definitions
-        .filter((definition) =>
+        .some((definition) =>
           definition.type !== "filler" && definition.type !== "particle"
         )
-        .length > 0
     )
     .map(([word]) => word),
 );
@@ -64,9 +63,7 @@ const PREPOSITION = new Set(
   Object
     .entries(DICTIONARY)
     .filter(([_, definitions]) =>
-      definitions
-        .filter((definition) => definition.type === "preposition")
-        .length > 0
+      definitions.some((definition) => definition.type === "preposition")
     )
     .map(([word]) => word),
 );
