@@ -7,70 +7,107 @@ a:
   eh/ehh/ehhh(f);
   um/umm/ummm(f);
   oy/oyy/oyyy(f);
+
   `[placed after something for emphasis or emotion]`(particle def);
 
 akesi:
   reptile(n);
   amphibian(n);
+  scaly(adj material) creature(n);
+  crawling(adj opinion) creature(n);
+
   reptilian(adj qualifier);
   amphibian(adj qualifier);
 
 ala:
   not(adhoc def);
-  no(d quantifier plural);
   nothing(n plural);
+  no(d quantifier plural);
+
   `[negates a word or phrase]`(particle def);
   `[forms a yes-no question]`(particle def);
+
   0(num);
 
 alasa:
   hunt(v) [object];
   search(v) [object];
 
+  hunting(n gerund);
+  searching(n gerund);
+
+  hunting(adj qualifier);
+  searching(adj qualifier);
+
 ale, ali:
-  everything(n singular);
-  anything(n singular);
-  entirety(n singular);
   all(d distributive plural);
   every(d distributive);
-  completely(adv);
+  everything(n singular);
+  entirety(n singular);
+  universe(n singular);
+
   100(num);
+
+  completely(adv);
 
 anpa:
   bottom(n singular);
-  below(n singular);
-  floor(n singular);
-  downward(adj origin);
+  underside(n singular);
+
+  defeated(adj opinion);
   humble(adj opinion);
   lowly(adj opinion);
-  dependent(adj opinion);
-  low(adj size);
-  lower(adj origin);
-  bottom(adj origin);
-  down(adj origin);
-  bow down(v) [object];
+
+  defeat(v) [object];
 
 ante:
-  change(n);
-  difference(n);
-  modification(n);
   different(adj opinion);
-  other(adj opinion);
-  change(v) [object];
+  altered(adj opinion);
+
   alter(v) [object];
+  modify(v) [object];
+  change(v) [object];
+
+  other(d);
+  other(n);
+  difference(n);
 
 anu:
-  or(particle def);
   `[separates multiple possibilities, replacing another particle]`(particle def);
-  choose(v) [object];
+  or(particle def);
+
+  choose(v) [object]; # How common is this?
   decide(v);
 
+  choosing(n gerund);
+  deciding(n gerund);
+
 awen:
-  wait(v);
   stay(v);
-  endure(v);
-  keep(v) [object];
+  remain(v);
+  wait(v);
+  pause(v) [object];
+
   protect(v) [object];
+  keep safe(v);
+
+  continue(v);
+
+  continue(v) to(particle) [predicate v];
+
+  staying(n gerund);
+  renaming(n gerund);
+  waiting(n gerund);
+  pausing(n gerund);
+  protecting(n gerund);
+  continuing(n gerund);
+
+  staying(adj qualifier);
+  renaming(adj qualifier);
+  waiting(adj qualifier);
+  pausing(adj qualifier);
+  protecting(adj qualifier);
+  continuing(adj qualifier);
 
 e:
   `[marks the start of a direct object]`(particle def);
@@ -80,12 +117,14 @@ en:
 
 epiku:
   epic(adj opinion);
-  cool(adj opinion);
+  # cool(adj opinion); # Could be conflated with "cool" as in lete
   awesome(adj opinion);
   amazing(adj opinion);
 
+  # coolness(n);
+  awesomeness(n);
+
 esun:
-  shop(n);
   trade(v) [object];
   barter(v) [object];
   exchange(v) [object];
@@ -93,17 +132,28 @@ esun:
   buy(v) [object];
   sell(v) [object];
 
+  market(n);
+  shop(n);
+  fair(n);
+  bazaar(n);
+  business(adj qualifier) place(n);
+
 ijo:
-  phenomenon(n);
+  thing(n);
   object(n);
+  entity(n);
+  being(n);
   matter(n);
+  phenomenon(n);
 
 ike:
   negative(adj opinion) quality(n);
+
   bad(adj opinion);
   unpleasant(adj opinion);
   harmful(adj opinion);
   unneeded(adj opinion);
+
   badly(adv);
   unpleasantly(adv);
   harmfully(adv);
@@ -112,112 +162,205 @@ ilo:
   tool(n);
   implement(n);
   machine(n);
+  device(n);
+
+  tool-related(adj qualifier);
+  implement-related(adj qualifier);
+  machine-related(adj qualifier);
+  device-related(adj qualifier);
 
 insa:
-  center(n singular);
-  content(n);
   inside(adj origin) part(n);
+  center(n singular);
+  middle(n);
+  midpoint(n);
+
+  internal(adj origin);
 
 jaki:
-  obscenity(n);
   disgusting(adj opinion);
-  sickly(adj opinion);
-  toxic(adj opinion);
   unclean(adj opinion);
+  unsanitary(adj opinion);
+  toxic(adj opinion);
+  repulsive(adj opinion);
+  rotten(adj opinion);
+
+  grossness(n);
+  toxicity(n);
+  rottenness(n);
 
 jan:
-  human being(n singular);
+  human being(n);
   person(n);
   somebody(n singular);
 
+  human-like(adj qualifier);
+  person-like(adj qualifier);
+
+  human-related(adj qualifier);
+  person-related(adj qualifier);
+
 jasima:
-  opposite(n) of(prep) [headword n];
-  reflection(n);
-  mirror(n);
   reflect(v) [object];
-  resound(v) [object];
+  echo(v) [object];
   mirror(v) [object];
+  duplicate(v) [object];
+
+  reflecting(n gerund);
+  echoing(n gerund);
+  mirroring(n gerund);
+  duplicating(n gerund);
+
+  reflecting(adj qualifier);
+  echoing(adj qualifier);
+  mirroring(adj qualifier);
+  duplicating(adj qualifier);
 
 jelo:
-  yellow(n singular);
-  lime(adj color) yellow(n singular);
-  yellowish(adj color) orange(n singular);
   yellow(adj color);
   golden(adj color);
   lime(adv) yellow(adj color);
   yellowish(adv) orange(adj color);
 
+  yellow(n singular);
+  lime(adj color) yellow(n singular);
+  yellowish(adj color) orange(n singular);
+
 jo:
-  # have(v) [object];
+  hold(v) [object];
   carry(v) [object];
   contain(v) [object];
-  hold(v) [object];
+  own(v) [object];
+
+  holding(n gerund);
+  carrying(n gerund);
+  containing(n gerund);
+  owning(n gerund);
 
 kala:
   fish(n);
+  marine(adj origin) animal(n);
   sea(adj qualifier) creature(n);
+  swimming(adj qualifier) creature(n);
+
   swim(v);
 
+  fish-like(adj qualifier);
+  fish-related(adj qualifier);
+
+  swimming(adj qualifier);
+
 kalama:
+  produce(v) sound(n);
   sound(n);
-  # sound(v);
-  make(v) sound(n);
+
+  sound-related(adj qualifier);
 
 kama:
-  future(n singular);
-  future(adj age);
-  summon(v) [object];
   arrive(v);
+  approach(v);
+  summon(v) [object];
+
+  future(adj age);
+
+  become(linking v) [predicate n/adj];
+  began(v) to(particle) [predicate v];
+
+  arriving(n gerund);
+  approaching(n gerund);
+  summoning(n gerund);
+  becoming(n gerund);
+
+  arriving(adj qualifier);
+  approaching(adj qualifier);
+  summoning(adj qualifier);
+  becoming(adj qualifier);
 
 kasi:
   plant(n);
+  vegetation(n);
   herb(n);
   leaf(n);
 
+  plant-like(adj qualifier);
+  vegetation-like(adj qualifier);
+  herb-like(adj qualifier);
+  leaf-like(adj qualifier);
+
+  plant-related(adj qualifier);
+  vegetation-related(adj qualifier);
+  herb-related(adj qualifier);
+  leaf-related(adj qualifier);
+
 ken:
+  can(v);
+  may(v);
+
   ability(n);
+  permission(n);
   possibility(n);
+
+  allow(v) [object];
+  enable(v) [object];
+
+  able(v) to(particle) [predicate v];
 
 kepeken:
   using(prep);
   by means of(prep);
-  use(v) [object];
 
 kijetesantakalu:
   raccoon(n);
-  coati(n);
   kinkajou(n);
-  olingo(n);
-  ringtail(n);
-  cacomistle(n);
-  weasel(n);
-  otter(n);
-  skunk(n);
-  red panda(n);
+  procyonid(n);
+  musteloid(n);
+
+  procyonid(adj qualifier);
+  musteloid(adj qualifier);
+
+  raccoon-like(adj qualifier);
+  kinkajou-like(adj qualifier);
+
+  raccoon-related(adj qualifier);
+  kinkajou-related(adj qualifier);
 
 kili:
   fruit(n);
   vegetable(n);
   mushroom(n);
 
+  fruit-like(adj qualifier);
+  vegetable-like(adj qualifier);
+  mushroom-like(adj qualifier);
+
+  fruit-related(adj qualifier);
+  vegetable-related(adj qualifier);
+  mushroom-related(adj qualifier);
+
 kin:
-  also(adhoc def);
-  too(adhoc def);
-  additionally(adhoc def);
   `[at sentence start]`(particle def);
+  too(adhoc def);
+  also(adhoc def);
+  as well(adhoc def);
+  additionally(adhoc def);
 
 kipisi:
-  sharp(adj physical quality);
   split(v) [object];
   cut(v) [object];
   slice(v) [object];
-  sever(v) [object];
+
+  piece(n) of(prep) [headword];
+  part(n) of(prep) [headword];
+
+  sharp(adj physical quality);
+  pointy(adj physical quality);
 
 kiwen:
   hard(adj material) object(n);
   metal(n);
   rock(n);
   stone(n);
+
   hard(adj material);
 
 ko:
@@ -228,19 +371,42 @@ ko:
   sand(n singular);
   soil(n singular);
   clay(n singular);
+
   squishy(adj material);
   moldable(adj material);
+
+  sticky(adj material);
 
 kokosila:
   speak(v) a(d article singular) non-Toki Pona(adj qualifier) language(n singular);
 
 kon:
-  air(n singular);
-  breath(n singular);
+  air(n);
+  breath(n);
+  wind(n);
+
   essence(n);
   spirit(n);
-  hidden(adj physical quality) reality(n);
+  soul(n);
+  ghost(n);
+
   unseen(adj physical quality) agent(n);
+
+  air-like(adj qualifier);
+  breath-like(adj qualifier);
+  wind-like(adj qualifier);
+  essence-like(adj qualifier);
+  spirit-like(adj qualifier);
+  soul-like(adj qualifier);
+  ghost-like(adj qualifier);
+
+  air-related(adj qualifier);
+  breath-related(adj qualifier);
+  wind-related(adj qualifier);
+  essence-related(adj qualifier);
+  spirit-related(adj qualifier);
+  soul-related(adj qualifier);
+  ghost-related(adj qualifier);
 
 ku:
   interact(v) with(prep) the(d article) Toki Pona Dictionary(n singular);
@@ -249,23 +415,39 @@ kule:
   color(n);
   pigment(n);
   category(n);
+  genre(n);
   flavor(n);
-  queerness(n singular);
+
   colorful(adj color);
-  queer(adj qualifier);
-  colorfully(adv);
+  diverse(adj qualifier);
 
 kulupu:
-  community(n);
-  company(n);
   group(n);
-  nation(n);
+  community(n);
   society(n);
-  tribe(n);
+  company(n);
+  nation(n);
+  collection(n);
+  team(n);
+  crowd(n);
+
+  group-related(adj qualifier);
+  community-related(adj qualifier);
+  society-related(adj qualifier);
+  company-related(adj qualifier);
+  nation-related(adj qualifier);
+  collection-related(adj qualifier);
+  team-related(adj qualifier);
+  crowd-related(adj qualifier);
 
 kute:
   ear(n);
+  hearing(adj qualifier) organ(n);
+
+  hear(v) [object];
   listen(v) at(prep) [object];
+  pay(v) attention(n) to(prep) [object];
+  obey(v) [object];
 
 la:
   `[mark the previous statement as context to a following statement]`(particle def);
@@ -273,9 +455,11 @@ la:
 lanpan:
   take(v) [object];
   seize(v) [object];
-  catch(v) [object];
-  receive(v) [object];
-  # get(v) [object];
+  steal(v) [object];
+
+  taking(n gerund);
+  seizing(n gerund);
+  stealing(n gerund);
 
 lape:
   sleep(n singular);
@@ -283,13 +467,10 @@ lape:
   sleep(v);
   rest(v);
 
+  sleeping(adj qualifier);
+  resting(adj qualifier);
+
 laso:
-  turquoise(n singular);
-  blue(n singular);
-  green(n singular);
-  cyan(n singular);
-  indigo(n singular);
-  lime(adj color) green(n singular);
   turquoise(adj color);
   blue(adj color);
   green(adj color);
@@ -297,157 +478,250 @@ laso:
   indigo(adj color);
   lime(adv) green(adj color);
 
+  turquoise(n singular);
+  blue(n singular);
+  green(n singular);
+  cyan(n singular);
+  indigo(n singular);
+  lime(adj color) green(n singular);
+
 lawa:
   head(n);
   mind(n);
-  guide(n);
-  plan(n);
-  rule(n);
+  brain(n);
+
   control(v) [object];
-  direct(v) [object];
-  guide(v) [object];
   lead(v) [object];
-  own(v) [object];
-  regulate(v) [object];
-  rule(v) [object];
+  guide(v) [object];
+
+  government(n);
+  leader(n);
+
+  rule(n);
+  law(n);
+
+  head-related(adj qualifier);
+  mind-related(adj qualifier);
+  brain-related(adj qualifier);
+  government-related(adj qualifier);
+  leader-related(adj qualifier);
+  rule-related(adj qualifier);
+  law-related(adj qualifier);
 
 leko:
-  stairs(n plural);
   square(n);
-  block(n);
-  corner(n);
   cube(n);
+  block(n);
+  blocky(adj physical quality) object(n);
+  bricks(n plural);
+  stairs(n plural);
 
 len:
+  cloth(n);
   clothing(n);
   fabric(n);
+  textile(n);
+
+  covered(adj origin);
+  hidden(adj origin);
+  secret(adj opinion);
+  private(adj opinion);
+
   cover(v) [object];
   hide(v) [object];
 
 lete:
-  coldness(n singular);
-  cool(adj physical quality);
-  cold(adj physical quality);
-  cool(v) [object];
+  cold(adj material);
+  # cool(adj material); # Could be conflated with "cool" as in pona
+  frozen(adj material);
+
   freeze(v) [object];
+  chill(v) [object];
+
+  raw(adj opinion);
+  uncooked(adj opinion);
+
+  coldness(n);
+  # coolness(n);
 
 li:
   `[marks the start of an indicative verb (statement)]`(particle def);
 
 lili:
-  smallness(n singular);
   small(adj size);
   short(adj size);
   young(adj age);
+
   few(d quantifier plural);
-  piece(n) of(prep) [headword n];
-  part(n) of(prep) [headword n];
+
+  piece(n) of(prep) [headword];
+  part(n) of(prep) [headword];
+
+  smallness(n);
+  shortness(n);
 
 linja:
   long(adj size) flexible(adj material) thing(n);
-  cord(n);
-  hair(n singular);
   rope(n);
+  yarn(n);
+  hair(n);
+  fur(n);
   line(n);
-  connection(n);
+  strand(n);
+
   long(adj size) and(c) flexible(adj material);
 
 lipu:
-  flat(adj size) object(n);
-  book(n);
-  document(n);
-  card(n);
+  flat(adj physical quality) bendable(adj material) object(n);
   paper(n);
-  record(n);
+  card(n);
+  leaf(n);
+
+  written(adj qualifier) text(n);
+  document(n);
+  book(n);
   website(n);
-  flat(adj size);
+  clay(adj qualifier) tablet(n);
+
+  flat(adj size) and(c) bendable(adj material);
 
 loje:
+  red(adj color);
+  magenta(adj color);
+  scarlet(adj color);
+  pink(adj color);
+  rust-colored(adj color);
+  reddish(adv) orange(adj color);
+
   red(n singular);
   magenta(n singular);
   scarlet(n singular);
   pink(n singular);
   rust-color(n singular);
   reddish(adj color) orange(n singular);
-  red(adj color);
-  magenta(adj color);
-  scarlet(adj color);
-  pink(adj color);
-  rust-color(adj color);
-  reddish(adv) orange(adj color);
 
 lon:
-  truth(n singular);
+  present(adj origin);
+  existing(adj opinion);
   real(adj opinion);
-  truthfully(adv);
-  exist(v) [object];
+  true(adj opinion);
+
   located at(prep);
   in(prep);
   during(prep);
   in the context of(prep);
+
+  truth(n singular);
+
+  truthfully(adv);
 
 luka:
   hand(n);
   arm(n);
   tactile(adj qualifier) organ(n);
   grasping(adj qualifier) organ(n);
+
+  grasp(v) [object];
+  interact(v) with(prep) [object];
+  feel(v) [object] using(prep) touch(n singular);
+
   5(num);
 
+  hand-like(adj physical quality);
+  arm-like(adj physical quality);
+
+  hand-related(adj qualifier);
+  arm-related(adj qualifier);
+
 lukin, oko:
-  appearance(n);
-  # visual(n);
-  eye(n);
-  seeing(adj qualifier) organ(n);
+  see(v) [object];
   look(v) at(prep) [object];
+  view(v) at(prep) [object];
+  examine(v) [object];
   read(v) [object];
   watch(v) [object];
 
+  visual(adj qualifier);
+
+  eye(n);
+  seeing(adj qualifier) organ(n);
+
+  try(v) to(particle) [predicate v];
+
 lupa:
   hole(n);
-  pit(n singular);
+  pit(n);
   cave(n);
   doorway(n);
   window(n);
   portal(n);
 
+  # TODO adjectives
+
 ma:
   earth(n singular);
   land(n singular);
-  world(n singular);
+  soil(n singular);
+
   country(n);
   territory(n);
-  soil(n singular);
+  world(n singular);
+
+  outdoor(n);
+
+  earth-related(adj qualifier);
+  land-related(adj qualifier);
+  soil-related(adj qualifier);
+  country-related(adj qualifier);
+  territory-related(adj qualifier);
+  world-related(adj qualifier);
+  outdoor-related(adj qualifier);
 
 majuna:
   old(adj age);
   aged(adj age);
   ancient(adj age);
 
+  oldness(n);
+
 mama:
   parent(n);
   ancestor(n);
+
   creator(n);
   originator(n);
+
   caretaker(n);
   sustainer(n);
   guardian(n);
 
+  parent-related(adj qualifier);
+  ancestor-related(adj qualifier);
+  creator-related(adj qualifier);
+  originator-related(adj qualifier);
+  caretaker-related(adj qualifier);
+  sustainer-related(adj qualifier);
+  guardian-related(adj qualifier);
+
 mani:
   money(n singular);
-  cash(n singular);
-  savings(n plural);
-  wealth(n singular);
-  large(adj size) domestic(adj qualifier) animal(n);
+  currency(n);
+  valuable(adj opinion) thing(n);
+
+  gold(n);
+  investment(n);
+  livestock(n);
+
+  valuable(adj opinion);
 
 meli:
   woman(n);
-  # female(n); # this sounds dehumanizing
-  feminine(adj qualifier) person(n);
+  feminine(adj opinion);
   wife(n);
+  girlfriend(n);
 
 meso:
   midpoint(n);
-  midpoint(adj opinion);
   medium(adj size);
   mediocre(adj opinion);
 
@@ -457,38 +731,59 @@ mi:
 
 mije:
   man(n);
-  # male(n); # this sounds dehumanizing
-  masculine(adj qualifier) person(n);
+  masculine(adj qualifier);
   husband(n);
+  boyfriend(n);
 
 misikeke:
-  medicine(n);
+  medical(adj qualifier) item(n);
+  prescription(n);
+  meditation(n);
+  exercise(n);
+  bandage(n);
+  therapy(n);
+
   medical(adj qualifier);
 
 moku:
-  food(n);
-  drink(n);
   eat(v) [object];
   drink(v) [object];
   consume(v) [object];
+  swallow(v) [object];
   ingest(v) [object];
+
+  food(n);
+  edible(adj opinion) thing();
+
+  food-related(adj qualifier);
 
 moli:
   death(n singular);
   dead(adj age);
+  die(v);
+  dying(n);
   kill(v) [object];
+  murder(v) [object];
 
 monsi:
   back(n singular);
-  behind(n singular);
   rear(n singular);
 
+  back-related(adj);
+  rear-related(adj);
+
 monsuta:
-  monster(n);
+  fear(n);
+  nervousness(n);
+  dread(n);
+
+  scary(adj opinion);
+  frightening(adj opinion);
+
+  scary(adj opinion) thing(n);
   predator(n);
   threat(n);
   danger(n);
-  scary(adj opinion);
 
 mu:
   `(animal noise or communication, onomatopoeia)`(adhoc def);
@@ -499,16 +794,23 @@ mun:
   star(n);
   celestial(adj origin) body(n);
 
+  celestial(adj origin);
+
+  moon-related(adj qualifier);
+  star-related(adj qualifier);
+
 musi:
   fun(n singular);
   game(n);
   entertainment(n);
+
   art(n);
   fun(adj opinion);
   amusing(adj opinion);
   interesting(adj opinion);
   comical(adj opinion);
   silly(adj opinion);
+
   have(v) fun(n singular);
 
 mute:
@@ -525,34 +827,61 @@ n:
   um/umm/ummm(f);
   `[indicate thinking or pause]`(particle def);
 
+namako:
+  spice(n);
+  ornament(n);
+  adornment(n);
+
+  extra(adj opinion);
+  additional(adj opinion);
+
 nanpa:
   number(n);
   -th(particle def);
   `[ordinal number]`(particle def);
 
 nasa:
-  silliness(n singular);
-  strangeness(n singular);
   unusual(adj opinion);
   strange(adj opinion);
   silly(adj opinion);
   drunk(adj opinion);
+  intoxicated(adj opinion);
+
   intoxicate(v) [object];
+
   strangely(adv);
 
+  silliness(n singular);
+  strangeness(n singular);
+
 nasin:
-  way(n);
-  custom(n);
-  doctrine(n);
   method(n);
+  doctrine(n);
+  tradition(n);
+
   path(n);
+  road(n);
+  way(n);
+
+  method-related(adj qualifier);
+  doctrine-related(adj qualifier);
+  tradition-related(adj qualifier);
+  path-related(adj qualifier);
+  road-related(adj qualifier);
+  way-related(adj qualifier);
 
 nena:
-  bump(n);
-  hill(n);
-  mountain(n);
-  nose(n);
   protuberance(n);
+  bump(n);
+  button(n);
+  hill(n);
+  nose(n);
+
+  protuberance-related(adj qualifier);
+  bump-related(adj qualifier);
+  button-related(adj qualifier);
+  hill-related(adj qualifier);
+  nose-related(adj qualifier);
 
 ni:
   this/these(n);
@@ -561,21 +890,35 @@ ni:
   that/those(d demonstrative);
 
 nimi:
-  name(n);
   word(n);
+  name(n);
+
+  word-related(adj qualifier);
+  name-related(adj qualifier);
 
 noka:
   foot(n);
   leg(n);
-  root(n);
   locomotive(adj qualifier) organ(n);
+  root(n);
+
+  foot-like(adj physical quality);
+  leg-like(adj physical quality);
+  root-like(adj physical quality);
+
+  foot-related(adj qualifier);
+  leg-related(adj qualifier);
+  root-related(adj qualifier);
 
 o:
-  should(particle def);
   `[marks the end of a vocative (who is being spoken to)]`(particle def);
   `[marks the start of an imperative (command, wish, instruction)]`(particle def);
+  should(particle def);
 
 olin:
+  have(v) strong(adj opinion) emotional(adj opinion) bond(n singular) with(prep) [object];
+  respect(v) [object];
+
   affection(n singular);
   appreciation(n singular);
   respect(n singular);
@@ -583,8 +926,6 @@ olin:
   platonic(adj qualifier);
   romantic(adj qualifier);
   familial(adj qualifier);
-  have(v) strong(adj opinion) emotional(adj opinion) bond(n singular) with(prep) [object];
-  respect(v) [object];
 
 ona:
   they/them(pn plural);
@@ -593,41 +934,69 @@ ona:
   its(d possessive);
 
 open:
-  beginning(n);
-  start(n singular);
-  open(adj physical quality);
-  start(v) [object];
-  turn on(v) [object];
+  begin(v);
+  start(v);
   open(v) [object];
+  turn on(v) [object];
+
+  beginning(n);
+
+  beginning-related(adj qualifier);
 
 pakala:
-  mess(n singular);
-  damage(n);
-  botch(v) [object];
-  break(v) [object];
+  damaged(adj opinion);
+  broken(adj opinion);
+  botched(adj opinion);
+  harmed(adj opinion);
+  messed up(adj opinion);
+
+  mistake(n);
+
   damage(v) [object];
+  break(v) [object];
+  botch(v) [object];
   harm(v) [object];
   mess up(v) [object];
-  fuck(i);
 
 pali:
+  work(n);
+  activity(n);
+
+  create(v) [object];
   build(v) [object];
-  make(v) [object];
-  prepare(v) [object];
-  do(v);
-  work(v);
+  design(v) [object];
+
+  put(v) effort(n) toward(prep) [object];
+  take(v) action(n) to(prep) [object];
+
+  work-related(adj qualifier);
+  activity-related(adj qualifier);
 
 palisa:
-  long(adj size) and(c) hard(adj material);
   long(adj size) hard(adj material) thing(n);
   branch(n);
+  pole(n);
   rod(n);
   stick(n);
+  spine(n);
+  mast(n);
+
+  long(adj size) and(c) hard(adj material);
 
 pan:
   grain(n);
   starchy(adj material) food(n);
   baked(adj qualifier) goods(n plural);
+
+  rice(n);
+  sorghum(n);
+  bread(n);
+  noodles(n);
+  masa(n);
+  porridge(n);
+  injera(n);
+
+  grain-related(adj qualifier);
 
 pana:
   give(v) [object];
@@ -637,32 +1006,65 @@ pana:
   put(v) [object];
   release(v) [object];
 
+  giving(n gerund);
+  sending(n gerund);
+  emitting(n gerund);
+  providing(n gerund);
+  putting(n gerund);
+  releasing(n gerund);
+
 pi:
   `[modify the next word with one or more following words]`(particle def);
 
 pilin:
-  heart(n);
+  experience(n);
+  emotion(n);
   feeling(n);
-  touch(v) [object];
+  touch(n);
+
   feel(v) [object];
+  touch(v) [object];
+
+  heart(n);
+
+  experience-related(adj qualifier);
+  emotion-related(adj qualifier);
+  feeling-related(adj qualifier);
+  touch-related(adj qualifier);
+  heart-related(adj qualifier);
 
 pimeja:
-  darkness(n singular);
-  dark(adj color) color(n);
   dark(adj color);
   unlit(adj color);
+
+  dark(adj color) color(n);
   black(adj color);
   purple(adj color);
   brown(adj color);
 
+  darkness(n singular);
+
 pini:
-  past(n singular);
+  finish(v) [object];
+  stop(v) [object];
+  prevent(v) [object];
+
+  close(v) [object];
+  disable(v) [object];
+  turn off(v) [object];
+
+  ended(adj age);
   past(adj age);
-  end(v) [object];
+
+  edge(n);
+  end(n);
+  conclusion(n);
 
 pipi:
   insect(n);
   bug(n);
+  spider(n);
+  tiny(adj size) crawling(adj qualifier) creature(n);
 
 poka:
   hip(n);
@@ -672,43 +1074,59 @@ poka:
 
 poki:
   container(n);
+  bag(n);
+  bowl(n);
+  box(n);
+  cup(n);
+  cupboard(n);
+  drawer(n);
+  folder(n);
+
+  container-like(adj physical quality);
+  container-related(adj qualifier);
 
 pona:
-  goodness(n singular);
-  simplicity(n singular);
+  positive(adj opinion) quality(n);
+
   good(adj opinion);
-  positive(adj opinion);
-  useful(adj opinion);
+  pleasant(adj opinion);
+  helpful(adj opinion);
   friendly(adj opinion);
+  useful(adj opinion);
   peaceful(adj opinion);
-  simple(adj opinion);
-  nicely(adv);
 
 pu:
   interact(v) with(prep) the(d article) `Toki Pona: The Language of Good`(adj qualifier) book(n singular);
 
 sama:
-  similarity(n);
-  sibling(n);
-  peer(n);
-  fellow(n);
   same(adj opinion);
   similar(adj opinion);
+  alike(adj opinion);
+
+  fellow(adj opinion);
+
   similar to(prep);
   same as(prep);
 
 seli:
-  fire(n singular);
-  cooking(adj qualifier) element(n);
-  chemical(adj qualifier) reaction(n);
-  heat(adj qualifier) source(n);
   hot(adj material);
-  heat(v) [object];
+  warm(adj material);
+
+  heat(n);
+  fire(n);
+  flame(n);
+
+  burn(v) [object];
 
 selo:
-  outer(adj origin) form(n);
   outer(adj origin) layer(n);
   skin(n singular);
+  peel(n singular);
+  shell(n singular);
+  bark(n singular);
+
+  outer(adj origin) shape(n);
+  outer(adj origin) form(n);
   boundary(n);
 
 seme:
@@ -719,30 +1137,53 @@ seme:
   which(d interrogative);
 
 sewi:
-  # TODO: area above, something elevated
+  top(adj origin);
+  above(adj origin);
   highest(adj origin) part(n);
-  elevate(v) [object];
-  awe-inspiring(adj opinion);
+
   divine(adj opinion);
   sacred(adj opinion);
   supernatural(adj opinion);
 
+  awesome(adj opinion);
+  inspiring(adj opinion);
+  excelling(adj opinion);
+
+  elevate(v) [object];
+
 sijelo:
   body(n);
+  shape(n);
   physical(adj qualifier) state(n);
-  torso(n singular);
+  torso(n);
+  substance(n);
+  form(n);
 
 sike:
+  circle(n);
+  sphere(n);
+  spiral(n);
   round(adj physical quality) thing(n);
+  ball(n);
+  wheel(n);
+
+  repeating(adj qualifier) thing(n);
   cycle(n);
+  orbit(n);
+  loop(n);
+
   round(adj physical quality);
+  repeating(adj qualifier);
 
 sin:
-  newness(n singular);
   new(adj age);
   fresh(adj opinion);
-  additional(adj origin);
-  extra(adj origin);
+
+  update(v) [object];
+
+  newness(n singular);
+
+  repeatedly(adv);
   newly(adv);
 
 sina:
@@ -750,9 +1191,12 @@ sina:
   your(d possessive);
 
 sinpin:
-  face(n);
+  vertical(adj physical quality) surface(n);
   wall(n);
-  foremost(adj origin);
+  board(n);
+
+  front(n);
+  face(n);
 
 sitelen:
   image(n);
@@ -762,104 +1206,190 @@ sitelen:
   mark(n);
   writing(n);
 
+  image-related(adj qualifier);
+  picture-related(adj qualifier);
+  representation-related(adj qualifier);
+  symbol-related(adj qualifier);
+  mark-related(adj qualifier);
+  writing-related(adj qualifier);
+
 soko:
+  mushroom(n);
   fungus(n);
+  lichen(n);
+
+  mushroom-like(adj physical quality);
+  fungus-like(adj physical quality);
+  lichen-like(adj physical quality);
+
+  mushroom-related(adj qualifier);
+  fungus-related(adj qualifier);
+  lichen-related(adj qualifier);
 
 sona:
-  knowledge(n singular);
+  # TODO: be skilled in, be wise about
+  knowledge(n);
+  information(n);
+  data(n);
+
+  know(v) [object];
+
+  know(v) how to(particle) [predicate v];
 
 soweli:
   fuzzy(adj physical quality) creature(n);
   land(adj origin) animal(n);
   beast(n);
 
+  animal-like(adj physical quality);
+  beast-like(adj physical quality);
+
+  animal-related(adj qualifier);
+  beast-related(adj qualifier);
+
 su:
   interact(v) with(prep) Sonja's(d possessive) story(adj qualifier) book(adj qualifier) series(n singular);
 
 suli:
-  hugeness(n singular);
-  importance(n singular);
   big(adj size);
   heavy(adj size);
+  large(adj size);
+  long(adj size);
+  tall(adj size);
+  wide(adj size);
+
   important(adj opinion);
-  adult(adj age);
+  relevant(adj opinion);
+
+  hugeness(n singular);
+  importance(n singular);
 
 suno:
-  sun(n singular);
+  light(v);
+  shine(v);
+  glow(v);
+
   light(n);
-  brightness(n singular);
-  glow(n singular);
   radiance(n);
+
+  sun(n);
   light(adj qualifier) source(n);
-  shining(adj color);
+  brightness(n);
+
+  light-related(adj qualifier);
 
 supa:
   horizontal(adj physical quality) surface(n);
+  bed(n);
+  floor(n);
+  desk(n);
+  plate(n);
+  table(n);
+  platform(n);
 
 suwi:
-  sweetness(n singular);
-  cuteness(n singular);
-  innocence(n singular);
   sweet(adj material);
+  fragrant(adj material);
   cute(adj opinion);
-  innocent(adj opinion);
-  sweetly(adv);
+  adorable(adj opinion);
+
+  sweetness(n);
+  fragrance(n);
+  cuteness(n);
 
 tan:
   from(prep);
   because of(prep);
+
   origin(n);
   cause(n);
 
 taso:
-  only(adhoc def);
+  only(adj opinion);
+  only(adv)
+  `[marks a sentence as qualifying or contradictory]`(particle def);
   but(particle def);
   however(particle def);
-  `[marks a sentence as qualifying or contradictory]`(particle def);
 
 tawa:
   motion(n);
-  travel(n singular);
-  shake(v) [object];
   walk(v);
+  shake(v) [object];
+  fly(v);
+  travel(v);
+
+  walking(n gerund);
+  shaking(n gerund);
+  flight(n);
+  travelling(n gerund);
+
   to(prep);
   for(prep);
   going to(prep);
   from the perspective of(prep);
 
+  moving(adj physical quality);
+
 telo:
-  water(n singular);
   liquid(n singular);
-  wet(adj material) substance(n);
-  beverage(n);
+  water(n singular);
+  gasoline(n singular);
+  soda(n singular);
+  lava(n singular);
+  soup(n singular);
+  oil(n singular);
+  ink(n singular);
+
   liquid(adj material);
-  wet(adj material);
 
 tenpo:
   time(n singular);
-  duration(n singular);
-  moment(n);
-  occasion(n);
-  period(n);
+  event(n);
   situation(n);
+  moment(n);
+  period(n);
+  duration(n singular);
 
 toki:
-  communication(n);
-  language(n);
   communicate(v) about(prep) [object];
-  hello(i);
+  say(v) [object];
+  think(v) about(prep) [object];
+
+  conversation(n);
+  story(n);
+
+  language(n);
+
+  communicating(adj qualifier);
+  saying(adj qualifier);
+  thinking(adj qualifier);
+
+  conversation-related(adj qualifier);
+  story-related(adj qualifier);
+  language-related(adj qualifier);
 
 tomo:
-  building(n);
-  home(n singular);
-  house(n);
+  indoor(adj origin) space(n);
+  shelter(n);
   room(n);
+  building(n);
+  home(n);
+  tent(n);
+  shack(n);
+
+  shelter-related(adj qualifier);
+  room-related(adj qualifier);
+  building-related(adj qualifier);
+  home-related(adj qualifier);
+  tent-related(adj qualifier);
+  shack-related(adj qualifier);
 
 tonsi:
   non-binary(adj qualifier) person(n);
   gender nonconforming(adj qualifier) person(n);
   genderqueer(adj qualifier) person(n);
   transgender(adj qualifier) person(n);
+
   non-binary(adj qualifier);
   gender nonconforming(adj qualifier);
   genderqueer(adj qualifier);
@@ -870,35 +1400,53 @@ tu:
   separate(v) [object];
   divide(v) [object];
   split(v) [object];
-  multiply(v) [object];
-  duplicate(v) [object];
 
 unpa:
-  sexual(adj qualifier);
-  sexually(adv);
+  sex(n);
   have(v) sex(n singular) with(prep) [object];
 
+  sexual(adj qualifier);
+
 uta:
-  mouth(n singular);
-  lips(n plural);
-  oral(adj qualifier) cavity(n);
-  jaw(n);
+  mouth(n);
+  lips(n);
+  throat(n);
+  consuming(adj qualifier) orifice(n);
+
+  mouth-related(adj qualifier);
+  lips-related(adj qualifier);
+  throat-related(adj qualifier);
 
 utala:
-  battle(n);
-  challenge(n);
+  fight(v) against(prep) [object];
   compete(v) against(prep) [object];
-  struggle(v) against(prep) [object];
+  battle(v) against(prep) [object];
+
+  competition(n);
+  challenge(n);
+
+  struggle(v);
+  strive(v);
 
 walo:
+  light-colored(adj color);
+  white(adj);
+  pale(adj);
+  light(adv) gray(adj color);
+  cream-colored(adj color);
+
   light(adj color) color(n);
-  white(n singular);
-  light(adj color) gray(n singular);
+  white(n);
+  paleness(n);
+  light(adj color) gray(n);
+  cream(adj qualifier) color(n);
 
 wan:
   1(num);
   singular(adj opinion);
+
   combine(v) [object];
+  join(v) [object];
   mix(v) [object];
   fuse(v) [object];
 
@@ -906,26 +1454,43 @@ waso:
   bird(n);
   flying(adj qualifier) creature(n);
   winged(adj qualifier) animal(n);
+
   fly(v);
 
+  bird-like(adj physical quality);
+  bird-related(adj physical quality);
+
 wawa:
-  power(n singular);
-  confidence(n singular);
-  energy(n singular);
-  intensity(n singular);
-  strong(adj opinion);
-  powerful(adj opinion);
+  power(n);
+  energy(n);
+  strength(n);
+
   confident(adj opinion);
-  energetic(adj opinion);
   intense(adj opinion);
+  forceful(adj opinion);
+
+  amazing(adj opinion);
+  impressive(adj opinion);
+
   powerfully(adv);
 
 weka:
   absent(adj origin);
   away(adj origin);
-  ignore(v) [object];
-  leave(v);
+  distant(adj origin);
+
+  remove(v) [object];
+  # TODO: get rid of
 
 wile:
+  want(v) [object];
+  desire(v) [object];
+  wish(v) for(prep) [object];
+  require(v) [object];
+
   want(n);
-  need(n);
+  desire(n);
+  wish(n);
+  requirement(n);
+
+  want(v) to(particle) [predicate v];
