@@ -341,10 +341,8 @@ kili:
 
 kin:
   `[at sentence start]`(particle def);
-  too(adhoc def);
-  also(adhoc def);
-  as well(adhoc def);
-  additionally(adhoc def);
+  also(adverb);
+  additionally(adverb);
 
 kipisi:
   split(v) [object];
