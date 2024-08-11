@@ -69,7 +69,7 @@ ante:
   modify(v) [object];
   change(v) [object];
 
-  other(d distributive);
+  other(adj origin);
   other(n);
   difference(n);
 
