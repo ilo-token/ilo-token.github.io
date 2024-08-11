@@ -61,14 +61,14 @@ awen:
 continue(v) to(particle) [predicate v]
 
 kama:
-become(v) [predicate n]
+become(linking v) [predicate n/adj]
 began(v) to(particle) [predicate v]
 
 ken:
-able(aj) to(particle) [predicate v]
+able(adj) to(particle) [predicate v]
 
 sona:
-know(v) how to(particle) [predicate v]
+know(v) how(c) to(particle) [predicate v]
 
 wile:
 want(v) to(particle) [predicate v]
