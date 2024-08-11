@@ -131,7 +131,7 @@ jan:
   somebody(n singular);
 
 jasima:
-  opposite(n) of(pp) [headword n];
+  opposite(n) of(prep) [headword n];
   reflection(n);
   mirror(n);
   reflect(v) [object];
@@ -179,8 +179,8 @@ ken:
   possibility(n);
 
 kepeken:
-  using(pp);
-  by means of(pp);
+  using(prep);
+  by means of(prep);
   use(v) [object];
 
 kijetesantakalu:
@@ -243,7 +243,7 @@ kon:
   unseen(adj physical quality) agent(n);
 
 ku:
-  interact(v) with(pp) the(d article) Toki Pona Dictionary(n singular);
+  interact(v) with(prep) the(d article) Toki Pona Dictionary(n singular);
 
 kule:
   color(n);
@@ -265,7 +265,7 @@ kulupu:
 
 kute:
   ear(n);
-  listen(v) at(pp) [object];
+  listen(v) at(prep) [object];
 
 la:
   `[mark the previous statement as context to a following statement]`(particle def);
@@ -340,8 +340,8 @@ lili:
   short(adj size);
   young(adj age);
   few(d quantifier plural);
-  piece(n) of(pp) [headword n];
-  part(n) of(pp) [headword n];
+  piece(n) of(prep) [headword n];
+  part(n) of(prep) [headword n];
 
 linja:
   long(adj size) flexible(adj material) thing(n);
@@ -381,10 +381,10 @@ lon:
   real(adj opinion);
   truthfully(adv);
   exist(v) [object];
-  located at(pp);
-  in(pp);
-  during(pp);
-  in the context of(pp);
+  located at(prep);
+  in(prep);
+  during(prep);
+  in the context of(prep);
 
 luka:
   hand(n);
@@ -398,7 +398,7 @@ lukin, oko:
   # visual(n);
   eye(n);
   seeing(adj qualifier) organ(n);
-  look(v) at(pp) [object];
+  look(v) at(prep) [object];
   read(v) [object];
   watch(v) [object];
 
@@ -452,7 +452,7 @@ meso:
   mediocre(adj opinion);
 
 mi:
-  I/me/we/us(pn);
+  I/me/we/us(personal pro);
   my/our(d possessive);
 
 mije:
@@ -583,7 +583,7 @@ olin:
   platonic(adj qualifier);
   romantic(adj qualifier);
   familial(adj qualifier);
-  have(v) strong(adj opinion) emotional(adj opinion) bond(n singular) with(pp) [object];
+  have(v) strong(adj opinion) emotional(adj opinion) bond(n singular) with(prep) [object];
   respect(v) [object];
 
 ona:
@@ -685,7 +685,7 @@ pona:
   nicely(adv);
 
 pu:
-  interact(v) with(pp) the(d article) `Toki Pona: The Language of Good`(adj qualifier) book(n singular);
+  interact(v) with(prep) the(d article) `Toki Pona: The Language of Good`(adj qualifier) book(n singular);
 
 sama:
   similarity(n);
@@ -694,8 +694,8 @@ sama:
   fellow(n);
   same(adj opinion);
   similar(adj opinion);
-  similar to(pp);
-  same as(pp);
+  similar to(prep);
+  same as(prep);
 
 seli:
   fire(n singular);
@@ -774,7 +774,7 @@ soweli:
   beast(n);
 
 su:
-  interact(v) with(pp) Sonja's(d possessive) story(adj qualifier) book(adj qualifier) series(n singular);
+  interact(v) with(prep) Sonja's(d possessive) story(adj qualifier) book(adj qualifier) series(n singular);
 
 suli:
   hugeness(n singular);
@@ -806,8 +806,8 @@ suwi:
   sweetly(adv);
 
 tan:
-  from(pp);
-  because of(pp);
+  from(prep);
+  because of(prep);
   origin(n);
   cause(n);
 
@@ -822,10 +822,10 @@ tawa:
   travel(n singular);
   shake(v) [object];
   walk(v);
-  to(pp);
-  for(pp);
-  going to(pp);
-  from the perspective of(pp);
+  to(prep);
+  for(prep);
+  going to(prep);
+  from the perspective of(prep);
 
 telo:
   water(n singular);
@@ -846,7 +846,7 @@ tenpo:
 toki:
   communication(n);
   language(n);
-  communicate(v) about(pp) [object];
+  communicate(v) about(prep) [object];
   hello(i);
 
 tomo:
@@ -876,7 +876,7 @@ tu:
 unpa:
   sexual(adj qualifier);
   sexually(adv);
-  have(v) sex(n singular) with(pp) [object];
+  have(v) sex(n singular) with(prep) [object];
 
 uta:
   mouth(n singular);
@@ -887,8 +887,8 @@ uta:
 utala:
   battle(n);
   challenge(n);
-  compete(v) against(pp) [object];
-  struggle(v) against(pp) [object];
+  compete(v) against(prep) [object];
+  struggle(v) against(prep) [object];
 
 walo:
   light(adj color) color(n);

@@ -52,24 +52,24 @@
 
 ```
 alasa:
-try(v) to [predicate verb]
+try(v) to(particle) [predicate v]
 
 lukin, oko:
-try(v) to [predicate verb]
+try(v) to(particle) [predicate v]
 
 awen:
-continue(v) to [predicate verb]
+continue(v) to(particle) [predicate v]
 
 kama:
-become(v) [predicate noun]
-began(v) [predicate verb]
+become(v) [predicate n]
+began(v) to(particle) [predicate v]
 
 ken:
-able(aj) to [predicate verb]
+able(aj) to(particle) [predicate v]
 
 sona:
-know(v) how to [predicate verb]
+know(v) how to(particle) [predicate v]
 
 wile:
-want(v) to [predicate verb]
+want(v) to(particle) [predicate v]
 ```
