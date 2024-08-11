@@ -40,7 +40,7 @@ alasa:
   searching(adj qualifier);
 
 ale, ali:
-  all(d distributive plural);
+  all(d quantifier plural);
   every(d distributive);
   everything(n singular);
   entirety(n singular);
