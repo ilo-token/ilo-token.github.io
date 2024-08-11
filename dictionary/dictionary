@@ -77,11 +77,12 @@ anu:
   `[separates multiple possibilities, replacing another particle]`(particle def);
   or(particle def);
 
-  choose(v) [object]; # How common is this?
-  decide(v);
+  # # These are no longer in Linku
+  # choose(v) [object];
+  # decide(v);
 
-  choosing(n gerund);
-  deciding(n gerund);
+  # choosing(n gerund);
+  # deciding(n gerund);
 
 awen:
   stay(v);
