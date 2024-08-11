@@ -131,7 +131,7 @@ jan:
   somebody(n singular);
 
 jasima:
-  opposite(n) of(pp);
+  opposite(n) of(pp) [headword n];
   reflection(n);
   mirror(n);
   reflect(v) [object];
@@ -340,8 +340,8 @@ lili:
   short(adj size);
   young(adj age);
   few(d quantifier plural);
-  piece(n) of(pp);
-  part(n) of(pp);
+  piece(n) of(pp) [headword n];
+  part(n) of(pp) [headword n];
 
 linja:
   long(adj size) flexible(adj material) thing(n);
