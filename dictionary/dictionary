@@ -68,7 +68,7 @@ ante:
   modify(v) [object];
   change(v) [object];
 
-  other(d);
+  other(d distributive);
   other(n);
   difference(n);
 
