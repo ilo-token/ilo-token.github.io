@@ -20,7 +20,8 @@ akesi:
   amphibian(adj qualifier);
 
 ala:
-  not(adhoc def);
+  not(d negative);
+  not(adv);
   nothing(n plural);
   no(d quantifier plural);
 
