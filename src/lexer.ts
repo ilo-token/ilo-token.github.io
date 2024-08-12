@@ -10,6 +10,7 @@ import { Output } from "./output.ts";
 import { UnexpectedError, UnrecognizedError } from "./error.ts";
 import {
   allAtLeastOnce,
+  cached,
   choiceOnlyOne,
   count,
   match,
@@ -335,7 +336,7 @@ function insideLongGlyph(): Parser<
     .map((words) => ({ type: "headed long glyph start", words }));
 }
 /** Parses a token. */
-export const TOKEN = choiceOnlyOne(
+export const TOKEN = cached(choiceOnlyOne(
   longSpaceGlyph(),
   longGlyphStart(),
   combinedGlyphs()
@@ -359,4 +360,4 @@ export const TOKEN = choiceOnlyOne(
   cartouches().map((words) =>
     ({ type: "proper word", words, kind: "cartouche" }) as Token
   ),
-);
+));

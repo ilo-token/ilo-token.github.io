@@ -228,3 +228,15 @@ export function eol(description = "end of text"): Parser<null> {
     else return new Output(new UnexpectedError(`"${src}"`, description));
   });
 }
+export function cached<T>(parser: Parser<T>): Parser<T> {
+  const cache: { [word: string]: ParserOutput<T> } = {};
+  return new Parser((src) => {
+    if (src in cache) {
+      return cache[src];
+    } else {
+      const output = parser.parser(src);
+      cache[src] = output;
+      return output;
+    }
+  });
+}
