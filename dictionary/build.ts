@@ -433,19 +433,24 @@ export async function buildDictionary(): Promise<boolean> {
   const sourceText = await Deno.readTextFile(SOURCE);
   const output = dictionary.parse(sourceText);
   if (output.isError()) {
-    const rawTexts = all(
-      optionalAll(head())
-        .with(
-          lex(match(/[^;]*;/, "definition"))
-            .map(([definition]) => definition),
-        ),
-    )
+    const rawTexts = space()
+      .with(all(
+        optionalAll(head())
+          .with(
+            lex(match(/[^;]*;/, "definition"))
+              .map(([definition]) => definition),
+          ),
+      ))
       .skip(eol("EOL"))
       .parse(sourceText);
     for (const text of rawTexts.output[0]) {
-      const output = insideDefinitionParser.parse(text);
-      for (const error of output.errors) {
-        console.error(error.message);
+      const errors = insideDefinitionParser.parse(text).errors;
+      if (errors.length > 0) {
+        console.error(`error with definition ${text}`);
+        for (const error of errors) {
+          console.error(error.message);
+        }
+        console.error();
       }
     }
     return false;
