@@ -381,17 +381,6 @@ function definitionAsPlainString(definition: Definition): Array<string> {
     }
     case "determiner":
       return [definition.determiner];
-    case "quantified determiner":
-      switch (settings.get("number-settings")) {
-        case "both":
-          return [definition.singular, definition.plural];
-        case "condensed":
-          return [condense(definition.singular, definition.plural)];
-        case "default only":
-          return [definition.singular];
-      }
-      // unreachable
-      // fallthrough
     case "adverb":
       return [definition.adverb];
     case "interjection":
@@ -436,7 +425,7 @@ function definitionAsPlainString(definition: Definition): Array<string> {
     }
     case "filler":
       return [`${definition.before}${definition.repeat}${definition.after}`];
-    case "particle":
+    case "particle definition":
       return [definition.definition];
     case "noun preposition":
       return nounAsPlainString(definition.noun)
@@ -445,8 +434,13 @@ function definitionAsPlainString(definition: Definition): Array<string> {
       return [`${definition.numeral}`];
     case "preposition":
       return [definition.preposition];
-    case "adhoc":
-      return [definition.definition];
+    case "preverb as linking verb":
+      return [definition.linkingVerb];
+    case "preverb as finitive verb":
+      return [
+        [definition.finitiveVerb, ...nullableAsArray(definition.particle)]
+          .join(" "),
+      ];
   }
 }
 function multipleSentences(
