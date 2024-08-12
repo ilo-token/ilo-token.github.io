@@ -323,35 +323,36 @@ function sentence(
     );
   }
 }
-function nounAsPlainString(definition: Noun): Array<string> {
-  let nouns: Array<string>;
+function nounOnlyAsPlainString(
+  noun: { singular: null | string; plural: null | string },
+): Array<string> {
   switch (settings.get("number-settings")) {
     case "both":
-      nouns = [
-        ...nullableAsArray(definition.singular),
-        ...nullableAsArray(definition.plural),
+      return [
+        ...nullableAsArray(noun.singular),
+        ...nullableAsArray(noun.plural),
       ];
-      break;
     case "condensed":
-      if (definition.singular != null && definition.plural != null) {
-        nouns = [condense(definition.singular, definition.plural)];
-      } else if (definition.singular != null) {
-        nouns = [definition.singular];
+      if (noun.singular != null && noun.plural != null) {
+        return [condense(noun.singular, noun.plural)];
+      } else if (noun.singular != null) {
+        return [noun.singular];
       } else {
-        nouns = [definition.plural!];
+        return [noun.plural!];
       }
-      break;
     case "default only":
-      nouns = [definition.singular ?? definition.plural!];
-      break;
+      return [noun.singular ?? noun.plural!];
   }
-  return nouns.map((noun) =>
-    `${
-      definition.adjective
-        .map((adjective) => adjective.adjective)
-        .join(" ")
-    } ${noun}`
-  );
+}
+function nounAsPlainString(definition: Noun): Array<string> {
+  return nounOnlyAsPlainString(definition)
+    .map((noun) =>
+      [
+        ...definition.determiner.map((determiner) => determiner.determiner),
+        ...definition.adjective.map((adjective) => adjective.adjective),
+        noun,
+      ].join(" ")
+    );
 }
 function definitionAsPlainString(definition: Definition): Array<string> {
   switch (definition.type) {
@@ -388,7 +389,10 @@ function definitionAsPlainString(definition: Definition): Array<string> {
       }
     }
     case "determiner":
-      return [definition.determiner];
+      return nounOnlyAsPlainString({
+        singular: definition.determiner,
+        plural: definition.plural,
+      });
     case "adverb":
       return [definition.adverb];
     case "interjection":
