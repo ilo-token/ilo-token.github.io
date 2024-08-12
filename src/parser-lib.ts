@@ -25,16 +25,6 @@ export class Parser<T> {
         .map(({ value, rest }) => ({ value: mapper(value), rest }))
     );
   }
-  /** TODO better comment. */
-  flatMapValue<U>(mapper: (value: T) => Output<U>): Parser<U> {
-    return new Parser((src) =>
-      this
-        .parser(src)
-        .flatMap(({ value, rest }) =>
-          mapper(value).map((value) => ({ value, rest }))
-        )
-    );
-  }
   /**
    * Filters outputs. Instead of returning false, OutputError must be thrown
    * instead.
