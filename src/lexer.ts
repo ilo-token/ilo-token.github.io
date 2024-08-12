@@ -339,13 +339,6 @@ function insideLongGlyph(): Parser<
 }
 /** Parses a token. */
 function token_(): Parser<Token> {
-  let xAlaXParser: Parser<Token>;
-  if (settings.get("x-ala-x-partial-parsing")) {
-    xAlaXParser = empty();
-  } else {
-    xAlaXParser = xAlaX()
-      .map((word) => ({ type: "x ala x", word }) as Token);
-  }
   return choiceOnlyOne(
     punctuation().map((punctuation) =>
       ({ type: "punctuation", punctuation }) as Token
@@ -367,7 +360,6 @@ function token_(): Parser<Token> {
       .map((words) => ({ type: "combined glyphs", words }) as Token),
     longWord(),
     multipleA().map((count) => ({ type: "multiple a", count }) as Token),
-    xAlaXParser,
     word().map((word) => ({ type: "word", word })),
   );
 }

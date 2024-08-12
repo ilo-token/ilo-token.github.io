@@ -5,8 +5,6 @@ type RedundancySettings = "both" | "condensed" | "default only";
 type Settings = {
   "use-telo-misikeke": boolean;
   "randomize": boolean;
-  "x-ala-x-partial-parsing": boolean;
-  "anu-as-content-word": boolean;
   "number-settings": RedundancySettings;
   "tense-settings": RedundancySettings;
 };
@@ -164,14 +162,6 @@ export const settings = new Setter<Settings>({
     updater: boolUpdater,
   },
   "randomize": {
-    default: false,
-    updater: boolUpdater,
-  },
-  "x-ala-x-partial-parsing": {
-    default: false,
-    updater: boolUpdater,
-  },
-  "anu-as-content-word": {
     default: false,
     updater: boolUpdater,
   },

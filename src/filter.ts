@@ -26,23 +26,6 @@ export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
     }
     return true;
   },
-  // disallow "anu" as content word only when turned off in settings
-  (wordUnit) => {
-    if (settings.get("anu-as-content-word")) {
-      return true;
-    }
-    const isAnu = (
-      wordUnit.type === "default" ||
-      wordUnit.type === "reduplication" ||
-      wordUnit.type === "x ala x"
-    ) &&
-      wordUnit.word === "anu";
-    if (isAnu) {
-      throw new UnrecognizedError("anu as content word");
-    } else {
-      return true;
-    }
-  },
   // "n" and multiple "a" cannot modify a word
   (wordUnit) => {
     if (isMultipleAOrN(wordUnit.emphasis)) {
