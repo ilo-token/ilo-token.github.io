@@ -319,8 +319,6 @@ ken:
   allow(v) [object];
   enable(v) [object];
 
-  able(v) to(particle) [predicate v];
-
 kepeken:
   using(prep);
   by means of(prep);
