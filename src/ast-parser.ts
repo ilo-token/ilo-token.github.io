@@ -54,7 +54,7 @@ const CONTENT_WORD = new Set(
     .filter(([_, definitions]) =>
       definitions
         .some((definition) =>
-          definition.type !== "filler" && definition.type !== "particle"
+          definition.type !== "filler" && definition.type !== "particle definition"
         )
     )
     .map(([word]) => word),

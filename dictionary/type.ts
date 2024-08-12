@@ -12,9 +12,7 @@ export type DeterminerType =
   | "interrogative"
   | "possessive"
   | "quantifier"
-  | "relative"
-  | "negative"
-  | "numeral";
+  | "negative";
 export type Quantity = "singular" | "plural" | "both";
 export type Determiner = {
   determiner: string;

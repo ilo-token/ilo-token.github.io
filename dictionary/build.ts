@@ -204,9 +204,7 @@ function determinerType(): TextParser<DeterminerType> {
     keyword("interrogative"),
     keyword("possessive"),
     keyword("quantifier"),
-    keyword("relative"),
     keyword("negative"),
-    keyword("numeral"),
   );
 }
 function adjectiveKind(): TextParser<AdjectiveType> {
