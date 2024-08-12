@@ -1040,6 +1040,7 @@ pan:
   porridge(n);
   injera(n);
 
+  starchy(adj material);
   grain-related(adj qualifier);
 
 pana:
