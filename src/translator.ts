@@ -168,8 +168,16 @@ function filler(filler: TokiPona.Emphasis): Array<string> {
   }
 }
 function emphasisAsPunctuation(
-  emphasis?: undefined | null | TokiPona.Emphasis,
+  emphasis: undefined | null | TokiPona.Emphasis,
+  interrogative: boolean,
 ): null | string {
+  let questionMark: string;
+  if (interrogative) {
+    questionMark = "?";
+  } else {
+    questionMark = "";
+  }
+  let exclamationMark: string;
   if (emphasis == null) {
     return null;
   } else {
@@ -177,25 +185,26 @@ function emphasisAsPunctuation(
       case "word":
         switch (emphasis.word as "a" | "n") {
           case "a":
-            return "!";
+            exclamationMark = "!";
+            break;
           case "n":
             return null;
         }
-        // unreachable
-        // fallthrough
+        break;
       case "long word":
         switch (emphasis.word as "a" | "n") {
           case "a":
-            return repeat("!", emphasis.length);
+            exclamationMark = repeat("!", emphasis.length);
+            break;
           case "n":
             return null;
         }
-        // unreachable
-        // fallthrough
+        break;
       case "multiple a":
         return null;
     }
   }
+  return `${questionMark}${exclamationMark}`;
 }
 function interjection(clause: TokiPona.Clause): Output<English.Clause> {
   let interjection: Output<English.Clause> = new Output();
@@ -309,16 +318,29 @@ function sentence(
       endingFiller = new Output(filler(endingParticle))
         .map((interjection) => ({ type: "interjection", interjection }));
     }
+    let punctuation: string;
+    if (sentence.interrogative) {
+      punctuation = "?";
+    } else {
+      punctuation = sentence.punctuation;
+    }
     return Output.concat(
       Output.combine(
         engClauses,
-        new Output(nullableAsArray(emphasisAsPunctuation(endingParticle))),
+        new Output(
+          nullableAsArray(
+            emphasisAsPunctuation(
+              endingParticle,
+              sentence.interrogative != null,
+            ),
+          ),
+        ),
       )
         .map(([clauses, punctuation]) => ({ clauses, punctuation })),
       Output.combine(engClauses, endingFiller)
         .map(([clauses, filler]) => ({
           clauses: [...clauses, ...nullableAsArray(filler)],
-          punctuation: sentence.punctuation,
+          punctuation,
         })),
     );
   }
