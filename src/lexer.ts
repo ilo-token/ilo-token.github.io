@@ -286,7 +286,7 @@ function longSpaceGlyph(): Parser<Token & { type: "long glyph space" }> {
       spaceLength,
     }));
 }
-function longGlyphStart(): Parser<
+function headedLongGlyphStart(): Parser<
   Token & { type: "headed long glyph start" }
 > {
   return longGlyphHead().skip(
@@ -295,14 +295,14 @@ function longGlyphStart(): Parser<
     .skip(spaces())
     .map((words) => ({ type: "headed long glyph start", words }));
 }
-function longGlyphEnd(): Parser<
+function headlessLongGlyphEnd(): Parser<
   Token & { type: "headless long glyph end" }
 > {
   return specificUcsurCharacter(END_OF_LONG_GLYPH, "end of long glyph")
     .skip(spaces())
     .map((_) => ({ type: "headless long glyph end" }));
 }
-function reverseLongGlyphStart(): Parser<
+function headlessLongGlyphStart(): Parser<
   Token & { type: "headless long glyph end" }
 > {
   return specificUcsurCharacter(
@@ -312,7 +312,7 @@ function reverseLongGlyphStart(): Parser<
     .skip(spaces())
     .map((_) => ({ type: "headless long glyph end" }));
 }
-function reverseLongGlyphEnd(): Parser<
+function headedLongGlyphEnd(): Parser<
   Token & { type: "headed long glyph start" }
 > {
   return specificUcsurCharacter(
@@ -338,7 +338,7 @@ function insideLongGlyph(): Parser<
 /** Parses a token. */
 export const TOKEN = cached(choiceOnlyOne(
   longSpaceGlyph(),
-  longGlyphStart(),
+  headedLongGlyphStart(),
   combinedGlyphs()
     .skip(spaces())
     .map((words) => ({ type: "combined glyphs", words }) as Token),
@@ -353,10 +353,10 @@ export const TOKEN = cached(choiceOnlyOne(
   punctuation().map((punctuation) =>
     ({ type: "punctuation", punctuation }) as Token
   ),
-  longGlyphEnd(),
-  reverseLongGlyphEnd(),
+  headlessLongGlyphEnd(),
+  headedLongGlyphEnd(),
+  headlessLongGlyphStart(),
   insideLongGlyph(),
-  reverseLongGlyphStart(),
   cartouches().map((words) =>
     ({ type: "proper word", words, kind: "cartouche" }) as Token
   ),
