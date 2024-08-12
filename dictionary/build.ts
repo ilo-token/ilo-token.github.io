@@ -81,6 +81,11 @@ function tag<T>(parser: TextParser<T>): TextParser<T> {
     .with(parser)
     .skip(lex(match(/\)/, "open parenthesis")));
 }
+function template<T>(parser: TextParser<T>): TextParser<T> {
+  return lex(match(/\[/, "open parenthesis"))
+    .with(parser)
+    .skip(lex(match(/\]/, "open parenthesis")));
+}
 function simpleUnit(kind: string): TextParser<string> {
   return word().skip(tag(keyword(kind)));
 }
@@ -263,8 +268,8 @@ function definition(): TextParser<Definition> {
     noun()
       .skip(semicolon())
       .map((noun) => ({ type: "noun", ...noun }) as Definition),
-    // TODO: add template here
     sequence(noun(), simpleUnit("prep"))
+      .skip(template(keyword("headword")))
       .skip(semicolon())
       .map(([noun, preposition]) =>
         ({
@@ -320,7 +325,17 @@ function definition(): TextParser<Definition> {
     adjective()
       .skip(semicolon())
       .map((adjective) => ({ type: "adjective", ...adjective }) as Definition),
-    // TODO: compound adjective here
+    sequence(
+      adjective(),
+      simpleUnit("c").filter((word) => word === "and").with(adjective()),
+    )
+      .filter(([first, second]) =>
+        first.adverb.length === 0 && second.adverb.length === 0
+      )
+      .skip(semicolon())
+      .map((adjective) =>
+        ({ type: "compound adjective", adjective }) as Definition
+      ),
     simpleUnit("adv")
       .skip(semicolon())
       .map((adverb) => ({ type: "adverb", adverb }) as Definition),

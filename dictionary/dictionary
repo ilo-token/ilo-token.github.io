@@ -265,7 +265,7 @@ kama:
 
   future(adj age);
 
-  become(linking v) [predicate n/adj];
+  become(linking v) [predicate];
   began(v) to(particle) [predicate v];
 
   arriving(n gerund);
