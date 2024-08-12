@@ -46,7 +46,7 @@ import {
 } from "./parser-lib.ts";
 import { describe, Token } from "./token.ts";
 import { DICTIONARY } from "dictionary/dictionary.ts";
-import { spaces, token } from "./lexer.ts";
+import { spaces, TOKEN } from "./lexer.ts";
 
 const CONTENT_WORD = new Set(
   Object
@@ -86,7 +86,7 @@ const TOKI_PONA_WORD = new Set(Object.keys(DICTIONARY));
 function specificToken<T extends Token["type"]>(
   type: T,
 ): Parser<Token & { type: T }> {
-  return token().map((token) => {
+  return TOKEN.map((token) => {
     if (token.type === type) {
       return token as Token & { type: T };
     } else {

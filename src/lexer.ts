@@ -338,31 +338,26 @@ function insideLongGlyph(): Parser<
     .map((words) => ({ type: "headed long glyph start", words }));
 }
 /** Parses a token. */
-function token_(): Parser<Token> {
-  return choiceOnlyOne(
-    punctuation().map((punctuation) =>
-      ({ type: "punctuation", punctuation }) as Token
-    ),
-    longSpaceGlyph(),
-    longGlyphStart(),
-    longGlyphEnd(),
-    reverseLongGlyphEnd(),
-    insideLongGlyph(),
-    reverseLongGlyphStart(),
-    cartouches().map((words) =>
-      ({ type: "proper word", words, kind: "cartouche" }) as Token
-    ),
-    properWords().map((words) =>
-      ({ type: "proper word", words, kind: "latin" }) as Token
-    ),
-    combinedGlyphs()
-      .skip(spaces())
-      .map((words) => ({ type: "combined glyphs", words }) as Token),
-    longWord(),
-    multipleA().map((count) => ({ type: "multiple a", count }) as Token),
-    word().map((word) => ({ type: "word", word })),
-  );
-}
-export function token(): Parser<Token> {
-  return lazy(token_);
-}
+export const TOKEN = choiceOnlyOne(
+  punctuation().map((punctuation) =>
+    ({ type: "punctuation", punctuation }) as Token
+  ),
+  longSpaceGlyph(),
+  longGlyphStart(),
+  longGlyphEnd(),
+  reverseLongGlyphEnd(),
+  insideLongGlyph(),
+  reverseLongGlyphStart(),
+  cartouches().map((words) =>
+    ({ type: "proper word", words, kind: "cartouche" }) as Token
+  ),
+  properWords().map((words) =>
+    ({ type: "proper word", words, kind: "latin" }) as Token
+  ),
+  combinedGlyphs()
+    .skip(spaces())
+    .map((words) => ({ type: "combined glyphs", words }) as Token),
+  longWord(),
+  multipleA().map((count) => ({ type: "multiple a", count }) as Token),
+  word().map((word) => ({ type: "word", word }) as Token),
+);
