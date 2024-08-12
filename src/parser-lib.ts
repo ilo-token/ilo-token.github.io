@@ -136,7 +136,6 @@ export function optionalAll<T>(parser: Parser<T>): Parser<null | T> {
   return choiceOnlyOne(parser, nothing());
 }
 /** Takes all parsers and applies them one after another. */
-// Typescript really struggles with inferring types when using this function
 export function sequence<T extends Array<unknown>>(
   ...sequence: { [I in keyof T]: Parser<T[I]> } & { length: T["length"] }
 ): Parser<T> {
