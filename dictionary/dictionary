@@ -560,6 +560,8 @@ lili:
   smallness(n);
   shortness(n);
 
+  slightly(adv);
+
 linja:
   long(adj size) flexible(adj material) thing(n);
   rope(n);
@@ -1140,6 +1142,8 @@ pona:
   useful(adj opinion);
   peaceful(adj opinion);
 
+  nicely(adv);
+
 pu:
   interact(v) with(prep) the(d article) `Toki Pona: The Language of Good`(adj qualifier) book(n singular);
 
@@ -1219,6 +1223,8 @@ sike:
 
   round(adj physical quality);
   repeating(adj qualifier);
+
+  repeatedly(adv);
 
 sin:
   new(adj age);
