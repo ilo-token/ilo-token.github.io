@@ -13,30 +13,32 @@ export type TokenTree =
     words: Array<string>;
   }
   | {
-    type: "long glyph";
-    before: Array<TokenTree>;
-    words: Array<string>;
-    after: Array<TokenTree>;
-  }
-  | {
     type: "long glyph space";
     words: Array<string>;
     spaceLength: number;
   }
   | {
-    type: "underline lon";
-    words: Array<TokenTree>;
+    type: "headed long glyph start";
+    words: Array<string>;
+  }
+  | {
+    type: "headless long glyph end";
+  }
+  | {
+    type: "headless long glyph start";
+  }
+  | {
+    type: "headed long glyph end";
+    words: Array<string>;
+  }
+  | {
+    type: "inside long glyph";
+    words: Array<string>;
   }
   | { type: "multiple a"; count: number }
   | { type: "long word"; word: string; length: number }
   | { type: "x ala x"; word: string }
   | { type: "proper word"; words: string; kind: "cartouche" | "latin" }
-  | {
-    type: "quotation";
-    tokenTree: Array<TokenTree>;
-    leftMark: string;
-    rightMark: string;
-  }
   | { type: "punctuation"; punctuation: string };
 /** Describes a token tree. Useful for error messages. */
 export function describe(tokenTree: TokenTree): string {
@@ -45,10 +47,14 @@ export function describe(tokenTree: TokenTree): string {
       return `"${tokenTree.word}"`;
     case "combined glyphs":
       return `combined glyphs "${tokenTree.words.join(" ")}"`;
-    case "long glyph":
     case "long glyph space":
-    case "underline lon":
+    case "headed long glyph start":
+    case "headless long glyph start":
       return "long glyph";
+    case "headless long glyph end":
+    case "headed long glyph end":
+    case "inside long glyph":
+      return "end of long glyph";
     case "multiple a":
       return `"${new Array(tokenTree.count).fill("a").join(" ")}"`;
     case "long word":
@@ -64,8 +70,6 @@ export function describe(tokenTree: TokenTree): string {
       }
       // this is unreachable
       // fallthrough
-    case "quotation":
-      return "quotation";
     case "punctuation":
       return "punctuation mark";
   }

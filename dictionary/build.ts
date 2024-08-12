@@ -12,10 +12,10 @@ import {
   all,
   choiceOnlyOne,
   eol,
-  match as rawMatch,
+  match,
   optionalAll,
   Parser,
-  sequence as rawSequence,
+  sequence,
 } from "../src/parser-lib.ts";
 import { OutputError } from "../src/output.ts";
 import { UnrecognizedError } from "../src/error.ts";
@@ -24,30 +24,16 @@ import { nullableAsArray, repeat } from "../src/misc.ts";
 const SOURCE = new URL("./dictionary", import.meta.url);
 const DESTINATION = new URL("./dictionary.ts", import.meta.url);
 
-type TextParser<T> = Parser<string, T>;
-
-function match(
-  regex: RegExp,
-  description: string,
-): TextParser<RegExpMatchArray> {
-  return rawMatch(regex, description, "EOL");
-}
-function sequence<T extends Array<unknown>>(
-  ...sequence: { [I in keyof T]: TextParser<T[I]> } & { length: T["length"] }
-): TextParser<T> {
-  // deno-lint-ignore no-explicit-any
-  return rawSequence<string, T>(...sequence as any);
-}
-function space(): TextParser<null> {
+function space(): Parser<null> {
   return all(
     choiceOnlyOne(match(/\s/, "space"), match(/#[^\n]*/, "comment")),
   )
     .map((_) => null);
 }
-function lex<T>(parser: TextParser<T>): TextParser<T> {
+function lex<T>(parser: Parser<T>): Parser<T> {
   return parser.skip(space());
 }
-function word(): TextParser<string> {
+function word(): Parser<string> {
   return all(
     choiceOnlyOne(
       match(/`([^`]*)`/, "quoted words").map(([_, words]) => words),
@@ -58,35 +44,35 @@ function word(): TextParser<string> {
     .map((word) => word.join("").replaceAll(/\s+/g, " ").trim())
     .filter((word) => word.length > 0);
 }
-function slash(): TextParser<null> {
+function slash(): Parser<null> {
   return lex(match(/\//, "slash")).map((_) => null);
 }
-function forms(): TextParser<Array<string>> {
+function forms(): Parser<Array<string>> {
   return sequence(word(), all(slash().with(word())))
     .map(([first, rest]) => [first, ...rest]);
 }
-function keyword<T extends string>(keyword: T): TextParser<T> {
+function keyword<T extends string>(keyword: T): Parser<T> {
   return lex(match(/[a-z]+/, keyword))
     .map(([keyword]) => keyword)
-    .filter((that) => that === keyword) as TextParser<T>;
+    .filter((that) => that === keyword) as Parser<T>;
 }
-function number(): TextParser<"singular" | "plural"> {
+function number(): Parser<"singular" | "plural"> {
   return choiceOnlyOne(keyword("singular"), keyword("plural"));
 }
-function optionalNumber(): TextParser<null | "singular" | "plural"> {
+function optionalNumber(): Parser<null | "singular" | "plural"> {
   return optionalAll(number());
 }
-function tag<T>(parser: TextParser<T>): TextParser<T> {
+function tag<T>(parser: Parser<T>): Parser<T> {
   return lex(match(/\(/, "open parenthesis"))
     .with(parser)
     .skip(lex(match(/\)/, "open parenthesis")));
 }
-function template<T>(parser: TextParser<T>): TextParser<T> {
+function template<T>(parser: Parser<T>): Parser<T> {
   return lex(match(/\[/, "open parenthesis"))
     .with(parser)
     .skip(lex(match(/\]/, "open parenthesis")));
 }
-function simpleUnit(kind: string): TextParser<string> {
+function simpleUnit(kind: string): Parser<string> {
   return word().skip(tag(keyword(kind)));
 }
 function conjugate(verb: string): {
@@ -136,7 +122,7 @@ function detectRepetition(
   }
   throw new OutputError(`${source} has no repetition pattern found`);
 }
-function nounOnly(): TextParser<
+function nounOnly(): Parser<
   { singular: null | string; plural: null | string; gerund: boolean }
 > {
   return sequence(
@@ -194,7 +180,7 @@ function nounOnly(): TextParser<
       return { singular, plural, gerund: gerund != null };
     });
 }
-function noun(): TextParser<Noun> {
+function noun(): Parser<Noun> {
   return sequence(all(determiner()), all(adjective()), nounOnly())
     .map(([determiner, adjective, noun]) => ({
       determiner,
@@ -202,7 +188,7 @@ function noun(): TextParser<Noun> {
       ...noun,
     }));
 }
-function determinerType(): TextParser<DeterminerType> {
+function determinerType(): Parser<DeterminerType> {
   return choiceOnlyOne(
     keyword("article"),
     keyword("demonstrative"),
@@ -213,7 +199,7 @@ function determinerType(): TextParser<DeterminerType> {
     keyword("negative"),
   );
 }
-function adjectiveKind(): TextParser<AdjectiveType> {
+function adjectiveKind(): Parser<AdjectiveType> {
   return choiceOnlyOne(
     keyword("opinion"),
     keyword("size"),
@@ -226,7 +212,7 @@ function adjectiveKind(): TextParser<AdjectiveType> {
     keyword("qualifier"),
   );
 }
-function determiner(): TextParser<Determiner> {
+function determiner(): Parser<Determiner> {
   return sequence(
     word(),
     optionalAll(slash().with(word())),
@@ -239,7 +225,7 @@ function determiner(): TextParser<Determiner> {
       number: number ?? "both",
     }));
 }
-function adjective(): TextParser<Adjective> {
+function adjective(): Parser<Adjective> {
   return sequence(
     all(simpleUnit("adv")),
     word(),
@@ -247,10 +233,10 @@ function adjective(): TextParser<Adjective> {
   )
     .map(([adverb, adjective, kind]) => ({ adverb, adjective, kind }));
 }
-function semicolon(): TextParser<null> {
+function semicolon(): Parser<null> {
   return lex(match(/;/, "semicolon")).map((_) => null);
 }
-function definition(): TextParser<Definition> {
+function definition(): Parser<Definition> {
   return choiceOnlyOne(
     forms().skip(tag(keyword("f")))
       .skip(semicolon())
@@ -404,10 +390,10 @@ function definition(): TextParser<Definition> {
       ),
   );
 }
-function singleWord(): TextParser<string> {
+function singleWord(): Parser<string> {
   return lex(match(/[a-z]+/, "word")).map(([word]) => word);
 }
-function head(): TextParser<Array<string>> {
+function head(): Parser<Array<string>> {
   return sequence(
     all(singleWord().skip(lex(match(/,/, "comma")))),
     singleWord(),
@@ -417,7 +403,7 @@ function head(): TextParser<Array<string>> {
 }
 const dictionary = space()
   .with(all(sequence(head(), all(definition()))))
-  .skip(eol("EOL"))
+  .skip(eol())
   .map((entries) => {
     const dictionary: Dictionary = {};
     for (const [words, definitions] of entries) {
@@ -441,7 +427,7 @@ export async function buildDictionary(): Promise<boolean> {
               .map(([definition]) => definition),
           ),
       ))
-      .skip(eol("EOL"))
+      .skip(eol())
       .parse(sourceText);
     for (const text of rawTexts.output[0]) {
       const errors = insideDefinitionParser.parse(text).errors;

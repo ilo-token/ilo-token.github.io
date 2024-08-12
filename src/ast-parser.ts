@@ -12,7 +12,6 @@ import {
   MultipleSentences,
   Phrase,
   Preposition,
-  Quotation,
   Sentence,
   SimpleHeadedWordUnit,
   SimpleWordUnit,
@@ -33,21 +32,21 @@ import {
   WORD_UNIT_RULES,
 } from "./filter.ts";
 import {
-  all,
   allAtLeastOnce,
   choice,
   choiceOnlyOne,
   count,
+  eol,
   lazy,
   many,
   manyAtLeastOnce,
   optional,
   Parser,
-  sequence as rawSequence,
+  sequence,
 } from "./parser-lib.ts";
 import { describe, TokenTree } from "./token-tree.ts";
-import { lex } from "./lexer.ts";
 import { DICTIONARY } from "dictionary/dictionary.ts";
+import { spaces, tokenTree } from "./lexer.ts";
 
 const CONTENT_WORD = new Set(
   Object
@@ -83,44 +82,11 @@ const PREVERB = new Set([
 ]);
 const TOKI_PONA_WORD = new Set(Object.keys(DICTIONARY));
 
-export type AstParser<T> = Parser<Array<TokenTree>, T>;
-
-/** Takes all parsers and applies them one after another. */
-// Had to redeclare this function, Typescript really struggles with inferring
-// types when using `sequence`.
-function sequence<T extends Array<unknown>>(
-  ...sequence: { [I in keyof T]: AstParser<T[I]> } & { length: T["length"] }
-): AstParser<T> {
-  // deno-lint-ignore no-explicit-any
-  return rawSequence<Array<TokenTree>, T>(...sequence as any);
-}
-/** Parses the end of line (or the end of sentence in context of Toki Pona) */
-function eol(description: string): AstParser<null> {
-  return new Parser((src) => {
-    if (src.length === 0) {
-      return new Output([{ value: null, rest: [] }]);
-    } else {
-      return new Output(
-        new UnexpectedError(describe(src[0]), description),
-      );
-    }
-  });
-}
-/** Parses a single token tree. */
-function tokenTree(description: string): AstParser<TokenTree> {
-  return new Parser((src) => {
-    if (src.length === 0) {
-      return new Output(new UnexpectedError("end of sentence", description));
-    } else {
-      return new Output([{ rest: src.slice(1), value: src[0] }]);
-    }
-  });
-}
 /** Parses a specific type of token tree. */
 function specificTokenTree<T extends TokenTree["type"]>(
   type: T,
-): AstParser<TokenTree & { type: T }> {
-  return tokenTree(type).map((tokenTree) => {
+): Parser<TokenTree & { type: T }> {
+  return tokenTree().map((tokenTree) => {
     if (tokenTree.type === type) {
       return tokenTree as TokenTree & { type: T };
     } else {
@@ -129,29 +95,29 @@ function specificTokenTree<T extends TokenTree["type"]>(
   });
 }
 /** Parses comma. */
-function comma(): AstParser<string> {
+function comma(): Parser<string> {
   return specificTokenTree("punctuation")
     .map(({ punctuation }) => punctuation)
     .filter((punctuation) => punctuation === ",");
 }
 /** Parses an optional comma. */
-function optionalComma(): AstParser<null | string> {
+function optionalComma(): Parser<null | string> {
   return optional(comma());
 }
 /** Parses a toki pona word. */
-function word(): AstParser<string> {
+function word(): Parser<string> {
   return specificTokenTree("word").map(({ word }) => word);
 }
 /** Parses proper words spanning multiple words. */
-function properWords(): AstParser<string> {
+function properWords(): Parser<string> {
   return specificTokenTree("proper word").map(({ words }) => words);
 }
 /** Parses a toki pona */
-function punctuation(): AstParser<string> {
+function punctuation(): Parser<string> {
   return specificTokenTree("punctuation").map(({ punctuation }) => punctuation);
 }
 /** Parses word only from `set`. */
-function wordFrom(set: Set<string>, description: string): AstParser<string> {
+function wordFrom(set: Set<string>, description: string): Parser<string> {
   return word().filter((word) => {
     if (set.has(word)) {
       return true;
@@ -161,14 +127,14 @@ function wordFrom(set: Set<string>, description: string): AstParser<string> {
   });
 }
 /** Parses a specific word. */
-function specificWord(thatWord: string): AstParser<string> {
+function specificWord(thatWord: string): Parser<string> {
   return word().filter((thisWord) => {
     if (thatWord === thisWord) return true;
     else throw new UnexpectedError(`"${thisWord}"`, `"${thatWord}"`);
   });
 }
 /** Parses an emphasis particle. */
-function emphasis(): AstParser<Emphasis> {
+function emphasis(): Parser<Emphasis> {
   return choice(
     specificTokenTree("long glyph space").map((longGlyph) => {
       if (longGlyph.words.length !== 1) {
@@ -197,50 +163,42 @@ function emphasis(): AstParser<Emphasis> {
       .map((word) => ({ type: "word", word }) as Emphasis),
   );
 }
-function optionalEmphasis(): AstParser<null | Emphasis> {
+function optionalEmphasis(): Parser<null | Emphasis> {
   return optional(emphasis());
-}
-/** Parses a side of long X ala X construction. */
-function parseXAlaXSide(tokenTrees: Array<TokenTree>, name: string): TokenTree {
-  if (tokenTrees.length !== 1) {
-    if (tokenTrees.length === 0) {
-      throw new UnexpectedError(name, "long glyph on both sides");
-    } else {
-      throw new UnexpectedError(
-        describe(tokenTrees[0]),
-        "end of long glyph",
-      );
-    }
-  }
-  return tokenTrees[0];
 }
 /** Parses an X ala X construction. */
 function xAlaX(
   word: Set<string>,
   description: string,
-): AstParser<SimpleWordUnit & { type: "x ala x" }> {
+): Parser<SimpleWordUnit & { type: "x ala x" }> {
   return choice(
-    specificTokenTree("long glyph").map((longGlyph) => {
-      if (longGlyph.words.length !== 1) {
-        throw new UnexpectedError(
-          describe({ type: "combined glyphs", words: longGlyph.words }),
-          '"ala"',
-        );
-      }
-      if (longGlyph.words[0] !== "ala") {
-        throw new UnexpectedError(`"${longGlyph.words[0]}"`, '"ala"');
-      }
-      const leftGlyph = parseXAlaXSide(longGlyph.before, "backward long glyph");
-      if (leftGlyph.type !== "word") {
-        throw new UnexpectedError(describe(leftGlyph), "word");
-      }
-      const { word } = leftGlyph;
-      const rightGlyph = parseXAlaXSide(longGlyph.after, "forward long glyph");
-      if (rightGlyph.type !== "word" || rightGlyph.word !== word) {
-        throw new UnexpectedError(describe(rightGlyph), `"${word}"`);
-      }
-      return { type: "x ala x", word } as WordUnit & { type: "x ala x" };
-    }),
+    sequence(
+      specificTokenTree("headless long glyph start"),
+      wordFrom(CONTENT_WORD, "content word"),
+      specificTokenTree("inside long glyph").filter((words) => {
+        if (words.words.length !== 1) {
+          throw new UnexpectedError(
+            describe({ type: "combined glyphs", words: words.words }),
+            '"ala"',
+          );
+        }
+        if (words.words[0] !== "ala") {
+          throw new UnexpectedError(`"${words.words[0]}"`, '"ala"');
+        }
+        return true;
+      }),
+      wordFrom(CONTENT_WORD, "content word"),
+      specificTokenTree("headless long glyph end"),
+    )
+      .map(([_, left, _1, right]) => {
+        if (left !== right) {
+          throw new UnexpectedError(`${right}`, `"${left}"`);
+        } else {
+          return { type: "x ala x", word: left } as WordUnit & {
+            type: "x ala x";
+          };
+        }
+      }),
     specificTokenTree("x ala x")
       .map(({ word }) =>
         ({ type: "x ala x", word }) as WordUnit & { type: "x ala x" }
@@ -255,7 +213,7 @@ function xAlaX(
 function simpleWordUnit(
   word: Set<string>,
   description: string,
-): AstParser<SimpleHeadedWordUnit> {
+): Parser<SimpleHeadedWordUnit> {
   return choice(
     sequence(
       wordFrom(word, description)
@@ -280,7 +238,7 @@ function simpleWordUnit(
 function wordUnit(
   word: Set<string>,
   description: string,
-): AstParser<HeadedWordUnit> {
+): Parser<HeadedWordUnit> {
   return sequence(
     simpleWordUnit(word, description),
     optionalEmphasis(),
@@ -295,7 +253,7 @@ function wordUnit(
 function binaryWords(
   word: Set<string>,
   description: string,
-): AstParser<[string, string]> {
+): Parser<[string, string]> {
   return specificTokenTree("combined glyphs").map(({ words }) => {
     if (words.length > 2) {
       throw new UnrecognizedError(`combined glyphs of ${words.length} words`);
@@ -312,7 +270,7 @@ function binaryWords(
 function optionalCombined(
   word: Set<string>,
   description: string,
-): AstParser<[WordUnit, Array<Modifier>]> {
+): Parser<[WordUnit, Array<Modifier>]> {
   return choice(
     wordUnit(word, description)
       .map((wordUnit) => [wordUnit, []] as [WordUnit, Array<Modifier>]),
@@ -336,7 +294,7 @@ function wordToNumber(word: string): number {
 /** Parses number words in order other than "ale" and "ala". This can parse
  * nothing and return 0.
  */
-function subAleNumber(): AstParser<number> {
+function subAleNumber(): Parser<number> {
   return sequence(
     many(specificWord("mute")),
     many(specificWord("luka")),
@@ -349,11 +307,11 @@ function subAleNumber(): AstParser<number> {
     );
 }
 /** Parses "ale" or "ali". */
-function ale(): AstParser<string> {
+function ale(): Parser<string> {
   return choice(specificWord("ale"), specificWord("ali"));
 }
 /** Parses number words including "nasin nanpa pona". */
-function number(): AstParser<number> {
+function number(): Parser<number> {
   return choice(
     specificWord("ala").map(() => 0),
     sequence(
@@ -380,38 +338,32 @@ function number(): AstParser<number> {
   );
 }
 /** Parses a "pi" construction. */
-function pi(): AstParser<Modifier & { type: "pi" }> {
+function pi(): Parser<Modifier & { type: "pi" }> {
   return choice(
-    specificTokenTree("long glyph").flatMapValue(
-      (longGlyph) => {
-        if (longGlyph.before.length > 0) {
-          return new Output(
-            new UnexpectedError("reverse long glyph", "long pi"),
+    sequence(
+      specificTokenTree("headed long glyph start").filter((words) => {
+        if (words.words.length !== 1) {
+          throw new UnexpectedError(
+            describe({ type: "combined glyphs", words: words.words }),
+            "pi",
           );
         }
-        if (longGlyph.words.length !== 1) {
-          return new Output(
-            new UnexpectedError(
-              describe({ type: "combined glyphs", words: longGlyph.words }),
-              "pi",
-            ),
-          );
+        if (words.words[0] !== "pi") {
+          throw new UnexpectedError(`"${words.words[0]}"`, "pi");
         }
-        if (longGlyph.words[0] !== "pi") {
-          return new Output(
-            new UnexpectedError(`"${longGlyph.words[0]}"`, "pi"),
-          );
-        }
-        return INNER_PHRASE_PARSER.parse(longGlyph.after);
-      },
-    ),
+        return true;
+      }),
+      phrase(),
+      specificTokenTree("headless long glyph end"),
+    )
+      .map(([_, phrase]) => phrase),
     specificWord("pi").with(phrase()),
   )
     .map((phrase) => ({ type: "pi", phrase }) as Modifier & { type: "pi" })
     .filter(filter(MODIFIER_RULES));
 }
 /** Parses multiple modifiers. */
-function modifiers(): AstParser<Array<Modifier>> {
+function modifiers(): Parser<Array<Modifier>> {
   return sequence(
     many(
       choice(
@@ -428,9 +380,6 @@ function modifiers(): AstParser<Array<Modifier>> {
           .filter(filter(MODIFIER_RULES)),
         properWords()
           .map((words) => ({ type: "proper words", words }) as Modifier)
-          .filter(filter(MODIFIER_RULES)),
-        quotation()
-          .map((quotation) => ({ type: "quotation", ...quotation }) as Modifier)
           .filter(filter(MODIFIER_RULES)),
       ),
     ),
@@ -451,10 +400,8 @@ function modifiers(): AstParser<Array<Modifier>> {
     ])
     .filter(filter(MULTIPLE_MODIFIERS_RULES));
 }
-/** Phrase parser intended for phrases inside long glyphs. */
-const INNER_PHRASE_PARSER = phrase_().skip(eol("end of long glyph"));
 /** Parses phrases. */
-function phrase_(): AstParser<Phrase> {
+function phrase_(): Parser<Phrase> {
   return choice(
     sequence(
       number(),
@@ -516,12 +463,10 @@ function phrase_(): AstParser<Phrase> {
           emphasis,
         }) as Phrase
       ),
-    quotation()
-      .map((quotation) => ({ ...quotation, type: "quotation" }) as Phrase),
   )
     .filter(filter(PHRASE_RULE));
 }
-function phrase(): AstParser<Phrase> {
+function phrase(): Parser<Phrase> {
   return lazy(phrase_);
 }
 /**
@@ -530,7 +475,7 @@ function phrase(): AstParser<Phrase> {
  */
 function nestedPhrasesOnly(
   nestingRule: Array<"en" | "li" | "o" | "e" | "anu">,
-): AstParser<MultiplePhrases> {
+): Parser<MultiplePhrases> {
   if (nestingRule.length === 0) {
     return phrase()
       .map((phrase) => ({ type: "single", phrase }) as MultiplePhrases);
@@ -559,7 +504,7 @@ function nestedPhrasesOnly(
 /** Parses nested phrases with given nesting rule. */
 function nestedPhrases(
   nestingRule: Array<"en" | "li" | "o" | "e" | "anu">,
-): AstParser<MultiplePhrases> {
+): Parser<MultiplePhrases> {
   if (nestingRule.length === 0) {
     return phrase()
       .map((phrase) => ({ type: "single", phrase }) as MultiplePhrases);
@@ -571,7 +516,7 @@ function nestedPhrases(
   }
 }
 /** Parses phrases separated by "en" or "anu". */
-function subjectPhrases(): AstParser<MultiplePhrases> {
+function subjectPhrases(): Parser<MultiplePhrases> {
   return choice(
     nestedPhrasesOnly(["en", "anu"]),
     nestedPhrasesOnly(["anu", "en"]),
@@ -579,11 +524,14 @@ function subjectPhrases(): AstParser<MultiplePhrases> {
   );
 }
 /** Parses prepositional phrase. */
-function preposition(): AstParser<Preposition> {
+function preposition(): Parser<Preposition> {
   return choice(
-    specificTokenTree("underline lon")
-      .flatMapValue((tokenTrees) => INNER_PHRASE_PARSER.parse(tokenTrees.words))
-      .map((phrase) =>
+    sequence(
+      specificTokenTree("headless long glyph start"),
+      phrase(),
+      specificTokenTree("headless long glyph end"),
+    )
+      .map(([_, phrase]) =>
         ({
           preposition: {
             type: "default",
@@ -595,39 +543,32 @@ function preposition(): AstParser<Preposition> {
           emphasis: null,
         }) as Preposition
       ),
-    specificTokenTree("long glyph").flatMapValue((tokenTrees) => {
-      if (tokenTrees.before.length > 0) {
-        return new Output(
-          new UnexpectedError("reverse long glyph", "forward long glyph"),
-        );
-      }
-      if (tokenTrees.words.length > 2) {
-        return new Output(
-          new UnrecognizedError(
-            `combined glyphs of ${tokenTrees.words.length} words`,
-          ),
-        );
-      }
-      const word = tokenTrees.words[0];
-      if (!PREPOSITION.has(word)) {
-        return new Output(
-          new UnrecognizedError(`"${word}" as preposition`),
-        );
-      }
-      const modifiers = tokenTrees.words
+    sequence(
+      specificTokenTree("headed long glyph start").map((words) => {
+        if (words.words.length > 2) {
+          throw new UnrecognizedError(
+            `combined glyphs of ${words.words.length} words`,
+          );
+        }
+        const word = words.words[0];
+        if (!PREPOSITION.has(word)) {
+          throw new UnrecognizedError(`"${word}" as preposition`);
+        }
+        return words.words;
+      }),
+      phrase(),
+      specificTokenTree("headless long glyph end"),
+    ).map(([words, phrase]) => {
+      const modifiers = words
         .slice(1)
         .map((word) =>
           ({ type: "default", word: { type: "default", word } }) as Modifier
         );
-      return INNER_PHRASE_PARSER
-        .parse(tokenTrees.after)
-        .map((phrase) =>
-          ({
-            preposition: { type: "default", word },
-            modifiers,
-            phrases: { type: "single", phrase },
-          }) as Preposition
-        );
+      return {
+        preposition: { type: "default", word: words[0] },
+        modifiers,
+        phrases: { type: "single", phrase },
+      } as Preposition;
     }),
     binaryWords(PREPOSITION, "preposition").map(([preposition, phrase]) =>
       ({
@@ -675,7 +616,7 @@ function preposition(): AstParser<Preposition> {
  */
 function associatedPredicates(
   nestingRule: Array<"li" | "o" | "anu">,
-): AstParser<MultiplePredicates> {
+): Parser<MultiplePredicates> {
   return sequence(
     nestedPhrasesOnly(nestingRule),
     optional(
@@ -699,7 +640,7 @@ function associatedPredicates(
 /** Parses multiple predicates without "li" nor "o" at the beginning. */
 function multiplePredicates(
   nestingRule: Array<"li" | "o" | "anu">,
-): AstParser<MultiplePredicates> {
+): Parser<MultiplePredicates> {
   if (nestingRule.length === 0) {
     return choice(
       associatedPredicates([]),
@@ -741,7 +682,7 @@ function multiplePredicates(
   }
 }
 /** Parses a single clause. */
-function clause(): AstParser<Clause> {
+function clause(): Parser<Clause> {
   return choice(
     sequence(
       wordFrom(new Set(["mi", "sina"]), "mi/sina subject"),
@@ -814,14 +755,11 @@ function clause(): AstParser<Clause> {
       .map(([subjects, predicates]) =>
         ({ type: "o clause", subjects, predicates }) as Clause
       ),
-    quotation().map((quotation) =>
-      ({ ...quotation, type: "quotation" }) as Clause
-    ),
   )
     .filter(filter(CLAUSE_RULE));
 }
 /** Parses a single clause including preclause and postclause. */
-function fullClause(): AstParser<FullClause> {
+function fullClause(): Parser<FullClause> {
   return choice(
     sequence(
       optional(emphasis().skip(optionalComma())),
@@ -852,7 +790,7 @@ function fullClause(): AstParser<FullClause> {
     .filter(filter(FULL_CLAUSE_RULE));
 }
 /** parses "la" with optional comma around. */
-function la(): AstParser<string> {
+function la(): Parser<string> {
   return choice(
     comma().with(specificWord("la")),
     specificWord("la").skip(comma()),
@@ -860,12 +798,12 @@ function la(): AstParser<string> {
   );
 }
 /** Parses a single full sentence with optional punctuations. */
-function sentence(): AstParser<Sentence> {
+function sentence(): Parser<Sentence> {
   return sequence(
     many(fullClause().skip(la())),
     fullClause(),
     choice(
-      eol("end of sentence").map(() => ""),
+      eol().map(() => ""),
       punctuation(),
     ),
   )
@@ -892,37 +830,23 @@ function sentence(): AstParser<Sentence> {
     })
     .filter(filter(SENTENCE_RULE));
 }
-/** Parses a sentence inside quotation. */
-const INNER_QUOTATION_PARSER = all(sentence())
-  .skip(eol("end of sentence"))
-  .filter(filter(MULTIPLE_SENTENCES_RULE));
-/** Parses a quotation. */
-export function quotation(): AstParser<Quotation> {
-  return specificTokenTree("quotation").flatMapValue((tokenTree) =>
-    INNER_QUOTATION_PARSER
-      .parse(tokenTree.tokenTree)
-      .map((value) =>
-        ({
-          sentences: value,
-          leftMark: tokenTree.leftMark,
-          rightMark: tokenTree.rightMark,
-        }) as Quotation
-      )
-  );
-}
 /** A multiple sentence parser for final parser. */
-const FULL_PARSER = choiceOnlyOne(
-  wordFrom(TOKI_PONA_WORD, "Toki Pona word")
-    .skip(eol("end of sentence"))
-    .map((word) => ({ type: "single word", word }) as MultipleSentences),
-  allAtLeastOnce(sentence())
-    .skip(eol("end of sentence"))
-    .filter(filter(MULTIPLE_SENTENCES_RULE))
-    .map((sentences) =>
-      ({ type: "sentences", sentences }) as MultipleSentences
-    ),
-);
+const FULL_PARSER = spaces()
+  .with(choiceOnlyOne(
+    wordFrom(TOKI_PONA_WORD, "Toki Pona word")
+      .skip(eol())
+      .map((word) => ({ type: "single word", word }) as MultipleSentences),
+    allAtLeastOnce(sentence())
+      .skip(eol())
+      .filter(filter(MULTIPLE_SENTENCES_RULE))
+      .map((sentences) =>
+        ({ type: "sentences", sentences }) as MultipleSentences
+      ),
+  ));
 /** Turns string into Toki Pona AST. */
 export function parse(src: string): Output<MultipleSentences> {
-  return lex(src).flatMap((src) => FULL_PARSER.parse(src));
+  if (/\n/.test(src.trim())) {
+    return new Output(new UnrecognizedError("multiline text"));
+  }
+  return FULL_PARSER.parse(src);
 }

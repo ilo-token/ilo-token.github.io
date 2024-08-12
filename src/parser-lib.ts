@@ -7,18 +7,18 @@ import { UnexpectedError } from "./error.ts";
 import { Output, OutputError } from "./output.ts";
 
 /** A single parsing result. */
-export type ValueRest<T, U> = { rest: T; value: U };
+export type ValueRest<T> = { rest: string; value: T };
 /** A special kind of Output that parsers returns. */
-export type ParserOutput<T, U> = Output<ValueRest<T, U>>;
+export type ParserOutput<T> = Output<ValueRest<T>>;
 
 /** Wrapper of parser function with added methods for convenience. */
-export class Parser<T, U> {
-  constructor(public readonly parser: (src: T) => ParserOutput<T, U>) {}
+export class Parser<T> {
+  constructor(public readonly parser: (src: string) => ParserOutput<T>) {}
   /**
    * Maps the parsing result. For convenience, the mapper function can throw
    * an OutputError; Other kinds of error are ignored.
    */
-  map<V>(mapper: (value: U) => V): Parser<T, V> {
+  map<U>(mapper: (value: T) => U): Parser<U> {
     return new Parser((src) =>
       this
         .parser(src)
@@ -26,7 +26,7 @@ export class Parser<T, U> {
     );
   }
   /** TODO better comment. */
-  flatMapValue<V>(mapper: (value: U) => Output<V>): Parser<T, V> {
+  flatMapValue<U>(mapper: (value: T) => Output<U>): Parser<U> {
     return new Parser((src) =>
       this
         .parser(src)
@@ -39,7 +39,7 @@ export class Parser<T, U> {
    * Filters outputs. Instead of returning false, OutputError must be thrown
    * instead.
    */
-  filter(mapper: (value: U) => boolean): Parser<T, U> {
+  filter(mapper: (value: T) => boolean): Parser<T> {
     return new Parser((src) =>
       this.parser(src).filter(({ value }) => mapper(value))
     );
@@ -48,45 +48,45 @@ export class Parser<T, U> {
    * Parses `this` then passes the parsing result in the mapper. The resulting
    * parser is then also parsed.
    */
-  then<V>(mapper: (value: U) => Parser<T, V>): Parser<T, V> {
+  then<U>(mapper: (value: T) => Parser<U>): Parser<U> {
     return new Parser((src) =>
       this.parser(src).flatMap(({ value, rest }) => mapper(value).parser(rest))
     );
   }
-  sort(comparer: (left: U, right: U) => number): Parser<T, U> {
+  sort(comparer: (left: T, right: T) => number): Parser<T> {
     return new Parser((src) =>
       this.parser(src).sort((left, right) => comparer(left.value, right.value))
     );
   }
-  sortBy(mapper: (value: U) => number): Parser<T, U> {
+  sortBy(mapper: (value: T) => number): Parser<T> {
     return this.sort((left, right) => mapper(left) - mapper(right));
   }
   /** Takes another parser and discards the parsing result of `this`. */
-  with<V>(parser: Parser<T, V>): Parser<T, V> {
-    return sequence<T, [U, V]>(this, parser).map(([_, output]) => output);
+  with<U>(parser: Parser<U>): Parser<U> {
+    return sequence(this, parser).map(([_, output]) => output);
   }
   /** Takes another parser and discards its parsing result. */
-  skip<V>(parser: Parser<T, V>): Parser<T, U> {
-    return sequence<T, [U, V]>(this, parser).map(([output, _]) => output);
+  skip<U>(parser: Parser<U>): Parser<T> {
+    return sequence(this, parser).map(([output, _]) => output);
   }
-  parse(src: T): Output<U> {
+  parse(src: string): Output<T> {
     return this.parser(src).map(({ value }) => value);
   }
 }
 /** Parser that always outputs an error. */
-export function error<T>(error: OutputError): Parser<T, never> {
+export function error(error: OutputError): Parser<never> {
   return new Parser(() => new Output(error));
 }
 /** Parser that always outputs an empty output. */
-export function empty<T>(): Parser<T, never> {
+export function empty(): Parser<never> {
   return new Parser(() => new Output());
 }
 /** Parses nothing and leaves the source string intact. */
-export function nothing<T>(): Parser<T, null> {
+export function nothing(): Parser<null> {
   return new Parser((src) => new Output([{ value: null, rest: src }]));
 }
 /** Parses without consuming the source string */
-export function lookAhead<T, U>(parser: Parser<T, U>): Parser<T, U> {
+export function lookAhead<T>(parser: Parser<T>): Parser<T> {
   return new Parser((src) =>
     parser.parser(src).map(({ value }) => ({ value, rest: src }))
   );
@@ -95,14 +95,14 @@ export function lookAhead<T, U>(parser: Parser<T, U>): Parser<T, U> {
  * Lazily evaluates the parser function only when needed. Useful for recursive
  * parsers.
  */
-export function lazy<T, U>(parser: () => Parser<T, U>): Parser<T, U> {
+export function lazy<T>(parser: () => Parser<T>): Parser<T> {
   return new Parser((src) => parser().parser(src));
 }
 /**
  * Evaluates all parsers on the same source string and sums it all on a single
  * Output.
  */
-export function choice<T, U>(...choices: Array<Parser<T, U>>): Parser<T, U> {
+export function choice<T>(...choices: Array<Parser<T>>): Parser<T> {
   return new Parser((src) =>
     new Output(choices).flatMap((parser) => parser.parser(src))
   );
@@ -111,9 +111,9 @@ export function choice<T, U>(...choices: Array<Parser<T, U>>): Parser<T, U> {
  * Tries to evaluate each parsers one at a time and only only use the output of
  * the parser that is successful.
  */
-export function choiceOnlyOne<T, U>(
-  ...choices: Array<Parser<T, U>>
-): Parser<T, U> {
+export function choiceOnlyOne<T>(
+  ...choices: Array<Parser<T>>
+): Parser<T> {
   return choices.reduceRight((newParser, parser) =>
     new Parser((src) => {
       const output = parser.parser(src);
@@ -125,30 +125,29 @@ export function choiceOnlyOne<T, U>(
     }), empty());
 }
 /** Combines `parser` and the `nothing` parser, and output `null | T`. */
-export function optional<T, U>(parser: Parser<T, U>): Parser<T, null | U> {
+export function optional<T>(parser: Parser<T>): Parser<null | T> {
   return choice(parser, nothing());
 }
 /**
  * Like `optional` but when the parser is successful, it doesn't consider
  * parsing nothing.
  */
-export function optionalAll<T, U>(parser: Parser<T, U>): Parser<T, null | U> {
+export function optionalAll<T>(parser: Parser<T>): Parser<null | T> {
   return choiceOnlyOne(parser, nothing());
 }
 /** Takes all parsers and applies them one after another. */
 // Typescript really struggles with inferring types when using this function
-export function sequence<T, U extends Array<unknown>>(
-  ...sequence: { [I in keyof U]: Parser<T, U[I]> } & { length: U["length"] }
-): Parser<T, U> {
+export function sequence<T extends Array<unknown>>(
+  ...sequence: { [I in keyof T]: Parser<T[I]> } & { length: T["length"] }
+): Parser<T> {
   // We resorted to using `any` types here, make sure it works properly
-  // deno-lint-ignore no-explicit-any
-  return sequence.reduceRight((newParser: any, parser) =>
+  return sequence.reduceRight(
     // deno-lint-ignore no-explicit-any
-    parser.then((value: any) =>
-      // deno-lint-ignore no-explicit-any
-      newParser.map((newValue: any) => [value, ...newValue] as any)
-      // deno-lint-ignore no-explicit-any
-    ), nothing().map(() => [] as any));
+    (newParser: Parser<any>, parser) =>
+      parser.then((value) => newParser.map((newValue) => [value, ...newValue])),
+    nothing().map(() => []),
+    // deno-lint-ignore no-explicit-any
+  ) as Parser<any>;
 }
 /**
  * Parses `parser` multiple times and returns an `Array<T>`. The resulting
@@ -159,11 +158,11 @@ export function sequence<T, U extends Array<unknown>>(
  *
  * Will cause infinite recursion if the parser can parse nothing.
  */
-export function many<T, U>(parser: Parser<T, U>): Parser<T, Array<U>> {
-  return choice<T, Array<U>>(
-    sequence<T, [U, Array<U>]>(parser, lazy(() => many(parser)))
+export function many<T>(parser: Parser<T>): Parser<Array<T>> {
+  return choice(
+    sequence(parser, lazy(() => many(parser)))
       .map(([first, rest]) => [first, ...rest]),
-    nothing<T>().map(() => []),
+    nothing().map(() => []),
   );
 }
 /**
@@ -173,10 +172,8 @@ export function many<T, U>(parser: Parser<T, U>): Parser<T, Array<U>> {
  *
  * Will cause infinite recursion if the parser can parse nothing.
  */
-export function manyAtLeastOnce<T, U>(
-  parser: Parser<T, U>,
-): Parser<T, Array<U>> {
-  return sequence<T, [U, Array<U>]>(parser, many(parser))
+export function manyAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
+  return sequence(parser, many(parser))
     .map(([first, rest]) => [first, ...rest]);
 }
 /**
@@ -187,11 +184,11 @@ export function manyAtLeastOnce<T, U>(
  *
  * Will cause infinite recursion if the parser can parse nothing.
  */
-export function all<T, U>(parser: Parser<T, U>): Parser<T, Array<U>> {
-  return choiceOnlyOne<T, Array<U>>(
-    sequence<T, [U, Array<U>]>(parser, lazy(() => all(parser)))
+export function all<T>(parser: Parser<T>): Parser<Array<T>> {
+  return choiceOnlyOne(
+    sequence(parser, lazy(() => all(parser)))
       .map(([first, rest]) => [first, ...rest]),
-    nothing<T>().map(() => []),
+    nothing().map(() => []),
   );
 }
 /**
@@ -201,13 +198,11 @@ export function all<T, U>(parser: Parser<T, U>): Parser<T, Array<U>> {
  *
  * Will cause infinite recursion if the parser can parse nothing.
  */
-export function allAtLeastOnce<T, U>(
-  parser: Parser<T, U>,
-): Parser<T, Array<U>> {
-  return sequence<T, [U, Array<U>]>(parser, all(parser))
+export function allAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
+  return sequence(parser, all(parser))
     .map(([first, rest]) => [first, ...rest]);
 }
-export function count<T, U>(parser: Parser<T, Array<U>>): Parser<T, number> {
+export function count<T>(parser: Parser<Array<T>>): Parser<number> {
   return parser.map((array) => array.length);
 }
 /**
@@ -217,15 +212,14 @@ export function count<T, U>(parser: Parser<T, Array<U>>): Parser<T, number> {
 export function match(
   regex: RegExp,
   description: string,
-  eolDescription: string,
-): Parser<string, RegExpMatchArray> {
+): Parser<RegExpMatchArray> {
   const newRegex = new RegExp(`^${regex.source}`, regex.flags);
   return new Parser((src) => {
     const match = src.match(newRegex);
     if (match != null) {
       return new Output([{ value: match, rest: src.slice(match[0].length) }]);
     } else if (src === "") {
-      return new Output(new UnexpectedError(eolDescription, description));
+      return new Output(new UnexpectedError("end of text", description));
     } else {
       const token = src.match(/[^\s]*/)![0];
       let tokenDescription: string;
@@ -239,9 +233,9 @@ export function match(
   });
 }
 /** Parses the end of line (or the end of sentence in context of Toki Pona) */
-export function eol(eolDescription: string): Parser<string, null> {
+export function eol(description = "end of text"): Parser<null> {
   return new Parser((src) => {
     if (src === "") return new Output([{ value: null, rest: "" }]);
-    else return new Output(new UnexpectedError(`"${src}"`, eolDescription));
+    else return new Output(new UnexpectedError(`"${src}"`, description));
   });
 }

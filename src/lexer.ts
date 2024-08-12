@@ -9,16 +9,14 @@
 import { Output } from "./output.ts";
 import { UnexpectedError, UnrecognizedError } from "./error.ts";
 import {
-  all,
   allAtLeastOnce,
   choiceOnlyOne,
   count,
   empty,
-  eol,
-  match as rawMatch,
+  match,
   optionalAll,
   Parser,
-  sequence as rawSequence,
+  sequence,
 } from "./parser-lib.ts";
 import { TokenTree } from "./token-tree.ts";
 import { settings } from "./settings.ts";
@@ -34,33 +32,12 @@ import {
   UCSUR_TO_LATIN,
 } from "./ucsur.ts";
 
-type Lexer<T> = Parser<string, T>;
-
-/** Takes all parser and applies them one after another. */
-// Had to redeclare this function, Typescript really struggles with inferring
-// types when using `sequence`.
-function sequence<T extends Array<unknown>>(
-  ...sequence: { [I in keyof T]: Lexer<T[I]> } & { length: T["length"] }
-): Lexer<T> {
-  // deno-lint-ignore no-explicit-any
-  return rawSequence<string, T>(...sequence as any);
-}
-/**
- * Uses Regular Expression to create parser. The parser outputs
- * RegExpMatchArray, which is what `string.match( ... )` returns.
- */
-function match(
-  regex: RegExp,
-  description: string,
-): Lexer<RegExpMatchArray> {
-  return rawMatch(regex, description, "end of sentence");
-}
 /** parses space. */
-function spaces(): Lexer<string> {
+export function spaces(): Parser<string> {
   return match(/\s*/, "space").map(([space]) => space);
 }
 /** parses a string of consistent length. */
-function slice(length: number, description: string): Lexer<string> {
+function slice(length: number, description: string): Parser<string> {
   return new Parser((src) => {
     if (src.length < length) {
       return new Output(new UnexpectedError(src, description));
@@ -73,7 +50,7 @@ function slice(length: number, description: string): Lexer<string> {
   });
 }
 /** Parses a string that exactly matches the given string. */
-function matchString(match: string): Lexer<string> {
+function matchString(match: string): Parser<string> {
   return slice(match.length, `"${match}"`).map((slice) => {
     if (slice === match) {
       return match;
@@ -83,7 +60,7 @@ function matchString(match: string): Lexer<string> {
   });
 }
 /** Parses lowercase latin word. */
-function latinWord(): Lexer<string> {
+function latinWord(): Parser<string> {
   return match(/([a-z][a-zA-Z]*)\s*/, "word").map(([_, word]) => {
     if (/[A-Z]/.test(word)) {
       throw new UnrecognizedError(`"${word}"`);
@@ -93,7 +70,7 @@ function latinWord(): Lexer<string> {
   });
 }
 /** Parses variation selector. */
-function variationSelector(): Lexer<string> {
+function variationSelector(): Parser<string> {
   return match(/[\uFE00-\uFE0F]/, "variation selector")
     .map(([character]) => character);
 }
@@ -101,7 +78,7 @@ function variationSelector(): Lexer<string> {
  * Parses an UCSUR character, this doesn't parse space and so must be manually
  * added if needed.
  */
-function ucsur(): Lexer<string> {
+function ucsur(): Parser<string> {
   return slice(2, "UCSUR character");
 }
 /**
@@ -111,7 +88,7 @@ function ucsur(): Lexer<string> {
 function specificUcsurCharacter(
   character: string,
   description: string,
-): Lexer<string> {
+): Parser<string> {
   return ucsur().filter((word) => {
     if (word === character) {
       return true;
@@ -124,7 +101,7 @@ function specificUcsurCharacter(
  * Parses UCSUR word, this doesn't parse space and so must be manually added if
  * needed
  */
-function ucsurWord(): Lexer<string> {
+function ucsurWord(): Parser<string> {
   return ucsur().map((word) => {
     const latin = UCSUR_TO_LATIN[word];
     if (latin == null) {
@@ -135,11 +112,11 @@ function ucsurWord(): Lexer<string> {
   });
 }
 /** Parses a single UCSUR word. */
-function singleUcsurWord(): Lexer<string> {
+function singleUcsurWord(): Parser<string> {
   return ucsurWord().skip(optionalAll(variationSelector())).skip(spaces());
 }
 /** Parses a joiner. */
-function joiner(): Lexer<string> {
+function joiner(): Parser<string> {
   return choiceOnlyOne(
     match(/\u200D/, "zero width joiner").map(([_, joiner]) => joiner),
     specificUcsurCharacter(STACKING_JOINER, "stacking joiner"),
@@ -150,7 +127,7 @@ function joiner(): Lexer<string> {
  * Parses combined glyphs. The spaces after aren't parsed and so must be
  * manually added by the caller.
  */
-function combinedGlyphs(): Lexer<Array<string>> {
+function combinedGlyphs(): Parser<Array<string>> {
   return sequence(
     ucsurWord(),
     allAtLeastOnce(
@@ -160,30 +137,30 @@ function combinedGlyphs(): Lexer<Array<string>> {
     .map(([first, rest]) => [first, ...rest]);
 }
 /** Parses a word, either UCSUR or latin. */
-function word(): Lexer<string> {
+function word(): Parser<string> {
   return choiceOnlyOne(singleUcsurWord(), latinWord());
 }
 /** Parses proper words spanning multiple words. */
-function properWords(): Lexer<string> {
+function properWords(): Parser<string> {
   return allAtLeastOnce(
     match(/([A-Z][a-zA-Z]*)\s*/, "proper word").map(([_, word]) => word),
   )
     .map((array) => array.join(" "));
 }
 /** Parses a specific word, either UCSUR or latin. */
-function specificWord(thatWord: string): Lexer<string> {
+function specificWord(thatWord: string): Parser<string> {
   return word().filter((thisWord) => {
     if (thatWord === thisWord) return true;
     else throw new UnexpectedError(`"${thisWord}"`, `"${thatWord}"`);
   });
 }
 /** Parses multiple a. */
-function multipleA(): Lexer<number> {
+function multipleA(): Parser<number> {
   return sequence(specificWord("a"), allAtLeastOnce(specificWord("a")))
     .map(([a, as]) => [a, ...as].length);
 }
 /** Parses lengthened words. */
-function longWord(): Lexer<TokenTree & { type: "long word" }> {
+function longWord(): Parser<TokenTree & { type: "long word" }> {
   return match(/[an]/, 'long "a" or "n"')
     .then(([word, _]) =>
       count(allAtLeastOnce(matchString(word)))
@@ -198,26 +175,18 @@ function longWord(): Lexer<TokenTree & { type: "long word" }> {
     .skip(spaces());
 }
 /** Parses X ala X constructions. */
-function xAlaX(): Lexer<string> {
+function xAlaX(): Parser<string> {
   return word().then((word) =>
     sequence(specificWord("ala"), specificWord(word)).map(() => word)
   );
 }
-/** Parses opening quotation mark */
-function openQuotationMark(): Lexer<string> {
-  return match(/(["“«「])\s*/, "open quotation mark").map(([_, mark]) => mark);
-}
-/** Parses closing quotation mark */
-function closeQuotationMark(): Lexer<string> {
-  return match(/(["”»」])\s*/, "close quotation mark").map(([_, mark]) => mark);
-}
 /** Parses a punctuation. */
-function punctuation(): Lexer<string> {
+function punctuation(): Parser<string> {
   return match(/([.,:;?!󱦜󱦝])\s*/u, "punctuation")
     .map(([_, punctuation]) => punctuation);
 }
 /** Parses cartouche element and returns the phonemes or letters it represents. */
-function cartoucheElement(): Lexer<string> {
+function cartoucheElement(): Parser<string> {
   return choiceOnlyOne(
     singleUcsurWord()
       .skip(
@@ -248,7 +217,7 @@ function cartoucheElement(): Lexer<string> {
   );
 }
 /** Parses a single cartouche. */
-function cartouche(): Lexer<string> {
+function cartouche(): Parser<string> {
   return sequence(
     specificUcsurCharacter(START_OF_CARTOUCHE, "start of cartouche")
       .skip(spaces()),
@@ -261,39 +230,8 @@ function cartouche(): Lexer<string> {
     });
 }
 /** Parses multiple cartouches. */
-function cartouches(): Lexer<string> {
+function cartouches(): Parser<string> {
   return allAtLeastOnce(cartouche()).map((words) => words.join(" "));
-}
-/** Parses quotation. */
-function quotation(
-  allowLongGlyph: boolean,
-): Lexer<TokenTree & { type: "quotation" }> {
-  return sequence(
-    openQuotationMark(),
-    tokenTrees({ allowQuotation: false, allowLongGlyph }),
-    closeQuotationMark(),
-  )
-    .map(([leftMark, tokenTree, rightMark]) => {
-      switch (leftMark) {
-        case '"':
-        case "“":
-          if (rightMark !== '"' && rightMark !== "”") {
-            throw new UnrecognizedError("Mismatched quotation marks");
-          }
-          break;
-        case "«":
-          if (rightMark !== "»") {
-            throw new UnrecognizedError("Mismatched quotation marks");
-          }
-          break;
-        case "「":
-          if (rightMark !== "」") {
-            throw new UnrecognizedError("Mismatched quotation marks");
-          }
-          break;
-      }
-      return { type: "quotation", tokenTree, leftMark, rightMark };
-    });
 }
 /**
  * Parses long glyph container.
@@ -304,8 +242,8 @@ function quotation(
 function longContainer<T>(
   left: string,
   right: string,
-  inside: Lexer<T>,
-): Lexer<T> {
+  inside: Parser<T>,
+): Parser<T> {
   const description: { [character: string]: string } = {
     [START_OF_LONG_GLYPH]: "start of long glyph",
     [END_OF_LONG_GLYPH]: "end of long glyph",
@@ -319,22 +257,8 @@ function longContainer<T>(
   )
     .map(([_, inside, _1]) => inside);
 }
-/** Parses long glyph container containing words. */
-function longCharacterContainer(
-  allowQuotation: boolean,
-  left: string,
-  right: string,
-): Lexer<Array<TokenTree>> {
-  return longContainer(
-    left,
-    right,
-    spaces().with(
-      allAtLeastOnce(tokenTree({ allowQuotation, allowLongGlyph: false })),
-    ),
-  );
-}
 /** Parses long glyph container containing just spaces. */
-function longSpaceContainer(): Lexer<number> {
+function longSpaceContainer(): Parser<number> {
   return longContainer(
     START_OF_LONG_GLYPH,
     END_OF_LONG_GLYPH,
@@ -348,46 +272,14 @@ function longSpaceContainer(): Lexer<number> {
  * This doesn't parses space on the right and so must be manually added by the
  * caller if needed.
  */
-function longGlyphHead(): Lexer<Array<string>> {
+function longGlyphHead(): Parser<Array<string>> {
   return choiceOnlyOne(
     combinedGlyphs(),
     ucsurWord().map((word) => [word]),
   );
 }
-/** Parses long glyph that contains characters. */
-function characterLongGlyph(
-  allowQuotation: boolean,
-): Lexer<TokenTree & { type: "long glyph" }> {
-  return sequence(
-    optionalAll(
-      longCharacterContainer(
-        allowQuotation,
-        START_OF_REVERSE_LONG_GLYPH,
-        END_OF_REVERSE_LONG_GLYPH,
-      ),
-    )
-      .map((array) => array ?? []),
-    longGlyphHead(),
-    optionalAll(
-      longCharacterContainer(
-        allowQuotation,
-        START_OF_LONG_GLYPH,
-        END_OF_LONG_GLYPH,
-      ),
-    )
-      .map((array) => array ?? []),
-  )
-    .skip(spaces())
-    .filter(([before, _, after]) => before.length > 0 || after.length > 0)
-    .map(([before, words, after]) => ({
-      type: "long glyph",
-      before,
-      words,
-      after,
-    }));
-}
 /** Parses long glyph that only contains spaces. */
-function longSpaceGlyph(): Lexer<TokenTree & { type: "long glyph space" }> {
+function longSpaceGlyph(): Parser<TokenTree & { type: "long glyph space" }> {
   return sequence(longGlyphHead(), longSpaceContainer())
     .map(([words, spaceLength]) => ({
       type: "long glyph space",
@@ -395,42 +287,58 @@ function longSpaceGlyph(): Lexer<TokenTree & { type: "long glyph space" }> {
       spaceLength,
     }));
 }
-/** Parses underline lon. */
-function longLon(
-  allowQuotation: boolean,
-): Lexer<Array<TokenTree>> {
-  return longCharacterContainer(
-    allowQuotation,
-    START_OF_REVERSE_LONG_GLYPH,
-    END_OF_LONG_GLYPH,
+function longGlyphStart(): Parser<
+  TokenTree & { type: "headed long glyph start" }
+> {
+  return longGlyphHead().skip(
+    specificUcsurCharacter(START_OF_LONG_GLYPH, "start of long glyph"),
   )
-    .skip(spaces());
+    .skip(spaces())
+    .map((words) => ({ type: "headed long glyph start", words }));
 }
-/** Parses all kinds of long glyphs. */
-function longGlyph(allowQuotation: boolean): Lexer<TokenTree> {
-  return choiceOnlyOne(
-    characterLongGlyph(allowQuotation) as Lexer<TokenTree>,
-    longSpaceGlyph() as Lexer<TokenTree>,
-    longLon(allowQuotation).map((words) => ({ type: "underline lon", words })),
-  );
+function longGlyphEnd(): Parser<
+  TokenTree & { type: "headless long glyph end" }
+> {
+  return specificUcsurCharacter(END_OF_LONG_GLYPH, "end of long glyph")
+    .skip(spaces())
+    .map((_) => ({ type: "headless long glyph end" }));
+}
+function reverseLongGlyphStart(): Parser<
+  TokenTree & { type: "headless long glyph end" }
+> {
+  return specificUcsurCharacter(
+    START_OF_REVERSE_LONG_GLYPH,
+    "start of reverse long glyph",
+  )
+    .skip(spaces())
+    .map((_) => ({ type: "headless long glyph end" }));
+}
+function reverseLongGlyphEnd(): Parser<
+  TokenTree & { type: "headed long glyph start" }
+> {
+  return specificUcsurCharacter(
+    END_OF_REVERSE_LONG_GLYPH,
+    "end of reverse long glyph",
+  )
+    .with(longGlyphHead())
+    .skip(spaces())
+    .map((words) => ({ type: "headed long glyph start", words }));
+}
+function insideLongGlyph(): Parser<
+  TokenTree & { type: "headed long glyph start" }
+> {
+  return specificUcsurCharacter(
+    END_OF_REVERSE_LONG_GLYPH,
+    "end of reverse long glyph",
+  )
+    .with(longGlyphHead())
+    .skip(specificUcsurCharacter(START_OF_LONG_GLYPH, "start of long glyph"))
+    .skip(spaces())
+    .map((words) => ({ type: "headed long glyph start", words }));
 }
 /** Parses a token tree. */
-function tokenTree(
-  nestingSettings: { allowQuotation: boolean; allowLongGlyph: boolean },
-): Lexer<TokenTree> {
-  let quotationParser: Lexer<TokenTree>;
-  if (nestingSettings.allowQuotation) {
-    quotationParser = quotation(nestingSettings.allowLongGlyph);
-  } else {
-    quotationParser = empty();
-  }
-  let longGlyphParser: Lexer<TokenTree>;
-  if (nestingSettings.allowLongGlyph) {
-    longGlyphParser = longGlyph(nestingSettings.allowQuotation);
-  } else {
-    longGlyphParser = empty();
-  }
-  let xAlaXParser: Lexer<TokenTree>;
+export function tokenTree(): Parser<TokenTree> {
+  let xAlaXParser: Parser<TokenTree>;
   if (settings.get("x-ala-x-partial-parsing")) {
     xAlaXParser = empty();
   } else {
@@ -441,8 +349,12 @@ function tokenTree(
     punctuation().map((punctuation) =>
       ({ type: "punctuation", punctuation }) as TokenTree
     ),
-    quotationParser,
-    longGlyphParser,
+    longSpaceGlyph(),
+    longGlyphStart(),
+    longGlyphEnd(),
+    reverseLongGlyphEnd(),
+    insideLongGlyph(),
+    reverseLongGlyphStart(),
     cartouches().map((words) =>
       ({ type: "proper word", words, kind: "cartouche" }) as TokenTree
     ),
@@ -457,21 +369,4 @@ function tokenTree(
     xAlaXParser,
     word().map((word) => ({ type: "word", word })),
   );
-}
-/** Parses multiple token trees. */
-function tokenTrees(
-  nestingSettings: { allowQuotation: boolean; allowLongGlyph: boolean },
-): Lexer<Array<TokenTree>> {
-  return all(tokenTree(nestingSettings));
-}
-/** The final lexer. */
-const FULL_PARSER = spaces()
-  .with(tokenTrees({ allowQuotation: true, allowLongGlyph: true }))
-  .skip(eol("end of sentence"));
-/** Turns string into token trees. */
-export function lex(src: string): Output<Array<TokenTree>> {
-  if (/\n/.test(src.trim())) {
-    return new Output(new UnrecognizedError("multiline text"));
-  }
-  return FULL_PARSER.parse(src);
 }
