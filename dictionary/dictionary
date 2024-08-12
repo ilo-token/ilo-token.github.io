@@ -786,7 +786,51 @@ monsuta:
   danger(n);
 
 mu:
-  `(animal noise or communication, onomatopoeia)`(adhoc def);
+  bark(v);
+  cough(v);
+  roar(v);
+  hum(v);
+  quack(v);
+  hiss(v);
+  buzz(v);
+  growl(v);
+  yawn(v);
+  screech(v);
+  chirp(v);
+  gobble(v);
+  purr(v);
+  honk(v);
+  burp(v);
+  chomp(v);
+
+  bark(i);
+  cough(i);
+  roar(i);
+  hum(i);
+  ow(i);
+  quack(i);
+  hiss(i);
+  buzz(i);
+  growl(i);
+  yawn(i);
+  woof(i);
+  screech(i);
+  chirp(i);
+  hoot(i);
+  moo(i);
+  hiccup(i);
+  gobble(i);
+  purr(i);
+  baa(i);
+  honk(i);
+  tweet(i);
+  ouch(i);
+  meow(i);
+  burp(i);
+  chomp(i);
+  ribbit(i);
+  achoo(i);
+
 
 mun:
   moon(n singular);
