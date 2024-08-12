@@ -68,18 +68,17 @@ const PREPOSITION = new Set(
     )
     .map(([word]) => word),
 );
-// TODO: rely on dictionary instead
-const PREVERB = new Set([
-  "alasa",
-  "awen",
-  "kama",
-  "ken",
-  "lukin",
-  "open",
-  "pini",
-  "sona",
-  "wile",
-]);
+const PREVERB = new Set(
+  Object
+    .entries(DICTIONARY)
+    .filter(([_, definitions]) =>
+      definitions.some((definition) =>
+        definition.type === "preverb as finitive verb" ||
+        definition.type === "preverb as linking verb"
+      )
+    )
+    .map(([word]) => word),
+);
 const TOKI_PONA_WORD = new Set(Object.keys(DICTIONARY));
 
 /** Parses a specific type of token. */
