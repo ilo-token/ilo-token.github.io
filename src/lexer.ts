@@ -356,5 +356,6 @@ export const TOKEN = choiceOnlyOne(
     .map((words) => ({ type: "combined glyphs", words }) as Token),
   longWord(),
   multipleA().map((count) => ({ type: "multiple a", count }) as Token),
+  xAlaX().map(word => ({type: "x ala x", word}) as Token),
   word().map((word) => ({ type: "word", word }) as Token),
 );
