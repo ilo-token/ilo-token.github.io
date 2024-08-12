@@ -12,15 +12,12 @@ import {
   allAtLeastOnce,
   choiceOnlyOne,
   count,
-  empty,
-  lazy,
   match,
   optionalAll,
   Parser,
   sequence,
 } from "./parser-lib.ts";
 import { Token } from "./token.ts";
-import { settings } from "./settings.ts";
 import {
   END_OF_CARTOUCHE,
   END_OF_LONG_GLYPH,
