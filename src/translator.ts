@@ -199,28 +199,33 @@ function emphasisAsPunctuation(
 }
 function interjection(clause: TokiPona.Clause): Output<English.Clause> {
   let interjection: Output<English.Clause> = new Output();
-  if (
-    clause.type === "phrases" &&
-    clause.phrases.type === "single"
-  ) {
+  if (clause.type === "phrases" && clause.phrases.type === "single") {
     const phrase = clause.phrases.phrase;
-    if (
-      phrase.type === "default" &&
-      phrase.modifiers.length === 0 &&
-      phrase.headWord.type === "default" &&
-      phrase.headWord.emphasis == null
-    ) {
-      interjection = new Output(DICTIONARY[phrase.headWord.word])
-        .filterMap((definition) => {
-          if (definition.type === "interjection") {
-            return definition.interjection;
-          } else {
-            return null;
-          }
-        })
-        .map((interjection) =>
-          ({ type: "interjection", interjection }) as English.Clause
-        );
+    if (phrase.type === "default" && phrase.modifiers.length === 0) {
+      const headWord = phrase.headWord;
+      if (
+        (headWord.type === "default" || headWord.type === "reduplication") &&
+        headWord.emphasis == null
+      ) {
+        interjection = new Output(DICTIONARY[headWord.word])
+          .filterMap((definition) => {
+            if (definition.type === "interjection") {
+              switch (headWord.type) {
+                case "default":
+                  return definition.interjection;
+                case "reduplication":
+                  return new Array(headWord.count)
+                    .fill(definition.interjection)
+                    .join(" ");
+              }
+            } else {
+              return null;
+            }
+          })
+          .map((interjection) =>
+            ({ type: "interjection", interjection }) as English.Clause
+          );
+      }
     }
   }
   return interjection;
