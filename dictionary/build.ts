@@ -19,7 +19,7 @@ import {
 } from "../src/parser-lib.ts";
 import { OutputError } from "../src/output.ts";
 import { UnrecognizedError } from "../src/error.ts";
-import { repeat } from "../src/misc.ts";
+import { nullableAsArray, repeat } from "../src/misc.ts";
 
 const SOURCE = new URL("./dictionary", import.meta.url);
 const DESTINATION = new URL("./dictionary.ts", import.meta.url);
@@ -339,8 +339,59 @@ function definition(): TextParser<Definition> {
     simpleUnit("adv")
       .skip(semicolon())
       .map((adverb) => ({ type: "adverb", adverb }) as Definition),
-    // TODO: verb here
-    // TODO: preverb here
+    sequence(
+      simpleUnit("v"),
+      optionalAll(template(keyword("object"))),
+      optionalAll(
+        sequence(simpleUnit("prep"), noun())
+          .map(([preposition, object]) => ({ preposition, object })),
+      )
+        .map(nullableAsArray),
+    )
+      .skip(semicolon())
+      .map(([verb, forObject, indirectObject]) =>
+        ({
+          type: "verb",
+          ...conjugate(verb),
+          directObject: null,
+          indirectObject,
+          forObject: forObject != null,
+        }) as Definition
+      ),
+    sequence(
+      simpleUnit("v"),
+      optionalAll(noun()),
+      optionalAll(simpleUnit("prep").skip(template(keyword("object")))),
+    )
+      .skip(semicolon())
+      .map(([verb, directObject, preposition]) =>
+        ({
+          type: "verb",
+          ...conjugate(verb),
+          directObject,
+          indirectObject: [],
+          forObject: preposition ?? false,
+        }) as Definition
+      ),
+    sequence(simpleUnit("v"), optionalAll(simpleUnit("particle")))
+      .skip(template(sequence(keyword("predicate"), keyword("v"))))
+      .skip(semicolon())
+      .map(([finitiveVerb, particle]) =>
+        ({
+          type: "preverb as finitive verb",
+          finitiveVerb,
+          particle,
+        }) as Definition
+      ),
+    word()
+      .skip(tag(sequence(keyword("linking"), keyword("v"))))
+      .skip(template(keyword("predicate")))
+      .skip(semicolon()).map((linkingVerb) =>
+        ({
+          type: "preverb as linking verb",
+          linkingVerb,
+        }) as Definition
+      ),
     simpleUnit("prep")
       .skip(semicolon())
       .map((preposition) =>
