@@ -341,8 +341,8 @@ kili:
 
 kin:
   `[at sentence start]`(particle def);
-  also(adverb);
-  additionally(adverb);
+  also(adv);
+  additionally(adv);
 
 kipisi:
   split(v) [object];
@@ -755,7 +755,7 @@ moku:
   ingest(v) [object];
 
   food(n);
-  edible(adj opinion) thing();
+  edible(adj opinion) thing(n);
 
   food-related(adj qualifier);
 
@@ -771,8 +771,8 @@ monsi:
   back(n singular);
   rear(n singular);
 
-  back-related(adj);
-  rear-related(adj);
+  back-related(adj qualifier);
+  rear-related(adj qualifier);
 
 monsuta:
   fear(n);
@@ -1037,7 +1037,7 @@ pan:
   rice(n);
   sorghum(n);
   bread(n);
-  noodles(n);
+  noodle(n);
   masa(n);
   porridge(n);
   injera(n);
@@ -1460,7 +1460,7 @@ unpa:
 
 uta:
   mouth(n);
-  lips(n);
+  lip(n);
   throat(n);
   consuming(adj qualifier) orifice(n);
 
@@ -1481,8 +1481,8 @@ utala:
 
 walo:
   light-colored(adj color);
-  white(adj);
-  pale(adj);
+  white(adj color);
+  pale(adj color);
   light(adv) gray(adj color);
   cream-colored(adj color);
 
