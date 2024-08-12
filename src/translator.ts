@@ -472,8 +472,7 @@ function definitionAsPlainString(definition: Definition): Array<string> {
     case "preverb as linking verb":
       return [definition.linkingVerb];
     case "preverb as finite verb":
-      return verbAsPlainString(definition)
-        .map((verb) => [verb, nullableAsArray(definition.particle)].join(" "));
+      return verbAsPlainString(definition);
     case "preverb as modal verb":
       return [definition.verb];
   }
