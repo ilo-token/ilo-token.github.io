@@ -336,11 +336,22 @@ function insideLongGlyph(): Parser<
 }
 /** Parses a token. */
 export const TOKEN = choiceOnlyOne(
+  longSpaceGlyph(),
+  longGlyphStart(),
+  combinedGlyphs()
+    .skip(spaces())
+    .map((words) => ({ type: "combined glyphs", words }) as Token),
+  properWords().map((words) =>
+    ({ type: "proper word", words, kind: "latin" }) as Token
+  ),
+  longWord(),
+  multipleA().map((count) => ({ type: "multiple a", count }) as Token),
+  xAlaX().map((word) => ({ type: "x ala x", word }) as Token),
+  word().map((word) => ({ type: "word", word }) as Token),
+  // starting with non-words:
   punctuation().map((punctuation) =>
     ({ type: "punctuation", punctuation }) as Token
   ),
-  longSpaceGlyph(),
-  longGlyphStart(),
   longGlyphEnd(),
   reverseLongGlyphEnd(),
   insideLongGlyph(),
@@ -348,14 +359,4 @@ export const TOKEN = choiceOnlyOne(
   cartouches().map((words) =>
     ({ type: "proper word", words, kind: "cartouche" }) as Token
   ),
-  properWords().map((words) =>
-    ({ type: "proper word", words, kind: "latin" }) as Token
-  ),
-  combinedGlyphs()
-    .skip(spaces())
-    .map((words) => ({ type: "combined glyphs", words }) as Token),
-  longWord(),
-  multipleA().map((count) => ({ type: "multiple a", count }) as Token),
-  xAlaX().map(word => ({type: "x ala x", word}) as Token),
-  word().map((word) => ({ type: "word", word }) as Token),
 );
