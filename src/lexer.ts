@@ -278,7 +278,7 @@ function longGlyphHead(): Parser<Array<string>> {
   );
 }
 /** Parses long glyph that only contains spaces. */
-function longSpaceGlyph(): Parser<Token & { type: "long glyph space" }> {
+function spaceLongGlyph(): Parser<Token & { type: "long glyph space" }> {
   return sequence(longGlyphHead(), longSpaceContainer())
     .map(([words, spaceLength]) => ({
       type: "long glyph space",
@@ -337,7 +337,7 @@ function insideLongGlyph(): Parser<
 }
 /** Parses a token. */
 export const TOKEN = cached(choiceOnlyOne(
-  longSpaceGlyph(),
+  spaceLongGlyph(),
   headedLongGlyphStart(),
   combinedGlyphs()
     .skip(spaces())
