@@ -1,5 +1,7 @@
 /** Module for describing Toki Pona AST. */
 
+import { nullableAsArray } from "./misc.ts";
+
 /** Represents an emphasis particle. */
 export type Emphasis =
   | { type: "word"; word: string }
@@ -101,6 +103,7 @@ export type FullClause =
 export type Sentence = {
   laClauses: Array<FullClause>;
   finalClause: FullClause;
+  interrogative: null | "seme" | "x ala x";
   punctuation: string;
 };
 /** Represents quotation. */
@@ -113,3 +116,110 @@ export type Quotation = {
 export type MultipleSentences =
   | { type: "single word"; word: string }
   | { type: "sentences"; sentences: Array<Sentence> };
+
+function everyWordUnitInModifier(modifier: Modifier): Array<WordUnit> {
+  switch (modifier.type) {
+    case "default":
+      return [modifier.word];
+    case "pi":
+      return everyWordUnitInPhrase(modifier.phrase);
+    case "nanpa":
+      return [modifier.nanpa, ...everyWordUnitInPhrase(modifier.phrase)];
+    case "quotation":
+    case "proper words":
+      return [];
+  }
+}
+function everyWordUnitInPhrase(phrase: Phrase): Array<WordUnit> {
+  switch (phrase.type) {
+    case "default":
+      return [
+        phrase.headWord,
+        ...phrase.modifiers.flatMap(everyWordUnitInModifier),
+      ];
+    case "preverb":
+      return [
+        phrase.preverb,
+        ...phrase.modifiers.flatMap(everyWordUnitInModifier),
+        ...everyWordUnitInPhrase(phrase.phrase),
+      ];
+    case "preposition":
+      return everyWordUnitInPreposition(phrase);
+    case "quotation":
+      return [];
+  }
+}
+function everyWordUnitInMultiplePhrases(
+  phrase: MultiplePhrases,
+): Array<WordUnit> {
+  switch (phrase.type) {
+    case "single":
+      return everyWordUnitInPhrase(phrase.phrase);
+    case "and conjunction":
+    case "anu":
+      return phrase.phrases.flatMap(everyWordUnitInMultiplePhrases);
+  }
+}
+function everyWordUnitInPreposition(preposition: Preposition): Array<WordUnit> {
+  return [
+    preposition.preposition,
+    ...preposition.modifiers.flatMap(everyWordUnitInModifier),
+    ...everyWordUnitInMultiplePhrases(preposition.phrases),
+  ];
+}
+function everyWordUnitInMultiplePredicates(
+  predicate: MultiplePredicates,
+): Array<WordUnit> {
+  switch (predicate.type) {
+    case "single":
+      return everyWordUnitInPhrase(predicate.predicate);
+    case "associated":
+      return [
+        ...everyWordUnitInMultiplePhrases(predicate.predicates),
+        ...nullableAsArray(predicate.objects)
+          .flatMap(everyWordUnitInMultiplePhrases),
+        ...predicate.prepositions.flatMap(everyWordUnitInPreposition),
+      ];
+    case "and conjunction":
+    case "anu":
+      return predicate.predicates.flatMap(everyWordUnitInMultiplePredicates);
+  }
+}
+function everyWordUnitInClause(clause: Clause): Array<WordUnit> {
+  switch (clause.type) {
+    case "phrases":
+    case "o vocative":
+      return everyWordUnitInMultiplePhrases(clause.phrases);
+    case "li clause":
+      return [
+        ...everyWordUnitInMultiplePhrases(clause.subjects),
+        ...everyWordUnitInMultiplePredicates(clause.predicates),
+      ];
+    case "o clause":
+      return [
+        ...nullableAsArray(clause.subjects)
+          .flatMap(everyWordUnitInMultiplePhrases),
+        ...everyWordUnitInMultiplePredicates(clause.predicates),
+      ];
+    case "prepositions":
+      return clause.prepositions.flatMap(everyWordUnitInPreposition);
+    case "quotation":
+      return [];
+  }
+}
+export function everyWordUnitInFullClause(clause: FullClause): Array<WordUnit> {
+  switch (clause.type) {
+    case "default":
+      return [
+        ...nullableAsArray(clause.kinOrTaso),
+        ...everyWordUnitInClause(clause.clause),
+        ...nullableAsArray(clause.anuSeme),
+      ];
+    case "filler":
+      return [];
+  }
+}
+export function everyWordUnitInSentence(sentence: Sentence): Array<WordUnit> {
+  return [...sentence.laClauses, sentence.finalClause]
+    .flatMap(everyWordUnitInFullClause);
+}

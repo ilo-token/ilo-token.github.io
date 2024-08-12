@@ -3,6 +3,7 @@
 import {
   Clause,
   Emphasis,
+  everyWordUnitInFullClause,
   FullClause,
   HeadedWordUnit,
   Modifier,
@@ -868,11 +869,27 @@ function sentence(): AstParser<Sentence> {
       punctuation(),
     ),
   )
-    .map(([laClauses, finalClause, punctuation]) => ({
-      laClauses,
-      finalClause,
-      punctuation,
-    }))
+    .map(([laClauses, finalClause, punctuation]) => {
+      const wordUnits = [...laClauses, finalClause]
+        .flatMap(everyWordUnitInFullClause);
+      let interrogative = null;
+      if (wordUnits.some((wordUnit) => wordUnit.type === "x ala x")) {
+        interrogative = "x ala x" as const;
+      } else if (
+        wordUnits.some((wordUnit) =>
+          (wordUnit.type === "default" || wordUnit.type === "reduplication") &&
+          wordUnit.word === "seme"
+        )
+      ) {
+        interrogative = "seme" as const;
+      }
+      return {
+        laClauses,
+        finalClause,
+        interrogative,
+        punctuation,
+      };
+    })
     .filter(filter(SENTENCE_RULE));
 }
 /** Parses a sentence inside quotation. */
