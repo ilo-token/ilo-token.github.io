@@ -455,10 +455,49 @@ export async function buildDictionary(): Promise<boolean> {
     }
     return false;
   } else {
-    const dictionary = JSON.stringify(output.output[0]);
+    const dictionary = output.output[0];
+    const contentWords = Object
+      .entries(dictionary)
+      .filter(([_, definitions]) =>
+        definitions.some((definition) =>
+          definition.type !== "filler" &&
+          definition.type !== "particle definition"
+        )
+      );
+    const noNouns = contentWords
+      .filter(([_, definitions]) =>
+        definitions.every((definition) => definition.type !== "noun")
+      )
+      .map(([word]) => word);
+    if (noNouns.length > 0) {
+      console.warn("the following doesn't have noun definition");
+      for (const word of noNouns) {
+        console.warn(word);
+      }
+      console.warn();
+    }
+    const noAdjectives = contentWords
+      .filter(([_, definitions]) =>
+        definitions.every((definition) =>
+          definition.type !== "adjective" &&
+          definition.type !== "compound adjective" &&
+          definition.type !== "determiner"
+        )
+      )
+      .map(([word]) => word);
+    if (noAdjectives.length > 0) {
+      console.warn(
+        "the following doesn't have adjective nor determiner definition",
+      );
+      for (const word of noAdjectives) {
+        console.warn(word);
+      }
+      console.warn();
+    }
+    const string = JSON.stringify(output.output[0]);
     await Deno.writeTextFile(
       DESTINATION,
-      `import{Dictionary}from"./type.ts";export const DICTIONARY:Dictionary=${dictionary}`,
+      `import{Dictionary}from"./type.ts";export const DICTIONARY:Dictionary=${string}`,
     );
     return true;
   }
