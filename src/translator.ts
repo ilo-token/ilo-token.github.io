@@ -376,6 +376,24 @@ function nounAsPlainString(definition: Noun): Array<string> {
       ].join(" ")
     );
 }
+function verbAsPlainString(
+  verb: { presentPlural: string; past: string },
+): Array<string> {
+  switch (settings.get("tense-settings")) {
+    case "both":
+      return [
+        verb.past,
+        verb.presentPlural,
+        `will ${verb.presentPlural}`,
+      ];
+    case "condensed":
+      return [
+        `(will) ${condenseVerb(verb.presentPlural, verb.past)}`,
+      ];
+    case "default only":
+      return [verb.presentPlural];
+  }
+}
 function definitionAsPlainString(definition: Definition): Array<string> {
   switch (definition.type) {
     case "noun":
@@ -420,24 +438,7 @@ function definitionAsPlainString(definition: Definition): Array<string> {
     case "interjection":
       return [definition.interjection];
     case "verb": {
-      let verbs: Array<string>;
-      switch (settings.get("tense-settings")) {
-        case "both":
-          verbs = [
-            definition.past,
-            definition.presentPlural,
-            `will ${definition.presentSingular}`,
-          ];
-          break;
-        case "condensed":
-          verbs = [
-            `(will) ${condenseVerb(definition.presentPlural, definition.past)}`,
-          ];
-          break;
-        case "default only":
-          verbs = [definition.presentPlural];
-          break;
-      }
+      const verbs = verbAsPlainString(definition);
       const directObjects = nullableAsArray(definition.directObject).flatMap(
         nounAsPlainString,
       );
@@ -471,10 +472,8 @@ function definitionAsPlainString(definition: Definition): Array<string> {
     case "preverb as linking verb":
       return [definition.linkingVerb];
     case "preverb as finitive verb":
-      return [
-        [definition.finitiveVerb, ...nullableAsArray(definition.particle)]
-          .join(" "),
-      ];
+      return verbAsPlainString(definition)
+        .map((verb) => [verb, nullableAsArray(definition.particle)].join(" "));
   }
 }
 function multipleSentences(

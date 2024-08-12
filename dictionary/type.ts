@@ -71,7 +71,9 @@ export type Definition =
   }
   | {
     type: "preverb as finitive verb";
-    finitiveVerb: string;
+    presentSingular: string;
+    presentPlural: string;
+    past: string;
     particle: null | string;
   }
   | { type: "preposition"; preposition: string }

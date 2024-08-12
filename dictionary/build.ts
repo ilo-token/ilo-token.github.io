@@ -362,10 +362,10 @@ function definition(): Parser<Definition> {
     sequence(simpleUnit("v"), optionalAll(simpleUnit("particle")))
       .skip(template(sequence(keyword("predicate"), keyword("v"))))
       .skip(semicolon())
-      .map(([finitiveVerb, particle]) =>
+      .map(([verb, particle]) =>
         ({
           type: "preverb as finitive verb",
-          finitiveVerb,
+          ...conjugate(verb),
           particle,
         }) as Definition
       ),
