@@ -1,12 +1,7 @@
-/**
- * Module describing token tree. It is like token but some token tree type also
- * stores array of token trees hence the name token tree.
- */
+/** Module describing token. */
 
-/**
- * Represents token tree.
- */
-export type TokenTree =
+/** Represents token. */
+export type Token =
   | { type: "word"; word: string }
   | {
     type: "combined glyphs";
@@ -40,13 +35,13 @@ export type TokenTree =
   | { type: "x ala x"; word: string }
   | { type: "proper word"; words: string; kind: "cartouche" | "latin" }
   | { type: "punctuation"; punctuation: string };
-/** Describes a token tree. Useful for error messages. */
-export function describe(tokenTree: TokenTree): string {
-  switch (tokenTree.type) {
+/** Describes a token. Useful for error messages. */
+export function describe(token: Token): string {
+  switch (token.type) {
     case "word":
-      return `"${tokenTree.word}"`;
+      return `"${token.word}"`;
     case "combined glyphs":
-      return `combined glyphs "${tokenTree.words.join(" ")}"`;
+      return `combined glyphs "${token.words.join(" ")}"`;
     case "long glyph space":
     case "headed long glyph start":
     case "headless long glyph start":
@@ -56,13 +51,13 @@ export function describe(tokenTree: TokenTree): string {
     case "inside long glyph":
       return "end of long glyph";
     case "multiple a":
-      return `"${new Array(tokenTree.count).fill("a").join(" ")}"`;
+      return `"${new Array(token.count).fill("a").join(" ")}"`;
     case "long word":
-      return `"${new Array(tokenTree.length).fill(tokenTree.word).join("")}"`;
+      return `"${new Array(token.length).fill(token.word).join("")}"`;
     case "x ala x":
-      return `"${tokenTree.word} ala ${tokenTree.word}"`;
+      return `"${token.word} ala ${token.word}"`;
     case "proper word":
-      switch (tokenTree.kind) {
+      switch (token.kind) {
         case "cartouche":
           return "cartouche";
         case "latin":

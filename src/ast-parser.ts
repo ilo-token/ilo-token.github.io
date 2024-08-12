@@ -44,9 +44,9 @@ import {
   Parser,
   sequence,
 } from "./parser-lib.ts";
-import { describe, TokenTree } from "./token-tree.ts";
+import { describe, Token } from "./token.ts";
 import { DICTIONARY } from "dictionary/dictionary.ts";
-import { spaces, tokenTree } from "./lexer.ts";
+import { spaces, token } from "./lexer.ts";
 
 const CONTENT_WORD = new Set(
   Object
@@ -82,15 +82,15 @@ const PREVERB = new Set([
 ]);
 const TOKI_PONA_WORD = new Set(Object.keys(DICTIONARY));
 
-/** Parses a specific type of token tree. */
-function specificTokenTree<T extends TokenTree["type"]>(
+/** Parses a specific type of token. */
+function specificTokenTree<T extends Token["type"]>(
   type: T,
-): Parser<TokenTree & { type: T }> {
-  return tokenTree().map((tokenTree) => {
-    if (tokenTree.type === type) {
-      return tokenTree as TokenTree & { type: T };
+): Parser<Token & { type: T }> {
+  return token().map((token) => {
+    if (token.type === type) {
+      return token as Token & { type: T };
     } else {
-      throw new UnexpectedError(describe(tokenTree), type);
+      throw new UnexpectedError(describe(token), type);
     }
   });
 }

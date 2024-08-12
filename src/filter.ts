@@ -15,7 +15,7 @@ import {
 } from "./ast.ts";
 import { UnrecognizedError } from "./error.ts";
 import { settings } from "./settings.ts";
-import { describe } from "./token-tree.ts";
+import { describe } from "./token.ts";
 
 /** Array of filter rules for a word unit. */
 export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [

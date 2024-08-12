@@ -18,7 +18,7 @@ import {
   Parser,
   sequence,
 } from "./parser-lib.ts";
-import { TokenTree } from "./token-tree.ts";
+import { Token } from "./token.ts";
 import { settings } from "./settings.ts";
 import {
   END_OF_CARTOUCHE,
@@ -160,7 +160,7 @@ function multipleA(): Parser<number> {
     .map(([a, as]) => [a, ...as].length);
 }
 /** Parses lengthened words. */
-function longWord(): Parser<TokenTree & { type: "long word" }> {
+function longWord(): Parser<Token & { type: "long word" }> {
   return match(/[an]/, 'long "a" or "n"')
     .then(([word, _]) =>
       count(allAtLeastOnce(matchString(word)))
@@ -169,7 +169,7 @@ function longWord(): Parser<TokenTree & { type: "long word" }> {
             type: "long word",
             word,
             length: count + 1,
-          }) as TokenTree & { type: "long word" }
+          }) as Token & { type: "long word" }
         )
     )
     .skip(spaces());
@@ -279,7 +279,7 @@ function longGlyphHead(): Parser<Array<string>> {
   );
 }
 /** Parses long glyph that only contains spaces. */
-function longSpaceGlyph(): Parser<TokenTree & { type: "long glyph space" }> {
+function longSpaceGlyph(): Parser<Token & { type: "long glyph space" }> {
   return sequence(longGlyphHead(), longSpaceContainer())
     .map(([words, spaceLength]) => ({
       type: "long glyph space",
@@ -288,7 +288,7 @@ function longSpaceGlyph(): Parser<TokenTree & { type: "long glyph space" }> {
     }));
 }
 function longGlyphStart(): Parser<
-  TokenTree & { type: "headed long glyph start" }
+  Token & { type: "headed long glyph start" }
 > {
   return longGlyphHead().skip(
     specificUcsurCharacter(START_OF_LONG_GLYPH, "start of long glyph"),
@@ -297,14 +297,14 @@ function longGlyphStart(): Parser<
     .map((words) => ({ type: "headed long glyph start", words }));
 }
 function longGlyphEnd(): Parser<
-  TokenTree & { type: "headless long glyph end" }
+  Token & { type: "headless long glyph end" }
 > {
   return specificUcsurCharacter(END_OF_LONG_GLYPH, "end of long glyph")
     .skip(spaces())
     .map((_) => ({ type: "headless long glyph end" }));
 }
 function reverseLongGlyphStart(): Parser<
-  TokenTree & { type: "headless long glyph end" }
+  Token & { type: "headless long glyph end" }
 > {
   return specificUcsurCharacter(
     START_OF_REVERSE_LONG_GLYPH,
@@ -314,7 +314,7 @@ function reverseLongGlyphStart(): Parser<
     .map((_) => ({ type: "headless long glyph end" }));
 }
 function reverseLongGlyphEnd(): Parser<
-  TokenTree & { type: "headed long glyph start" }
+  Token & { type: "headed long glyph start" }
 > {
   return specificUcsurCharacter(
     END_OF_REVERSE_LONG_GLYPH,
@@ -325,7 +325,7 @@ function reverseLongGlyphEnd(): Parser<
     .map((words) => ({ type: "headed long glyph start", words }));
 }
 function insideLongGlyph(): Parser<
-  TokenTree & { type: "headed long glyph start" }
+  Token & { type: "headed long glyph start" }
 > {
   return specificUcsurCharacter(
     END_OF_REVERSE_LONG_GLYPH,
@@ -336,18 +336,18 @@ function insideLongGlyph(): Parser<
     .skip(spaces())
     .map((words) => ({ type: "headed long glyph start", words }));
 }
-/** Parses a token tree. */
-export function tokenTree(): Parser<TokenTree> {
-  let xAlaXParser: Parser<TokenTree>;
+/** Parses a token. */
+export function token(): Parser<Token> {
+  let xAlaXParser: Parser<Token>;
   if (settings.get("x-ala-x-partial-parsing")) {
     xAlaXParser = empty();
   } else {
     xAlaXParser = xAlaX()
-      .map((word) => ({ type: "x ala x", word }) as TokenTree);
+      .map((word) => ({ type: "x ala x", word }) as Token);
   }
   return choiceOnlyOne(
     punctuation().map((punctuation) =>
-      ({ type: "punctuation", punctuation }) as TokenTree
+      ({ type: "punctuation", punctuation }) as Token
     ),
     longSpaceGlyph(),
     longGlyphStart(),
@@ -356,16 +356,16 @@ export function tokenTree(): Parser<TokenTree> {
     insideLongGlyph(),
     reverseLongGlyphStart(),
     cartouches().map((words) =>
-      ({ type: "proper word", words, kind: "cartouche" }) as TokenTree
+      ({ type: "proper word", words, kind: "cartouche" }) as Token
     ),
     properWords().map((words) =>
-      ({ type: "proper word", words, kind: "latin" }) as TokenTree
+      ({ type: "proper word", words, kind: "latin" }) as Token
     ),
     combinedGlyphs()
       .skip(spaces())
-      .map((words) => ({ type: "combined glyphs", words }) as TokenTree),
+      .map((words) => ({ type: "combined glyphs", words }) as Token),
     longWord(),
-    multipleA().map((count) => ({ type: "multiple a", count }) as TokenTree),
+    multipleA().map((count) => ({ type: "multiple a", count }) as Token),
     xAlaXParser,
     word().map((word) => ({ type: "word", word })),
   );
