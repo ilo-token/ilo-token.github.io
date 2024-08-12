@@ -73,7 +73,7 @@ const PREVERB = new Set(
     .entries(DICTIONARY)
     .filter(([_, definitions]) =>
       definitions.some((definition) =>
-        definition.type === "preverb as finitive verb" ||
+        definition.type === "preverb as finite verb" ||
         definition.type === "preverb as linking verb"
       )
     )

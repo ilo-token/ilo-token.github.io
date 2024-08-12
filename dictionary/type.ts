@@ -70,11 +70,15 @@ export type Definition =
     linkingVerb: string;
   }
   | {
-    type: "preverb as finitive verb";
+    type: "preverb as finite verb";
     presentSingular: string;
     presentPlural: string;
     past: string;
     particle: null | string;
+  }
+  | {
+    type: "preverb as modal verb";
+    verb: string;
   }
   | { type: "preposition"; preposition: string }
   | { type: "interjection"; interjection: string };

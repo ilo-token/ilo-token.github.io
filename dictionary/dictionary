@@ -309,8 +309,8 @@ kasi:
   leaf-related(adj qualifier);
 
 ken:
-  can(v);
-  may(v);
+  can(modal v) [predicate];
+  may(modal v) [predicate];
 
   ability(n);
   permission(n);

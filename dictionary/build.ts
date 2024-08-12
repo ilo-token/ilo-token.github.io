@@ -364,7 +364,7 @@ function definition(): Parser<Definition> {
       .skip(semicolon())
       .map(([verb, particle]) =>
         ({
-          type: "preverb as finitive verb",
+          type: "preverb as finite verb",
           ...conjugate(verb),
           particle,
         }) as Definition
@@ -376,6 +376,15 @@ function definition(): Parser<Definition> {
         ({
           type: "preverb as linking verb",
           linkingVerb,
+        }) as Definition
+      ),
+    word()
+      .skip(tag(sequence(keyword("modal"), keyword("v"))))
+      .skip(template(keyword("predicate")))
+      .skip(semicolon()).map((verb) =>
+        ({
+          type: "preverb as modal verb",
+          verb,
         }) as Definition
       ),
     simpleUnit("prep")

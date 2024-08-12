@@ -471,9 +471,11 @@ function definitionAsPlainString(definition: Definition): Array<string> {
       return [definition.preposition];
     case "preverb as linking verb":
       return [definition.linkingVerb];
-    case "preverb as finitive verb":
+    case "preverb as finite verb":
       return verbAsPlainString(definition)
         .map((verb) => [verb, nullableAsArray(definition.particle)].join(" "));
+    case "preverb as modal verb":
+      return [definition.verb];
   }
 }
 function multipleSentences(
