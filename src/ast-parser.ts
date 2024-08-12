@@ -74,7 +74,8 @@ const PREVERB = new Set(
     .filter(([_, definitions]) =>
       definitions.some((definition) =>
         definition.type === "preverb as finite verb" ||
-        definition.type === "preverb as linking verb"
+        definition.type === "preverb as linking verb" ||
+        definition.type === "preverb as modal verb"
       )
     )
     .map(([word]) => word),
