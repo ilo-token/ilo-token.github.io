@@ -484,6 +484,10 @@ lanpan:
   seizing(n gerund);
   stealing(n gerund);
 
+  taking(adj qualifier);
+  seizing(adj qualifier);
+  stealing(adj qualifier);
+
 lape:
   sleep(n singular);
   rest(n singular);
