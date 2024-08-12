@@ -1357,7 +1357,7 @@ tan:
 
 taso:
   only(adj opinion);
-  only(adv)
+  only(adv);
   `[marks a sentence as qualifying or contradictory]`(particle def);
   but(particle def);
   however(particle def);
