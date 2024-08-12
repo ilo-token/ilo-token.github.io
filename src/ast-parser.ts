@@ -135,23 +135,24 @@ function specificWord(thatWord: string): Parser<string> {
 /** Parses an emphasis particle. */
 function emphasis(): Parser<Emphasis> {
   return choice(
-    specificToken("long glyph space").map((longGlyph) => {
-      if (longGlyph.words.length !== 1) {
-        throw new UnexpectedError(
-          describe({ type: "combined glyphs", words: longGlyph.words }),
-          '"ala"',
-        );
-      }
-      const word = longGlyph.words[0];
-      if (word !== "n" && word !== "a") {
-        throw new UnexpectedError(`"${word}"`, '"a" or "n"');
-      }
-      return {
-        type: "long word",
-        word,
-        length: longGlyph.spaceLength,
-      } as Emphasis;
-    }),
+    specificToken("long glyph space")
+      .map((longGlyph) => {
+        if (longGlyph.words.length !== 1) {
+          throw new UnexpectedError(
+            describe({ type: "combined glyphs", words: longGlyph.words }),
+            '"ala"',
+          );
+        }
+        const word = longGlyph.words[0];
+        if (word !== "n" && word !== "a") {
+          throw new UnexpectedError(`"${word}"`, '"a" or "n"');
+        }
+        return {
+          type: "long word",
+          word,
+          length: longGlyph.spaceLength,
+        } as Emphasis;
+      }),
     specificToken("multiple a")
       .map(({ count }) => ({ type: "multiple a", count }) as Emphasis),
     specificToken("long word")
@@ -174,18 +175,19 @@ function xAlaX(
     sequence(
       specificToken("headless long glyph start"),
       wordFrom(CONTENT_WORD, "content word"),
-      specificToken("inside long glyph").filter((words) => {
-        if (words.words.length !== 1) {
-          throw new UnexpectedError(
-            describe({ type: "combined glyphs", words: words.words }),
-            '"ala"',
-          );
-        }
-        if (words.words[0] !== "ala") {
-          throw new UnexpectedError(`"${words.words[0]}"`, '"ala"');
-        }
-        return true;
-      }),
+      specificToken("inside long glyph")
+        .filter((words) => {
+          if (words.words.length !== 1) {
+            throw new UnexpectedError(
+              describe({ type: "combined glyphs", words: words.words }),
+              '"ala"',
+            );
+          }
+          if (words.words[0] !== "ala") {
+            throw new UnexpectedError(`"${words.words[0]}"`, '"ala"');
+          }
+          return true;
+        }),
       wordFrom(CONTENT_WORD, "content word"),
       specificToken("headless long glyph end"),
     )
@@ -337,18 +339,19 @@ function number(): Parser<number> {
 function pi(): Parser<Modifier & { type: "pi" }> {
   return choice(
     sequence(
-      specificToken("headed long glyph start").filter((words) => {
-        if (words.words.length !== 1) {
-          throw new UnexpectedError(
-            describe({ type: "combined glyphs", words: words.words }),
-            "pi",
-          );
-        }
-        if (words.words[0] !== "pi") {
-          throw new UnexpectedError(`"${words.words[0]}"`, "pi");
-        }
-        return true;
-      }),
+      specificToken("headed long glyph start")
+        .filter((words) => {
+          if (words.words.length !== 1) {
+            throw new UnexpectedError(
+              describe({ type: "combined glyphs", words: words.words }),
+              "pi",
+            );
+          }
+          if (words.words[0] !== "pi") {
+            throw new UnexpectedError(`"${words.words[0]}"`, "pi");
+          }
+          return true;
+        }),
       phrase(),
       specificToken("headless long glyph end"),
     )
@@ -540,18 +543,19 @@ function preposition(): Parser<Preposition> {
         }) as Preposition
       ),
     sequence(
-      specificToken("headed long glyph start").map((words) => {
-        if (words.words.length > 2) {
-          throw new UnrecognizedError(
-            `combined glyphs of ${words.words.length} words`,
-          );
-        }
-        const word = words.words[0];
-        if (!PREPOSITION.has(word)) {
-          throw new UnrecognizedError(`"${word}" as preposition`);
-        }
-        return words.words;
-      }),
+      specificToken("headed long glyph start")
+        .map((words) => {
+          if (words.words.length > 2) {
+            throw new UnrecognizedError(
+              `combined glyphs of ${words.words.length} words`,
+            );
+          }
+          const word = words.words[0];
+          if (!PREPOSITION.has(word)) {
+            throw new UnrecognizedError(`"${word}" as preposition`);
+          }
+          return words.words;
+        }),
       phrase(),
       specificToken("headless long glyph end"),
     )
