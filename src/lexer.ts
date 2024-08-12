@@ -13,6 +13,7 @@ import {
   choiceOnlyOne,
   count,
   empty,
+  lazy,
   match,
   optionalAll,
   Parser,
@@ -337,7 +338,7 @@ function insideLongGlyph(): Parser<
     .map((words) => ({ type: "headed long glyph start", words }));
 }
 /** Parses a token. */
-export function token(): Parser<Token> {
+function token_(): Parser<Token> {
   let xAlaXParser: Parser<Token>;
   if (settings.get("x-ala-x-partial-parsing")) {
     xAlaXParser = empty();
@@ -369,4 +370,7 @@ export function token(): Parser<Token> {
     xAlaXParser,
     word().map((word) => ({ type: "word", word })),
   );
+}
+export function token(): Parser<Token> {
+  return lazy(token_);
 }
