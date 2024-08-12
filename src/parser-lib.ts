@@ -231,7 +231,7 @@ export function eol(): Parser<null> {
 export function cached<T>(parser: Parser<T>): Parser<T> {
   const cache: { [word: string]: ParserOutput<T> } = {};
   return new Parser((src) => {
-    if (src in cache) {
+    if (Object.hasOwn(cache, src)) {
       return cache[src];
     } else {
       const output = parser.parser(src);
