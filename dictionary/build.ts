@@ -51,6 +51,7 @@ function word(): TextParser<string> {
   return all(
     choiceOnlyOne(
       match(/`([^`]*)`/, "quoted words").map(([_, words]) => words),
+      match(/#[^\n]*/, "comment").map((_) => ""),
       match(/[^():;#/`]/, "word").map(([character]) => character),
     ),
   )
