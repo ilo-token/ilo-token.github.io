@@ -467,7 +467,9 @@ export async function buildDictionary(): Promise<boolean> {
     const noNouns = contentWords
       .filter(([_, definitions]) =>
         definitions.every((definition) =>
-          definition.type !== "noun" && definition.type !== "personal pronoun"
+          definition.type !== "noun" &&
+          definition.type !== "personal pronoun" &&
+          definition.type !== "numeral"
         )
       )
       .map(([word]) => word);
@@ -483,7 +485,8 @@ export async function buildDictionary(): Promise<boolean> {
         definitions.every((definition) =>
           definition.type !== "adjective" &&
           definition.type !== "compound adjective" &&
-          definition.type !== "determiner"
+          definition.type !== "determiner" &&
+          definition.type !== "numeral"
         )
       )
       .map(([word]) => word);
