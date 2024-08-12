@@ -204,11 +204,6 @@ function xAlaX(
       .map(({ word }) =>
         ({ type: "x ala x", word }) as WordUnit & { type: "x ala x" }
       ),
-    wordFrom(word, description)
-      .then((word) => specificWord("ala").with(specificWord(word)))
-      .map((word) =>
-        ({ type: "x ala x", word }) as WordUnit & { type: "x ala x" }
-      ),
   );
 }
 function simpleWordUnit(
