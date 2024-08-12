@@ -3,6 +3,7 @@ export type Noun = {
   adjective: Array<Adjective>;
   singular: null | string;
   plural: null | string;
+  gerund: boolean;
 };
 export type DeterminerType =
   | "article"
@@ -11,10 +12,13 @@ export type DeterminerType =
   | "interrogative"
   | "possessive"
   | "quantifier"
-  | "relative";
+  | "relative"
+  | "negative"
+  | "numeral";
 export type Quantity = "singular" | "plural" | "both";
 export type Determiner = {
   determiner: string;
+  plural: null | string;
   kind: DeterminerType;
   number: Quantity;
 };
@@ -34,7 +38,7 @@ export type Adjective = {
 };
 export type Definition =
   | { type: "filler"; before: string; repeat: string; after: string }
-  | { type: "particle"; definition: string }
+  | { type: "particle definition"; definition: string }
   | ({ type: "noun" } & Noun)
   | {
     type: "noun preposition";
@@ -47,13 +51,6 @@ export type Definition =
     plural: null | { subject: string; object: string };
   }
   | ({ type: "determiner" } & Determiner)
-  | {
-    type: "quantified determiner";
-    singular: string;
-    plural: string;
-    kind: DeterminerType;
-    number: Quantity;
-  }
   | { type: "numeral"; numeral: number }
   | ({ type: "adjective" } & Adjective)
   | { type: "compound adjective"; adjective: Array<Adjective> }
@@ -70,7 +67,15 @@ export type Definition =
     }>;
     forObject: boolean | string;
   }
+  | {
+    type: "preverb as linking verb";
+    linkingVerb: string;
+  }
+  | {
+    type: "preverb as finitive verb";
+    finitiveVerb: string;
+    particle: null | string;
+  }
   | { type: "preposition"; preposition: string }
-  | { type: "interjection"; interjection: string }
-  | { type: "adhoc"; definition: string };
+  | { type: "interjection"; interjection: string };
 export type Dictionary = { [word: string]: Array<Definition> };
