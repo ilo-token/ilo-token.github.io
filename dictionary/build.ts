@@ -71,8 +71,8 @@ function lex<T>(parser: TextParser<T>): TextParser<T> {
 function word(): TextParser<string> {
   return all(
     choiceOnlyOne(
-      match(/\\(\S)/, "escape sequence").map(([_, character]) => character),
-      match(/[^\\():;#]/, "word").map(([character]) => character),
+      match(/`([^`]*)`/, "quoted words").map(([_, character]) => character),
+      match(/[^():;#/`]/, "word").map(([character]) => character),
     ),
   )
     .map((word) => word.join("").replaceAll(/\s+/g, " ").trim())
