@@ -34,6 +34,8 @@ alasa:
   hunt(v) [object];
   search(v) [object];
 
+  try(v) to(particle) [predicate v];
+
   hunting(n gerund);
   searching(n gerund);
 
