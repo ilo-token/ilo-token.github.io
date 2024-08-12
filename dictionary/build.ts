@@ -71,7 +71,7 @@ function lex<T>(parser: TextParser<T>): TextParser<T> {
 function word(): TextParser<string> {
   return all(
     choiceOnlyOne(
-      match(/`([^`]*)`/, "quoted words").map(([_, character]) => character),
+      match(/`([^`]*)`/, "quoted words").map(([_, words]) => words),
       match(/[^():;#/`]/, "word").map(([character]) => character),
     ),
   )
