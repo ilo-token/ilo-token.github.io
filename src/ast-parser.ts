@@ -83,7 +83,7 @@ const PREVERB = new Set([
 const TOKI_PONA_WORD = new Set(Object.keys(DICTIONARY));
 
 /** Parses a specific type of token. */
-function specificTokenTree<T extends Token["type"]>(
+function specificToken<T extends Token["type"]>(
   type: T,
 ): Parser<Token & { type: T }> {
   return token().map((token) => {
@@ -96,7 +96,7 @@ function specificTokenTree<T extends Token["type"]>(
 }
 /** Parses comma. */
 function comma(): Parser<string> {
-  return specificTokenTree("punctuation")
+  return specificToken("punctuation")
     .map(({ punctuation }) => punctuation)
     .filter((punctuation) => punctuation === ",");
 }
@@ -106,15 +106,15 @@ function optionalComma(): Parser<null | string> {
 }
 /** Parses a toki pona word. */
 function word(): Parser<string> {
-  return specificTokenTree("word").map(({ word }) => word);
+  return specificToken("word").map(({ word }) => word);
 }
 /** Parses proper words spanning multiple words. */
 function properWords(): Parser<string> {
-  return specificTokenTree("proper word").map(({ words }) => words);
+  return specificToken("proper word").map(({ words }) => words);
 }
 /** Parses a toki pona */
 function punctuation(): Parser<string> {
-  return specificTokenTree("punctuation").map(({ punctuation }) => punctuation);
+  return specificToken("punctuation").map(({ punctuation }) => punctuation);
 }
 /** Parses word only from `set`. */
 function wordFrom(set: Set<string>, description: string): Parser<string> {
@@ -136,7 +136,7 @@ function specificWord(thatWord: string): Parser<string> {
 /** Parses an emphasis particle. */
 function emphasis(): Parser<Emphasis> {
   return choice(
-    specificTokenTree("long glyph space").map((longGlyph) => {
+    specificToken("long glyph space").map((longGlyph) => {
       if (longGlyph.words.length !== 1) {
         throw new UnexpectedError(
           describe({ type: "combined glyphs", words: longGlyph.words }),
@@ -153,9 +153,9 @@ function emphasis(): Parser<Emphasis> {
         length: longGlyph.spaceLength,
       } as Emphasis;
     }),
-    specificTokenTree("multiple a")
+    specificToken("multiple a")
       .map(({ count }) => ({ type: "multiple a", count }) as Emphasis),
-    specificTokenTree("long word")
+    specificToken("long word")
       .map(({ word, length }) =>
         ({ type: "long word", word, length }) as Emphasis
       ),
@@ -173,9 +173,9 @@ function xAlaX(
 ): Parser<SimpleWordUnit & { type: "x ala x" }> {
   return choice(
     sequence(
-      specificTokenTree("headless long glyph start"),
+      specificToken("headless long glyph start"),
       wordFrom(CONTENT_WORD, "content word"),
-      specificTokenTree("inside long glyph").filter((words) => {
+      specificToken("inside long glyph").filter((words) => {
         if (words.words.length !== 1) {
           throw new UnexpectedError(
             describe({ type: "combined glyphs", words: words.words }),
@@ -188,7 +188,7 @@ function xAlaX(
         return true;
       }),
       wordFrom(CONTENT_WORD, "content word"),
-      specificTokenTree("headless long glyph end"),
+      specificToken("headless long glyph end"),
     )
       .map(([_, left, _1, right]) => {
         if (left !== right) {
@@ -199,7 +199,7 @@ function xAlaX(
           };
         }
       }),
-    specificTokenTree("x ala x")
+    specificToken("x ala x")
       .map(({ word }) =>
         ({ type: "x ala x", word }) as WordUnit & { type: "x ala x" }
       ),
@@ -254,7 +254,7 @@ function binaryWords(
   word: Set<string>,
   description: string,
 ): Parser<[string, string]> {
-  return specificTokenTree("combined glyphs").map(({ words }) => {
+  return specificToken("combined glyphs").map(({ words }) => {
     if (words.length > 2) {
       throw new UnrecognizedError(`combined glyphs of ${words.length} words`);
     } else if (!word.has(words[0])) {
@@ -341,7 +341,7 @@ function number(): Parser<number> {
 function pi(): Parser<Modifier & { type: "pi" }> {
   return choice(
     sequence(
-      specificTokenTree("headed long glyph start").filter((words) => {
+      specificToken("headed long glyph start").filter((words) => {
         if (words.words.length !== 1) {
           throw new UnexpectedError(
             describe({ type: "combined glyphs", words: words.words }),
@@ -354,7 +354,7 @@ function pi(): Parser<Modifier & { type: "pi" }> {
         return true;
       }),
       phrase(),
-      specificTokenTree("headless long glyph end"),
+      specificToken("headless long glyph end"),
     )
       .map(([_, phrase]) => phrase),
     specificWord("pi").with(phrase()),
@@ -527,9 +527,9 @@ function subjectPhrases(): Parser<MultiplePhrases> {
 function preposition(): Parser<Preposition> {
   return choice(
     sequence(
-      specificTokenTree("headless long glyph start"),
+      specificToken("headless long glyph start"),
       phrase(),
-      specificTokenTree("headless long glyph end"),
+      specificToken("headless long glyph end"),
     )
       .map(([_, phrase]) =>
         ({
@@ -544,7 +544,7 @@ function preposition(): Parser<Preposition> {
         }) as Preposition
       ),
     sequence(
-      specificTokenTree("headed long glyph start").map((words) => {
+      specificToken("headed long glyph start").map((words) => {
         if (words.words.length > 2) {
           throw new UnrecognizedError(
             `combined glyphs of ${words.words.length} words`,
@@ -557,7 +557,7 @@ function preposition(): Parser<Preposition> {
         return words.words;
       }),
       phrase(),
-      specificTokenTree("headless long glyph end"),
+      specificToken("headless long glyph end"),
     ).map(([words, phrase]) => {
       const modifiers = words
         .slice(1)
