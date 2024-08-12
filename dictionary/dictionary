@@ -140,6 +140,20 @@ esun:
   bazaar(n);
   business(adj qualifier) place(n);
 
+  trading(n gerund);
+  bartering(n gerund);
+  exchanging(n gerund);
+  swapping(n gerund);
+  buying(n gerund);
+  sell(n gerund);
+
+  trading(adj qualifier);
+  bartering(adj qualifier);
+  exchanging(adj qualifier);
+  swapping(adj qualifier);
+  buying(adj qualifier);
+  sell(adj qualifier);
+
 ijo:
   thing(n);
   object(n);
@@ -410,6 +424,7 @@ kon:
 
 ku:
   interact(v) with(prep) the(d article) Toki Pona Dictionary(n singular);
+  the(d article) Toki Pona Dictionary(n singular);
 
 kule:
   color(n);
@@ -448,6 +463,14 @@ kute:
   listen(v) at(prep) [object];
   pay(v) attention(n) to(prep) [object];
   obey(v) [object];
+
+  hearing(n gerund);
+  listen(n gerund);
+  obeying(n gerund);
+
+  hearing(adj qualifier);
+  listen(adj qualifier);
+  obeying(adj qualifier);
 
 la:
   `[mark the previous statement as context to a following statement]`(particle def);
@@ -515,6 +538,10 @@ leko:
   blocky(adj physical quality) object(n);
   bricks(n plural);
   stairs(n plural);
+
+  square(adj physical quality);
+  cuboid(adj physical quality);
+  blocky(adj physical quality);
 
 len:
   cloth(n);
@@ -865,6 +892,8 @@ mute:
   very(adv);
   20(num);
 
+  quantity(n);
+
 n:
   hm/hmm/hmmm(f);
   uh/uhh/uhhh(f);
@@ -885,6 +914,8 @@ nanpa:
   number(n);
   -th(particle def);
   `[ordinal number]`(particle def);
+
+  numeric(adj opinion);
 
 nasa:
   unusual(adj opinion);
@@ -1060,6 +1091,13 @@ pana:
   putting(n gerund);
   releasing(n gerund);
 
+  giving(adj qualifier);
+  sending(adj qualifier);
+  emitting(adj qualifier);
+  providing(adj qualifier);
+  putting(adj qualifier);
+  releasing(adj qualifier);
+
 pi:
   `[modify the next word with one or more following words]`(particle def);
 
@@ -1113,6 +1151,12 @@ pipi:
   spider(n);
   tiny(adj size) crawling(adj qualifier) creature(n);
 
+  insect-like(adj physical quality);
+  bug-like(adj physical quality);
+
+  insect-related(adj qualifier);
+  bug-related(adj qualifier);
+
 poka:
   hip(n);
   side(n);
@@ -1146,6 +1190,7 @@ pona:
 
 pu:
   interact(v) with(prep) the(d article) `Toki Pona: The Language of Good`(adj qualifier) book(n singular);
+  the(d article) `Toki Pona: The Language of Good`(adj qualifier) book(n singular);
 
 sama:
   same(adj opinion);
@@ -1156,6 +1201,8 @@ sama:
 
   similar to(prep);
   same as(prep);
+
+  similarity(n);
 
 seli:
   hot(adj material);
@@ -1177,6 +1224,9 @@ selo:
   outer(adj origin) shape(n);
   outer(adj origin) form(n);
   boundary(n);
+
+  skin-related(adj qualifier);
+  boundary-related(adj qualifier);
 
 seme:
   `[indicate a question by marking missing info in a sentence]`(particle def);
@@ -1207,6 +1257,12 @@ sijelo:
   torso(n);
   substance(n);
   form(n);
+
+  body-related(adj qualifier);
+  shape-related(adj qualifier);
+  torso-related(adj qualifier);
+  substance-related(adj qualifier);
+  form-related(adj qualifier);
 
 sike:
   circle(n);
@@ -1249,6 +1305,11 @@ sinpin:
   front(n);
   face(n);
 
+  wall-related(adj qualifier);
+  board-related(adj qualifier);
+  front-related(adj qualifier);
+  face-related(adj qualifier);
+
 sitelen:
   image(n);
   picture(n);
@@ -1287,6 +1348,12 @@ sona:
 
   know(v) how to(particle) [predicate v];
 
+  knowledgeable(adj opinion);
+
+  knowledge-related(adj qualifier);
+  information-related(adj qualifier);
+  data-related(adj qualifier);
+
 soweli:
   fuzzy(adj physical quality) creature(n);
   land(adj origin) animal(n);
@@ -1300,6 +1367,7 @@ soweli:
 
 su:
   interact(v) with(prep) Sonja's(d possessive) story(adj qualifier) book(adj qualifier) series(n singular);
+  Sonja's(d possessive) story(adj qualifier) book(adj qualifier) series(n singular);
 
 suli:
   big(adj size);
@@ -1337,6 +1405,8 @@ supa:
   plate(n);
   table(n);
   platform(n);
+
+  horizontal(adj physical quality);
 
 suwi:
   sweet(adj material);
@@ -1400,6 +1470,13 @@ tenpo:
   moment(n);
   period(n);
   duration(n singular);
+
+  time-related(adj qualifier);
+  event-related(adj qualifier);
+  situation-related(adj qualifier);
+  moment-related(adj qualifier);
+  period-related(adj qualifier);
+  duration-related(adj qualifier);
 
 toki:
   communicate(v) about(prep) [object];
@@ -1479,6 +1556,10 @@ utala:
   struggle(v);
   strive(v);
 
+  fight-related(adj qualifier);
+  competition-related(adj qualifier);
+  challenge-related(adj qualifier);
+
 walo:
   light-colored(adj color);
   white(adj color);
@@ -1533,6 +1614,9 @@ weka:
   remove(v) [object];
   # TODO: get rid of
 
+  absence(n);
+  removal(n);
+
 wile:
   want(v) [object];
   desire(v) [object];
@@ -1545,3 +1629,8 @@ wile:
   requirement(n);
 
   want(v) to(particle) [predicate v];
+
+  want-related(adj qualifier);
+  desire-related(adj qualifier);
+  wish-related(adj qualifier);
+  requirement-related(adj qualifier);
