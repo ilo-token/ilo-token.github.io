@@ -190,7 +190,9 @@ function xAlaX(
       specificToken("headless long glyph end"),
     )
       .map(([_, left, _1, right]) => {
-        if (left !== right) {
+        if (!word.has(left)) {
+          throw new UnrecognizedError(`${left} as ${description}`);
+        } else if (left !== right) {
           throw new UnexpectedError(`${right}`, `"${left}"`);
         } else {
           return { type: "x ala x", word: left } as WordUnit & {
