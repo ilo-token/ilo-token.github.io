@@ -3,6 +3,7 @@
 import {
   Clause,
   Emphasis,
+  everyWordUnitInSentence,
   FullClause,
   Modifier,
   MultiplePhrases,
@@ -466,6 +467,24 @@ export const SENTENCE_RULE: Array<(sentence: Sentence) => boolean> = [
       if (clause.type === "default" && clause.endingParticle != null) {
         throw new UnrecognizedError("emphasis phrase inside sentence");
       }
+    }
+    return true;
+  },
+  // There can't be more than 1 "x ala x" or "seme"
+  (sentence) => {
+    if (
+      sentence.interrogative != null && everyWordUnitInSentence(sentence)
+          .filter((wordUnit) =>
+            wordUnit.type === "x ala x" ||
+            ((wordUnit.type === "default" ||
+              wordUnit.type === "reduplication") &&
+              wordUnit.word === "seme")
+          )
+          .length > 1
+    ) {
+      throw new UnrecognizedError(
+        'more than 1 interrogative elements: "x ala x" or "seme"',
+      );
     }
     return true;
   },
