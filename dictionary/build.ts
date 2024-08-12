@@ -422,7 +422,7 @@ const dictionary = space()
     }
     return dictionary;
   });
-const insideDefinitionParser = space().with(definition()).skip(eol(";"));
+const insideDefinitionParser = space().with(definition()).skip(eol());
 
 export async function buildDictionary(): Promise<boolean> {
   const sourceText = await Deno.readTextFile(SOURCE);

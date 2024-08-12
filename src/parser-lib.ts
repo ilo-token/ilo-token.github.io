@@ -222,10 +222,10 @@ export function match(
   });
 }
 /** Parses the end of line (or the end of sentence in context of Toki Pona) */
-export function eol(description = "end of text"): Parser<null> {
+export function eol(): Parser<null> {
   return new Parser((src) => {
     if (src === "") return new Output([{ value: null, rest: "" }]);
-    else return new Output(new UnexpectedError(`"${src}"`, description));
+    else return new Output(new UnexpectedError(`"${src}"`, "end of text"));
   });
 }
 export function cached<T>(parser: Parser<T>): Parser<T> {
