@@ -235,6 +235,9 @@ function sentence(
 ): Output<English.Sentence> {
   // This relies on sentence filter, if some of those filters were disabled,
   // this function might break.
+  if (sentence.interrogative === "x ala x") {
+    throw new TodoError('translation of "x ala x"');
+  }
   if (sentence.finalClause.type === "filler") {
     return new Output(filler(sentence.finalClause.emphasis))
       .map((interjection) =>
