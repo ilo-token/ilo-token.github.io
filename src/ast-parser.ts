@@ -554,18 +554,19 @@ function preposition(): Parser<Preposition> {
       }),
       phrase(),
       specificToken("headless long glyph end"),
-    ).map(([words, phrase]) => {
-      const modifiers = words
-        .slice(1)
-        .map((word) =>
-          ({ type: "default", word: { type: "default", word } }) as Modifier
-        );
-      return {
-        preposition: { type: "default", word: words[0] },
-        modifiers,
-        phrases: { type: "single", phrase },
-      } as Preposition;
-    }),
+    )
+      .map(([words, phrase]) => {
+        const modifiers = words
+          .slice(1)
+          .map((word) =>
+            ({ type: "default", word: { type: "default", word } }) as Modifier
+          );
+        return {
+          preposition: { type: "default", word: words[0] },
+          modifiers,
+          phrases: { type: "single", phrase },
+        } as Preposition;
+      }),
     binaryWords(PREPOSITION, "preposition").map(([preposition, phrase]) =>
       ({
         preposition: {
