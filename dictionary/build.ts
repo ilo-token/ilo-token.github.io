@@ -466,11 +466,13 @@ export async function buildDictionary(): Promise<boolean> {
       );
     const noNouns = contentWords
       .filter(([_, definitions]) =>
-        definitions.every((definition) => definition.type !== "noun")
+        definitions.every((definition) =>
+          definition.type !== "noun" && definition.type !== "personal pronoun"
+        )
       )
       .map(([word]) => word);
     if (noNouns.length > 0) {
-      console.warn("the following doesn't have noun definition");
+      console.warn("the following doesn't have noun nor pronoun definition");
       for (const word of noNouns) {
         console.warn(word);
       }
