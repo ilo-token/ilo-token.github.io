@@ -232,7 +232,7 @@ function interjection(clause: TokiPona.Clause): Output<English.Clause> {
             ({
               type: "interjection",
               interjection,
-              bold: headWord.emphasis != null,
+              emphasis: headWord.emphasis != null,
             }) as English.Clause
           );
       }
@@ -252,7 +252,7 @@ function anuSeme(seme: TokiPona.HeadedWordUnit): English.Clause {
   return {
     type: "interjection",
     interjection: interjection!,
-    bold: seme.emphasis != null,
+    emphasis: seme.emphasis != null,
   };
 }
 function sentence(
@@ -287,7 +287,7 @@ function sentence(
         .map((interjection) => ({
           type: "interjection",
           interjection,
-          bold: false,
+          emphasis: false,
         }));
     }
     const laClauses =
@@ -347,7 +347,7 @@ function sentence(
         .map((interjection) => ({
           type: "interjection",
           interjection,
-          bold: false,
+          emphasis: false,
         }));
     }
     let punctuation: string;

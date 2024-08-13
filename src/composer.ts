@@ -4,12 +4,22 @@ import { TodoError } from "./error.ts";
 import { Output, OutputError } from "./output.ts";
 import { translate as translateToAst } from "./translator.ts";
 
+const emphasisStartingTag = "<strong>";
+const emphasisEndingTag = "</strong>";
+
+function optionalEmphasis(text: string, emphasis: boolean): string {
+  if (emphasis) {
+    return `${emphasisStartingTag}${text}${emphasisEndingTag}`;
+  } else {
+    return text;
+  }
+}
 function clause(clause: Clause): string {
   switch (clause.type) {
     case "free form":
       return clause.text;
     case "interjection":
-      return clause.interjection;
+      return optionalEmphasis(clause.interjection, clause.emphasis);
     default:
       throw new TodoError(`composing ${clause.type}`);
   }
