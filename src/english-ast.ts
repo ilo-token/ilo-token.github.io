@@ -23,14 +23,12 @@ export type NounPhrase =
     quantity: Quantity;
     preposition: Array<Preposition>;
   };
-export type Determiner =
-  | {
-    type: "default";
-    kind: DeterminerType;
-    word: string;
-    quantity: Quantity;
-  }
-  | { type: "numeral"; number: number };
+export type Determiner = {
+  type: "default";
+  kind: DeterminerType;
+  determiner: string;
+  quantity: Quantity;
+};
 export type AdjectivePhrase =
   | {
     type: "simple";

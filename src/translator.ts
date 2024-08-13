@@ -10,6 +10,13 @@ import { DICTIONARY } from "dictionary/dictionary.ts";
 
 const CONJUNCTION = { "and conjunction": "and", "anu": "or" } as const;
 
+type ModifierTranslation =
+  | { type: "noun"; noun: English.NounPhrase }
+  | { type: "adjective"; adjective: English.AdjectivePhrase }
+  | { type: "determiner"; determiner: English.Determiner }
+  | { type: "adverb"; adverb: string }
+  | { type: "name"; name: string }
+  | { type: "position"; position: English.NounPhrase };
 type PhraseTranslation =
   | { type: "noun"; noun: English.NounPhrase }
   | { type: "adjective"; adjective: English.AdjectivePhrase };
@@ -29,6 +36,44 @@ function condenseVerb(present: string, past: string): string {
   const [first, ...rest] = present.split(" ");
   const second = past.split(" ")[0];
   return [condense(first, second), ...rest].join(" ");
+}
+function modifier(modifier: TokiPona.Modifier): Output<ModifierTranslation> {
+  switch (modifier.type) {
+    case "default": {
+      const word = modifier.word;
+      switch (word.type) {
+        case "number": {
+          let quantity: English.Quantity;
+          if (word.number === 1) {
+            quantity = "singular";
+          } else {
+            quantity = "plural";
+          }
+          return new Output([{
+            type: "determiner",
+            determiner: {
+              determiner: `${word.number}`,
+              kind: "numeral",
+              quantity,
+            },
+          } as ModifierTranslation]);
+        }
+        case "x ala x":
+          return new Output();
+        case "reduplication":
+        case "default":
+          return new Output(new TodoError(`translation of ${modifier.type}`));
+      }
+    }
+    // unreachable
+    // fallthrough
+    case "proper words":
+      return new Output([{ type: "name", name: modifier.words }]);
+    case "pi":
+    case "nanpa":
+    case "quotation":
+      return new Output(new TodoError(`translation of ${modifier.type}`));
+  }
 }
 function phrase(phrase: TokiPona.Phrase): Output<PhraseTranslation> {
   switch (phrase.type) {
