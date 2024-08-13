@@ -64,7 +64,7 @@ function clearOutput(): void {
 function outputTranslations(output: Array<string>): void {
   for (const translation of output) {
     const list = document.createElement("li");
-    list.innerText = translation;
+    list.innerHTML = translation;
     elements!.output.appendChild(list);
   }
 }
