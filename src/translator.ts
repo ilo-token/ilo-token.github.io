@@ -212,10 +212,7 @@ function interjection(clause: TokiPona.Clause): Output<English.Clause> {
     const phrase = clause.phrases.phrase;
     if (phrase.type === "default" && phrase.modifiers.length === 0) {
       const headWord = phrase.headWord;
-      if (
-        (headWord.type === "default" || headWord.type === "reduplication") &&
-        headWord.emphasis == null
-      ) {
+      if (headWord.type === "default" || headWord.type === "reduplication") {
         interjection = new Output(DICTIONARY[headWord.word])
           .filterMap((definition) => {
             if (definition.type === "interjection") {
@@ -232,7 +229,11 @@ function interjection(clause: TokiPona.Clause): Output<English.Clause> {
             }
           })
           .map((interjection) =>
-            ({ type: "interjection", interjection }) as English.Clause
+            ({
+              type: "interjection",
+              interjection,
+              bold: headWord.emphasis != null,
+            }) as English.Clause
           );
       }
     }
