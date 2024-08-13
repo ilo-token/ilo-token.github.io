@@ -785,7 +785,14 @@ function fullClause(): Parser<FullClause> {
           anuSeme,
           endingParticle,
         }) as FullClause
-      ),
+      )
+      .sort((clause) => {
+        if ((clause as FullClause & { type: "default" }).anuSeme == null) {
+          return 1;
+        } else {
+          return 0;
+        }
+      }),
     emphasis()
       .map((emphasis) => ({ type: "filler", emphasis }) as FullClause),
   )
