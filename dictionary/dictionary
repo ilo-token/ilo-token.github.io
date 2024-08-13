@@ -1193,8 +1193,8 @@ pona:
   nicely(adv);
 
 pu:
-  interact(v) with(prep) the(d article) `Toki Pona: The Language of Good`(adj qualifier) book(n singular);
-  the(d article) `Toki Pona: The Language of Good`(adj qualifier) book(n singular);
+  interact(v) with(prep) the(d article) book(n singular) titled(adj) `Toki Pona: The Language of Good`(proper n);
+  the(d article) book(n singular) titled(adj) `Toki Pona: The Language of Good`(proper n);
 
 sama:
   same(adj opinion);

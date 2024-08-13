@@ -4,6 +4,10 @@ export type Noun = {
   singular: null | string;
   plural: null | string;
   gerund: boolean;
+  postAdjective: null | {
+    adjective: string;
+    name: string;
+  };
 };
 export type DeterminerType =
   | "article"

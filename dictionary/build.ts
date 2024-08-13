@@ -181,12 +181,29 @@ function nounOnly(): Parser<
     });
 }
 function noun(): Parser<Noun> {
-  return sequence(all(determiner()), all(adjective()), nounOnly())
-    .map(([determiner, adjective, noun]) => ({
-      determiner,
-      adjective,
-      ...noun,
-    }));
+  return sequence(
+    all(determiner()),
+    all(adjective()),
+    nounOnly(),
+    optionalAll(
+      sequence(simpleUnit("adj"), word())
+        .skip(tag(sequence(keyword("proper"), keyword("n")))),
+    ),
+  )
+    .map(([determiner, adjective, noun, post]) => {
+      let postAdjective: null | { adjective: string; name: string };
+      if (post == null) {
+        postAdjective = null;
+      } else {
+        postAdjective = { adjective: post[0], name: post[1] };
+      }
+      return {
+        determiner,
+        adjective,
+        ...noun,
+        postAdjective,
+      };
+    });
 }
 function determinerType(): Parser<DeterminerType> {
   return choiceOnlyOne(

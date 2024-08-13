@@ -405,6 +405,8 @@ function nounAsPlainString(definition: Noun): Array<string> {
         ...definition.determiner.map((determiner) => determiner.determiner),
         ...definition.adjective.map((adjective) => adjective.adjective),
         noun,
+        ...nullableAsArray(definition.postAdjective)
+          .map((adjective) => `${adjective.adjective} ${adjective.name}`),
       ].join(" ")
     );
 }
