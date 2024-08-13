@@ -278,10 +278,10 @@ function longGlyphHead(): Parser<Array<string>> {
   );
 }
 /** Parses long glyph that only contains spaces. */
-function spaceLongGlyph(): Parser<Token & { type: "long glyph space" }> {
+function spaceLongGlyph(): Parser<Token & { type: "space long glyph" }> {
   return sequence(longGlyphHead(), longSpaceContainer())
     .map(([words, spaceLength]) => ({
-      type: "long glyph space",
+      type: "space long glyph",
       words,
       spaceLength,
     }));

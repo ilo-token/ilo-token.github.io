@@ -8,7 +8,7 @@ export type Token =
     words: Array<string>;
   }
   | {
-    type: "long glyph space";
+    type: "space long glyph";
     words: Array<string>;
     spaceLength: number;
   }
@@ -42,7 +42,7 @@ export function describe(token: Token): string {
       return `"${token.word}"`;
     case "combined glyphs":
       return `combined glyphs "${token.words.join(" ")}"`;
-    case "long glyph space":
+    case "space long glyph":
     case "headed long glyph start":
     case "headless long glyph start":
       return "long glyph";

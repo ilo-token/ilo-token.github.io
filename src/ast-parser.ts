@@ -136,7 +136,7 @@ function specificWord(thatWord: string): Parser<string> {
 /** Parses an emphasis particle. */
 function emphasis(): Parser<Emphasis> {
   return choice(
-    specificToken("long glyph space")
+    specificToken("space long glyph")
       .map((longGlyph) => {
         if (longGlyph.words.length !== 1) {
           throw new UnexpectedError(
