@@ -444,7 +444,7 @@ function definitionAsPlainString(definition: Definition): Array<string> {
       const indirectObjects = definition.indirectObject
         .flatMap((object) =>
           nounAsPlainString(object.object)
-            .map((noun) => `${noun} ${object.preposition}`)
+            .map((noun) => `${object.preposition} ${noun}`)
         );
       return verbs
         .map((verb) => [verb, ...directObjects, ...indirectObjects].join(" "));
