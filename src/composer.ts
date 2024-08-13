@@ -4,8 +4,8 @@ import { TodoError } from "./error.ts";
 import { Output, OutputError } from "./output.ts";
 import { translate as translateToAst } from "./translator.ts";
 
-const emphasisStartingTag = "<strong>";
-const emphasisEndingTag = "</strong>";
+const emphasisStartingTag = "<b>";
+const emphasisEndingTag = "</b>";
 
 function optionalEmphasis(text: string, emphasis: boolean): string {
   if (emphasis) {
