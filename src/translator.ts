@@ -239,6 +239,21 @@ function interjection(clause: TokiPona.Clause): Output<English.Clause> {
   }
   return interjection;
 }
+function anuSeme(seme: TokiPona.HeadedWordUnit): English.Clause {
+  let interjection: string;
+  switch (seme.type) {
+    case "default":
+      interjection = "right";
+      break;
+    case "reduplication":
+      interjection = new Array(seme.count).fill("right").join(" ");
+  }
+  return {
+    type: "interjection",
+    interjection: interjection!,
+    bold: seme.emphasis != null,
+  };
+}
 function sentence(
   sentence: TokiPona.Sentence,
 ): Output<English.Sentence> {
@@ -268,7 +283,11 @@ function sentence(
       startingFiller = new Output([null]);
     } else {
       startingFiller = new Output(filler(startingParticle))
-        .map((interjection) => ({ type: "interjection", interjection }));
+        .map((interjection) => ({
+          type: "interjection",
+          interjection,
+          bold: false,
+        }));
     }
     const laClauses =
       (sentence.laClauses as Array<TokiPona.FullClause & { type: "default" }>)
@@ -284,15 +303,22 @@ function sentence(
           }) as English.Clause
         )
       );
-    const { kinOrTaso, clause: lastTpClause, anuSeme, endingParticle } =
-      sentence.finalClause;
+    const {
+      kinOrTaso,
+      clause: lastTpClause,
+      anuSeme: tpAnuSeme,
+      endingParticle,
+    } = sentence.finalClause;
     if (kinOrTaso != null) {
       return new Output(
         new TodoError(`translation of "${kinOrTaso.word}" preclause`),
       );
     }
-    if (anuSeme != null) {
-      return new Output(new TodoError('translation of "anu seme"'));
+    let right: Array<English.Clause>;
+    if (tpAnuSeme == null) {
+      right = [];
+    } else {
+      right = [anuSeme(tpAnuSeme)];
     }
     const lastEngClause = clause(lastTpClause);
     let interjectionClause: Output<English.Clause>;
@@ -310,13 +336,18 @@ function sentence(
         ...nullableAsArray(filler),
         ...givenClauses,
         lastClause,
+        ...right,
       ]);
     let endingFiller: Output<null | English.Clause>;
     if (endingParticle == null) {
       endingFiller = new Output([null]);
     } else {
       endingFiller = new Output(filler(endingParticle))
-        .map((interjection) => ({ type: "interjection", interjection }));
+        .map((interjection) => ({
+          type: "interjection",
+          interjection,
+          bold: false,
+        }));
     }
     let punctuation: string;
     if (sentence.interrogative) {

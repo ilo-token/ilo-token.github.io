@@ -83,7 +83,7 @@ export type Clause =
     verb: VerbPhrase;
     preposition: Array<Preposition>;
   }
-  | { type: "interjection"; interjection: string }
+  | { type: "interjection"; interjection: string; bold: boolean }
   | { type: "vocative"; call: string; addressee: NounPhrase }
   | {
     type: "compound";
