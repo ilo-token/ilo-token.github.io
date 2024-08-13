@@ -439,24 +439,15 @@ function definitionAsPlainString(definition: Definition): Array<string> {
       return [definition.interjection];
     case "verb": {
       const verbs = verbAsPlainString(definition);
-      const directObjects = nullableAsArray(definition.directObject).flatMap(
-        nounAsPlainString,
-      );
+      const directObjects = nullableAsArray(definition.directObject)
+        .flatMap(nounAsPlainString);
       const indirectObjects = definition.indirectObject
         .flatMap((object) =>
           nounAsPlainString(object.object)
             .map((noun) => `${noun} ${object.preposition}`)
         );
-      let preposition: Array<string>;
-      if (typeof definition.forObject === "string") {
-        preposition = [definition.forObject];
-      } else {
-        preposition = [];
-      }
       return verbs
-        .map((verb) =>
-          [verb, ...directObjects, ...indirectObjects, ...preposition].join(" ")
-        );
+        .map((verb) => [verb, ...directObjects, ...indirectObjects].join(" "));
     }
     case "filler":
       return [`${definition.before}${definition.repeat}${definition.after}`];
