@@ -10,17 +10,6 @@ import { DICTIONARY } from "dictionary/dictionary.ts";
 
 const CONJUNCTION = { "and conjunction": "and", "anu": "or" } as const;
 
-type ModifierTranslation =
-  | { type: "noun"; noun: English.NounPhrase }
-  | { type: "adjective"; adjective: English.AdjectivePhrase }
-  | { type: "determiner"; determiner: English.Determiner }
-  | { type: "adverb"; adverb: string }
-  | { type: "name"; name: string }
-  | { type: "position"; position: English.NounPhrase };
-type PhraseTranslation =
-  | { type: "noun"; noun: English.NounPhrase }
-  | { type: "adjective"; adjective: English.AdjectivePhrase };
-
 function condense(first: string, second: string): string {
   if (first === second) {
     return first;
@@ -37,6 +26,13 @@ function condenseVerb(present: string, past: string): string {
   const second = past.split(" ")[0];
   return [condense(first, second), ...rest].join(" ");
 }
+type ModifierTranslation =
+  | { type: "noun"; noun: English.NounPhrase }
+  | { type: "adjective"; adjective: English.AdjectivePhrase }
+  | { type: "determiner"; determiner: English.Determiner }
+  | { type: "adverb"; adverb: string }
+  | { type: "name"; name: string }
+  | { type: "position"; position: English.NounPhrase };
 function modifier(modifier: TokiPona.Modifier): Output<ModifierTranslation> {
   switch (modifier.type) {
     case "default": {
@@ -75,6 +71,9 @@ function modifier(modifier: TokiPona.Modifier): Output<ModifierTranslation> {
       return new Output(new TodoError(`translation of ${modifier.type}`));
   }
 }
+type PhraseTranslation =
+  | { type: "noun"; noun: English.NounPhrase }
+  | { type: "adjective"; adjective: English.AdjectivePhrase };
 function phrase(phrase: TokiPona.Phrase): Output<PhraseTranslation> {
   switch (phrase.type) {
     case "default":
