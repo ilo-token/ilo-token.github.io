@@ -315,13 +315,13 @@ function sentence(
         new TodoError(`translation of "${kinOrTaso.word}" preclause`),
       );
     }
+    const lastEngClause = clause(lastTpClause);
     let right: Array<English.Clause>;
     if (tpAnuSeme == null) {
       right = [];
     } else {
       right = [anuSeme(tpAnuSeme)];
     }
-    const lastEngClause = clause(lastTpClause);
     let interjectionClause: Output<English.Clause>;
     if (sentence.laClauses.length === 0) {
       interjectionClause = interjection(lastTpClause);
