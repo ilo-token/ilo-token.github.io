@@ -367,7 +367,9 @@ function sentence(
       right = [anuSeme(tpAnuSeme)];
     }
     let interjectionClause: Output<English.Clause>;
-    if (sentence.laClauses.length === 0) {
+    if (
+      sentence.laClauses.length === 0 && kinOrTaso == null && tpAnuSeme == null
+    ) {
       interjectionClause = interjection(lastTpClause);
     } else {
       interjectionClause = new Output();
