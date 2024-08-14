@@ -621,9 +621,9 @@ function multiplePhrases(
         .combine(
           ...phrases.phrases.map((phrases) => multiplePhrases(phrases, place)),
         )
-        .filterMap((phrases) => {
-          if (phrases.every((phrase) => phrase.type === "noun")) {
-            const nouns = phrases
+        .filterMap((phrase) => {
+          if (phrase.every((phrase) => phrase.type === "noun")) {
+            const nouns = phrase
               .map((noun) => noun.noun)
               .flatMap((noun) => {
                 if (
@@ -652,6 +652,33 @@ function multiplePhrases(
                 nouns,
                 preposition: [],
                 number,
+              },
+            } as PhraseTranslation;
+          } else if (
+            phrases.type === "anu" &&
+            phrase.every((phrase) =>
+              phrase.type === "adjective" && phrase.inWayPhrase == null
+            )
+          ) {
+            return {
+              type: "adjective",
+              adjective: {
+                type: "compound",
+                adjective: phrase
+                  .map((adjective) =>
+                    (adjective as PhraseTranslation & { type: "adjective" })
+                      .adjective
+                  )
+                  .flatMap((adjective) => {
+                    if (
+                      adjective.type === "compound" &&
+                      adjective.conjunction === conjunction
+                    ) {
+                      return adjective.adjective;
+                    } else {
+                      return [adjective];
+                    }
+                  }),
               },
             } as PhraseTranslation;
           } else {
