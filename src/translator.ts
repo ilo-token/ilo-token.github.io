@@ -92,15 +92,30 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
           count = word.count;
           break;
       }
-      return new Output(DICTIONARY[word.word]).filterMap((definition) => {
+      return new Output(DICTIONARY[word.word]).flatMap((definition) => {
         switch (definition.type) {
           case "noun":
           case "personal pronoun":
-            return null;
+            return new Output();
           case "determiner":
-            return null;
+            return new Output(
+              singularPluralForms(definition.determiner, definition.plural),
+            )
+              .map((determiner) =>
+                ({
+                  type: "determiner",
+                  determiner: {
+                    kind: definition.kind,
+                    determiner: {
+                      word: repeat(determiner, count),
+                      emphasis: word.emphasis != null,
+                    },
+                    quantity: definition.number,
+                  },
+                }) as ModifierTranslation
+              );
           case "adjective":
-            return {
+            return new Output([{
               type: "adjective",
               adjective: {
                 type: "simple",
@@ -111,10 +126,10 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
                   emphasis: word.emphasis != null,
                 },
               },
-            } as ModifierTranslation;
+            } as ModifierTranslation]);
           case "compound adjective":
             if (word.type === "default") {
-              return {
+              return new Output([{
                 type: "adjective",
                 adjective: {
                   type: "compound",
@@ -129,20 +144,20 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
                     },
                   })),
                 },
-              } as ModifierTranslation;
+              } as ModifierTranslation]);
             } else {
-              return null;
+              return new Output();
             }
           case "adverb":
-            return {
+            return new Output([{
               type: "adverb",
               adverb: {
                 word: definition.adverb,
                 emphasis: word.emphasis != null,
               },
-            } as ModifierTranslation;
+            } as ModifierTranslation]);
           default:
-            return null;
+            return new Output();
         }
       });
     }
