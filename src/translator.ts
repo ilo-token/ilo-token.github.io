@@ -54,12 +54,10 @@ function singularPluralForms(
 }
 function determiner(
   definition: Dictionary.Determiner,
-  count = 1,
   emphasis = false,
-): Output<English.Determiner> {
-  return new Output(
-    singularPluralForms(definition.determiner, definition.plural),
-  )
+  count = 1,
+): Array<English.Determiner> {
+  return singularPluralForms(definition.determiner, definition.plural)
     .map((determiner) => ({
       kind: definition.kind,
       determiner: {
@@ -71,18 +69,35 @@ function determiner(
 }
 function adjective(
   definition: Dictionary.Adjective,
+  emphasis: null | TokiPona.Emphasis,
   count = 1,
-  emphasis = false,
-): English.AdjectivePhrase {
-  return {
-    type: "simple",
-    kind: definition.kind,
-    adverb: definition.adverb.map(unemphasized),
-    adjective: {
-      word: repeat(definition.adjective, count),
-      emphasis,
-    },
-  };
+): Array<English.AdjectivePhrase> {
+  let so: null | string;
+  if (emphasis == null) {
+    so = null;
+  } else {
+    switch (emphasis.type) {
+      case "word":
+        so = "so";
+        break;
+      case "long word":
+        so = `s${repeat("o", emphasis.length)}`;
+        break;
+    }
+  }
+  return [
+    ...nullableAsArray(so!).map((so) => ({ emphasis: false, so })),
+    { emphasis: emphasis != null, so: null },
+  ]
+    .map(({ emphasis, so }) => ({
+      type: "simple",
+      kind: definition.kind,
+      adverb: [...definition.adverb, ...nullableAsArray(so)].map(unemphasized),
+      adjective: {
+        word: repeat(definition.adjective, count),
+        emphasis,
+      },
+    }));
 }
 type ModifierTranslation =
   | { type: "noun"; noun: English.NounPhrase }
@@ -92,6 +107,7 @@ type ModifierTranslation =
   | { type: "name"; name: string }
   | { type: "in position phrase"; noun: English.NounPhrase };
 function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
+  const emphasis = word.emphasis != null;
   switch (word.type) {
     case "number": {
       let number: English.Quantity;
@@ -103,10 +119,7 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
       return new Output([{
         type: "determiner",
         determiner: {
-          determiner: {
-            word: `${word.number}`,
-            emphasis: word.emphasis != null,
-          },
+          determiner: { word: `${word.number}`, emphasis },
           kind: "numeral",
           number,
         },
@@ -133,26 +146,24 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
           case "noun": {
             const engDeterminer = Output.combine(
               ...definition.determiner
-                .map((definition) => determiner(definition)),
+                .map((definition) => new Output(determiner(definition))),
             );
-            const engAdjective = definition
-              .adjective
-              .map((definition) => adjective(definition));
+            const engAdjective = Output.combine(
+              ...definition.adjective
+                .map((definition) => new Output(adjective(definition, null))),
+            );
             const noun = new Output(
               singularPluralForms(definition.singular, definition.plural),
             );
-            return Output.combine(noun, engDeterminer)
-              .map(([noun, determiner]) =>
+            return Output.combine(noun, engDeterminer, engAdjective)
+              .map(([noun, determiner, adjective]) =>
                 ({
                   type: "noun",
                   noun: {
                     type: "simple",
                     determiner,
-                    adjective: engAdjective,
-                    noun: {
-                      word: noun,
-                      emphasis: word.emphasis != null,
-                    },
+                    adjective,
+                    noun: { word: noun, emphasis },
                     number: "both",
                     postCompound: null,
                     postAdjective: definition.postAdjective,
@@ -175,10 +186,7 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
                     type: "simple",
                     determiner: [],
                     adjective: [],
-                    noun: {
-                      word: pronoun,
-                      emphasis: word.emphasis != null,
-                    },
+                    noun: { word: pronoun, emphasis },
                     number: "both",
                     postCompound: null,
                     postAdjective: null,
@@ -187,7 +195,9 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
                 }) as ModifierTranslation
               );
           case "determiner":
-            return determiner(definition)
+            return new Output(
+              determiner(definition, word.emphasis != null, count),
+            )
               .map((determiner) =>
                 ({
                   type: "determiner",
@@ -195,33 +205,38 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
                 }) as ModifierTranslation
               );
           case "adjective":
-            return new Output([{
-              type: "adjective",
-              adjective: adjective(definition, count, word.emphasis != null),
-            } as ModifierTranslation]);
+            return new Output(adjective(definition, word.emphasis, count))
+              .map((adjective) =>
+                ({
+                  type: "adjective",
+                  adjective,
+                }) as ModifierTranslation
+              );
           case "compound adjective":
             if (word.type === "default") {
-              return new Output([{
-                type: "adjective",
-                adjective: {
-                  type: "compound",
-                  conjunction: "and",
-                  adjective: definition.adjective
-                    .map((definition) =>
-                      adjective(definition, 1, word.emphasis != null)
-                    ),
-                },
-              } as ModifierTranslation]);
+              return Output.combine(
+                ...definition.adjective
+                  .map((definition) =>
+                    new Output(adjective(definition, word.emphasis))
+                  ),
+              )
+                .map((adjective) =>
+                  ({
+                    type: "adjective",
+                    adjective: {
+                      type: "compound",
+                      conjunction: "and",
+                      adjective,
+                    },
+                  }) as ModifierTranslation
+                );
             } else {
               return new Output();
             }
           case "adverb":
             return new Output([{
               type: "adverb",
-              adverb: {
-                word: definition.adverb,
-                emphasis: word.emphasis != null,
-              },
+              adverb: { word: definition.adverb, emphasis },
             } as ModifierTranslation]);
           default:
             return new Output();
