@@ -285,30 +285,10 @@ function modifier(modifier: TokiPona.Modifier): Output<ModifierTranslation> {
       return new Output(new TodoError(`translation of ${modifier.type}`));
   }
 }
-function findNumber(
-  quantity: Array<English.Quantity>,
-): null | English.Quantity {
-  if (quantity.every((quantity) => quantity === "both")) {
-    return "both";
-  } else if (
-    quantity.every((quantity) => quantity !== "plural") &&
-    quantity.some((quantity) => quantity === "singular")
-  ) {
-    return "singular";
-  } else if (
-    quantity.every((quantity) => quantity !== "singular") &&
-    quantity.some((quantity) => quantity === "plural")
-  ) {
-    return "plural";
-  } else {
-    return null;
-  }
-}
 type MultipleModifierTranslation =
   | {
     type: "adjectival";
     determiner: Array<English.Determiner>;
-    number: English.Quantity;
     adjective: Array<English.AdjectivePhrase>;
     name: null | string;
     inPositionPhrase: null | English.NounPhrase;
@@ -366,16 +346,9 @@ function multipleModifiers(
           adverb.length === 0 &&
           inPositionPhrase.length <= 1
         ) {
-          const number = findNumber(
-            determiner.map((determiner) => determiner.number),
-          );
-          if (number == null) {
-            return null;
-          }
           return {
             type: "adjectival",
             determiner,
-            number,
             adjective,
             name: name[0] ?? null,
             inPositionPhrase: inPositionPhrase[0] ?? null,
@@ -412,6 +385,25 @@ function multipleModifiers(
           return null;
         }
       });
+  }
+}
+function findNumber(
+  quantity: Array<English.Quantity>,
+): null | English.Quantity {
+  if (quantity.every((quantity) => quantity === "both")) {
+    return "both";
+  } else if (
+    quantity.every((quantity) => quantity !== "plural") &&
+    quantity.some((quantity) => quantity === "singular")
+  ) {
+    return "singular";
+  } else if (
+    quantity.every((quantity) => quantity !== "singular") &&
+    quantity.some((quantity) => quantity === "plural")
+  ) {
+    return "plural";
+  } else {
+    return null;
   }
 }
 function fixDeterminer(
@@ -487,7 +479,10 @@ function defaultPhrase(
   phrase: TokiPona.Phrase & { type: "default" },
   place: "subject" | "object",
 ): Output<PhraseTranslation> {
-  return new Output(new TodoError(`translation of ${phrase.type}`));
+  return multipleModifiers(phrase.modifiers)
+    .flatMap((modifier) => {
+      throw new Error("todo");
+    });
 }
 function phrase(
   phrase: TokiPona.Phrase,
