@@ -253,12 +253,12 @@ function modifier(modifier: TokiPona.Modifier): Output<ModifierTranslation> {
     case "proper words":
       return new Output([{ type: "name", name: modifier.words }]);
     case "pi":
-      return phrase(modifier.phrase)
+      return phrase(modifier.phrase, "object")
         .filter((modifier) =>
           modifier.type != "adjective" || modifier.inWayPhrase != null
         );
     case "nanpa":
-      return phrase(modifier.phrase).filterMap((phrase) => {
+      return phrase(modifier.phrase, "object").filterMap((phrase) => {
         if (phrase.type === "noun") {
           return {
             type: "in position phrase",
@@ -440,7 +440,10 @@ function defaultPhrase(
 ): Output<PhraseTranslation> {
   return new Output(new TodoError(`translation of ${phrase.type}`));
 }
-function phrase(phrase: TokiPona.Phrase): Output<PhraseTranslation> {
+function phrase(
+  phrase: TokiPona.Phrase,
+  place: "subject" | "object",
+): Output<PhraseTranslation> {
   switch (phrase.type) {
     case "default":
       return defaultPhrase(phrase);
@@ -453,15 +456,18 @@ function phrase(phrase: TokiPona.Phrase): Output<PhraseTranslation> {
 }
 function multiplePhrases(
   phrases: TokiPona.MultiplePhrases,
+  place: "subject" | "object",
 ): Output<PhraseTranslation> {
   switch (phrases.type) {
     case "single":
-      return phrase(phrases.phrase);
+      return phrase(phrases.phrase, place);
     case "and conjunction":
     case "anu": {
       const conjunction = CONJUNCTION[phrases.type];
       return Output
-        .combine(...phrases.phrases.map(multiplePhrases))
+        .combine(
+          ...phrases.phrases.map((phrases) => multiplePhrases(phrases, place)),
+        )
         .filterMap((phrases) => {
           if (phrases.every((phrase) => phrase.type === "noun")) {
             const nouns = phrases
@@ -531,7 +537,7 @@ function multiplePhrases(
 function clause(clause: TokiPona.Clause): Output<English.Clause> {
   switch (clause.type) {
     case "phrases":
-      return multiplePhrases(clause.phrases).map((phrase) => {
+      return multiplePhrases(clause.phrases, "object").map((phrase) => {
         switch (phrase.type) {
           case "noun":
             return {
@@ -555,7 +561,7 @@ function clause(clause: TokiPona.Clause): Output<English.Clause> {
         }
       });
     case "o vocative":
-      return multiplePhrases(clause.phrases).filterMap((phrase) => {
+      return multiplePhrases(clause.phrases, "object").filterMap((phrase) => {
         if (phrase.type === "noun") {
           return { type: "vocative", call: "hey", addressee: phrase.noun };
         } else {
