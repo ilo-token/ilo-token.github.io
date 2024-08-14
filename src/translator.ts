@@ -251,7 +251,10 @@ function modifier(modifier: TokiPona.Modifier): Output<ModifierTranslation> {
     case "proper words":
       return new Output([{ type: "name", name: modifier.words }]);
     case "pi":
-      return phrase(modifier.phrase);
+      return phrase(modifier.phrase)
+        .filter((modifier) =>
+          modifier.type != "adjective" || modifier.inWayPhrase != null
+        );
     case "nanpa":
       return phrase(modifier.phrase).filterMap((phrase) => {
         if (phrase.type === "noun") {
