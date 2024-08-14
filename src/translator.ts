@@ -36,101 +36,100 @@ type ModifierTranslation =
   | { type: "adverb"; adverb: English.Word }
   | { type: "name"; name: string }
   | { type: "position"; position: English.NounPhrase };
-function modifier(modifier: TokiPona.Modifier): Output<ModifierTranslation> {
-  switch (modifier.type) {
-    case "default": {
-      const word = modifier.word;
+function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
+  switch (word.type) {
+    case "number": {
+      let quantity: English.Quantity;
+      if (word.number === 1) {
+        quantity = "singular";
+      } else {
+        quantity = "plural";
+      }
+      return new Output([{
+        type: "determiner",
+        determiner: {
+          determiner: {
+            word: `${word.number}`,
+            emphasis: word.emphasis != null,
+          },
+          kind: "numeral",
+          quantity,
+        },
+      } as ModifierTranslation]);
+    }
+    case "x ala x":
+      return new Output();
+    case "default":
+    case "reduplication": {
+      let count: number;
       switch (word.type) {
-        case "number": {
-          let quantity: English.Quantity;
-          if (word.number === 1) {
-            quantity = "singular";
-          } else {
-            quantity = "plural";
-          }
-          return new Output([{
-            type: "determiner",
-            determiner: {
-              determiner: {
-                word: `${word.number}`,
-                emphasis: word.emphasis != null,
-              },
-              kind: "numeral",
-              quantity,
-            },
-          } as ModifierTranslation]);
-        }
-        case "x ala x":
-          return new Output();
         case "default":
-        case "reduplication": {
-          let count: number;
-          switch (word.type) {
-            case "default":
-              count = 1;
-              break;
-            case "reduplication":
-              count = word.count;
-              break;
-          }
-          return new Output(DICTIONARY[word.word]).filterMap((definition) => {
-            switch (definition.type) {
-              case "noun":
-              case "personal pronoun":
-                return null;
-              case "determiner":
-                return null;
-              case "adjective":
-                return {
-                  type: "adjective",
-                  adjective: {
+          count = 1;
+          break;
+        case "reduplication":
+          count = word.count;
+          break;
+      }
+      return new Output(DICTIONARY[word.word]).filterMap((definition) => {
+        switch (definition.type) {
+          case "noun":
+          case "personal pronoun":
+            return null;
+          case "determiner":
+            return null;
+          case "adjective":
+            return {
+              type: "adjective",
+              adjective: {
+                type: "simple",
+                kind: definition.kind,
+                adverbs: definition.adverb.map(unemphasized),
+                adjective: {
+                  word: repeat(definition.adjective, count),
+                  emphasis: word.emphasis != null,
+                },
+              },
+            } as ModifierTranslation;
+          case "compound adjective":
+            if (word.type === "default") {
+              return {
+                type: "adjective",
+                adjective: {
+                  type: "compound",
+                  conjunction: "and",
+                  adjectives: definition.adjective.map((adjective) => ({
                     type: "simple",
-                    kind: definition.kind,
-                    adverbs: definition.adverb.map(unemphasized),
+                    kind: adjective.kind,
+                    adverbs: adjective.adverb.map(unemphasized),
                     adjective: {
-                      word: repeat(definition.adjective, count),
+                      word: adjective.adjective,
                       emphasis: word.emphasis != null,
                     },
-                  },
-                } as ModifierTranslation;
-              case "compound adjective":
-                if (word.type === "default") {
-                  return {
-                    type: "adjective",
-                    adjective: {
-                      type: "compound",
-                      conjunction: "and",
-                      adjectives: definition.adjective.map((adjective) => ({
-                        type: "simple",
-                        kind: adjective.kind,
-                        adverbs: adjective.adverb.map(unemphasized),
-                        adjective: {
-                          word: adjective.adjective,
-                          emphasis: word.emphasis != null,
-                        },
-                      })),
-                    },
-                  } as ModifierTranslation;
-                } else {
-                  return null;
-                }
-              case "adverb":
-                return {
-                  type: "adverb",
-                  adverb: {
-                    word: definition.adverb,
-                    emphasis: word.emphasis != null,
-                  },
-                } as ModifierTranslation;
-              default:
-                return null;
+                  })),
+                },
+              } as ModifierTranslation;
+            } else {
+              return null;
             }
-          });
+          case "adverb":
+            return {
+              type: "adverb",
+              adverb: {
+                word: definition.adverb,
+                emphasis: word.emphasis != null,
+              },
+            } as ModifierTranslation;
+          default:
+            return null;
         }
-      }
+      });
     }
-    // unreachable
-    // fallthrough
+  }
+}
+function modifier(modifier: TokiPona.Modifier): Output<ModifierTranslation> {
+  switch (modifier.type) {
+    case "default":
+      return defaultModifier(modifier.word);
     case "proper words":
       return new Output([{ type: "name", name: modifier.words }]);
     case "pi":
