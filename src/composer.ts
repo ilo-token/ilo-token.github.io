@@ -51,9 +51,8 @@ function adjective(phrases: AdjectivePhrase): string {
   let text: string;
   switch (phrases.type) {
     case "simple":
-      text = [...phrases.adverb.map(word), word(phrases.adjective)].join(
-        " ",
-      );
+      text = [...phrases.adverb.map(word), word(phrases.adjective)]
+        .join(" ");
       break;
     case "compound":
       text = compound(phrases.adjective.map(adjective), phrases.conjunction);
@@ -80,7 +79,7 @@ function clause(clause: Clause): string {
           text = adjective(verb.adjective);
           break;
       }
-      return [text!, verb.preposition.map(preposition)].join(" ");
+      return [text!, ...verb.preposition.map(preposition)].join(" ");
     }
     // unreachable
     // fallthrough
