@@ -404,10 +404,15 @@ type PhraseTranslation =
     adjective: English.AdjectivePhrase;
     inWayPhrase: English.NounPhrase;
   };
+function defaultPhrase(
+  phrase: TokiPona.Phrase & { type: "default" },
+): Output<PhraseTranslation> {
+  return new Output(new TodoError(`translation of ${phrase.type}`));
+}
 function phrase(phrase: TokiPona.Phrase): Output<PhraseTranslation> {
   switch (phrase.type) {
     case "default":
-      return new Output(new TodoError(`translation of ${phrase.type}`));
+      return defaultPhrase(phrase);
     case "preverb":
     case "preposition":
       return new Output();
