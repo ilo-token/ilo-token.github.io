@@ -185,9 +185,6 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
       }
       return new Output(DICTIONARY[word.word]).flatMap((definition) => {
         switch (definition.type) {
-          // The noun node needs these to have numbers, but modifier numbers
-          // will never be read so its fine to assign it as any value, and we
-          // used "both"
           case "noun":
             return noun(definition, emphasis, count)
               .map((noun) =>
