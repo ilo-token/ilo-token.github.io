@@ -61,11 +61,11 @@ type ModifierTranslation =
 function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
   switch (word.type) {
     case "number": {
-      let quantity: English.Quantity;
+      let number: English.Quantity;
       if (word.number === 1) {
-        quantity = "singular";
+        number = "singular";
       } else {
-        quantity = "plural";
+        number = "plural";
       }
       return new Output([{
         type: "determiner",
@@ -75,7 +75,7 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
             emphasis: word.emphasis != null,
           },
           kind: "numeral",
-          quantity,
+          number,
         },
       } as ModifierTranslation]);
     }
@@ -110,7 +110,7 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
                       word: repeat(determiner, count),
                       emphasis: word.emphasis != null,
                     },
-                    quantity: definition.number,
+                    number: definition.number,
                   },
                 }) as ModifierTranslation
               );
@@ -120,7 +120,7 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
               adjective: {
                 type: "simple",
                 kind: definition.kind,
-                adverbs: definition.adverb.map(unemphasized),
+                adverb: definition.adverb.map(unemphasized),
                 adjective: {
                   word: repeat(definition.adjective, count),
                   emphasis: word.emphasis != null,
@@ -134,10 +134,10 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
                 adjective: {
                   type: "compound",
                   conjunction: "and",
-                  adjectives: definition.adjective.map((adjective) => ({
+                  adjective: definition.adjective.map((adjective) => ({
                     type: "simple",
                     kind: adjective.kind,
-                    adverbs: adjective.adverb.map(unemphasized),
+                    adverb: adjective.adverb.map(unemphasized),
                     adjective: {
                       word: adjective.adjective,
                       emphasis: word.emphasis != null,
@@ -215,13 +215,13 @@ function multiplePhrases(
                   return [noun];
                 }
               });
-            let quantity: English.Quantity;
+            let number: English.Quantity;
             switch (conjunction) {
               case "and":
-                quantity = "plural";
+                number = "plural";
                 break;
               case "or":
-                quantity = nouns[nouns.length - 1].quantity;
+                number = nouns[nouns.length - 1].number;
                 break;
             }
             return {
@@ -231,7 +231,7 @@ function multiplePhrases(
                 conjunction,
                 nouns,
                 preposition: [],
-                quantity,
+                number,
               },
             } as PhraseTranslation;
           } else if (phrases.every((phrase) => phrase.type === "adjective")) {
@@ -239,14 +239,14 @@ function multiplePhrases(
               type: "adjective",
               adjective: {
                 type: "compound",
-                adjectives: phrases
+                adjective: phrases
                   .map((adjective) => adjective.adjective)
                   .flatMap((adjective) => {
                     if (
                       adjective.type === "compound" &&
                       adjective.conjunction === conjunction
                     ) {
-                      return adjective.adjectives;
+                      return adjective.adjective;
                     } else {
                       return [adjective];
                     }

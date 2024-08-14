@@ -14,41 +14,41 @@ export type DeterminerType = OriginalDeterminerType | "numeral";
 export type NounPhrase =
   | {
     type: "simple";
-    determiners: Array<Determiner>;
-    adjectives: Array<AdjectivePhrase>;
+    determiner: Array<Determiner>;
+    adjective: Array<AdjectivePhrase>;
     noun: Word;
-    quantity: Quantity;
+    number: Quantity;
     preposition: Array<Preposition>;
   }
   | {
     type: "compound";
     conjunction: string;
     nouns: Array<NounPhrase>;
-    quantity: Quantity;
+    number: Quantity;
     preposition: Array<Preposition>;
   };
 export type Determiner = {
   type: "default";
   kind: DeterminerType;
   determiner: Word;
-  quantity: Quantity;
+  number: Quantity;
 };
 export type AdjectivePhrase =
   | {
     type: "simple";
     kind: AdjectiveType;
-    adverbs: Array<Word>;
+    adverb: Array<Word>;
     adjective: Word;
   }
   | {
     type: "compound";
     conjunction: string;
-    adjectives: Array<AdjectivePhrase>;
+    adjective: Array<AdjectivePhrase>;
   };
 export type VerbPhrase =
   | {
     type: "default";
-    adverbs: Array<Word>;
+    adverb: Array<Word>;
     verb: Word;
     preposition: Array<Preposition>;
   }
