@@ -29,6 +29,28 @@ function condenseVerb(present: string, past: string): string {
 function unemphasized(word: string): English.Word {
   return { word, emphasis: false };
 }
+function singularPluralForms(
+  singular: null | string,
+  plural: null | string,
+): Array<string> {
+  switch (settings.get("number-settings")) {
+    case "both":
+      return [
+        ...nullableAsArray(singular),
+        ...nullableAsArray(plural),
+      ];
+    case "condensed":
+      if (singular != null && plural != null) {
+        return [condense(singular, plural)];
+      } else if (singular != null) {
+        return [singular];
+      } else {
+        return [plural!];
+      }
+    case "default only":
+      return [singular ?? plural!];
+  }
+}
 type ModifierTranslation =
   | { type: "noun"; noun: English.NounPhrase }
   | { type: "adjective"; adjective: English.AdjectivePhrase }
@@ -510,29 +532,8 @@ function sentence(
     );
   }
 }
-function nounOnlyAsPlainString(
-  noun: { singular: null | string; plural: null | string },
-): Array<string> {
-  switch (settings.get("number-settings")) {
-    case "both":
-      return [
-        ...nullableAsArray(noun.singular),
-        ...nullableAsArray(noun.plural),
-      ];
-    case "condensed":
-      if (noun.singular != null && noun.plural != null) {
-        return [condense(noun.singular, noun.plural)];
-      } else if (noun.singular != null) {
-        return [noun.singular];
-      } else {
-        return [noun.plural!];
-      }
-    case "default only":
-      return [noun.singular ?? noun.plural!];
-  }
-}
 function nounAsPlainString(definition: Noun): Array<string> {
-  return nounOnlyAsPlainString(definition)
+  return singularPluralForms(definition.singular, definition.plural)
     .map((noun) =>
       [
         ...definition.determiner.map((determiner) => determiner.determiner),
@@ -596,10 +597,7 @@ function definitionAsPlainString(definition: Definition): Array<string> {
       }
     }
     case "determiner":
-      return nounOnlyAsPlainString({
-        singular: definition.determiner,
-        plural: definition.plural,
-      });
+      return singularPluralForms(definition.determiner, definition.plural);
     case "adverb":
       return [definition.adverb];
     case "interjection":
