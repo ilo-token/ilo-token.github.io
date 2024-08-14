@@ -10,3 +10,6 @@ export function nullableAsArray<T>(
 export function repeat(text: string, count: number): string {
   return new Array(count).fill(text).join("");
 }
+export function repeatWithSpace(text: string, count: number): string {
+  return new Array(count).fill(text).join(" ");
+}

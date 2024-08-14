@@ -2,7 +2,7 @@ import { parse } from "./ast-parser.ts";
 import * as TokiPona from "./ast.ts";
 import * as English from "./english-ast.ts";
 import { TodoError } from "./error.ts";
-import { nullableAsArray, repeat } from "./misc.ts";
+import { nullableAsArray, repeat, repeatWithSpace } from "./misc.ts";
 import { Output } from "./output.ts";
 import { settings } from "./settings.ts";
 import { DICTIONARY } from "dictionary/dictionary.ts";
@@ -60,7 +60,7 @@ function determiner(
     .map((determiner) => ({
       kind: definition.kind,
       determiner: {
-        word: repeat(determiner, count),
+        word: repeatWithSpace(determiner, count),
         emphasis,
       },
       number: definition.number,
@@ -93,7 +93,7 @@ function adjective(
       kind: definition.kind,
       adverb: [...definition.adverb, ...nullableAsArray(so)].map(unemphasized),
       adjective: {
-        word: repeat(definition.adjective, count),
+        word: repeatWithSpace(definition.adjective, count),
         emphasis,
       },
       emphasis: false,
@@ -178,7 +178,7 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
                     type: "simple",
                     determiner,
                     adjective,
-                    noun: { word: repeat(noun, count), emphasis },
+                    noun: { word: repeatWithSpace(noun, count), emphasis },
                     useAm: false,
                     number: "both",
                     postCompound: null,
