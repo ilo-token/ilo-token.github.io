@@ -29,26 +29,61 @@ function condenseVerb(present: string, past: string): string {
 function unemphasized(word: string): English.Word {
   return { word, emphasis: false };
 }
+function findNumber(
+  determiner: Array<English.Determiner>,
+): null | Dictionary.Quantity {
+  const quantity = determiner.map((determiner) => determiner.number);
+  if (quantity.every((quantity) => quantity === "both")) {
+    return "both";
+  } else if (
+    quantity.every((quantity) => quantity !== "plural") &&
+    quantity.some((quantity) => quantity === "singular")
+  ) {
+    return "singular";
+  } else if (
+    quantity.every((quantity) => quantity !== "singular") &&
+    quantity.some((quantity) => quantity === "plural")
+  ) {
+    return "plural";
+  } else {
+    return null;
+  }
+}
 function singularPluralForms(
   singular: undefined | null | string,
   plural: undefined | null | string,
-): Array<string> {
-  switch (settings.get("number-settings")) {
+  determinerNumber: Dictionary.Quantity,
+): Array<{ noun: string; number: English.Quantity }> {
+  switch (determinerNumber) {
     case "both":
-      return [
-        ...nullableAsArray(singular),
-        ...nullableAsArray(plural),
-      ];
-    case "condensed":
-      if (singular != null && plural != null) {
-        return [condense(singular, plural)];
-      } else if (singular != null) {
-        return [singular];
-      } else {
-        return [plural!];
+      switch (settings.get("number-settings")) {
+        case "both":
+          return [
+            ...nullableAsArray(singular)
+              .map((noun) => ({ noun, number: "singular" as const })),
+            ...nullableAsArray(plural)
+              .map((noun) => ({ noun, number: "plural" as const })),
+          ];
+        case "condensed":
+          if (singular != null && plural != null) {
+            return [{ noun: condense(singular, plural), number: "condensed" }];
+          }
+          // fallthrough
+        case "default only":
+          if (singular != null) {
+            return [{ noun: singular, number: "singular" }];
+          } else {
+            return [{ noun: plural!, number: "plural" }];
+          }
       }
-    case "default only":
-      return [singular ?? plural!];
+      // unreachable
+      // fallthrough
+    case "singular":
+      return nullableAsArray(singular)
+        .map((noun) => ({ noun, number: "singular" as const }));
+    case "plural":
+      return nullableAsArray(plural)
+        .map((noun) => ({ noun, number: "plural" as const }));
   }
 }
 function noun(
@@ -64,32 +99,38 @@ function noun(
     ...definition.adjective
       .map((definition) => new Output(adjective(definition, null, 1))),
   );
-  const noun = new Output(
-    singularPluralForms(definition.singular, definition.plural),
-  );
-  return Output.combine(noun, engDeterminer, engAdjective)
-    .map(([noun, determiner, adjective]) => ({
-      type: "simple",
-      determiner,
-      adjective,
-      noun: { word: repeatWithSpace(noun, count), emphasis },
-      useAm: false,
-      number: "both",
-      postCompound: null,
-      postAdjective: definition.postAdjective,
-      preposition: [],
-    }));
+  return Output.combine(engDeterminer, engAdjective)
+    .flatMap(([determiner, adjective]) => {
+      const number = findNumber(determiner);
+      if (number == null) {
+        return new Output();
+      }
+      return new Output(
+        singularPluralForms(definition.singular, definition.plural, number),
+      )
+        .map((noun) => ({
+          type: "simple",
+          determiner,
+          adjective,
+          noun: { word: repeatWithSpace(noun.noun, count), emphasis },
+          useAm: false,
+          number: noun.number,
+          postCompound: null,
+          postAdjective: definition.postAdjective,
+          preposition: [],
+        }));
+    });
 }
 function determiner(
   definition: Dictionary.Determiner,
   emphasis: boolean,
   count: number,
 ): Array<English.Determiner> {
-  return singularPluralForms(definition.determiner, definition.plural)
+  return singularPluralForms(definition.determiner, definition.plural, "both")
     .map((determiner) => ({
       kind: definition.kind,
       determiner: {
-        word: repeatWithSpace(determiner, count),
+        word: repeatWithSpace(determiner.noun, count),
         emphasis,
       },
       number: definition.number,
@@ -207,6 +248,7 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
               singularPluralForms(
                 definition.singular?.object,
                 definition.plural?.object,
+                "both",
               ),
             )
               .map((pronoun) =>
@@ -216,7 +258,10 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
                     type: "simple",
                     determiner: [],
                     adjective: [],
-                    noun: { word: repeatWithSpace(pronoun, count), emphasis },
+                    noun: {
+                      word: repeatWithSpace(pronoun.noun, count),
+                      emphasis,
+                    },
                     useAm: false,
                     number: "both",
                     postCompound: null,
@@ -401,25 +446,6 @@ function multipleModifiers(
       }
       return Output.concat(adjectival, adverbial);
     });
-}
-function findNumber(
-  quantity: Array<English.Quantity>,
-): null | English.Quantity {
-  if (quantity.every((quantity) => quantity === "both")) {
-    return "both";
-  } else if (
-    quantity.every((quantity) => quantity !== "plural") &&
-    quantity.some((quantity) => quantity === "singular")
-  ) {
-    return "singular";
-  } else if (
-    quantity.every((quantity) => quantity !== "singular") &&
-    quantity.some((quantity) => quantity === "plural")
-  ) {
-    return "plural";
-  } else {
-    return null;
-  }
 }
 function fixDeterminer(
   determiner: Array<English.Determiner>,
@@ -952,12 +978,12 @@ function sentence(
   }
 }
 function nounAsPlainString(definition: Dictionary.Noun): Array<string> {
-  return singularPluralForms(definition.singular, definition.plural)
+  return singularPluralForms(definition.singular, definition.plural, "both")
     .map((noun) =>
       [
         ...definition.determiner.map((determiner) => determiner.determiner),
         ...definition.adjective.map((adjective) => adjective.adjective),
-        noun,
+        noun.noun,
         ...nullableAsArray(definition.postAdjective)
           .map((adjective) => `${adjective.adjective} ${adjective.name}`),
       ].join(" ")
@@ -1018,7 +1044,12 @@ function definitionAsPlainString(
       }
     }
     case "determiner":
-      return singularPluralForms(definition.determiner, definition.plural);
+      return singularPluralForms(
+        definition.determiner,
+        definition.plural,
+        "both",
+      )
+        .map((determiner) => determiner.noun);
     case "adverb":
       return [definition.adverb];
     case "interjection":
