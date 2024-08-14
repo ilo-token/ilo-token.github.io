@@ -309,7 +309,7 @@ function fixAdjective(
     }) as Array<English.AdjectivePhrase & { type: "simple" }>)
     .sort((a, b) => rankAdjective(a.kind) - rankAdjective(b.kind));
 }
-type MutlitpleModifierTranslation =
+type MultipleModifierTranslation =
   | {
     type: "adjectival";
     determiner: Array<English.Determiner>;
@@ -325,7 +325,7 @@ type MutlitpleModifierTranslation =
   };
 function multipleModifiers(
   modifiers: Array<TokiPona.Modifier>,
-): Output<null | MutlitpleModifierTranslation> {
+): Output<null | MultipleModifierTranslation> {
   if (modifiers.length === 0) {
     return new Output([null]);
   } else {
