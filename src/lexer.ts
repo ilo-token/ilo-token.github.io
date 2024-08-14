@@ -117,7 +117,7 @@ function singleUcsurWord(): Parser<string> {
 /** Parses a joiner. */
 function joiner(): Parser<string> {
   return choiceOnlyOne(
-    match(/\u200D/, "zero width joiner").map(([_, joiner]) => joiner),
+    match(/\u200D/, "zero width joiner").map((_) => "zero width joiner"),
     specificUcsurCharacter(STACKING_JOINER, "stacking joiner"),
     specificUcsurCharacter(SCALING_JOINER, "scaling joiner"),
   );
