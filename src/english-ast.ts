@@ -28,7 +28,6 @@ export type NounPhrase =
     conjunction: string;
     nouns: Array<NounPhrase>;
     number: Quantity;
-    preposition: Array<Preposition>;
   };
 export type Determiner = {
   kind: DeterminerType;
@@ -87,7 +86,6 @@ export type Clause =
   | {
     type: "implied it's";
     verb: VerbPhrase;
-    preposition: Array<Preposition>;
   }
   | { type: "interjection"; interjection: Word }
   | { type: "vocative"; call: string; addressee: NounPhrase }
