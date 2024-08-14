@@ -41,11 +41,13 @@ export type AdjectivePhrase =
     kind: AdjectiveType;
     adverb: Array<Word>;
     adjective: Word;
+    emphasis: boolean;
   }
   | {
     type: "compound";
     conjunction: string;
     adjective: Array<AdjectivePhrase>;
+    emphasis: boolean;
   };
 export type VerbPhrase =
   | {

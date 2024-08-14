@@ -70,7 +70,7 @@ function adjective(
   definition: Dictionary.Adjective,
   emphasis: null | TokiPona.Emphasis,
   count = 1,
-): Array<English.AdjectivePhrase> {
+): Array<English.AdjectivePhrase & { type: "simple" }> {
   let so: null | string;
   if (emphasis == null) {
     so = null;
@@ -96,6 +96,22 @@ function adjective(
         word: repeat(definition.adjective, count),
         emphasis,
       },
+      emphasis: false,
+    }));
+}
+function compoundAdjective(
+  definition: Dictionary.Definition & { type: "compound adjective" },
+  emphasis: null | TokiPona.Emphasis,
+): Output<English.AdjectivePhrase & { type: "compound" }> {
+  return Output.combine(
+    ...definition.adjective
+      .map((definition) => new Output(adjective(definition, emphasis))),
+  )
+    .map((adjective) => ({
+      type: "compound",
+      conjunction: "and",
+      adjective,
+      emphasis: false,
     }));
 }
 type ModifierTranslation =
@@ -215,20 +231,11 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
               );
           case "compound adjective":
             if (word.type === "default") {
-              return Output.combine(
-                ...definition.adjective
-                  .map((definition) =>
-                    new Output(adjective(definition, word.emphasis))
-                  ),
-              )
+              return compoundAdjective(definition, word.emphasis)
                 .map((adjective) =>
                   ({
                     type: "adjective",
-                    adjective: {
-                      type: "compound",
-                      conjunction: "and",
-                      adjective,
-                    },
+                    adjective,
                   }) as ModifierTranslation
                 );
             } else {
@@ -473,15 +480,83 @@ type PhraseTranslation =
   | {
     type: "adjective";
     adjective: English.AdjectivePhrase;
-    inWayPhrase: English.NounPhrase;
+    inWayPhrase: null | English.NounPhrase;
   };
 function defaultPhrase(
   phrase: TokiPona.Phrase & { type: "default" },
   place: "subject" | "object",
 ): Output<PhraseTranslation> {
+  const headWord = phrase.headWord;
+  if (headWord.type === "x ala x") {
+    return new Output();
+  }
+  let count: number;
+  switch (headWord.type) {
+    case "default":
+    case "number":
+      count = 1;
+      break;
+    case "reduplication":
+      count = headWord.count;
+      break;
+  }
   return multipleModifiers(phrase.modifiers)
     .flatMap((modifier) => {
-      throw new Error("todo");
+      switch (modifier.type) {
+        case "adjectival":
+          return new Output(new TodoError("translation to noun"));
+        case "adverbial": {
+          if (headWord.type === "number") {
+            return new Output();
+          }
+          return new Output(DICTIONARY[headWord.word])
+            .flatMap((definition) => {
+              switch (definition.type) {
+                case "adjective":
+                  return new Output(
+                    adjective(definition, headWord.emphasis, count),
+                  )
+                    .map((adjective) =>
+                      ({
+                        type: "adjective",
+                        adjective: {
+                          type: "simple",
+                          kind: adjective.kind,
+                          adverb: [
+                            ...modifier.adverb.reverse(),
+                            ...adjective.adverb,
+                          ],
+                          adjective: adjective.adjective,
+                          emphasis: phrase.emphasis != null,
+                        },
+                      }) as PhraseTranslation
+                    );
+                case "compound adjective":
+                  if (
+                    headWord.type === "default" && modifier.adverb.length === 0
+                  ) {
+                    return compoundAdjective(definition, headWord.emphasis)
+                      .map((adjective) =>
+                        ({
+                          type: "adjective",
+                          adjective: {
+                            type: "compound",
+                            conjunction: "and",
+                            adjective: adjective.adjective,
+                            emphasis: phrase.emphasis != null,
+                          },
+                          inWayPhrase: modifier.inWayPhrase,
+                        }) as PhraseTranslation
+                      );
+                  } else {
+                    return new Output();
+                  }
+                default:
+                  return new Output();
+              }
+            });
+        }
+      }
     });
 }
 function phrase(
