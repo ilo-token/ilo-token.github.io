@@ -20,7 +20,7 @@ export type NounPhrase =
     number: Quantity;
     useAm: boolean;
     postCompound: null | NounPhrase;
-    postAdjective: null | { adjective: Word; name: string };
+    postAdjective: null | { adjective: string; name: string };
     preposition: Array<Preposition>;
   }
   | {

@@ -51,10 +51,39 @@ function singularPluralForms(
       return [singular ?? plural!];
   }
 }
+function noun(
+  definition: Dictionary.Noun,
+  emphasis: boolean,
+  count: number,
+): Output<English.NounPhrase> {
+  const engDeterminer = Output.combine(
+    ...definition.determiner
+      .map((definition) => new Output(determiner(definition, false, 1))),
+  );
+  const engAdjective = Output.combine(
+    ...definition.adjective
+      .map((definition) => new Output(adjective(definition, null, 1))),
+  );
+  const noun = new Output(
+    singularPluralForms(definition.singular, definition.plural),
+  );
+  return Output.combine(noun, engDeterminer, engAdjective)
+    .map(([noun, determiner, adjective]) => ({
+      type: "simple",
+      determiner,
+      adjective,
+      noun: { word: repeatWithSpace(noun, count), emphasis },
+      useAm: false,
+      number: "both",
+      postCompound: null,
+      postAdjective: definition.postAdjective,
+      preposition: [],
+    }));
+}
 function determiner(
   definition: Dictionary.Determiner,
-  emphasis = false,
-  count = 1,
+  emphasis: boolean,
+  count: number,
 ): Array<English.Determiner> {
   return singularPluralForms(definition.determiner, definition.plural)
     .map((determiner) => ({
@@ -69,7 +98,7 @@ function determiner(
 function adjective(
   definition: Dictionary.Adjective,
   emphasis: null | TokiPona.Emphasis,
-  count = 1,
+  count: number,
 ): Array<English.AdjectivePhrase & { type: "simple" }> {
   let so: null | string;
   if (emphasis == null) {
@@ -105,7 +134,7 @@ function compoundAdjective(
 ): Output<English.AdjectivePhrase & { type: "compound" }> {
   return Output.combine(
     ...definition.adjective
-      .map((definition) => new Output(adjective(definition, emphasis))),
+      .map((definition) => new Output(adjective(definition, emphasis, 1))),
   )
     .map((adjective) => ({
       type: "compound",
@@ -116,6 +145,7 @@ function compoundAdjective(
 }
 type ModifierTranslation =
   | { type: "noun"; noun: English.NounPhrase }
+  | { type: "noun preposition"; noun: English.NounPhrase; preposition: string }
   | { type: "adjective"; adjective: English.AdjectivePhrase }
   | { type: "determiner"; determiner: English.Determiner }
   | { type: "adverb"; adverb: English.Word }
@@ -158,36 +188,23 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
           // The noun node needs these to have numbers, but modifier numbers
           // will never be read so its fine to assign it as any value, and we
           // used "both"
-          case "noun": {
-            const engDeterminer = Output.combine(
-              ...definition.determiner
-                .map((definition) => new Output(determiner(definition))),
-            );
-            const engAdjective = Output.combine(
-              ...definition.adjective
-                .map((definition) => new Output(adjective(definition, null))),
-            );
-            const noun = new Output(
-              singularPluralForms(definition.singular, definition.plural),
-            );
-            return Output.combine(noun, engDeterminer, engAdjective)
-              .map(([noun, determiner, adjective]) =>
+          case "noun":
+            return noun(definition, emphasis, count)
+              .map((noun) =>
                 ({
                   type: "noun",
-                  noun: {
-                    type: "simple",
-                    determiner,
-                    adjective,
-                    noun: { word: repeatWithSpace(noun, count), emphasis },
-                    useAm: false,
-                    number: "both",
-                    postCompound: null,
-                    postAdjective: definition.postAdjective,
-                    preposition: [],
-                  },
+                  noun,
                 }) as ModifierTranslation
               );
-          }
+          case "noun preposition":
+            return noun(definition.noun, emphasis, count)
+              .map((noun) =>
+                ({
+                  type: "noun preposition",
+                  noun,
+                  preposition: definition.preposition,
+                }) as ModifierTranslation
+              );
           case "personal pronoun":
             return new Output(
               singularPluralForms(
@@ -298,11 +315,11 @@ function modifier(modifier: TokiPona.Modifier): Output<ModifierTranslation> {
 type MultipleModifierTranslation =
   | {
     type: "adjectival";
+    nounPreposition: null | { noun: English.NounPhrase; preposition: string };
     determiner: Array<English.Determiner>;
     adjective: Array<English.AdjectivePhrase>;
     name: null | string;
     inPositionPhrase: null | English.NounPhrase;
-    ofPhrase: null | English.NounPhrase;
   }
   | {
     type: "adverbial";
@@ -318,6 +335,8 @@ function multipleModifiers(
       const noun = modifiers
         .filter((modifier) => modifier.type === "noun")
         .map((modifier) => modifier.noun);
+      const nounPreposition = modifiers
+        .filter((modifier) => modifier.type === "noun preposition");
       const determiner = modifiers
         .filter((modifier) => modifier.type === "determiner")
         .map((modifier) => modifier.determiner);
@@ -336,11 +355,13 @@ function multipleModifiers(
       let adjectival: Output<MultipleModifierTranslation>;
       if (
         noun.length <= 1 &&
+        nounPreposition.length <= 1 &&
         adverb.length === 0 &&
         inPositionPhrase.length <= 1
       ) {
         adjectival = new Output([{
           type: "adjectival",
+          nounPreposition: nounPreposition[0] ?? null,
           determiner,
           adjective,
           name: name[0] ?? null,
