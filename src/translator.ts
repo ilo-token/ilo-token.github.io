@@ -94,22 +94,26 @@ function modifier(modifier: TokiPona.Modifier): Output<ModifierTranslation> {
                   },
                 } as ModifierTranslation;
               case "compound adjective":
-                return {
-                  type: "adjective",
-                  adjective: {
-                    type: "compound",
-                    conjunction: "and",
-                    adjectives: definition.adjective.map((adjective) => ({
-                      type: "simple",
-                      kind: adjective.kind,
-                      adverbs: adjective.adverb.map(unemphasized),
-                      adjective: {
-                        word: repeat(adjective.adjective, count),
-                        emphasis: word.emphasis != null,
-                      },
-                    })),
-                  },
-                } as ModifierTranslation;
+                if (word.type === "default") {
+                  return {
+                    type: "adjective",
+                    adjective: {
+                      type: "compound",
+                      conjunction: "and",
+                      adjectives: definition.adjective.map((adjective) => ({
+                        type: "simple",
+                        kind: adjective.kind,
+                        adverbs: adjective.adverb.map(unemphasized),
+                        adjective: {
+                          word: adjective.adjective,
+                          emphasis: word.emphasis != null,
+                        },
+                      })),
+                    },
+                  } as ModifierTranslation;
+                } else {
+                  return null;
+                }
               case "adverb":
                 return {
                   type: "adverb",
