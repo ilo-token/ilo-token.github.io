@@ -673,7 +673,11 @@ function clause(clause: TokiPona.Clause): Output<English.Clause> {
                   emphasis: false,
                 },
                 adjective: phrase.adjective,
-                preposition: [],
+                preposition: nullableAsArray(phrase.inWayPhrase)
+                  .map((object) => ({
+                    preposition: { word: "in", emphasis: false },
+                    object,
+                  })),
               },
               preposition: [],
             } as English.Clause;
