@@ -7,6 +7,7 @@ import { nullableAsArray, repeat } from "./misc.ts";
 import { Output } from "./output.ts";
 import { settings } from "./settings.ts";
 import { DICTIONARY } from "dictionary/dictionary.ts";
+import * as Dictionary from "dictionary/type.ts";
 
 const CONJUNCTION = { "and conjunction": "and", "anu": "or" } as const;
 
@@ -50,6 +51,38 @@ function singularPluralForms(
     case "default only":
       return [singular ?? plural!];
   }
+}
+function determiner(
+  definition: Dictionary.Determiner,
+  count = 1,
+  emphasis = false,
+): Output<English.Determiner> {
+  return new Output(
+    singularPluralForms(definition.determiner, definition.plural),
+  )
+    .map((determiner) => ({
+      kind: definition.kind,
+      determiner: {
+        word: repeat(determiner, count),
+        emphasis,
+      },
+      number: definition.number,
+    }));
+}
+function adjective(
+  definition: Dictionary.Adjective,
+  count = 1,
+  emphasis = false,
+): English.AdjectivePhrase {
+  return {
+    type: "simple",
+    kind: definition.kind,
+    adverb: definition.adverb.map(unemphasized),
+    adjective: {
+      word: repeat(definition.adjective, count),
+      emphasis,
+    },
+  };
 }
 type ModifierTranslation =
   | { type: "noun"; noun: English.NounPhrase }
@@ -98,34 +131,17 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
           case "personal pronoun":
             return new Output();
           case "determiner":
-            return new Output(
-              singularPluralForms(definition.determiner, definition.plural),
-            )
+            return determiner(definition)
               .map((determiner) =>
                 ({
                   type: "determiner",
-                  determiner: {
-                    kind: definition.kind,
-                    determiner: {
-                      word: repeat(determiner, count),
-                      emphasis: word.emphasis != null,
-                    },
-                    number: definition.number,
-                  },
+                  determiner,
                 }) as ModifierTranslation
               );
           case "adjective":
             return new Output([{
               type: "adjective",
-              adjective: {
-                type: "simple",
-                kind: definition.kind,
-                adverb: definition.adverb.map(unemphasized),
-                adjective: {
-                  word: repeat(definition.adjective, count),
-                  emphasis: word.emphasis != null,
-                },
-              },
+              adjective: adjective(definition, count, word.emphasis != null),
             } as ModifierTranslation]);
           case "compound adjective":
             if (word.type === "default") {
@@ -134,15 +150,10 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
                 adjective: {
                   type: "compound",
                   conjunction: "and",
-                  adjective: definition.adjective.map((adjective) => ({
-                    type: "simple",
-                    kind: adjective.kind,
-                    adverb: adjective.adverb.map(unemphasized),
-                    adjective: {
-                      word: adjective.adjective,
-                      emphasis: word.emphasis != null,
-                    },
-                  })),
+                  adjective: definition.adjective
+                    .map((definition) =>
+                      adjective(definition, 1, word.emphasis != null)
+                    ),
                 },
               } as ModifierTranslation]);
             } else {

@@ -18,6 +18,7 @@ export type NounPhrase =
     adjective: Array<AdjectivePhrase>;
     noun: Word;
     number: Quantity;
+    postAdjective: null | { adjective: Word; name: string };
     preposition: Array<Preposition>;
   }
   | {
@@ -28,7 +29,6 @@ export type NounPhrase =
     preposition: Array<Preposition>;
   };
 export type Determiner = {
-  type: "default";
   kind: DeterminerType;
   determiner: Word;
   number: Quantity;
