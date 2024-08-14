@@ -1,4 +1,3 @@
-import { Definition, Noun } from "dictionary/type.ts";
 import { parse } from "./ast-parser.ts";
 import * as TokiPona from "./ast.ts";
 import * as English from "./english-ast.ts";
@@ -280,6 +279,92 @@ function modifier(modifier: TokiPona.Modifier): Output<ModifierTranslation> {
       return new Output(new TodoError(`translation of ${modifier.type}`));
   }
 }
+type MultipleModifierTranslation =
+  | {
+    type: "adjectival";
+    determiner: Array<English.Determiner>;
+    adjective: Array<English.AdjectivePhrase>;
+    name: string;
+    inPositionPhrase: null | English.NounPhrase;
+    ofPhrase: null | English.NounPhrase;
+  }
+  | {
+    type: "adverbial";
+    adverb: Array<English.Word>;
+    inWayPhrase: null | English.NounPhrase;
+  };
+function multipleModifiers(
+  modifiers: Array<TokiPona.Modifier>,
+): Output<null | MultipleModifierTranslation> {
+  if (modifiers.length === 0) {
+    return new Output([null]);
+  } else {
+    return Output
+      .combine(...modifiers.map(modifier))
+      .map((modifiers) => {
+        const noun = modifiers
+          .filter((modifier) => modifier.type === "noun")
+          .map((modifier) => modifier.noun);
+        const determiner = modifiers
+          .filter((modifier) => modifier.type === "determiner")
+          .map((modifier) => modifier.determiner);
+        const adjective = modifiers
+          .filter((modifier) => modifier.type === "adjective")
+          .map((modifier) => modifier.adjective);
+        const adverb = modifiers
+          .filter((modifier) => modifier.type === "adverb")
+          .map((modifier) => modifier.adverb);
+        const name = modifiers
+          .filter((modifier) => modifier.type === "name")
+          .map((modifier) => modifier.name);
+        const inPositionPhrase = modifiers
+          .filter((modifier) => modifier.type === "in position phrase")
+          .map((modifier) => modifier.noun);
+        if (
+          noun.length <= 1 &&
+          adverb.length === 0 &&
+          inPositionPhrase.length <= 1
+        ) {
+          return {
+            type: "adjectival",
+            determiner,
+            adjective,
+            name: name[0] ?? null,
+            inPositionPhrase: inPositionPhrase[0] ?? null,
+          } as MultipleModifierTranslation;
+        } else if (
+          noun.length === 0 &&
+          determiner.length === 0 &&
+          adjective.length <= 1 &&
+          name.length === 0 &&
+          inPositionPhrase.length === 0
+        ) {
+          let inWayPhrase: null | English.NounPhrase;
+          if (adjective.length > 1) {
+            inWayPhrase = {
+              type: "simple",
+              determiner: [],
+              adjective,
+              noun: { word: "way", emphasis: false },
+              number: "singular",
+              postCompound: null,
+              postAdjective: null,
+              preposition: [],
+            };
+          } else {
+            inWayPhrase = null;
+          }
+          return {
+            type: "adverbial",
+            adverb,
+            inWayPhrase,
+          } as MultipleModifierTranslation;
+        } else {
+          return null;
+        }
+      });
+  }
+}
 export function rankAdjective(kind: Dictionary.AdjectiveType): number {
   return [
     "opinion",
@@ -308,51 +393,6 @@ function fixAdjective(
       }
     }) as Array<English.AdjectivePhrase & { type: "simple" }>)
     .sort((a, b) => rankAdjective(a.kind) - rankAdjective(b.kind));
-}
-type MultipleModifierTranslation =
-  | {
-    type: "adjectival";
-    determiner: Array<English.Determiner>;
-    adjective: Array<English.AdjectivePhrase>;
-    name: string;
-    inPositionPhrase: null | English.NounPhrase;
-    ofPhrase: null | English.NounPhrase;
-  }
-  | {
-    type: "adverbial";
-    adverb: Array<English.Word>;
-    inWayPhrase: null | English.NounPhrase;
-  };
-function multipleModifiers(
-  modifiers: Array<TokiPona.Modifier>,
-): Output<null | MultipleModifierTranslation> {
-  if (modifiers.length === 0) {
-    return new Output([null]);
-  } else {
-    return Output
-      .combine(...modifiers.map(modifier))
-      .flatMap((modifiers) => {
-        const noun = modifiers
-          .filter((modifier) => modifier.type === "noun")
-          .map((modifier) => modifier.noun);
-        const determiner = modifiers
-          .filter((modifier) => modifier.type === "determiner")
-          .map((modifier) => modifier.determiner);
-        const adjective = modifiers
-          .filter((modifier) => modifier.type === "adjective")
-          .map((modifier) => modifier.adjective);
-        const adverb = modifiers
-          .filter((modifier) => modifier.type === "adverb")
-          .map((modifier) => modifier.adverb);
-        const name = modifiers
-          .filter((modifier) => modifier.type === "name")
-          .map((modifier) => modifier.name);
-        const inPositionPhrase = modifiers
-          .filter((modifier) => modifier.type === "in position phrase")
-          .map((modifier) => modifier.noun);
-        throw new Error("todo");
-      });
-  }
 }
 type PhraseTranslation =
   | { type: "noun"; noun: English.NounPhrase }
@@ -725,7 +765,7 @@ function sentence(
     );
   }
 }
-function nounAsPlainString(definition: Noun): Array<string> {
+function nounAsPlainString(definition: Dictionary.Noun): Array<string> {
   return singularPluralForms(definition.singular, definition.plural)
     .map((noun) =>
       [
@@ -755,7 +795,9 @@ function verbAsPlainString(
       return [verb.presentPlural];
   }
 }
-function definitionAsPlainString(definition: Definition): Array<string> {
+function definitionAsPlainString(
+  definition: Dictionary.Definition,
+): Array<string> {
   switch (definition.type) {
     case "noun":
       return nounAsPlainString(definition);
