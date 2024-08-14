@@ -49,7 +49,7 @@ function findNumber(
     return null;
   }
 }
-function singularPluralForms(
+function nounForms(
   singular: undefined | null | string,
   plural: undefined | null | string,
   determinerNumber: Dictionary.Quantity,
@@ -86,6 +86,12 @@ function singularPluralForms(
         .map((noun) => ({ noun, number: "plural" as const }));
   }
 }
+function simpleNounForms(
+  singular: undefined | null | string,
+  plural: undefined | null | string,
+): Array<string> {
+  return nounForms(singular, plural, "both").map((noun) => noun.noun);
+}
 function noun(
   definition: Dictionary.Noun,
   emphasis: boolean,
@@ -106,7 +112,7 @@ function noun(
         return new Output();
       }
       return new Output(
-        singularPluralForms(definition.singular, definition.plural, number),
+        nounForms(definition.singular, definition.plural, number),
       )
         .map((noun) => ({
           type: "simple",
@@ -125,11 +131,11 @@ function determiner(
   emphasis: boolean,
   count: number,
 ): Array<English.Determiner> {
-  return singularPluralForms(definition.determiner, definition.plural, "both")
+  return simpleNounForms(definition.determiner, definition.plural)
     .map((determiner) => ({
       kind: definition.kind,
       determiner: {
-        word: repeatWithSpace(determiner.noun, count),
+        word: repeatWithSpace(determiner, count),
         emphasis,
       },
       number: definition.number,
@@ -244,10 +250,9 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
               );
           case "personal pronoun":
             return new Output(
-              singularPluralForms(
+              simpleNounForms(
                 definition.singular?.object,
                 definition.plural?.object,
-                "both",
               ),
             )
               .map((pronoun) =>
@@ -258,7 +263,7 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
                     determiner: [],
                     adjective: [],
                     noun: {
-                      word: repeatWithSpace(pronoun.noun, count),
+                      word: repeatWithSpace(pronoun, count),
                       emphasis,
                     },
                     number: "both",
@@ -948,12 +953,12 @@ function sentence(
   }
 }
 function nounAsPlainString(definition: Dictionary.Noun): Array<string> {
-  return singularPluralForms(definition.singular, definition.plural, "both")
+  return simpleNounForms(definition.singular, definition.plural)
     .map((noun) =>
       [
         ...definition.determiner.map((determiner) => determiner.determiner),
         ...definition.adjective.map((adjective) => adjective.adjective),
-        noun.noun,
+        noun,
         ...nullableAsArray(definition.postAdjective)
           .map((adjective) => `${adjective.adjective} ${adjective.name}`),
       ].join(" ")
@@ -1014,12 +1019,7 @@ function definitionAsPlainString(
       }
     }
     case "determiner":
-      return singularPluralForms(
-        definition.determiner,
-        definition.plural,
-        "both",
-      )
-        .map((determiner) => determiner.noun);
+      return simpleNounForms(definition.determiner, definition.plural);
     case "adverb":
       return [definition.adverb];
     case "interjection":
