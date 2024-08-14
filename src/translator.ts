@@ -134,6 +134,7 @@ function modifier(modifier: TokiPona.Modifier): Output<ModifierTranslation> {
     case "proper words":
       return new Output([{ type: "name", name: modifier.words }]);
     case "pi":
+      return phrase(modifier.phrase);
     case "nanpa":
     case "quotation":
       return new Output(new TodoError(`translation of ${modifier.type}`));
