@@ -77,8 +77,22 @@ function modifier(modifier: TokiPona.Modifier): Output<ModifierTranslation> {
             switch (definition.type) {
               case "noun":
               case "personal pronoun":
+                return null;
               case "determiner":
+                return null;
               case "adjective":
+                return {
+                  type: "adjective",
+                  adjective: {
+                    type: "simple",
+                    kind: definition.kind,
+                    adverbs: definition.adverb.map(unemphasized),
+                    adjective: {
+                      word: repeat(definition.adjective, count),
+                      emphasis: word.emphasis != null,
+                    },
+                  },
+                } as ModifierTranslation;
               case "compound adjective":
                 return null;
               case "adverb":
