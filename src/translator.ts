@@ -414,7 +414,40 @@ function multipleModifiers(
       });
   }
 }
-export function rankAdjective(kind: Dictionary.AdjectiveType): number {
+function fixDeterminer(
+  determiner: Array<English.Determiner>,
+): null | Array<English.Determiner> {
+  const negative = determiner
+    .filter((determiner) => determiner.kind === "negative");
+  const first = determiner
+    .filter((determiner) =>
+      ["article", "demonstrative", "possessive"].includes(determiner.kind)
+    );
+  const distributive = determiner
+    .filter((determiner) => determiner.kind === "distributive");
+  const interrogative = determiner
+    .filter((determiner) => determiner.kind === "interrogative");
+  const numerical = determiner
+    .filter((determiner) =>
+      determiner.kind === "numeral" || determiner.kind === "quantifier"
+    );
+  if (
+    negative.length > 1 || first.length > 1 || distributive.length > 1 ||
+    interrogative.length > 1 || numerical.length > 1 ||
+    negative.length > 0 && interrogative.length > 0
+  ) {
+    return null;
+  } else {
+    return [
+      ...negative,
+      ...first,
+      ...distributive,
+      ...interrogative,
+      ...numerical,
+    ];
+  }
+}
+function rankAdjective(kind: Dictionary.AdjectiveType): number {
   return [
     "opinion",
     "size",
