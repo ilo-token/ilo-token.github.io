@@ -437,6 +437,7 @@ type PhraseTranslation =
   };
 function defaultPhrase(
   phrase: TokiPona.Phrase & { type: "default" },
+  place: "subject" | "object",
 ): Output<PhraseTranslation> {
   return new Output(new TodoError(`translation of ${phrase.type}`));
 }
@@ -446,7 +447,7 @@ function phrase(
 ): Output<PhraseTranslation> {
   switch (phrase.type) {
     case "default":
-      return defaultPhrase(phrase);
+      return defaultPhrase(phrase, place);
     case "preverb":
     case "preposition":
       return new Output();
