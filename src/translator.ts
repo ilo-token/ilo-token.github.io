@@ -90,7 +90,7 @@ type ModifierTranslation =
   | { type: "determiner"; determiner: English.Determiner }
   | { type: "adverb"; adverb: English.Word }
   | { type: "name"; name: string }
-  | { type: "position"; position: English.NounPhrase };
+  | { type: "inPositionPhrase"; noun: English.NounPhrase };
 function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
   switch (word.type) {
     case "number": {
@@ -154,6 +154,7 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
                       emphasis: word.emphasis != null,
                     },
                     number: "both",
+                    postCompound: null,
                     postAdjective: definition.postAdjective,
                     preposition: [],
                   },
@@ -179,6 +180,7 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
                       emphasis: word.emphasis != null,
                     },
                     number: "both",
+                    postCompound: null,
                     postAdjective: null,
                     preposition: [],
                   },
@@ -237,8 +239,53 @@ function modifier(modifier: TokiPona.Modifier): Output<ModifierTranslation> {
     case "pi":
       return phrase(modifier.phrase);
     case "nanpa":
+      return phrase(modifier.phrase).filterMap((phrase) => {
+        if (phrase.type === "noun") {
+          return {
+            type: "inPositionPhrase",
+            noun: {
+              type: "simple",
+              determiner: [],
+              adjective: [],
+              noun: {
+                word: "position",
+                emphasis: modifier.nanpa.emphasis != null,
+              },
+              number: "singular",
+              postCompound: phrase.noun,
+              postAdjective: null,
+              preposition: [],
+            },
+          } as ModifierTranslation;
+        } else {
+          return null;
+        }
+      });
     case "quotation":
       return new Output(new TodoError(`translation of ${modifier.type}`));
+  }
+}
+type MutlitpleModifierTranslation =
+  | {
+    type: "adjectival";
+    determiner: Array<English.Determiner>;
+    adjective: Array<English.AdjectivePhrase>;
+    name: string;
+    position: null | English.NounPhrase;
+    ofPhrase: null | English.NounPhrase;
+  }
+  | {
+    type: "adverbial";
+    adverb: Array<English.Word>;
+    inWay: null | English.NounPhrase;
+  };
+function multipleModifiers(
+  modifiers: Array<TokiPona.Modifier>,
+): Output<null | MutlitpleModifierTranslation> {
+  if (modifiers.length === 0) {
+    return new Output([null]);
+  } else {
+    return new Output();
   }
 }
 type PhraseTranslation =
