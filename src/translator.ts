@@ -202,7 +202,7 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
                     type: "simple",
                     determiner: [],
                     adjective: [],
-                    noun: { word: pronoun, emphasis },
+                    noun: { word: repeatWithSpace(pronoun, count), emphasis },
                     useAm: false,
                     number: "both",
                     postCompound: null,
@@ -244,7 +244,10 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
           case "adverb":
             return new Output([{
               type: "adverb",
-              adverb: { word: definition.adverb, emphasis },
+              adverb: {
+                word: repeatWithSpace(definition.adverb, count),
+                emphasis,
+              },
             } as ModifierTranslation]);
           default:
             return new Output();
@@ -309,90 +312,77 @@ type MultipleModifierTranslation =
 function multipleModifiers(
   modifiers: Array<TokiPona.Modifier>,
 ): Output<MultipleModifierTranslation> {
-  if (modifiers.length === 0) {
-    return new Output([
-      {
-        type: "adjectival",
-        determiner: [],
-        number: "both",
-        adjective: [],
-        name: null,
-        inPositionPhrase: null,
-        ofPhrase: null,
-      } as MultipleModifierTranslation,
-      {
-        type: "adverbial",
-        adverb: [],
-        inWayPhrase: null,
-      } as MultipleModifierTranslation,
-    ]);
-  } else {
-    return Output
-      .combine(...modifiers.map(modifier))
-      .filterMap((modifiers) => {
-        const noun = modifiers
-          .filter((modifier) => modifier.type === "noun")
-          .map((modifier) => modifier.noun);
-        const determiner = modifiers
-          .filter((modifier) => modifier.type === "determiner")
-          .map((modifier) => modifier.determiner);
-        const adjective = modifiers
-          .filter((modifier) => modifier.type === "adjective")
-          .map((modifier) => modifier.adjective);
-        const adverb = modifiers
-          .filter((modifier) => modifier.type === "adverb")
-          .map((modifier) => modifier.adverb);
-        const name = modifiers
-          .filter((modifier) => modifier.type === "name")
-          .map((modifier) => modifier.name);
-        const inPositionPhrase = modifiers
-          .filter((modifier) => modifier.type === "in position phrase")
-          .map((modifier) => modifier.noun);
-        if (
-          noun.length <= 1 &&
-          adverb.length === 0 &&
-          inPositionPhrase.length <= 1
-        ) {
-          return {
-            type: "adjectival",
-            determiner,
+  return Output
+    .combine(...modifiers.map(modifier))
+    .flatMap((modifiers) => {
+      const noun = modifiers
+        .filter((modifier) => modifier.type === "noun")
+        .map((modifier) => modifier.noun);
+      const determiner = modifiers
+        .filter((modifier) => modifier.type === "determiner")
+        .map((modifier) => modifier.determiner);
+      const adjective = modifiers
+        .filter((modifier) => modifier.type === "adjective")
+        .map((modifier) => modifier.adjective);
+      const adverb = modifiers
+        .filter((modifier) => modifier.type === "adverb")
+        .map((modifier) => modifier.adverb);
+      const name = modifiers
+        .filter((modifier) => modifier.type === "name")
+        .map((modifier) => modifier.name);
+      const inPositionPhrase = modifiers
+        .filter((modifier) => modifier.type === "in position phrase")
+        .map((modifier) => modifier.noun);
+      let adjectival: Output<MultipleModifierTranslation>;
+      if (
+        noun.length <= 1 &&
+        adverb.length === 0 &&
+        inPositionPhrase.length <= 1
+      ) {
+        adjectival = new Output([{
+          type: "adjectival",
+          determiner,
+          adjective,
+          name: name[0] ?? null,
+          inPositionPhrase: inPositionPhrase[0] ?? null,
+        } as MultipleModifierTranslation]);
+      } else {
+        adjectival = new Output();
+      }
+      let adverbial: Output<MultipleModifierTranslation>;
+      if (
+        noun.length === 0 &&
+        determiner.length === 0 &&
+        adjective.length <= 1 &&
+        name.length === 0 &&
+        inPositionPhrase.length === 0
+      ) {
+        let inWayPhrase: null | English.NounPhrase;
+        if (adjective.length > 0) {
+          inWayPhrase = {
+            type: "simple",
+            determiner: [],
             adjective,
-            name: name[0] ?? null,
-            inPositionPhrase: inPositionPhrase[0] ?? null,
-          } as MultipleModifierTranslation;
-        } else if (
-          noun.length === 0 &&
-          determiner.length === 0 &&
-          adjective.length <= 1 &&
-          name.length === 0 &&
-          inPositionPhrase.length === 0
-        ) {
-          let inWayPhrase: null | English.NounPhrase;
-          if (adjective.length > 1) {
-            inWayPhrase = {
-              type: "simple",
-              determiner: [],
-              adjective,
-              noun: { word: "way", emphasis: false },
-              useAm: false,
-              number: "singular",
-              postCompound: null,
-              postAdjective: null,
-              preposition: [],
-            };
-          } else {
-            inWayPhrase = null;
-          }
-          return {
-            type: "adverbial",
-            adverb,
-            inWayPhrase,
-          } as MultipleModifierTranslation;
+            noun: { word: "way", emphasis: false },
+            useAm: false,
+            number: "singular",
+            postCompound: null,
+            postAdjective: null,
+            preposition: [],
+          };
         } else {
-          return null;
+          inWayPhrase = null;
         }
-      });
-  }
+        adverbial = new Output([{
+          type: "adverbial",
+          adverb,
+          inWayPhrase,
+        } as MultipleModifierTranslation]);
+      } else {
+        adverbial = new Output();
+      }
+      return Output.concat(adjectival, adverbial);
+    });
 }
 function findNumber(
   quantity: Array<English.Quantity>,
@@ -529,6 +519,7 @@ function defaultPhrase(
                           adjective: adjective.adjective,
                           emphasis: phrase.emphasis != null,
                         },
+                        inWayPhrase: modifier.inWayPhrase,
                       }) as PhraseTranslation
                     );
                 case "compound adjective":

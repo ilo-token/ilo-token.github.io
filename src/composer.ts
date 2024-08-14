@@ -60,7 +60,7 @@ function adjective(phrases: AdjectivePhrase): string {
   return word({ word: text, emphasis: phrases.emphasis });
 }
 function preposition(preposition: Preposition): string {
-  return `${preposition.preposition} ${noun(preposition.object)}`;
+  return `${word(preposition.preposition)} ${noun(preposition.object)}`;
 }
 function clause(clause: Clause): string {
   switch (clause.type) {
