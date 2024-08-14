@@ -396,7 +396,11 @@ function fixAdjective(
 }
 type PhraseTranslation =
   | { type: "noun"; noun: English.NounPhrase }
-  | { type: "adjective"; adjective: English.AdjectivePhrase };
+  | {
+    type: "adjective";
+    adjective: English.AdjectivePhrase;
+    inWayPhrase: English.NounPhrase;
+  };
 function phrase(phrase: TokiPona.Phrase): Output<PhraseTranslation> {
   switch (phrase.type) {
     case "default":
@@ -452,13 +456,20 @@ function multiplePhrases(
                 number,
               },
             } as PhraseTranslation;
-          } else if (phrases.every((phrase) => phrase.type === "adjective")) {
+          } else if (
+            phrases.every((phrase) =>
+              phrase.type === "adjective" && phrase.inWayPhrase == null
+            )
+          ) {
             return {
               type: "adjective",
               adjective: {
                 type: "compound",
                 adjective: phrases
-                  .map((adjective) => adjective.adjective)
+                  .map((adjective) =>
+                    (adjective as PhraseTranslation & { type: "adjective" })
+                      .adjective
+                  )
                   .flatMap((adjective) => {
                     if (
                       adjective.type === "compound" &&
