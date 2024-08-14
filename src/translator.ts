@@ -90,7 +90,7 @@ type ModifierTranslation =
   | { type: "determiner"; determiner: English.Determiner }
   | { type: "adverb"; adverb: English.Word }
   | { type: "name"; name: string }
-  | { type: "inPositionPhrase"; noun: English.NounPhrase };
+  | { type: "in position phrase"; noun: English.NounPhrase };
 function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
   switch (word.type) {
     case "number": {
@@ -242,7 +242,7 @@ function modifier(modifier: TokiPona.Modifier): Output<ModifierTranslation> {
       return phrase(modifier.phrase).filterMap((phrase) => {
         if (phrase.type === "noun") {
           return {
-            type: "inPositionPhrase",
+            type: "in position phrase",
             noun: {
               type: "simple",
               determiner: [],
@@ -285,7 +285,29 @@ function multipleModifiers(
   if (modifiers.length === 0) {
     return new Output([null]);
   } else {
-    return new Output();
+    return Output
+      .combine(...modifiers.map(modifier))
+      .flatMap((modifiers) => {
+        const noun = modifiers
+          .filter((modifier) => modifier.type === "noun")
+          .map((modifier) => modifier.noun);
+        const determiner = modifiers
+          .filter((modifier) => modifier.type === "determiner")
+          .map((modifier) => modifier.determiner);
+        const adjective = modifiers
+          .filter((modifier) => modifier.type === "adjective")
+          .map((modifier) => modifier.adjective);
+        const adverb = modifiers
+          .filter((modifier) => modifier.type === "adverb")
+          .map((modifier) => modifier.adverb);
+        const name = modifiers
+          .filter((modifier) => modifier.type === "name")
+          .map((modifier) => modifier.name);
+        const inPositionPhrase = modifiers
+          .filter((modifier) => modifier.type === "in position phrase")
+          .map((modifier) => modifier.noun);
+        throw new Error("todo");
+      });
   }
 }
 type PhraseTranslation =
