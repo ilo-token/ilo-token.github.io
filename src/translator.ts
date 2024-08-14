@@ -280,6 +280,35 @@ function modifier(modifier: TokiPona.Modifier): Output<ModifierTranslation> {
       return new Output(new TodoError(`translation of ${modifier.type}`));
   }
 }
+export function rankAdjective(kind: Dictionary.AdjectiveType): number {
+  return [
+    "opinion",
+    "size",
+    "physical quality",
+    "age",
+    "color",
+    "origin",
+    "material",
+    "qualifier",
+  ]
+    .indexOf(kind);
+}
+function fixAdjective(
+  adjective: Array<English.AdjectivePhrase>,
+): Array<English.AdjectivePhrase> {
+  return (adjective
+    .slice()
+    .reverse()
+    .flatMap((adjective) => {
+      switch (adjective.type) {
+        case "simple":
+          return [adjective];
+        case "compound":
+          return adjective.adjective;
+      }
+    }) as Array<English.AdjectivePhrase & { type: "simple" }>)
+    .sort((a, b) => rankAdjective(a.kind) - rankAdjective(b.kind));
+}
 type MutlitpleModifierTranslation =
   | {
     type: "adjectival";
