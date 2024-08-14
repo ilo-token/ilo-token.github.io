@@ -26,6 +26,9 @@ function condenseVerb(present: string, past: string): string {
   const second = past.split(" ")[0];
   return [condense(first, second), ...rest].join(" ");
 }
+function unemphasized(word: string): English.Word {
+  return { word, emphasis: false };
+}
 type ModifierTranslation =
   | { type: "noun"; noun: English.NounPhrase }
   | { type: "adjective"; adjective: English.AdjectivePhrase }
@@ -48,7 +51,10 @@ function modifier(modifier: TokiPona.Modifier): Output<ModifierTranslation> {
           return new Output([{
             type: "determiner",
             determiner: {
-              determiner: `${word.number}`,
+              determiner: {
+                word: `${word.number}`,
+                emphasis: word.emphasis != null,
+              },
               kind: "numeral",
               quantity,
             },
@@ -56,9 +62,30 @@ function modifier(modifier: TokiPona.Modifier): Output<ModifierTranslation> {
         }
         case "x ala x":
           return new Output();
-        case "reduplication":
         case "default":
-          return new Output(new TodoError(`translation of ${modifier.type}`));
+        case "reduplication": {
+          let count: number;
+          switch (word.type) {
+            case "default":
+              count = 1;
+              break;
+            case "reduplication":
+              count = word.count;
+              break;
+          }
+          return new Output(DICTIONARY[word.word]).filterMap((definition) => {
+            switch (definition.type) {
+              case "noun":
+              case "personal pronoun":
+              case "determiner":
+              case "adjective":
+              case "compound adjective":
+              case "adverb":
+              default:
+                return null;
+            }
+          });
+        }
       }
     }
     // unreachable
@@ -168,7 +195,10 @@ function clause(clause: TokiPona.Clause): Output<English.Clause> {
               type: "implied it's",
               verb: {
                 type: "linking adjective",
-                linkingVerb: "is",
+                linkingVerb: {
+                  word: "is",
+                  emphasis: false,
+                },
                 adjective: phrase.adjective,
                 preposition: [],
               },
@@ -275,8 +305,10 @@ function interjection(clause: TokiPona.Clause): Output<English.Clause> {
           .map((interjection) =>
             ({
               type: "interjection",
-              interjection,
-              emphasis: headWord.emphasis != null,
+              interjection: {
+                word: interjection,
+                emphasis: headWord.emphasis != null,
+              },
             }) as English.Clause
           );
       }
@@ -295,8 +327,10 @@ function anuSeme(seme: TokiPona.HeadedWordUnit): English.Clause {
   }
   return {
     type: "interjection",
-    interjection: interjection!,
-    emphasis: seme.emphasis != null,
+    interjection: {
+      word: interjection!,
+      emphasis: seme.emphasis != null,
+    },
   };
 }
 function sentence(
@@ -313,7 +347,10 @@ function sentence(
         ({
           clauses: [{
             type: "interjection",
-            interjection,
+            interjection: {
+              word: interjection,
+              emphasis: false,
+            },
           }],
           punctuation: sentence.punctuation,
         }) as English.Sentence
@@ -330,8 +367,10 @@ function sentence(
       startingFiller = new Output(filler(startingParticle))
         .map((interjection) => ({
           type: "interjection",
-          interjection,
-          emphasis: false,
+          interjection: {
+            word: interjection,
+            emphasis: false,
+          },
         }));
     }
     const laClauses =
@@ -343,7 +382,10 @@ function sentence(
         clauses.map((clause) =>
           ({
             type: "dependent",
-            conjunction: "given",
+            conjunction: {
+              word: "given",
+              emphasis: false,
+            },
             clause,
           }) as English.Clause
         )
@@ -392,8 +434,10 @@ function sentence(
       endingFiller = new Output(filler(endingParticle))
         .map((interjection) => ({
           type: "interjection",
-          interjection,
-          emphasis: false,
+          interjection: {
+            word: interjection,
+            emphasis: false,
+          },
         }));
     }
     let punctuation: string;

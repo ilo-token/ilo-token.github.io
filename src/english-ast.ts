@@ -5,6 +5,10 @@ import {
   DeterminerType as OriginalDeterminerType,
 } from "dictionary/type.ts";
 
+export type Word = {
+  word: string;
+  emphasis: boolean;
+};
 export type Quantity = "singular" | "plural" | "both" | "condensed";
 export type DeterminerType = OriginalDeterminerType | "numeral";
 export type NounPhrase =
@@ -12,7 +16,7 @@ export type NounPhrase =
     type: "simple";
     determiners: Array<Determiner>;
     adjectives: Array<AdjectivePhrase>;
-    noun: string;
+    noun: Word;
     quantity: Quantity;
     preposition: Array<Preposition>;
   }
@@ -26,15 +30,15 @@ export type NounPhrase =
 export type Determiner = {
   type: "default";
   kind: DeterminerType;
-  determiner: string;
+  determiner: Word;
   quantity: Quantity;
 };
 export type AdjectivePhrase =
   | {
     type: "simple";
     kind: AdjectiveType;
-    adverbs: Array<string>;
-    adjective: string;
+    adverbs: Array<Word>;
+    adjective: Word;
   }
   | {
     type: "compound";
@@ -44,25 +48,25 @@ export type AdjectivePhrase =
 export type VerbPhrase =
   | {
     type: "default";
-    adverbs: Array<string>;
-    verb: string;
+    adverbs: Array<Word>;
+    verb: Word;
     preposition: Array<Preposition>;
   }
   | {
     type: "linking noun";
-    linkingVerb: string;
+    linkingVerb: Word;
     noun: NounPhrase;
     preposition: Array<Preposition>;
   }
   | {
     type: "linking adjective";
-    linkingVerb: string;
+    linkingVerb: Word;
     adjective: AdjectivePhrase;
     preposition: Array<Preposition>;
   }
   | {
     type: "compound";
-    conjunction: string;
+    conjunction: Word;
     verbs: VerbPhrase;
     preposition: Array<Preposition>;
   };
@@ -81,7 +85,7 @@ export type Clause =
     verb: VerbPhrase;
     preposition: Array<Preposition>;
   }
-  | { type: "interjection"; interjection: string; emphasis: boolean }
+  | { type: "interjection"; interjection: Word }
   | { type: "vocative"; call: string; addressee: NounPhrase }
   | {
     type: "compound";
@@ -89,9 +93,9 @@ export type Clause =
     clauses: Array<Clause>;
     preposition: Array<Preposition>;
   }
-  | { type: "dependent"; conjunction: string; clause: Clause };
+  | { type: "dependent"; conjunction: Word; clause: Clause };
 export type Preposition = {
-  preposition: string;
+  preposition: Word;
   object: NounPhrase;
 };
 export type Sentence = {

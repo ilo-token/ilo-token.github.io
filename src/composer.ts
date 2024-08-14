@@ -1,4 +1,4 @@
-import { Clause } from "./english-ast.ts";
+import { Clause, Word } from "./english-ast.ts";
 import { Sentence } from "./english-ast.ts";
 import { TodoError } from "./error.ts";
 import { Output, OutputError } from "./output.ts";
@@ -7,11 +7,11 @@ import { translate as translateToAst } from "./translator.ts";
 const emphasisStartingTag = "<b>";
 const emphasisEndingTag = "</b>";
 
-function optionalEmphasis(text: string, emphasis: boolean): string {
-  if (emphasis) {
-    return `${emphasisStartingTag}${text}${emphasisEndingTag}`;
+function word(word: Word): string {
+  if (word.emphasis) {
+    return `${emphasisStartingTag}${word.word}${emphasisEndingTag}`;
   } else {
-    return text;
+    return word.word;
   }
 }
 function clause(clause: Clause): string {
@@ -19,7 +19,7 @@ function clause(clause: Clause): string {
     case "free form":
       return clause.text;
     case "interjection":
-      return optionalEmphasis(clause.interjection, clause.emphasis);
+      return word(clause.interjection);
     default:
       throw new TodoError(`composing ${clause.type}`);
   }
