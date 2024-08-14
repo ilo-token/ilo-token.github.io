@@ -453,8 +453,6 @@ function fixAdjective(
   adjective: Array<English.AdjectivePhrase>,
 ): Array<English.AdjectivePhrase> {
   return (adjective
-    .slice()
-    .reverse()
     .flatMap((adjective) => {
       switch (adjective.type) {
         case "simple":
