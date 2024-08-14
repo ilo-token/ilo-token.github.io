@@ -18,7 +18,6 @@ export type NounPhrase =
     adjective: Array<AdjectivePhrase>;
     noun: Word;
     number: Quantity;
-    useAm: boolean;
     postCompound: null | NounPhrase;
     postAdjective: null | { adjective: string; name: string };
     preposition: Array<Preposition>;
