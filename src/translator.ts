@@ -664,6 +664,7 @@ function multiplePhrases(
               type: "adjective",
               adjective: {
                 type: "compound",
+                conjunction,
                 adjective: phrase
                   .map((adjective) =>
                     (adjective as PhraseTranslation & { type: "adjective" })
