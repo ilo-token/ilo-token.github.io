@@ -31,8 +31,8 @@ function unemphasized(word: string): English.Word {
   return { word, emphasis: false };
 }
 function singularPluralForms(
-  singular: null | string,
-  plural: null | string,
+  singular: undefined | null | string,
+  plural: undefined | null | string,
 ): Array<string> {
   switch (settings.get("number-settings")) {
     case "both":
@@ -127,9 +127,34 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
       }
       return new Output(DICTIONARY[word.word]).flatMap((definition) => {
         switch (definition.type) {
+          // The noun node needs these to have number, but modifier numbers
+          // will never be read so its fine to assign it as any value,
           case "noun":
-          case "personal pronoun":
             return new Output();
+          case "personal pronoun":
+            return new Output(
+              singularPluralForms(
+                definition.singular?.object,
+                definition.plural?.object,
+              ),
+            )
+              .map((pronoun) =>
+                ({
+                  type: "noun",
+                  noun: {
+                    type: "simple",
+                    determiner: [],
+                    adjective: [],
+                    noun: {
+                      word: pronoun,
+                      emphasis: word.emphasis != null,
+                    },
+                    number: "both",
+                    postAdjective: null,
+                    preposition: [],
+                  },
+                }) as ModifierTranslation
+              );
           case "determiner":
             return determiner(definition)
               .map((determiner) =>
