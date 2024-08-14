@@ -271,13 +271,13 @@ type MutlitpleModifierTranslation =
     determiner: Array<English.Determiner>;
     adjective: Array<English.AdjectivePhrase>;
     name: string;
-    position: null | English.NounPhrase;
+    inPositionPhrase: null | English.NounPhrase;
     ofPhrase: null | English.NounPhrase;
   }
   | {
     type: "adverbial";
     adverb: Array<English.Word>;
-    inWay: null | English.NounPhrase;
+    inWayPhrase: null | English.NounPhrase;
   };
 function multipleModifiers(
   modifiers: Array<TokiPona.Modifier>,
