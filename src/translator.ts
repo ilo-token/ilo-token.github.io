@@ -127,10 +127,39 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
       }
       return new Output(DICTIONARY[word.word]).flatMap((definition) => {
         switch (definition.type) {
-          // The noun node needs these to have number, but modifier numbers
-          // will never be read so its fine to assign it as any value,
-          case "noun":
-            return new Output();
+          // The noun node needs these to have numbers, but modifier numbers
+          // will never be read so its fine to assign it as any value, and we
+          // used "both"
+          case "noun": {
+            const engDeterminer = Output.combine(
+              ...definition.determiner
+                .map((definition) => determiner(definition)),
+            );
+            const engAdjective = definition
+              .adjective
+              .map((definition) => adjective(definition));
+            const noun = new Output(
+              singularPluralForms(definition.singular, definition.plural),
+            );
+            return Output.combine(noun, engDeterminer)
+              .map(([noun, determiner]) =>
+                ({
+                  type: "noun",
+                  noun: {
+                    type: "simple",
+                    determiner,
+                    adjective: engAdjective,
+                    noun: {
+                      word: noun,
+                      emphasis: word.emphasis != null,
+                    },
+                    number: "both",
+                    postAdjective: definition.postAdjective,
+                    preposition: [],
+                  },
+                }) as ModifierTranslation
+              );
+          }
           case "personal pronoun":
             return new Output(
               singularPluralForms(
