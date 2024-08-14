@@ -1,6 +1,7 @@
 /** Module for main execution in the browser. */
 
 import { translate } from "./composer.ts";
+import { shuffle } from "./misc.ts";
 import { settings } from "./settings.ts";
 import { errors } from "telo-misikeke/telo-misikeke.js";
 
@@ -100,7 +101,7 @@ function updateOutput(): void {
     if (!translations.isError()) {
       const output = [...new Set(translations.output)];
       if (settings.get("randomize")) {
-        output.sort(() => Math.random() - Math.random());
+        shuffle(output);
       }
       outputTranslations(output);
     } else {
