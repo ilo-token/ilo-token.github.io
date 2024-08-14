@@ -310,7 +310,7 @@ type MultipleModifierTranslation =
     determiner: Array<English.Determiner>;
     number: English.Quantity;
     adjective: Array<English.AdjectivePhrase>;
-    name: string;
+    name: null | string;
     inPositionPhrase: null | English.NounPhrase;
     ofPhrase: null | English.NounPhrase;
   }
@@ -321,13 +321,28 @@ type MultipleModifierTranslation =
   };
 function multipleModifiers(
   modifiers: Array<TokiPona.Modifier>,
-): Output<null | MultipleModifierTranslation> {
+): Output<MultipleModifierTranslation> {
   if (modifiers.length === 0) {
-    return new Output([null]);
+    return new Output([
+      {
+        type: "adjectival",
+        determiner: [],
+        number: "both",
+        adjective: [],
+        name: null,
+        inPositionPhrase: null,
+        ofPhrase: null,
+      } as MultipleModifierTranslation,
+      {
+        type: "adverbial",
+        adverb: [],
+        inWayPhrase: null,
+      } as MultipleModifierTranslation,
+    ]);
   } else {
     return Output
       .combine(...modifiers.map(modifier))
-      .map((modifiers) => {
+      .filterMap((modifiers) => {
         const noun = modifiers
           .filter((modifier) => modifier.type === "noun")
           .map((modifier) => modifier.noun);
