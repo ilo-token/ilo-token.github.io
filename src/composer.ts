@@ -21,9 +21,13 @@ function word(word: Word): string {
     return word.word;
   }
 }
-function compound(elements: Array<string>, conjunction: string): string {
-  if (elements.length === 2) {
-    return `${elements[0]} ${conjunction} ${elements[1]}`;
+function compound(
+  elements: Array<string>,
+  conjunction: string,
+  depth: number,
+): string {
+  if (depth !== 0 || elements.length === 2) {
+    return elements.join(` ${conjunction} `);
   } else {
     const lastIndex = elements.length - 1;
     const init = elements.slice(0, lastIndex);
@@ -31,7 +35,7 @@ function compound(elements: Array<string>, conjunction: string): string {
     return `${init.join(", ")} ${conjunction} ${last}`;
   }
 }
-function noun(phrases: NounPhrase): string {
+function noun(phrases: NounPhrase, depth: number): string {
   switch (phrases.type) {
     case "simple":
       return [
@@ -44,10 +48,14 @@ function noun(phrases: NounPhrase): string {
         ...phrases.preposition.map(preposition),
       ].join(" ");
     case "compound":
-      return compound(phrases.nouns.map(noun), phrases.conjunction);
+      return compound(
+        phrases.nouns.map((phrase) => noun(phrase, depth + 1)),
+        phrases.conjunction,
+        depth,
+      );
   }
 }
-function adjective(phrases: AdjectivePhrase): string {
+function adjective(phrases: AdjectivePhrase, depth: number): string {
   let text: string;
   switch (phrases.type) {
     case "simple":
@@ -55,12 +63,16 @@ function adjective(phrases: AdjectivePhrase): string {
         .join(" ");
       break;
     case "compound":
-      text = compound(phrases.adjective.map(adjective), phrases.conjunction);
+      text = compound(
+        phrases.adjective.map((phrase) => adjective(phrase, depth + 1)),
+        phrases.conjunction,
+        depth,
+      );
   }
   return word({ word: text, emphasis: phrases.emphasis });
 }
 function preposition(preposition: Preposition): string {
-  return `${word(preposition.preposition)} ${noun(preposition.object)}`;
+  return `${word(preposition.preposition)} ${noun(preposition.object, 0)}`;
 }
 function clause(clause: Clause): string {
   switch (clause.type) {
@@ -73,10 +85,10 @@ function clause(clause: Clause): string {
       let text: string;
       switch (verb.type) {
         case "linking noun":
-          text = noun(verb.noun);
+          text = noun(verb.noun, 0);
           break;
         case "linking adjective":
-          text = adjective(verb.adjective);
+          text = adjective(verb.adjective, 0);
           break;
       }
       return [text!, ...verb.preposition.map(preposition)].join(" ");
