@@ -33,7 +33,7 @@ type ModifierTranslation =
   | { type: "noun"; noun: English.NounPhrase }
   | { type: "adjective"; adjective: English.AdjectivePhrase }
   | { type: "determiner"; determiner: English.Determiner }
-  | { type: "adverb"; adverb: string }
+  | { type: "adverb"; adverb: English.Word }
   | { type: "name"; name: string }
   | { type: "position"; position: English.NounPhrase };
 function modifier(modifier: TokiPona.Modifier): Output<ModifierTranslation> {
@@ -80,7 +80,15 @@ function modifier(modifier: TokiPona.Modifier): Output<ModifierTranslation> {
               case "determiner":
               case "adjective":
               case "compound adjective":
+                return null;
               case "adverb":
+                return {
+                  type: "adverb",
+                  adverb: {
+                    word: definition.adverb,
+                    emphasis: word.emphasis != null,
+                  },
+                } as ModifierTranslation;
               default:
                 return null;
             }
