@@ -95,8 +95,8 @@ function clause(clause: Clause): string {
       }
       return [text!, ...verb.preposition.map(preposition)].join(" ");
     }
-    // unreachable
-    // fallthrough
+    case "subject phrase":
+      return noun(clause.subject, 0);
     default:
       throw new TodoError(`composing ${clause.type}`);
   }
