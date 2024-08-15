@@ -642,6 +642,18 @@ function defaultPhrase(
   )
     .flatMap(([headWord, modifier]) => {
       if (headWord.type === "noun" && modifier.type === "adjectival") {
+        let count: number;
+        switch (phrase.headWord.type) {
+          case "number":
+          case "default":
+            count = 1;
+            break;
+          case "x ala x":
+            return new Output();
+          case "reduplication":
+            count = phrase.headWord.count;
+            break;
+        }
         const determiner = fixDeterminer([
           ...headWord.determiner,
           ...modifier.determiner,
@@ -694,7 +706,7 @@ function defaultPhrase(
             determiner,
             adjective,
             noun: {
-              word: noun.noun,
+              word: repeat(noun.noun, count),
               emphasis: phrase.headWord.emphasis != null,
             },
             number,
