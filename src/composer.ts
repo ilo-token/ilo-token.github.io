@@ -76,14 +76,14 @@ function adjective(phrases: AdjectivePhrase, depth: number): string {
 function preposition(preposition: Preposition): string {
   return `${word(preposition.preposition)} ${noun(preposition.object, 0)}`;
 }
-function clause(clause: Clause): string {
-  switch (clause.type) {
+function clause(ast: Clause): string {
+  switch (ast.type) {
     case "free form":
-      return clause.text;
+      return ast.text;
     case "interjection":
-      return word(clause.interjection);
+      return word(ast.interjection);
     case "implied it's": {
-      const verb = clause.verb;
+      const verb = ast.verb;
       let text: string;
       switch (verb.type) {
         case "linking noun":
@@ -96,9 +96,13 @@ function clause(clause: Clause): string {
       return [text!, ...verb.preposition.map(preposition)].join(" ");
     }
     case "subject phrase":
-      return noun(clause.subject, 0);
+      return noun(ast.subject, 0);
+    case "vocative":
+      return `${ast.call} ${noun(ast.addressee, 0)}`;
+    case "dependent":
+      return `${ast.conjunction} ${clause(ast.clause)}`;
     default:
-      throw new TodoError(`composing ${clause.type}`);
+      throw new TodoError(`composing ${ast.type}`);
   }
 }
 function sentence(sentence: Sentence): string {
