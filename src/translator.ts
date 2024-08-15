@@ -326,6 +326,10 @@ function modifier(modifier: TokiPona.Modifier): Output<ModifierTranslation> {
     case "pi":
       return phrase(modifier.phrase, "object")
         .filter((modifier) =>
+          modifier.type !== "noun" || modifier.noun.type !== "simple" ||
+          modifier.noun.preposition.length === 0
+        )
+        .filter((modifier) =>
           modifier.type != "adjective" || modifier.inWayPhrase != null
         );
     case "nanpa":
@@ -408,10 +412,7 @@ function multipleModifiers(
         adverb.length === 0 &&
         name.length <= 1 &&
         inPositionPhrase.length <= 1 &&
-        (noun.length === 0 || inPositionPhrase.length === 0) &&
-        (noun.length === 0 ||
-          (noun[0] as English.NounPhrase & { type: "simple" }).preposition
-              .length === 0)
+        (noun.length === 0 || inPositionPhrase.length === 0)
       ) {
         adjectival = new Output([{
           type: "adjectival",
@@ -1295,3 +1296,4 @@ function multipleSentences(
 export function translate(src: string): Output<Array<English.Sentence>> {
   return parse(src).flatMap(multipleSentences);
 }
+translate("jan pi pona mute");
