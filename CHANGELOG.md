@@ -12,7 +12,6 @@ This is a huge update now with better quality translations, configurable setting
 - Reimplement the word "a". This were dropped due to parser rewrite.
 - The vocabulary has been expanded to _nimi ku suli_ plus _nimi su!_.
 - New "dictionary mode", just enter a single word and ilo Token will output all definition from its own dictionary. This also works for particles. To bypass this and translate the word as if it is the whole sentence, just add a period.
-- Reimplement the "a" particle.
 - Implement UCSUR support! It supports:
   - Cartouche with nasin sitelen kalama
   - Combined glyphs
