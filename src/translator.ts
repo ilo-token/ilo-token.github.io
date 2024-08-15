@@ -429,6 +429,7 @@ function multipleModifiers(
       let adverbial: Output<MultipleModifierTranslation>;
       if (
         noun.length === 0 &&
+        nounPreposition.length === 0 &&
         determiner.length === 0 &&
         adjective.length <= 1 &&
         name.length === 0 &&
@@ -1296,3 +1297,4 @@ function multipleSentences(
 export function translate(src: string): Output<Array<English.Sentence>> {
   return parse(src).flatMap(multipleSentences);
 }
+translate("toki pona");
