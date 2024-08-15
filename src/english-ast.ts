@@ -21,6 +21,7 @@ export type NounPhrase =
     postCompound: null | NounPhrase;
     postAdjective: null | { adjective: string; name: string };
     preposition: Array<Preposition>;
+    emphasis: boolean;
   }
   | {
     type: "compound";

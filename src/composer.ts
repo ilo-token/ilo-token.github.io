@@ -37,8 +37,8 @@ function compound(
 }
 function noun(phrases: NounPhrase, depth: number): string {
   switch (phrases.type) {
-    case "simple":
-      return [
+    case "simple": {
+      const text = [
         ...phrases.determiner.map((determiner) => word(determiner.determiner)),
         ...phrases.adjective.map(adjective),
         word(phrases.noun),
@@ -47,6 +47,8 @@ function noun(phrases: NounPhrase, depth: number): string {
           .map((adjective) => `${adjective.adjective} ${adjective.name}`),
         ...phrases.preposition.map(preposition),
       ].join(" ");
+      return word({ word: text, emphasis: phrases.emphasis });
+    }
     case "compound":
       return compound(
         phrases.nouns.map((phrase) => noun(phrase, depth + 1)),
