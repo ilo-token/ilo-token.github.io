@@ -330,7 +330,7 @@ function modifier(modifier: TokiPona.Modifier): Output<ModifierTranslation> {
           modifier.noun.preposition.length === 0
         )
         .filter((modifier) =>
-          modifier.type != "adjective" || modifier.inWayPhrase != null
+          modifier.type != "adjective" || modifier.inWayPhrase == null
         );
     case "nanpa":
       return phrase(modifier.phrase, "object").filterMap((phrase) => {
