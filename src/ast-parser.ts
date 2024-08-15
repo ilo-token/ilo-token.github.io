@@ -392,6 +392,7 @@ function modifiers(): Parser<Array<Modifier>> {
     ),
     many(pi()),
   )
+    .sortBy(([_, nanpaModifiers, _1]) => -nanpaModifiers.length)
     .map(([modifiers, nanpaModifiers, piModifiers]) => [
       ...modifiers,
       ...nanpaModifiers,
@@ -630,6 +631,7 @@ function associatedPredicates(
     .filter(([_, objects, prepositions]) =>
       objects != null || prepositions.length > 0
     )
+    .sortBy(([_, _1, prepositions]) => -prepositions.length)
     .map(([predicates, objects, prepositions]) => ({
       type: "associated",
       predicates,
@@ -783,7 +785,14 @@ function fullClause(): Parser<FullClause> {
           anuSeme,
           endingParticle,
         }) as FullClause
-      ),
+      )
+      .sort((clause) => {
+        if ((clause as FullClause & { type: "default" }).anuSeme == null) {
+          return 1;
+        } else {
+          return 0;
+        }
+      }),
     emphasis()
       .map((emphasis) => ({ type: "filler", emphasis }) as FullClause),
   )
