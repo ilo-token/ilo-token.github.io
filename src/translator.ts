@@ -716,7 +716,7 @@ function defaultPhrase(
             postAdjective,
             preposition,
             emphasis: phrase.emphasis != null &&
-              modifier.nounPreposition != null,
+              modifier.nounPreposition == null,
           }));
         let noun: Output<English.NounPhrase>;
         if (modifier.nounPreposition == null) {
