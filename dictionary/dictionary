@@ -424,8 +424,8 @@ kon:
   # ghost-related(adj qualifier);
 
 ku:
-  interact(v) with(prep) the(d article) Toki Pona Dictionary(n singular);
-  the(d article) Toki Pona Dictionary(n singular);
+  interact(v) with(prep) the(d article) Toki Pona(adj qualifier) Dictionary(n singular);
+  the(d article) Toki Pona(adj qualifier) Dictionary(n);
 
 kule:
   color(n);
@@ -1194,7 +1194,7 @@ pona:
 
 pu:
   interact(v) with(prep) the(d article) book(n singular) titled(adj) `Toki Pona: The Language of Good`(proper n);
-  the(d article) book(n singular) titled(adj) `Toki Pona: The Language of Good`(proper n);
+  the(d article) book(n) titled(adj) `Toki Pona: The Language of Good`(proper n);
 
 sama:
   same(adj opinion);
@@ -1371,7 +1371,7 @@ soweli:
 
 su:
   interact(v) with(prep) Sonja's(d possessive) story(adj qualifier) book(adj qualifier) series(n singular);
-  Sonja's(d possessive) story(adj qualifier) book(adj qualifier) series(n singular);
+  Sonja's(d possessive) story(adj qualifier) book(adj qualifier) series(n);
 
 suli:
   big(adj size);
