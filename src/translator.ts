@@ -706,7 +706,7 @@ function defaultPhrase(
             determiner,
             adjective,
             noun: {
-              word: repeat(noun.noun, count),
+              word: repeatWithSpace(noun.noun, count),
               emphasis: phrase.headWord.emphasis != null,
             },
             number,
