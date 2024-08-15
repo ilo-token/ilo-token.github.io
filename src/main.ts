@@ -6,9 +6,9 @@ import { settings } from "./settings.ts";
 import { errors } from "telo-misikeke/telo-misikeke.js";
 
 // Set to false when releasing, set to true when developing
-const DEVELOPMENT = true;
+const DEVELOPMENT = false;
 // Don't forget these two when releasing
-const DATE_RELEASED = new Date("2024-2-1");
+const DATE_RELEASED = new Date("2024-8-15");
 const VERSION = "v0.3.0";
 
 type Elements = {

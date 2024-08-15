@@ -1,11 +1,11 @@
 # Changelog
 
-<details>
+<!-- <details>
 <summary>On development changelog</summary>
-
-## 0.3.0 (On development)
-
 The latest on-development version can be accessed by building the source code. On this on-development version, things can be broken.
+</details> -->
+
+## 0.3.0
 
 This is a huge update now with better quality translations, configurable settings, UCSUR support, and expanded vocabulary!
 
@@ -37,8 +37,6 @@ Inside update (intended for developers):
 
 - Implement lexer and english AST.
 - Overhaul dictionary: It is now a separate file with nicer syntax as opposed to written inside the code.
-
-</details>
 
 ## 0.2.2
 
