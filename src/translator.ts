@@ -330,7 +330,11 @@ function modifier(modifier: TokiPona.Modifier): Output<ModifierTranslation> {
         );
     case "nanpa":
       return phrase(modifier.phrase, "object").filterMap((phrase) => {
-        if (phrase.type === "noun") {
+        if (
+          phrase.type === "noun" &&
+          (phrase.noun as English.NounPhrase & { type: "simple" })
+              .preposition.length === 0
+        ) {
           return {
             type: "in position phrase",
             noun: {
@@ -402,8 +406,12 @@ function multipleModifiers(
         noun.length <= 1 &&
         nounPreposition.length <= 1 &&
         adverb.length === 0 &&
+        name.length <= 1 &&
         inPositionPhrase.length <= 1 &&
-        !(noun.length > 0 && inPositionPhrase.length > 0)
+        (noun.length === 0 || inPositionPhrase.length === 0) &&
+        (noun.length === 0 ||
+          (noun[0] as English.NounPhrase & { type: "simple" }).preposition
+              .length === 0)
       ) {
         adjectival = new Output([{
           type: "adjectival",
@@ -674,6 +682,9 @@ function defaultPhrase(
               object,
             })),
         ];
+        if (preposition.length > 1) {
+          return new Output();
+        }
         const headNoun = nounForms(headWord.singular, headWord.plural, number)
           .map((noun) => ({
             type: "simple" as const,
