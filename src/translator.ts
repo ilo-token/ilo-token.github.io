@@ -575,7 +575,7 @@ function wordUnit(
                 );
             }
             case "personal pronoun": {
-              let singular: null | String;
+              let singular: null | string;
               let plural: null | string;
               switch (place) {
                 case "subject":
