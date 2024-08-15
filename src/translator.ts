@@ -682,7 +682,10 @@ function defaultPhrase(
               object,
             })),
         ];
-        if (preposition.length > 1) {
+        if (
+          preposition.length > 1 ||
+          (preposition.length > 0 && postAdjective != null)
+        ) {
           return new Output();
         }
         const headNoun = nounForms(headWord.singular, headWord.plural, number)
