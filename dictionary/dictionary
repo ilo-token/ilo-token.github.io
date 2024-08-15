@@ -2,11 +2,11 @@
 
 a:
   ah/aah/aaah(f);
-  oh/ohh/ohhh(f);
-  ha/haa/haaa(f);
-  eh/ehh/ehhh(f);
-  um/umm/ummm(f);
-  oy/oyy/oyyy(f);
+  # oh/ohh/ohhh(f);
+  # ha/haa/haaa(f);
+  # eh/ehh/ehhh(f);
+  # um/umm/ummm(f);
+  # oy/oyy/oyyy(f);
 
   `[placed after something for emphasis or emotion]`(particle def);
 
@@ -900,10 +900,10 @@ mute:
 
 n:
   hm/hmm/hmmm(f);
-  uh/uhh/uhhh(f);
-  mm/mmm/mmmm(f);
-  er/err/errr(f);
-  um/umm/ummm(f);
+  # uh/uhh/uhhh(f);
+  # mm/mmm/mmmm(f);
+  # er/err/errr(f);
+  # um/umm/ummm(f);
   `[indicate thinking or pause]`(particle def);
 
 namako:
