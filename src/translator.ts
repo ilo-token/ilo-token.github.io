@@ -508,6 +508,99 @@ function fixAdjective(
     }) as Array<English.AdjectivePhrase & { type: "simple" }>)
     .sort((a, b) => rankAdjective(a.kind) - rankAdjective(b.kind));
 }
+type WordUnitTranslation =
+  | {
+    type: "noun";
+    noun: Dictionary.Noun;
+  }
+  | {
+    type: "adjective";
+    adjective: English.AdjectivePhrase;
+  };
+function wordUnit(
+  wordUnit: TokiPona.WordUnit,
+  place: "subject" | "object",
+): Output<WordUnitTranslation> {
+  switch (wordUnit.type) {
+    case "number":
+      return new Output([{
+        type: "noun",
+        noun: {
+          determiner: [],
+          adjective: [],
+          singular: `${wordUnit.number}`,
+          plural: `${wordUnit.number}s`,
+          gerund: false,
+          postAdjective: null,
+        },
+      } as WordUnitTranslation]);
+    case "x ala x":
+      return new Output();
+    case "default":
+    case "reduplication": {
+      let count: number;
+      switch (wordUnit.type) {
+        case "default":
+          count = 1;
+          break;
+        case "reduplication":
+          count = wordUnit.count;
+          break;
+      }
+      return new Output(DICTIONARY[wordUnit.word])
+        .flatMap((definition) => {
+          switch (definition.type) {
+            case "noun":
+              return new Output([{
+                type: "noun",
+                noun: definition,
+              } as WordUnitTranslation]);
+            case "personal pronoun": {
+              let singular: null | String;
+              let plural: null | string;
+              switch (place) {
+                case "subject":
+                  singular = definition.singular?.subject ?? null;
+                  plural = definition.plural?.subject ?? null;
+                  break;
+                case "object":
+                  singular = definition.singular?.object ?? null;
+                  plural = definition.plural?.object ?? null;
+                  break;
+              }
+              return new Output([{
+                type: "noun",
+                noun: {
+                  determiner: [],
+                  adjective: [],
+                  singular,
+                  plural,
+                  gerund: false,
+                  postAdjective: null,
+                },
+              } as WordUnitTranslation]);
+            }
+            case "adjective":
+              return new Output(adjective(definition, wordUnit.emphasis, count))
+                .map((adjective) =>
+                  ({ type: "adjective", adjective }) as WordUnitTranslation
+                );
+            case "compound adjective":
+              if (wordUnit.type === "default") {
+                return compoundAdjective(definition, wordUnit.emphasis)
+                  .map((adjective) =>
+                    ({ type: "adjective", adjective }) as WordUnitTranslation
+                  );
+              } else {
+                return new Output();
+              }
+            default:
+              return new Output();
+          }
+        });
+    }
+  }
+}
 type PhraseTranslation =
   | { type: "noun"; noun: English.NounPhrase }
   | {
