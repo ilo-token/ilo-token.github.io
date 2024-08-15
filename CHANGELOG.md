@@ -1,6 +1,42 @@
 # Changelog
 
-You may need to force restart the page in order to use the latest version: shift + click the restart button; or ctrl + shift + R.
+<!-- <details>
+<summary>On development changelog</summary>
+The latest on-development version can be accessed by building the source code. On this on-development version, things can be broken.
+</details> -->
+
+## 0.3.0
+
+This is a huge update now with better quality translations, configurable settings, UCSUR support, and expanded vocabulary!
+
+- Reimplement the word "a". This were dropped due to parser rewrite.
+- The vocabulary has been expanded to _nimi ku suli_ plus _nimi su!_.
+- New "dictionary mode", just enter a single word and ilo Token will output all definition from its own dictionary. This also works for particles. To bypass this and translate the word as if it is the whole sentence, just add a period.
+- Reimplement the "a" particle.
+- Implement UCSUR support! It supports:
+  - Cartouche with nasin sitelen kalama
+  - Combined glyphs
+  - Long glyphs
+  - (Deprecated characters and combiners are not supported)
+- Implement [nasin nanpa pona](https://sona.pona.la/wiki/nasin_nanpa_pona).
+- Implement settings dialog. [More info](https://github.com/ilo-token/ilo-token.github.io/wiki/Settings-Help).
+- Changes in error messages:
+  - All possible errors will now be listed.
+  - ilo Token now uses telo misikeke for error messages. This can be disabled from the settings.
+- Multiline text will no longer be recognized.
+- Add icons.
+
+You may not notice this, we take good grammar for granted, but ilo Token now has generally better quality translations thanks to the following:
+
+- It is now aware determiners are separate from adjectives. So you won't see adjectives like "nicely my", since adverbs can't modify determiners.
+- It tries to ensure adjectives are in proper order. Yes this matters, it's "big red fruit" and not "red big fruit".
+- Just like adjectives, determiners are also ordered, but unlike adjectives, they're also filtered (some combinations are not shown). You won't see "my your animal".
+- It is aware of grammatical numbers. So you won't see "2 stick" or "1 sticks".
+
+Inside update (intended for developers):
+
+- Implement lexer and english AST.
+- Overhaul dictionary: It is now a separate file with nicer syntax as opposed to written inside the code.
 
 ## 0.2.2
 

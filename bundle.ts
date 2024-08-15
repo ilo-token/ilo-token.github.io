@@ -1,29 +1,84 @@
-import { emit } from "./dev-deps.ts";
-import { debounce } from "./dev-deps.ts";
+import { bundle } from "@deno/emit";
+import { buildTeloMisikeke } from "telo-misikeke/build.ts";
+import { buildDictionary } from "dictionary/build.ts";
 
-const SOURCE = "./src/main.ts";
-const DESTINATION = "./main.js";
+const SOURCE = new URL("./src/main.ts", import.meta.url);
+const DESTINATION = new URL("./dist/main.js", import.meta.url);
+const IMPORT_MAP = new URL("./deno.json", import.meta.url);
 
-const url = new URL(SOURCE, import.meta.url);
-
-async function build(options: emit.BundleOptions): Promise<void> {
-  const result = await emit.bundle(url, options);
-  const { code } = result;
-  await Deno.writeTextFile(DESTINATION, code);
-}
-if (Deno.args[0] === "build") {
-  await build({ minify: true });
-} else if (Deno.args[0] === "watch") {
-  const builder = debounce.debounce(async () => {
-    console.log("Starting to build...");
-    await build({ compilerOptions: { inlineSourceMap: true } });
+switch (Deno.args[0]) {
+  case "build": {
+    console.log("Building telo misikeke...");
+    await buildTeloMisikeke();
+    console.log("Building dictionary...");
+    if (!await buildDictionary()) {
+      break;
+    }
+    console.log("Building main.js...");
+    const bundled = await bundle(SOURCE, {
+      type: "classic",
+      importMap: IMPORT_MAP,
+    });
+    const useStrict = addUseStrict(bundled.code);
+    const { stop, transform } = await import("esbuild");
+    const minified = await transform(useStrict, { minify: true });
+    await stop();
+    await Deno.writeTextFile(DESTINATION, minified.code);
     console.log("Building done!");
-  }, 500);
-  const watcher = Deno.watchFs("./src/");
-  builder();
-  for await (const _ of watcher) {
-    builder();
+    break;
   }
-} else {
-  throw new Error(`Unrecognized build option, ${Deno.args[0]}`);
+  case "watch": {
+    const builder = debounce(async () => {
+      console.log("Starting to build...");
+      try {
+        const { code } = await bundle(SOURCE, {
+          compilerOptions: { inlineSourceMap: true },
+          type: "classic",
+          importMap: IMPORT_MAP,
+        });
+        const useStrict = addUseStrict(code);
+        await Deno.writeTextFile(DESTINATION, useStrict);
+        console.log("Building done!");
+      } catch (error) {
+        console.error(error);
+      }
+    }, 500);
+    const watcher = Deno.watchFs([
+      "./src/",
+      "./telo-misikeke/",
+      "./dictionary/",
+    ]);
+    try {
+      builder();
+      for await (const _ of watcher) {
+        builder();
+      }
+    } finally {
+      watcher.close();
+    }
+    throw new Error("unreachable");
+  }
+  default:
+    throw new Error(`Unrecognized build option, ${Deno.args[0]}`);
+}
+function addUseStrict(src: string): string {
+  return src.replace(/\(\s*function\s*\(\s*\)\s*\{/, '$&"use strict";');
+}
+function debounce(callback: () => Promise<void>, delay: number): () => void {
+  let previous = { aborted: true };
+  let current = Promise.resolve();
+  return () => {
+    previous.aborted = true;
+    const newPrevious = { aborted: false };
+    setTimeout(() => {
+      if (!newPrevious.aborted) {
+        current = current
+          .then(() => callback())
+          .catch((error) => {
+            throw error;
+          });
+      }
+    }, delay);
+    previous = newPrevious;
+  };
 }

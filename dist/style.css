@@ -1,0 +1,107 @@
+@font-face {
+  font-family: nasin-nanpa;
+  src: url("https://github.com/ETBCOR/nasin-nanpa/raw/main/versions/nasin-nanpa.otf");
+}
+body {
+  margin: 10px;
+  font-family: sans-serif, nasin-nanpa;
+}
+a {
+  color: #0057af;
+}
+a:visited {
+  color: #551a8b;
+}
+#input {
+  box-sizing: border-box;
+  resize: none;
+  width: 100%;
+
+  background-color: inherit;
+  color: inherit;
+  padding: 5px;
+
+  border-color: gray;
+  border-width: 2px;
+  border-radius: 2px;
+}
+#error,
+#error-list {
+  color: #b60000;
+}
+.align-right {
+  text-align: right;
+}
+summary {
+  cursor: pointer;
+}
+button,
+select {
+  padding: 10px;
+}
+dialog {
+  padding: 0px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  flex-direction: column;
+  resize: both;
+}
+dialog:modal {
+  display: flex;
+}
+dialog > label,
+dialog > h1 {
+  padding: 10px;
+  margin: 0;
+}
+dialog > label[for] {
+  padding-bottom: 5px;
+}
+dialog > select {
+  margin: 10px;
+  margin-top: 0px;
+}
+dialog > div {
+  margin: 10px;
+  display: flex;
+}
+dialog > div > div {
+  flex-grow: 1;
+}
+dialog input[type="checkbox"] {
+  margin-left: 10px;
+  width: 1em;
+  height: 1em;
+  float: right;
+}
+@media (min-width: 800px) {
+  body {
+    margin: 50px;
+  }
+  dialog {
+    padding: 20px;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: black;
+    color: white;
+  }
+  dialog {
+    background-color: black;
+    color: white;
+  }
+  a {
+    color: #3197ff;
+  }
+  a:visited {
+    color: #b47de7;
+  }
+  #error,
+  #error-list {
+    color: #ff5e5e;
+  }
+}
+.hide {
+  display: none;
+}

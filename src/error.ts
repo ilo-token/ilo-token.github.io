@@ -1,12 +1,11 @@
-/** Represents Error used by `Output`. */
-export class OutputError extends Error {}
-/**
- * Represents errors that cannot be seen. This includes errors expected to be
- * unreached as well as errors expected to be covered by non-error outputs.
- */
-export class UnreachableError extends OutputError {
-  constructor() {
-    super("This is an error you shouldn't see... Please report this error.");
+/** Module for Error datatypes. */
+
+import { OutputError } from "./output.ts";
+
+/** Represents Error with unexpected and expected elements. */
+export class UnexpectedError extends OutputError {
+  constructor(unexpected: string, expected: string) {
+    super(`Unexpected ${unexpected}. ${expected} were expected instead.`);
   }
 }
 /** Represents Error due to things not implemented yet. */

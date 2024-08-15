@@ -1,17 +1,20 @@
-import { somePhraseInMultiplePhrases } from "./ast.ts";
-import { MultiplePhrases } from "./ast.ts";
+/** Module describing filter rules integrated within AST Parser. */
+
 import {
   Clause,
+  Emphasis,
+  everyWordUnitInSentence,
   FullClause,
   Modifier,
+  MultiplePhrases,
+  MultiplePredicates,
   Phrase,
   Preposition,
   Sentence,
-  someModifierInPhrase,
-  someObjectInMultiplePredicate,
   WordUnit,
 } from "./ast.ts";
 import { UnrecognizedError } from "./error.ts";
+import { describe } from "./token.ts";
 
 /** Array of filter rules for a word unit. */
 export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
@@ -22,13 +25,12 @@ export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
     }
     return true;
   },
-  // avoid reduplication of "wan" and "tu"
+  // "n" and multiple "a" cannot modify a word
   (wordUnit) => {
-    if (
-      wordUnit.type === "reduplication" &&
-      (wordUnit.word === "wan" || wordUnit.word === "tu")
-    ) {
-      throw new UnrecognizedError(`reduplication of ${wordUnit.word}`);
+    if (isMultipleAOrN(wordUnit.emphasis)) {
+      throw new UnrecognizedError(
+        `${describe(wordUnit.emphasis!)} modifying a word`,
+      );
     }
     return true;
   },
@@ -72,23 +74,23 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
   },
   // nanpa construction cannot contain pi
   (modifier) => {
-    if (modifier.type === "nanpa" && modifier.phrase.type === "default") {
-      if (
-        modifier.phrase.modifiers.some((modifier) => modifier.type === "pi")
-      ) {
-        throw new UnrecognizedError("pi inside nanpa");
-      }
+    if (
+      modifier.type === "nanpa" &&
+      modifier.phrase.type === "default" &&
+      modifier.phrase.modifiers.some((modifier) => modifier.type === "pi")
+    ) {
+      throw new UnrecognizedError("pi inside nanpa");
     }
     return true;
   },
   // nanpa construction cannot contain nanpa
   (modifier) => {
-    if (modifier.type === "nanpa" && modifier.phrase.type === "default") {
-      if (
-        modifier.phrase.modifiers.some((modifier) => modifier.type === "nanpa")
-      ) {
-        throw new UnrecognizedError("nanpa inside nanpa");
-      }
+    if (
+      modifier.type === "nanpa" &&
+      modifier.phrase.type === "default" &&
+      modifier.phrase.modifiers.some((modifier) => modifier.type === "nanpa")
+    ) {
+      throw new UnrecognizedError("nanpa inside nanpa");
     }
     return true;
   },
@@ -102,7 +104,7 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
   // pi must follow phrases with modifier
   (modifier) => {
     if (modifier.type === "pi") {
-      const phrase = modifier.phrase;
+      const { phrase } = modifier;
       if (phrase.type === "default" && phrase.modifiers.length === 0) {
         throw new UnrecognizedError("pi followed by one word");
       }
@@ -112,17 +114,15 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
   // pi cannot be nested
   (modifier) => {
     const checker = (modifier: Modifier) => {
-      if (
-        modifier.type === "default" || modifier.type === "proper words" ||
-        modifier.type === "quotation"
-      ) {
-        return false;
-      } else if (modifier.type === "nanpa") {
-        return someModifierInPhrase(modifier.phrase, false, checker);
-      } else if (modifier.type === "pi") {
-        return true;
-      } else {
-        throw new Error("unreachable error");
+      switch (modifier.type) {
+        case "default":
+        case "proper words":
+        case "quotation":
+          return false;
+        case "nanpa":
+          return someModifierInPhrase(modifier.phrase, false, checker);
+        case "pi":
+          return true;
       }
     };
     if (modifier.type === "pi") {
@@ -132,9 +132,45 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
     }
     return true;
   },
+  // pi cannot have emphasis particle
+  (modifier) => {
+    if (modifier.type === "pi") {
+      const phrase = modifier.phrase;
+      if (
+        (
+          phrase.type === "default" ||
+          phrase.type === "preverb" ||
+          phrase.type === "preposition"
+        ) &&
+        phrase.emphasis != null
+      ) {
+        return false;
+      }
+    }
+    return true;
+  },
+  // nanpa cannot have emphasis particle
+  (modifier) => {
+    if (modifier.type === "nanpa") {
+      const phrase = modifier.phrase;
+      if (
+        (
+          phrase.type === "default" ||
+          phrase.type === "preverb" ||
+          phrase.type === "preposition"
+        ) &&
+        phrase.emphasis != null
+      ) {
+        return false;
+      }
+    }
+    return true;
+  },
 ];
 /** Array of filter rules for multiple modifiers. */
-export const MODIFIERS_RULES: Array<(modifier: Array<Modifier>) => boolean> = [
+export const MULTIPLE_MODIFIERS_RULES: Array<
+  (modifier: Array<Modifier>) => boolean
+> = [
   // no multiple pi
   (modifiers) => {
     if (modifiers.filter((modifier) => modifier.type === "pi").length > 1) {
@@ -166,6 +202,42 @@ export const MODIFIERS_RULES: Array<(modifier: Array<Modifier>) => boolean> = [
     }
     return true;
   },
+  // avoid duplicate modifiers
+  (modifiers) => {
+    const set = new Set<string>();
+    for (const modifier of modifiers) {
+      let word: string;
+      switch (modifier.type) {
+        case "default":
+          if (modifier.word.type !== "number") {
+            word = modifier.word.word;
+            break;
+          } else {
+            continue;
+          }
+        case "pi":
+          if (
+            modifier.phrase.type === "default" &&
+            modifier.phrase.headWord.type !== "number"
+          ) {
+            word = modifier.phrase.headWord.word;
+            break;
+          } else {
+            continue;
+          }
+        case "quotation":
+        case "proper words":
+        case "nanpa":
+          continue;
+      }
+      if (set.has(word)) {
+        throw new UnrecognizedError(`duplicate "${word}" in modifier`);
+      } else {
+        set.add(word);
+      }
+    }
+    return true;
+  },
 ];
 /** Array of filter rules for a single phrase. */
 export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
@@ -176,34 +248,49 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
     }
     return true;
   },
-  // Disallow preverb modifiers other than _ala_
+  // Disallow preverb modifiers other than "ala"
   (phrase) => {
-    if (phrase.type === "preverb") {
-      if (!modifiersIsAlaOrNone(phrase.modifiers)) {
-        throw new UnrecognizedError('preverb with modifiers other than "ala"');
-      }
+    if (phrase.type === "preverb" && !modifiersIsAlaOrNone(phrase.modifiers)) {
+      throw new UnrecognizedError('preverb with modifiers other than "ala"');
     }
     return true;
   },
   // No multiple number words
   (phrase) => {
-    if (phrase.type === "default") {
-      if (
-        phrase.headWord.type === "numbers" ||
-        (phrase.headWord.type === "default" &&
-          (phrase.headWord.word === "wan" || phrase.headWord.word === "tu"))
-      ) {
-        if (phrase.modifiers.some(modifierIsNumeric)) {
-          throw new UnrecognizedError("Multiple number words");
-        }
-      }
+    if (
+      phrase.type === "default" &&
+      phrase.headWord.type === "number" &&
+      phrase.modifiers.some(modifierIsNumeric)
+    ) {
+      throw new UnrecognizedError("Multiple number words");
     }
     return true;
   },
+  // If the phrase has no modifiers, avoid emphasis particle
+  (phrase) =>
+    phrase.type !== "default" ||
+    phrase.emphasis == null ||
+    phrase.modifiers.length > 0,
+  // "n" and multiple "a" cannot modify a phrase
+  (wordUnit) => {
+    if (
+      (wordUnit.type === "default" || wordUnit.type === "preverb") &&
+      isMultipleAOrN(wordUnit.emphasis)
+    ) {
+      throw new UnrecognizedError(
+        `${describe(wordUnit.emphasis!)} modifying a word`,
+      );
+    }
+    return true;
+  },
+  // For preverbs, inner phrase must not have emphasis particle
+  (phrase) =>
+    phrase.type !== "preverb" ||
+    !phraseHasTopLevelEmphasis(phrase.phrase),
 ];
 /** Array of filter rules for preposition. */
 export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
-  // Disallow preverb modifiers other than _ala_
+  // Disallow preverb modifiers other than "ala"
   (preposition) => {
     if (!modifiersIsAlaOrNone(preposition.modifiers)) {
       throw new UnrecognizedError('preverb with modifiers other than "ala"');
@@ -219,22 +306,44 @@ export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
     }
     return true;
   },
+  // "n" and multiple "a" cannot modify a preposition
+  (wordUnit) => {
+    if (isMultipleAOrN(wordUnit.emphasis)) {
+      throw new UnrecognizedError(
+        `${describe(wordUnit.emphasis!)} modifying a word`,
+      );
+    }
+    return true;
+  },
+  // Preposition with "anu" must not have emphasis particle
+  (preposition) =>
+    preposition.emphasis == null || preposition.phrases.type !== "anu",
+  // Inner phrase must not have emphasis particle
+  (preposition) =>
+    preposition.phrases.type !== "single" ||
+    !phraseHasTopLevelEmphasis(preposition.phrases.phrase),
 ];
 /** Array of filter rules for clauses. */
 export const CLAUSE_RULE: Array<(clause: Clause) => boolean> = [
   // disallow preposition in subject
   (clause) => {
     let phrases: MultiplePhrases;
-    if (clause.type === "phrases" || clause.type === "o vocative") {
-      phrases = clause.phrases;
-    } else if (clause.type === "li clause" || clause.type === "o clause") {
-      if (clause.subjects) {
-        phrases = clause.subjects;
-      } else {
+    switch (clause.type) {
+      case "phrases":
+      case "o vocative":
+        phrases = clause.phrases;
+        break;
+      case "li clause":
+      case "o clause":
+        if (clause.subjects) {
+          phrases = clause.subjects;
+        } else {
+          return true;
+        }
+        break;
+      case "prepositions":
+      case "quotation":
         return true;
-      }
-    } else {
-      return true;
     }
     if (somePhraseInMultiplePhrases(phrases, hasPrepositionInPhrase)) {
       throw new UnrecognizedError("Preposition in subject");
@@ -243,27 +352,129 @@ export const CLAUSE_RULE: Array<(clause: Clause) => boolean> = [
   },
   // disallow preposition in object
   (clause) => {
-    if (clause.type === "li clause" || clause.type === "o clause") {
+    if (
+      (clause.type === "li clause" || clause.type === "o clause") &&
+      someObjectInMultiplePredicate(clause.predicates, hasPrepositionInPhrase)
+    ) {
+      throw new UnrecognizedError("Preposition in object");
+    }
+    return true;
+  },
+  // disallow "mi li" or "sina li"
+  (clause) => {
+    if (
+      clause.type === "li clause" &&
+      clause.explicitLi &&
+      clause.subjects.type === "single"
+    ) {
+      const phrase = clause.subjects.phrase;
       if (
-        someObjectInMultiplePredicate(clause.predicates, hasPrepositionInPhrase)
+        phrase.type === "default" &&
+        phrase.headWord.type === "default" &&
+        phrase.headWord.emphasis == null &&
+        phrase.modifiers.length === 0 &&
+        phrase.emphasis == null
       ) {
-        throw new UnrecognizedError("Preposition in object");
+        const word = phrase.headWord.word;
+        if (word === "mi" || word === "sina") {
+          throw new UnrecognizedError(`"${word} li"`);
+        }
       }
     }
     return true;
   },
 ];
 export const FULL_CLAUSE_RULE: Array<(fullClase: FullClause) => boolean> = [
-  // Prevent "taso ala taso"
+  // Prevent "taso ala taso" or "kin ala kin"
   (fullClause) => {
-    if (fullClause.taso && fullClause.taso.type === "x ala x") {
-      throw new UnrecognizedError('"taso ala taso"');
+    if (fullClause.type === "default") {
+      if (
+        fullClause.kinOrTaso != null && fullClause.kinOrTaso.type === "x ala x"
+      ) {
+        const word = fullClause.kinOrTaso.word;
+        throw new UnrecognizedError(`"${word} ala ${word}"`);
+      }
+    }
+    return true;
+  },
+];
+export const SENTENCE_RULE: Array<(sentence: Sentence) => boolean> = [
+  // If there is "la", there must be no filler
+  (sentence) => {
+    if (sentence.laClauses.length > 0) {
+      for (const clause of [...sentence.laClauses, sentence.finalClause]) {
+        if (clause.type === "filler") {
+          throw new UnrecognizedError('filler with "la"');
+        }
+      }
+    }
+    return true;
+  },
+  // If there is "la", there can't be "taso" or "kin"
+  (sentence) => {
+    if (sentence.laClauses.length > 0) {
+      for (const clause of [...sentence.laClauses, sentence.finalClause]) {
+        if (clause.type === "default" && clause.kinOrTaso != null) {
+          throw new UnrecognizedError(
+            `${clause.kinOrTaso.word} particle with "la"`,
+          );
+        }
+      }
+    }
+    return true;
+  },
+  // Only the last clause can have anu seme
+  (sentence) => {
+    for (const clause of sentence.laClauses) {
+      if (clause.type === "default" && clause.anuSeme != null) {
+        throw new UnrecognizedError("anu seme inside sentence");
+      }
+    }
+    return true;
+  },
+  // Only the first clause can have starting particle
+  (sentence) => {
+    for (
+      const clause of [...sentence.laClauses, sentence.finalClause].slice(1)
+    ) {
+      if (clause.type === "default" && clause.startingParticle != null) {
+        throw new UnrecognizedError("emphasis phrase inside sentence");
+      }
+    }
+    return true;
+  },
+  // Only the last clause can have ending particle
+  (sentence) => {
+    for (const clause of sentence.laClauses) {
+      if (clause.type === "default" && clause.endingParticle != null) {
+        throw new UnrecognizedError("emphasis phrase inside sentence");
+      }
+    }
+    return true;
+  },
+  // There can't be more than 1 "x ala x" or "seme"
+  (sentence) => {
+    if (
+      sentence.interrogative != null && everyWordUnitInSentence(sentence)
+          .filter((wordUnit) =>
+            wordUnit.type === "x ala x" ||
+            ((wordUnit.type === "default" ||
+              wordUnit.type === "reduplication") &&
+              wordUnit.word === "seme")
+          )
+          .length > 1
+    ) {
+      throw new UnrecognizedError(
+        'more than 1 interrogative elements: "x ala x" or "seme"',
+      );
     }
     return true;
   },
 ];
 /** Array of filter rules for multiple sentences. */
-export const SENTENCES_RULE: Array<(sentences: Array<Sentence>) => boolean> = [
+export const MULTIPLE_SENTENCES_RULE: Array<
+  (sentences: Array<Sentence>) => boolean
+> = [
   // Only allow at most 2 sentences
   (sentences) => {
     if (sentences.length > 2) {
@@ -278,17 +489,102 @@ export function filter<T>(
 ): (value: T) => boolean {
   return (value) => rules.every((rule) => rule(value));
 }
+/**
+ * Helper function for checking whether some modifier passes the test
+ * function.
+ */
+export function someModifierInPhrase(
+  phrase: Phrase,
+  whenQuotation: boolean,
+  checker: (modifier: Modifier) => boolean,
+): boolean {
+  switch (phrase.type) {
+    case "default":
+      return phrase.modifiers.some(checker);
+    case "preverb":
+      return phrase.modifiers.some(checker) ||
+        someModifierInPhrase(phrase.phrase, whenQuotation, checker);
+    case "preposition": {
+      return phrase.modifiers.some(checker) ||
+        someModifierInMultiplePhrases(
+          phrase.phrases,
+          whenQuotation,
+          checker,
+        );
+    }
+    case "quotation":
+      return whenQuotation;
+  }
+}
+/**
+ * Helper function for checking whether some modifier passes the test
+ * function.
+ */
+export function someModifierInMultiplePhrases(
+  phrases: MultiplePhrases,
+  whenQuotation: boolean,
+  checker: (modifier: Modifier) => boolean,
+): boolean {
+  switch (phrases.type) {
+    case "single":
+      return someModifierInPhrase(phrases.phrase, whenQuotation, checker);
+    case "and conjunction":
+    case "anu":
+      return phrases.phrases
+        .some((phrases) =>
+          someModifierInMultiplePhrases(phrases, whenQuotation, checker)
+        );
+  }
+}
+/**
+ * Helper function for checking whether some phrase passes the test
+ * function.
+ */
+export function somePhraseInMultiplePhrases(
+  phrases: MultiplePhrases,
+  checker: (modifier: Phrase) => boolean,
+): boolean {
+  switch (phrases.type) {
+    case "single":
+      return checker(phrases.phrase);
+    case "and conjunction":
+    case "anu":
+      return phrases.phrases
+        .some((phrases) => somePhraseInMultiplePhrases(phrases, checker));
+  }
+}
+/**
+ * Helper function for checking whether some object phrase passes the test
+ * function.
+ */
+export function someObjectInMultiplePredicate(
+  predicate: MultiplePredicates,
+  checker: (object: Phrase) => boolean,
+): boolean {
+  switch (predicate.type) {
+    case "single":
+      return false;
+    case "associated":
+      if (predicate.objects) {
+        return somePhraseInMultiplePhrases(predicate.objects, checker);
+      } else {
+        return false;
+      }
+    case "and conjunction":
+    case "anu":
+      return predicate.predicates
+        .some((predicates) =>
+          someObjectInMultiplePredicate(predicates, checker)
+        );
+  }
+}
 /** Helper function for checking whether a modifier is numeric. */
 function modifierIsNumeric(modifier: Modifier): boolean {
-  if (modifier.type === "default") {
-    const word = modifier.word;
-    return word.type === "numbers" ||
-      (word.type === "default" &&
-        (word.word === "wan" || word.word === "tu"));
-  }
-  return false;
+  return modifier.type === "default" && modifier.word.type === "number";
 }
-/** Helper function for checking if the modifiers is exactly just _ala_ or nothing. */
+/**
+ * Helper function for checking if the modifiers is exactly just "ala" or nothing.
+ */
 function modifiersIsAlaOrNone(modifiers: Array<Modifier>): boolean {
   if (modifiers.length > 1) {
     return false;
@@ -299,16 +595,35 @@ function modifiersIsAlaOrNone(modifiers: Array<Modifier>): boolean {
   }
   return true;
 }
+/**
+ * Helper function for determining whether the phrase has a preposition inside.
+ */
 function hasPrepositionInPhrase(phrase: Phrase): boolean {
-  if (phrase.type === "default") {
-    return false;
-  } else if (phrase.type === "preposition") {
-    return true;
-  } else if (phrase.type === "preverb") {
-    return hasPrepositionInPhrase(phrase.phrase);
-  } else if (phrase.type === "quotation") {
-    return false;
-  } else {
-    throw new Error("unreachable");
+  switch (phrase.type) {
+    case "default":
+      return false;
+    case "preposition":
+      return true;
+    case "preverb":
+      return hasPrepositionInPhrase(phrase.phrase);
+    case "quotation":
+      return false;
+  }
+}
+function isMultipleAOrN(emphasis: null | Emphasis): boolean {
+  return emphasis != null &&
+    (emphasis.type === "multiple a" ||
+      ((emphasis.type === "word" ||
+        emphasis.type === "long word") &&
+        emphasis.word === "n"));
+}
+function phraseHasTopLevelEmphasis(phrase: Phrase): boolean {
+  switch (phrase.type) {
+    case "default":
+    case "preverb":
+    case "preposition":
+      return phrase.emphasis != null;
+    case "quotation":
+      return false;
   }
 }

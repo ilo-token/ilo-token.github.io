@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title lang="tok">ilo Token</title>
+    <meta name="author" content="neverRare" />
+    <meta
+      name="description"
+      content="An open-source rule-based Toki Pona to English translator"
+    />
+    <meta property="og:title" content="ilo Token" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://ilo-token.github.io/" />
+    <meta
+      property="og:image"
+      content="https://ilo-token.github.io/images/preview.png"
+    />
+    <meta
+      property="og:description"
+      content="An open-source rule-based Toki Pona to English translator"
+    />
+    <link rel="shortcut icon" href="./images/ico.ico" />
+    <link rel="icon" type="image/png" href="./images/192.png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="./images/180.png" sizes="180x180" />
+    <meta name="theme-color" content="#893cf3" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://necolas.github.io/normalize.css/8.0.1/normalize.css"
+    />
+    <link rel="stylesheet" href="./style.css" />
+    <script src="./main.js"></script>
+  </head>
+  <body>
+    <h1 lang="tok">ilo Token</h1>
+    <p>
+      <strong>⚠ WARNING:</strong> Work in progress; Some things may not work
+      properly.
+    </p>
+    <p>
+      An open-source rule-based Toki Pona to English translator. No data are
+      collected.
+      <a
+        href="https://github.com/ilo-token/ilo-token.github.io/wiki/Limitations"
+        >Limitations</a
+      >.
+    </p>
+    <textarea id="input" placeholder="o toki tawa ni" lang="tok"></textarea>
+    <div>
+      <button id="translate-button">Translate</button>
+      <button id="settings-button">Settings</button>
+    </div>
+    <noscript>
+      <p>This page needs JavaScript enabled for translation.</p>
+    </noscript>
+    <ul id="output"></ul>
+    <p id="error"></p>
+    <ul id="error-list"></ul>
+    <details>
+      <summary>Provide feedback</summary>
+      <ul>
+        <li>
+          Github (public):
+          <a href="https://github.com/ilo-token/ilo-token.github.io"
+            >ilo-token/ilo-token.github.io</a
+          >
+          (<a
+            href="https://github.com/ilo-token/ilo-token.github.io/blob/master/CONTRIBUTING.md"
+            >Contributing Instruction</a
+          >)
+        </li>
+        <li>
+          <a
+            href="https://docs.google.com/forms/d/e/1FAIpQLSfdDEMbde9mieybZdbZr8haRzNzGsg0BVkuTIzuHaATCdcrlw/viewform?usp=sf_link"
+            >Google forms (private)</a
+          >
+        </li>
+        <li>
+          Email (private):
+          <a href="mailto:neverrare@proton.me">neverrare@proton.me</a>
+        </li>
+      </ul>
+    </details>
+    <footer>
+      <p>
+        <a
+          href="https://github.com/ilo-token/ilo-token.github.io/blob/master/CHANGELOG.md"
+          id="version"
+        ></a>
+      </p>
+    </footer>
+    <dialog id="dialog-box">
+      <h1>
+        Settings
+        <a
+          href="https://github.com/ilo-token/ilo-token.github.io/wiki/Settings-Help"
+          >(Help)</a
+        >
+      </h1>
+      <label>
+        Use telo misikeke error messages
+        <input type="checkbox" id="use-telo-misikeke" />
+      </label>
+      <label>
+        Randomize output order <input type="checkbox" id="randomize" />
+      </label>
+      <label for="number-settings">Singular and plural forms</label>
+      <select id="number-settings">
+        <option value="both">Show all</option>
+        <option value="condensed">Condensed</option>
+        <option value="default only">Show singular only</option>
+      </select>
+      <label for="tense-settings">Verb tenses</label>
+      <select id="tense-settings">
+        <option value="both">Show all</option>
+        <option value="condensed">Condensed</option>
+        <option value="default only">Show present only</option>
+      </select>
+      <div>
+        <button id="reset-button">Reset to default</button>
+        <div></div>
+        <button id="cancel-button">Cancel</button>
+        <button id="confirm-button">Confirm</button>
+      </div>
+    </dialog>
+  </body>
+</html>
