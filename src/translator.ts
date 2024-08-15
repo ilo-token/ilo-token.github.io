@@ -1297,4 +1297,3 @@ function multipleSentences(
 export function translate(src: string): Output<Array<English.Sentence>> {
   return parse(src).flatMap(multipleSentences);
 }
-translate("toki pona");
