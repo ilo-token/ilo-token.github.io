@@ -403,7 +403,7 @@ function multipleModifiers(
         nounPreposition.length <= 1 &&
         adverb.length === 0 &&
         inPositionPhrase.length <= 1 &&
-        !(noun.length > 1 && inPositionPhrase.length > 1)
+        !(noun.length > 0 && inPositionPhrase.length > 0)
       ) {
         adjectival = new Output([{
           type: "adjectival",
