@@ -209,9 +209,9 @@ jaki:
   # rottenness(n);
 
 jan:
-  human being(n);
   person(n);
   somebody(n singular);
+  human being(n);
 
   human-like(adj qualifier);
   # person-like(adj qualifier);
