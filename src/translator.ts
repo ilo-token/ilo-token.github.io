@@ -1205,15 +1205,25 @@ function definitionAsPlainString(
       return new Output([definition.interjection]);
     case "verb": {
       const verbs = verbAsPlainString(definition);
-      const directObjects = nullableAsArray(definition.directObject)
-        .flatMap(nounAsPlainString);
-      const indirectObjects = definition.indirectObject
-        .flatMap((object) =>
-          nounAsPlainString(object.object)
-            .map((noun) => `${object.preposition} ${noun}`)
+      const directObject = Output.combine(
+        ...nullableAsArray(definition.directObject)
+          .map(nounAsPlainString),
+      );
+      const indirectObject = Output.combine(
+        ...definition.indirectObject
+          .map((object) =>
+            nounAsPlainString(object.object)
+              .map((noun) => `${object.preposition} ${noun}`)
+          ),
+      );
+      return Output.combine(verbs, directObject, indirectObject)
+        .map(([verb, directObject, indirectObject]) =>
+          [
+            verb,
+            ...directObject,
+            ...indirectObject,
+          ].join(" ")
         );
-      return verbs
-        .map((verb) => [verb, ...directObjects, ...indirectObjects].join(" "));
     }
     case "filler":
       return new Output([
