@@ -544,7 +544,7 @@ function wordUnit(
         determiner: [],
         adjective: [],
         singular: `${wordUnit.number}`,
-        plural: `${wordUnit.number}s`,
+        plural: null,
         postAdjective: null,
       } as WordUnitTranslation]);
     case "x ala x":
