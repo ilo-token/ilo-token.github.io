@@ -747,11 +747,15 @@ function defaultPhrase(
       ) {
         const adjective = headWord.adjective;
         if (adjective.type === "simple") {
+          const adverb = [...modifier.adverb.reverse(), ...adjective.adverb];
+          if (adverb.length > 1) {
+            return new Output();
+          }
           return new Output([{
             type: "adjective",
             adjective: {
               ...adjective,
-              adverb: [...modifier.adverb.reverse(), ...adjective.adverb],
+              adverb,
               emphasis: phrase.emphasis != null,
             },
             inWayPhrase: modifier.inWayPhrase,
