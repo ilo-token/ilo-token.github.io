@@ -6,10 +6,10 @@ import { settings } from "./settings.ts";
 import { errors } from "telo-misikeke/telo-misikeke.js";
 
 // Set to false when releasing, set to true when developing
-const DEVELOPMENT = false;
+const DEVELOPMENT = true;
 // Don't forget these two when releasing
 const DATE_RELEASED = new Date("2024-8-15");
-const VERSION = "v0.3.0";
+const VERSION = "v0.3.1";
 
 type Elements = {
   input: HTMLTextAreaElement;
