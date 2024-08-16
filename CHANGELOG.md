@@ -7,6 +7,8 @@ The latest on-development version can be accessed by building the source code. O
 
 ## 0.3.0
 
+Released 15 Aug 2024
+
 This is a huge update now with better quality translations, configurable settings, UCSUR support, and expanded vocabulary!
 
 - Reimplement the word "a". This were dropped due to parser rewrite.
@@ -39,9 +41,13 @@ Inside update (intended for developers):
 
 ## 0.2.2
 
+Released 24 Jan 2024
+
 Update missed links.
 
 ## 0.2.1
+
+Released 24 Jan 2024
 
 The project has been renamed to ilo Token. The definition list has been given a huge overhaul.
 
@@ -54,6 +60,8 @@ The project has been renamed to ilo Token. The definition list has been given a 
   - Include interjection for later use.
 
 ## 0.2.0
+
+Released 24 Jan 2024
 
 For this version. The whole code has been rewritten. The translator can now translate few more things! Although it's still not capable of translating full sentences.
 
@@ -81,11 +89,15 @@ Inside update (intended for developers):
 
 ## 0.1.1
 
+Released 11 Jan 2024
+
 - Update copyright notice.
 - Update version number on the page.
 - Update contacts to Discord. (from `neverRare#1517` to `never_rare`)
 
 ## 0.1.0
+
+Released 11 Jan 2024
 
 - Add "(adjective) in (adjective) way" translation.
 - Handle complicated phrase as error.
@@ -96,6 +108,8 @@ Inside update (intended for developers):
   - _ante_ &ndash; change "other" into "different", "different" have broader meaning than "other".
 
 ## 0.0.2
+
+Released 23 Dec 2022
 
 For this version. Major bugs related to phrase translation has been fixed. The translation lists has been updated as well.
 
@@ -140,6 +154,8 @@ You may need to force restart the webpage: shift + click the restart button; or 
 - Minor fixes and changes.
 
 ## 0.0.1
+
+Released 19 Dec 2022
 
 For this version, the word list and translations have been updated. Few words that have been missed has been added. Translation lists has been updated. This includes simplifying translation lists such as deduplicating translation words that have mostly the same meaning, as well as adding more translation words.
 
