@@ -1,9 +1,16 @@
 # Changelog
 
-<!-- <details>
+<details>
+
 <summary>On development changelog</summary>
+
+## 0.3.1
+
 The latest on-development version can be accessed by building the source code. On this on-development version, things can be broken.
-</details> -->
+
+- Consecutive adverbs are now filtered to avoid ambiguity.
+
+</details>
 
 ## 0.3.0
 
