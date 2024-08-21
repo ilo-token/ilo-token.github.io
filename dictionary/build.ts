@@ -439,6 +439,15 @@ const dictionary = space()
     }
     return dictionary;
   });
+const rawTextParser = space()
+  .with(all(
+    optionalAll(head())
+      .with(
+        lex(match(/[^;]*;/, "definition"))
+          .map(([definition]) => definition),
+      ),
+  ))
+  .skip(eol());
 const insideDefinitionParser = space().with(definition()).skip(eol());
 
 export async function buildDictionary(): Promise<boolean> {
@@ -446,16 +455,7 @@ export async function buildDictionary(): Promise<boolean> {
   const startTime = performance.now();
   const output = dictionary.parse(sourceText);
   if (output.isError()) {
-    const rawTexts = space()
-      .with(all(
-        optionalAll(head())
-          .with(
-            lex(match(/[^;]*;/, "definition"))
-              .map(([definition]) => definition),
-          ),
-      ))
-      .skip(eol())
-      .parse(sourceText);
+    const rawTexts = rawTextParser.parse(sourceText);
     for (const text of rawTexts.output[0]) {
       const errors = insideDefinitionParser.parse(text).errors;
       if (errors.length > 0) {
