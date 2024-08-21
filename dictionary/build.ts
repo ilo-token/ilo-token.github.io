@@ -443,6 +443,7 @@ const insideDefinitionParser = space().with(definition()).skip(eol());
 
 export async function buildDictionary(): Promise<boolean> {
   const sourceText = await Deno.readTextFile(SOURCE);
+  const startTime = performance.now();
   const output = dictionary.parse(sourceText);
   if (output.isError()) {
     const rawTexts = space()
@@ -468,6 +469,8 @@ export async function buildDictionary(): Promise<boolean> {
     return false;
   } else {
     const dictionary = output.output[0];
+    const endTime = performance.now();
+    console.log(`dictionary built within ${endTime - startTime} milliseconds`);
     const contentWords = Object
       .entries(dictionary)
       .filter(([_, definitions]) =>
@@ -511,7 +514,7 @@ export async function buildDictionary(): Promise<boolean> {
       }
       console.warn();
     }
-    const string = JSON.stringify(output.output[0]);
+    const string = JSON.stringify(dictionary);
     await Deno.writeTextFile(
       DESTINATION,
       `import{Dictionary}from"./type.ts";export const DICTIONARY:Dictionary=${string}`,
