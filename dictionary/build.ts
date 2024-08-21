@@ -255,22 +255,100 @@ function semicolon(): Parser<null> {
 }
 function definition(): Parser<Definition> {
   return choiceOnlyOne(
-    forms().skip(tag(keyword("f")))
+    adjective()
       .skip(semicolon())
-      .map((unit) =>
+      .map((adjective) => ({ type: "adjective", ...adjective }) as Definition),
+    sequence(
+      adjective(),
+      simpleUnit("c").filter((word) => word === "and").with(adjective()),
+    )
+      .filter(([first, second]) =>
+        first.adverb.length === 0 && second.adverb.length === 0
+      )
+      .skip(semicolon())
+      .map((adjective) =>
+        ({ type: "compound adjective", adjective }) as Definition
+      ),
+    noun()
+      .skip(semicolon())
+      .map((noun) => ({ type: "noun", ...noun }) as Definition),
+    sequence(
+      simpleUnit("v"),
+      optionalAll(template(keyword("object"))),
+      optionalAll(
+        sequence(simpleUnit("prep"), noun())
+          .map(([preposition, object]) => ({ preposition, object })),
+      )
+        .map(nullableAsArray),
+    )
+      .skip(semicolon())
+      .map(([verb, forObject, indirectObject]) =>
         ({
-          type: "filler",
-          ...detectRepetition(unit),
+          type: "verb",
+          ...conjugate(verb),
+          directObject: null,
+          indirectObject,
+          forObject: forObject != null,
         }) as Definition
+      ),
+    sequence(
+      simpleUnit("v"),
+      optionalAll(noun()),
+      optionalAll(simpleUnit("prep").skip(template(keyword("object")))),
+    )
+      .skip(semicolon())
+      .map(([verb, directObject, preposition]) =>
+        ({
+          type: "verb",
+          ...conjugate(verb),
+          directObject,
+          indirectObject: [],
+          forObject: preposition ?? false,
+        }) as Definition
+      ),
+    simpleUnit("i")
+      .skip(semicolon())
+      .map((preposition) =>
+        ({ type: "interjection", interjection: preposition }) as Definition
       ),
     word().skip(tag(sequence(keyword("particle"), keyword("def"))))
       .skip(semicolon())
       .map((definition) =>
         ({ type: "particle definition", definition }) as Definition
       ),
-    noun()
+    simpleUnit("adv")
       .skip(semicolon())
-      .map((noun) => ({ type: "noun", ...noun }) as Definition),
+      .map((adverb) => ({ type: "adverb", adverb }) as Definition),
+    determiner()
+      .skip(semicolon())
+      .map((determiner) =>
+        ({ type: "determiner", ...determiner }) as Definition
+      ),
+    simpleUnit("prep")
+      .skip(semicolon())
+      .map((preposition) =>
+        ({ type: "preposition", preposition }) as Definition
+      ),
+    simpleUnit("num")
+      .skip(semicolon())
+      .map((unit) => {
+        const numeral = Number.parseInt(unit);
+        if (Number.isNaN(numeral)) {
+          throw new UnrecognizedError("non-number on numeral");
+        } else {
+          return { type: "numeral", numeral } as Definition;
+        }
+      }),
+    sequence(simpleUnit("v"), optionalAll(simpleUnit("particle")))
+      .skip(template(sequence(keyword("predicate"), keyword("v"))))
+      .skip(semicolon())
+      .map(([verb, particle]) =>
+        ({
+          type: "preverb as finite verb",
+          ...conjugate(verb),
+          particle,
+        }) as Definition
+      ),
     sequence(noun(), simpleUnit("prep"))
       .skip(template(keyword("headword")))
       .skip(semicolon())
@@ -310,80 +388,13 @@ function definition(): Parser<Definition> {
           [number]: { subject, object },
         }) as Definition
       ),
-    determiner()
-      .skip(semicolon())
-      .map((determiner) =>
-        ({ type: "determiner", ...determiner }) as Definition
-      ),
-    simpleUnit("num")
-      .skip(semicolon())
-      .map((unit) => {
-        const numeral = Number.parseInt(unit);
-        if (Number.isNaN(numeral)) {
-          throw new UnrecognizedError("non-number on numeral");
-        } else {
-          return { type: "numeral", numeral } as Definition;
-        }
-      }),
-    adjective()
-      .skip(semicolon())
-      .map((adjective) => ({ type: "adjective", ...adjective }) as Definition),
-    sequence(
-      adjective(),
-      simpleUnit("c").filter((word) => word === "and").with(adjective()),
-    )
-      .filter(([first, second]) =>
-        first.adverb.length === 0 && second.adverb.length === 0
-      )
-      .skip(semicolon())
-      .map((adjective) =>
-        ({ type: "compound adjective", adjective }) as Definition
-      ),
-    simpleUnit("adv")
-      .skip(semicolon())
-      .map((adverb) => ({ type: "adverb", adverb }) as Definition),
-    sequence(
-      simpleUnit("v"),
-      optionalAll(template(keyword("object"))),
-      optionalAll(
-        sequence(simpleUnit("prep"), noun())
-          .map(([preposition, object]) => ({ preposition, object })),
-      )
-        .map(nullableAsArray),
-    )
-      .skip(semicolon())
-      .map(([verb, forObject, indirectObject]) =>
+    word()
+      .skip(tag(sequence(keyword("modal"), keyword("v"))))
+      .skip(template(keyword("predicate")))
+      .skip(semicolon()).map((verb) =>
         ({
-          type: "verb",
-          ...conjugate(verb),
-          directObject: null,
-          indirectObject,
-          forObject: forObject != null,
-        }) as Definition
-      ),
-    sequence(
-      simpleUnit("v"),
-      optionalAll(noun()),
-      optionalAll(simpleUnit("prep").skip(template(keyword("object")))),
-    )
-      .skip(semicolon())
-      .map(([verb, directObject, preposition]) =>
-        ({
-          type: "verb",
-          ...conjugate(verb),
-          directObject,
-          indirectObject: [],
-          forObject: preposition ?? false,
-        }) as Definition
-      ),
-    sequence(simpleUnit("v"), optionalAll(simpleUnit("particle")))
-      .skip(template(sequence(keyword("predicate"), keyword("v"))))
-      .skip(semicolon())
-      .map(([verb, particle]) =>
-        ({
-          type: "preverb as finite verb",
-          ...conjugate(verb),
-          particle,
+          type: "preverb as modal verb",
+          verb,
         }) as Definition
       ),
     word()
@@ -395,24 +406,13 @@ function definition(): Parser<Definition> {
           linkingVerb,
         }) as Definition
       ),
-    word()
-      .skip(tag(sequence(keyword("modal"), keyword("v"))))
-      .skip(template(keyword("predicate")))
-      .skip(semicolon()).map((verb) =>
+    forms().skip(tag(keyword("f")))
+      .skip(semicolon())
+      .map((unit) =>
         ({
-          type: "preverb as modal verb",
-          verb,
+          type: "filler",
+          ...detectRepetition(unit),
         }) as Definition
-      ),
-    simpleUnit("prep")
-      .skip(semicolon())
-      .map((preposition) =>
-        ({ type: "preposition", preposition }) as Definition
-      ),
-    simpleUnit("i")
-      .skip(semicolon())
-      .map((preposition) =>
-        ({ type: "interjection", interjection: preposition }) as Definition
       ),
   );
 }
