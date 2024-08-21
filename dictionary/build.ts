@@ -36,9 +36,9 @@ function lex<T>(parser: Parser<T>): Parser<T> {
 function word(): Parser<string> {
   return all(
     choiceOnlyOne(
+      match(/[^():;#/`]/, "word").map(([character]) => character),
       match(/`([^`]*)`/, "quoted words").map(([_, words]) => words),
       match(/#[^\n]*/, "comment").map((_) => ""),
-      match(/[^():;#/`]/, "word").map(([character]) => character),
     ),
   )
     .map((word) => word.join("").replaceAll(/\s+/g, " ").trim())
