@@ -8,6 +8,7 @@
 
 The latest on-development version can be accessed by building the source code. On this on-development version, things can be broken.
 
+- Fixed "la" translation.
 - Consecutive adverbs are now not shown to avoid ambiguity.
 
 </details>

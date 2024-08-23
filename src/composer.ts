@@ -100,7 +100,7 @@ function clause(ast: Clause): string {
     case "vocative":
       return `${ast.call} ${noun(ast.addressee, 0)}`;
     case "dependent":
-      return `${ast.conjunction} ${clause(ast.clause)}`;
+      return `${word(ast.conjunction)} ${clause(ast.clause)}`;
     default:
       throw new TodoError(`composing ${ast.type}`);
   }
