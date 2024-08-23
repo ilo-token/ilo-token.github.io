@@ -47,6 +47,7 @@ import {
 import { describe, Token } from "./token.ts";
 import { DICTIONARY } from "dictionary/dictionary.ts";
 import { spaces, TOKEN } from "./lexer.ts";
+import { fs } from "./misc.ts";
 
 const CONTENT_WORD = new Set(
   Object
@@ -122,7 +123,7 @@ function wordFrom(set: Set<string>, description: string): Parser<string> {
     if (set.has(word)) {
       return true;
     } else {
-      throw new UnrecognizedError(`"${word}" as ${description}`);
+      throw new UnrecognizedError(fs`"${word}" as ${description}`);
     }
   });
 }
@@ -130,7 +131,7 @@ function wordFrom(set: Set<string>, description: string): Parser<string> {
 function specificWord(thatWord: string): Parser<string> {
   return word().filter((thisWord) => {
     if (thatWord === thisWord) return true;
-    else throw new UnexpectedError(`"${thisWord}"`, `"${thatWord}"`);
+    else throw new UnexpectedError(fs`"${thisWord}"`, fs`"${thatWord}"`);
   });
 }
 /** Parses an emphasis particle. */
@@ -146,7 +147,7 @@ function emphasis(): Parser<Emphasis> {
         }
         const word = longGlyph.words[0];
         if (word !== "n" && word !== "a") {
-          throw new UnexpectedError(`"${word}"`, '"a" or "n"');
+          throw new UnexpectedError(fs`"${word}"`, '"a" or "n"');
         }
         return {
           type: "long word",
@@ -185,7 +186,7 @@ function xAlaX(
             );
           }
           if (words.words[0] !== "ala") {
-            throw new UnexpectedError(`"${words.words[0]}"`, '"ala"');
+            throw new UnexpectedError(fs`"${words.words[0]}"`, '"ala"');
           }
           return true;
         }),
@@ -194,9 +195,9 @@ function xAlaX(
     )
       .map(([_, left, _1, right]) => {
         if (!word.has(left)) {
-          throw new UnrecognizedError(`${left} as ${description}`);
+          throw new UnrecognizedError(fs`${left} as ${description}`);
         } else if (left !== right) {
-          throw new UnexpectedError(`${right}`, `"${left}"`);
+          throw new UnexpectedError(fs`${right}`, fs`"${left}"`);
         } else {
           return { type: "x ala x", word: left } as WordUnit & {
             type: "x ala x";
@@ -255,11 +256,13 @@ function binaryWords(
 ): Parser<[string, string]> {
   return specificToken("combined glyphs").map(({ words }) => {
     if (words.length > 2) {
-      throw new UnrecognizedError(`combined glyphs of ${words.length} words`);
+      throw new UnrecognizedError(
+        fs`combined glyphs of ${`${words.length}`} words`,
+      );
     } else if (!word.has(words[0])) {
-      throw new UnrecognizedError(`"${words[0]}" as ${description}`);
+      throw new UnrecognizedError(fs`"${words[0]}" as ${description}`);
     } else if (!CONTENT_WORD.has(words[1])) {
-      throw new UnrecognizedError(`"${words[1]}" as content word`);
+      throw new UnrecognizedError(fs`"${words[1]}" as content word`);
     } else {
       return words as [string, string];
     }
@@ -349,7 +352,7 @@ function pi(): Parser<Modifier & { type: "pi" }> {
             );
           }
           if (words.words[0] !== "pi") {
-            throw new UnexpectedError(`"${words.words[0]}"`, "pi");
+            throw new UnexpectedError(fs`"${words.words[0]}"`, "pi");
           }
           return true;
         }),
@@ -548,12 +551,12 @@ function preposition(): Parser<Preposition> {
         .map((words) => {
           if (words.words.length > 2) {
             throw new UnrecognizedError(
-              `combined glyphs of ${words.words.length} words`,
+              fs`combined glyphs of ${`${words.words.length}`} words`,
             );
           }
           const word = words.words[0];
           if (!PREPOSITION.has(word)) {
-            throw new UnrecognizedError(`"${word}" as preposition`);
+            throw new UnrecognizedError(fs`"${word}" as preposition`);
           }
           return words.words;
         }),

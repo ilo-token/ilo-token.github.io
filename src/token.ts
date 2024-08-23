@@ -1,5 +1,7 @@
 /** Module describing token. */
 
+import { fs } from "./misc.ts";
+
 /** Represents token. */
 export type Token =
   | { type: "word"; word: string }
@@ -39,9 +41,9 @@ export type Token =
 export function describe(token: Token): string {
   switch (token.type) {
     case "word":
-      return `"${token.word}"`;
+      return fs`"${token.word}"`;
     case "combined glyphs":
-      return `combined glyphs "${token.words.join(" ")}"`;
+      return fs`combined glyphs "${token.words.join(" ")}"`;
     case "space long glyph":
     case "headed long glyph start":
     case "headless long glyph start":
@@ -51,11 +53,11 @@ export function describe(token: Token): string {
     case "inside long glyph":
       return "end of long glyph";
     case "multiple a":
-      return `"${new Array(token.count).fill("a").join(" ")}"`;
+      return fs`"${new Array(token.count).fill("a").join(" ")}"`;
     case "long word":
-      return `"${new Array(token.length).fill(token.word).join("")}"`;
+      return fs`"${new Array(token.length).fill(token.word).join("")}"`;
     case "x ala x":
-      return `"${token.word} ala ${token.word}"`;
+      return fs`"${token.word} ala ${token.word}"`;
     case "proper word":
       switch (token.kind) {
         case "cartouche":

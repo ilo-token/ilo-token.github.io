@@ -2,7 +2,7 @@ import { parse } from "./ast-parser.ts";
 import * as TokiPona from "./ast.ts";
 import * as English from "./english-ast.ts";
 import { TodoError } from "./error.ts";
-import { nullableAsArray, repeat, repeatWithSpace } from "./misc.ts";
+import { fs, nullableAsArray, repeat, repeatWithSpace } from "./misc.ts";
 import { Output } from "./output.ts";
 import { settings } from "./settings.ts";
 import { DICTIONARY } from "dictionary/dictionary.ts";
@@ -16,9 +16,9 @@ function condense(first: string, second: string): string {
   } else if (
     second.length > first.length && second.slice(0, first.length) === first
   ) {
-    return `${first}(${second.slice(first.length)})`;
+    return fs`${first}(${second.slice(first.length)})`;
   } else {
-    return `${first}/${second}`;
+    return fs`${first}/${second}`;
   }
 }
 function condenseVerb(present: string, past: string): string {
@@ -157,7 +157,7 @@ function adjective(
         so = "so";
         break;
       case "long word":
-        so = `s${repeat("o", emphasis.length)}`;
+        so = fs`s${repeat("o", emphasis.length)}`;
         break;
     }
   }
@@ -361,7 +361,7 @@ function modifier(modifier: TokiPona.Modifier): Output<ModifierTranslation> {
         }
       });
     case "quotation":
-      return new Output(new TodoError(`translation of ${modifier.type}`));
+      return new Output(new TodoError(fs`translation of ${modifier.type}`));
   }
 }
 type MultipleModifierTranslation =
@@ -787,7 +787,7 @@ function phrase(
     case "preposition":
       return new Output();
     case "quotation":
-      return new Output(new TodoError(`translation of ${phrase.type}`));
+      return new Output(new TodoError(fs`translation of ${phrase.type}`));
   }
 }
 function multiplePhrases(
@@ -914,7 +914,7 @@ function clause(clause: TokiPona.Clause): Output<English.Clause> {
     case "li clause":
     case "o clause":
     case "quotation":
-      return new Output(new TodoError(`translation of ${clause.type}`));
+      return new Output(new TodoError(fs`translation of ${clause.type}`));
   }
 }
 function filler(filler: TokiPona.Emphasis): Array<string> {
@@ -923,7 +923,7 @@ function filler(filler: TokiPona.Emphasis): Array<string> {
       return DICTIONARY[filler.word]
         .filter((definition) => definition.type === "filler")
         .map((definition) =>
-          `${definition.before}${definition.repeat}${definition.after}`
+          fs`${definition.before}${definition.repeat}${definition.after}`
         );
     case "long word":
       return DICTIONARY[filler.word]
@@ -974,7 +974,7 @@ function emphasisAsPunctuation(
         return null;
     }
   }
-  return `${questionMark}${exclamationMark}`;
+  return fs`${questionMark}${exclamationMark}`;
 }
 function interjection(clause: TokiPona.Clause): Output<English.Clause> {
   let interjection: Output<English.Clause> = new Output();
@@ -1094,7 +1094,7 @@ function sentence(
     } = sentence.finalClause;
     if (kinOrTaso != null) {
       return new Output(
-        new TodoError(`translation of "${kinOrTaso.word}" preclause`),
+        new TodoError(fs`translation of "${kinOrTaso.word}" preclause`),
       );
     }
     const lastEngClause = clause(lastTpClause);
@@ -1171,7 +1171,7 @@ function nounAsPlainString(definition: Dictionary.Noun): Output<string> {
         ...definition.adjective.map((adjective) => adjective.adjective),
         noun,
         ...nullableAsArray(definition.postAdjective)
-          .map((adjective) => `${adjective.adjective} ${adjective.name}`),
+          .map((adjective) => fs`${adjective.adjective} ${adjective.name}`),
       ].join(" ")
     );
 }
@@ -1183,11 +1183,11 @@ function verbAsPlainString(
       return new Output([
         verb.past,
         verb.presentPlural,
-        `will ${verb.presentPlural}`,
+        fs`will ${verb.presentPlural}`,
       ]);
     case "condensed":
       return new Output([
-        `(will) ${condenseVerb(verb.presentPlural, verb.past)}`,
+        fs`(will) ${condenseVerb(verb.presentPlural, verb.past)}`,
       ]);
     case "default only":
       return new Output([verb.presentPlural]);
@@ -1208,7 +1208,7 @@ function definitionAsPlainString(
       ]);
     case "adjective":
       return new Output([
-        `${definition.adverb.join(" ")} ${definition.adjective}`,
+        fs`${definition.adverb.join(" ")} ${definition.adjective}`,
       ]);
     case "compound adjective": {
       const { adjective } = definition;
@@ -1245,7 +1245,7 @@ function definitionAsPlainString(
         ...definition.indirectObject
           .map((object) =>
             nounAsPlainString(object.object)
-              .map((noun) => `${object.preposition} ${noun}`)
+              .map((noun) => fs`${object.preposition} ${noun}`)
           ),
       );
       return Output.combine(verbs, directObject, indirectObject)
@@ -1259,13 +1259,13 @@ function definitionAsPlainString(
     }
     case "filler":
       return new Output([
-        `${definition.before}${definition.repeat}${definition.after}`,
+        fs`${definition.before}${definition.repeat}${definition.after}`,
       ]);
     case "particle definition":
       return new Output([definition.definition]);
     case "noun preposition":
       return nounAsPlainString(definition.noun)
-        .map((noun) => `${noun} ${definition.preposition}`);
+        .map((noun) => fs`${noun} ${definition.preposition}`);
     case "numeral":
       return new Output([`${definition.numeral}`]);
     case "preposition":

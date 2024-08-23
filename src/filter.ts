@@ -14,6 +14,7 @@ import {
   WordUnit,
 } from "./ast.ts";
 import { UnrecognizedError } from "./error.ts";
+import { fs } from "./misc.ts";
 import { describe } from "./token.ts";
 
 /** Array of filter rules for a word unit. */
@@ -29,7 +30,7 @@ export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
   (wordUnit) => {
     if (isMultipleAOrN(wordUnit.emphasis)) {
       throw new UnrecognizedError(
-        `${describe(wordUnit.emphasis!)} modifying a word`,
+        fs`${describe(wordUnit.emphasis!)} modifying a word`,
       );
     }
     return true;
@@ -231,7 +232,7 @@ export const MULTIPLE_MODIFIERS_RULES: Array<
           continue;
       }
       if (set.has(word)) {
-        throw new UnrecognizedError(`duplicate "${word}" in modifier`);
+        throw new UnrecognizedError(fs`duplicate "${word}" in modifier`);
       } else {
         set.add(word);
       }
@@ -278,7 +279,7 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
       isMultipleAOrN(wordUnit.emphasis)
     ) {
       throw new UnrecognizedError(
-        `${describe(wordUnit.emphasis!)} modifying a word`,
+        fs`${describe(wordUnit.emphasis!)} modifying a word`,
       );
     }
     return true;
@@ -310,7 +311,7 @@ export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
   (wordUnit) => {
     if (isMultipleAOrN(wordUnit.emphasis)) {
       throw new UnrecognizedError(
-        `${describe(wordUnit.emphasis!)} modifying a word`,
+        fs`${describe(wordUnit.emphasis!)} modifying a word`,
       );
     }
     return true;
@@ -377,7 +378,7 @@ export const CLAUSE_RULE: Array<(clause: Clause) => boolean> = [
       ) {
         const word = phrase.headWord.word;
         if (word === "mi" || word === "sina") {
-          throw new UnrecognizedError(`"${word} li"`);
+          throw new UnrecognizedError(fs`"${word} li"`);
         }
       }
     }
@@ -392,7 +393,7 @@ export const FULL_CLAUSE_RULE: Array<(fullClase: FullClause) => boolean> = [
         fullClause.kinOrTaso != null && fullClause.kinOrTaso.type === "x ala x"
       ) {
         const word = fullClause.kinOrTaso.word;
-        throw new UnrecognizedError(`"${word} ala ${word}"`);
+        throw new UnrecognizedError(fs`"${word} ala ${word}"`);
       }
     }
     return true;
@@ -416,7 +417,7 @@ export const SENTENCE_RULE: Array<(sentence: Sentence) => boolean> = [
       for (const clause of [...sentence.laClauses, sentence.finalClause]) {
         if (clause.type === "default" && clause.kinOrTaso != null) {
           throw new UnrecognizedError(
-            `${clause.kinOrTaso.word} particle with "la"`,
+            fs`${clause.kinOrTaso.word} particle with "la"`,
           );
         }
       }

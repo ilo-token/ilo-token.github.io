@@ -19,7 +19,7 @@ import {
 } from "../src/parser-lib.ts";
 import { OutputError } from "../src/output.ts";
 import { UnrecognizedError } from "../src/error.ts";
-import { nullableAsArray, repeat } from "../src/misc.ts";
+import { fs, nullableAsArray, repeat } from "../src/misc.ts";
 
 const SOURCE = new URL("./dictionary", import.meta.url);
 const DESTINATION = new URL("./dictionary.ts", import.meta.url);
@@ -90,7 +90,7 @@ function conjugate(verb: string): {
     FutureTense: string;
   };
   if (conjugations == null) {
-    throw new OutputError(`no verb conjugation found for ${verb}`);
+    throw new OutputError(fs`no verb conjugation found for ${verb}`);
   }
   return {
     presentSingular: conjugations.PresentTense,
@@ -114,13 +114,15 @@ function detectRepetition(
     const after = first.slice(i + 1);
     const passed = [...rest.entries()]
       .every(([i, test]) =>
-        test === `${before}${repeat(repeatString, i + 2)}${after}`
+        test === fs`${before}${repeat(repeatString, i + 2)}${after}`
       );
     if (passed) {
       return { before, repeat: repeatString, after };
     }
   }
-  throw new OutputError(`${source} has no repetition pattern found`);
+  throw new OutputError(
+    fs`${source.join("/")} has no repetition pattern found`,
+  );
 }
 function nounOnly(): Parser<
   { singular: null | string; plural: null | string; gerund: boolean }
@@ -151,7 +153,7 @@ function nounOnly(): Parser<
               .text();
             if (singular === "" || plural === "") {
               throw new OutputError(
-                `no singular or plural form found for ${first}`,
+                fs`no singular or plural form found for ${first}`,
               );
             }
           } else {
@@ -459,7 +461,7 @@ export async function buildDictionary(): Promise<boolean> {
     for (const text of rawTexts.output[0]) {
       const errors = insideDefinitionParser.parse(text).errors;
       if (errors.length > 0) {
-        console.error(`error with definition ${text}`);
+        console.error(fs`error with definition ${text}`);
         for (const error of errors) {
           console.error(error.message);
         }
@@ -470,7 +472,9 @@ export async function buildDictionary(): Promise<boolean> {
   } else {
     const dictionary = output.output[0];
     const endTime = performance.now();
-    console.log(`dictionary built within ${endTime - startTime} milliseconds`);
+    console.log(
+      fs`dictionary built within ${`${endTime - startTime}`} milliseconds`,
+    );
     const contentWords = Object
       .entries(dictionary)
       .filter(([_, definitions]) =>
@@ -517,7 +521,7 @@ export async function buildDictionary(): Promise<boolean> {
     const string = JSON.stringify(dictionary);
     await Deno.writeTextFile(
       DESTINATION,
-      `import{Dictionary}from"./type.ts";export const DICTIONARY:Dictionary=${string}`,
+      fs`import{Dictionary}from"./type.ts";export const DICTIONARY:Dictionary=${string}`,
     );
     return true;
   }

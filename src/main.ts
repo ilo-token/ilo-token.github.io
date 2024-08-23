@@ -1,7 +1,7 @@
 /** Module for main execution in the browser. */
 
 import { translate } from "./composer.ts";
-import { shuffle } from "./misc.ts";
+import { fs, shuffle } from "./misc.ts";
 import { settings } from "./settings.ts";
 import { errors } from "telo-misikeke/telo-misikeke.js";
 
@@ -49,12 +49,12 @@ function loadElements(): void {
 }
 function setVersion(): void {
   if (DEVELOPMENT) {
-    elements!.version.innerText = `${VERSION} (On development)`;
+    elements!.version.innerText = fs`${VERSION} (On development)`;
   } else {
     const date = DATE_RELEASED.toLocaleDateString(undefined, {
       dateStyle: "short",
     });
-    elements!.version.innerText = `${VERSION} - Released ${date}`;
+    elements!.version.innerText = fs`${VERSION} - Released ${date}`;
   }
 }
 function clearOutput(): void {
@@ -125,7 +125,7 @@ function updateOutput(): void {
     if (unreachableError instanceof Error) {
       error = unreachableError.message;
     } else {
-      error = `${unreachableError}`;
+      error = fs`${unreachableError}`;
     }
     error += " (please report this)";
     outputErrors([error], false);

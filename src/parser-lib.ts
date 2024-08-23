@@ -4,6 +4,7 @@
  */
 
 import { UnexpectedError } from "./error.ts";
+import { fs } from "./misc.ts";
 import { Output, OutputError } from "./output.ts";
 
 /** A single parsing result. */
@@ -114,7 +115,7 @@ export function choiceOnlyOne<T>(
       }
     }), empty());
 }
-/** Combines `parser` and the `nothing` parser, and output `null | T`. */
+/** Combines `parser` and the `nothing` parser, and output fs`null | T`. */
 export function optional<T>(parser: Parser<T>): Parser<null | T> {
   return choice(parser, nothing());
 }
@@ -166,7 +167,7 @@ export function manyAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
     .map(([first, rest]) => [first, ...rest]);
 }
 /**
- * Parses `parser` multiple times and returns an `Array<T>`. This function is
+ * Parses `parser` multiple times and returns an fs`Array<T>`. This function is
  * exhaustive unlike `many`.
  *
  * ## ⚠️ Warning
@@ -202,7 +203,7 @@ export function match(
   regex: RegExp,
   description: string,
 ): Parser<RegExpMatchArray> {
-  const newRegex = new RegExp(`^${regex.source}`, regex.flags);
+  const newRegex = new RegExp(fs`^${regex.source}`, regex.flags);
   return new Parser((src) => {
     const match = src.match(newRegex);
     if (match != null) {
@@ -215,7 +216,7 @@ export function match(
       if (token === "") {
         tokenDescription = "space";
       } else {
-        tokenDescription = `"${token}"`;
+        tokenDescription = fs`"${token}"`;
       }
       return new Output(new UnexpectedError(tokenDescription, description));
     }
@@ -225,7 +226,7 @@ export function match(
 export function eol(): Parser<null> {
   return new Parser((src) => {
     if (src === "") return new Output([{ value: null, rest: "" }]);
-    else return new Output(new UnexpectedError(`"${src}"`, "end of text"));
+    else return new Output(new UnexpectedError(fs`"${src}"`, "end of text"));
   });
 }
 export function cached<T>(parser: Parser<T>): Parser<T> {

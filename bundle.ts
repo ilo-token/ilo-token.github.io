@@ -1,6 +1,7 @@
 import { bundle } from "@deno/emit";
 import { buildTeloMisikeke } from "telo-misikeke/build.ts";
 import { buildDictionary } from "dictionary/build.ts";
+import { fs } from "./src/misc.ts";
 
 const SOURCE = new URL("./src/main.ts", import.meta.url);
 const DESTINATION = new URL("./dist/main.js", import.meta.url);
@@ -59,7 +60,7 @@ switch (Deno.args[0]) {
     throw new Error("unreachable");
   }
   default:
-    throw new Error(`Unrecognized build option, ${Deno.args[0]}`);
+    throw new Error(fs`Unrecognized build option, ${Deno.args[0]}`);
 }
 function addUseStrict(src: string): string {
   return src.replace(/\(\s*function\s*\(\s*\)\s*\{/, '$&"use strict";');

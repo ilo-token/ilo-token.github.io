@@ -30,3 +30,9 @@ export function shuffle<T>(array: Array<T>) {
     ];
   }
 }
+export function fs(
+  strings: TemplateStringsArray,
+  ...values: Array<string>
+): string {
+  return strings.map((string, i) => `${string}${values[i] ?? ""}`).join("");
+}

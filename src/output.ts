@@ -1,6 +1,6 @@
 /** Module containing the Output data type. */
 
-/** Represents Error used by `Output`. */
+/** Represents Error used by Output. */
 export class OutputError extends Error {}
 /** Represents possibilities and error. */
 export class Output<T> {
