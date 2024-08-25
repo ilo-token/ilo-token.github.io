@@ -22,7 +22,7 @@ deno task build
 
 ## Watching
 
-Before running this command, you'll need to run `deno task build` first. This is because `deno task watch` doesn't fetch dependencies nor builds the dictionary. You'll only need to run this command once.
+Before running this command, you'll need to run `deno task build` first. This is because `deno task watch` doesn't fetch dependencies nor builds the dictionary.
 
 This builds `./dist/main.js` as a non-minified file with source mapping, intended for testing and debugging. This command also watches the source codes in `./src/` path and rebuilds `./dist/main.js` whenever there are changes.
 
