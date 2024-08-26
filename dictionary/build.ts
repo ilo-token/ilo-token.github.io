@@ -327,6 +327,7 @@ function definition(): Parser<Definition> {
         ({ type: "determiner", ...determiner }) as Definition
       ),
     simpleUnit("prep")
+      .skip(template(sequence(keyword("indirect"), keyword("object"))))
       .skip(semicolon())
       .map((preposition) =>
         ({ type: "preposition", preposition }) as Definition

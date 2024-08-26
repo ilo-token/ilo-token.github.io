@@ -323,8 +323,8 @@ ken:
   enable(v) [object];
 
 kepeken:
-  using(prep);
-  by means of(prep);
+  using(prep) [indirect object];
+  by means of(prep) [indirect object];
 
 kijetesantakalu:
   raccoon(n);
@@ -640,10 +640,10 @@ lon:
   real(adj opinion);
   true(adj opinion);
 
-  located at(prep);
-  in(prep);
-  during(prep);
-  in the context of(prep);
+  located at(prep) [indirect object];
+  in(prep) [indirect object];
+  during(prep) [indirect object];
+  in the context of(prep) [indirect object];
 
   truth(n singular);
 
@@ -1203,8 +1203,8 @@ sama:
 
   fellow(adj opinion);
 
-  similar to(prep);
-  # same as(prep);
+  similar to(prep) [indirect object];
+  # same as(prep) [indirect object];
 
   similarity(n);
 
@@ -1423,8 +1423,8 @@ suwi:
   cuteness(n);
 
 tan:
-  from(prep);
-  because of(prep);
+  from(prep) [indirect object];
+  because of(prep) [indirect object];
 
   origin(n);
   cause(n);
@@ -1448,10 +1448,10 @@ tawa:
   flight(n);
   travelling(n gerund);
 
-  to(prep);
-  for(prep);
-  going to(prep);
-  from the perspective of(prep);
+  to(prep) [indirect object];
+  for(prep) [indirect object];
+  going to(prep) [indirect object];
+  from the perspective of(prep) [indirect object];
 
   moving(adj physical quality);
 
