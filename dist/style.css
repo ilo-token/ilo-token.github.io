@@ -1,6 +1,6 @@
 @font-face {
   font-family: nasin-nanpa;
-  src: url("https://github.com/ETBCOR/nasin-nanpa/raw/main/versions/nasin-nanpa.otf");
+  src: url("./nasin-nanpa.otf");
 }
 body {
   margin: 10px;
