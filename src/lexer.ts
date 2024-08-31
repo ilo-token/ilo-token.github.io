@@ -182,7 +182,9 @@ function xAlaX(): Parser<string> {
 }
 /** Parses a punctuation. */
 function punctuation(): Parser<string> {
-  return match(/([.,:;?!󱦜󱦝])\s*/u, "punctuation")
+  // This includes UCSUR middle dot and colon
+  // https://www.kreativekorp.com/ucsur/charts/sitelen.html
+  return match(/([.,:;?!\u{F199C}\u{F199D}])\s*/u, "punctuation")
     .map(([_, punctuation]) => punctuation);
 }
 /** Parses cartouche element and returns the phonemes or letters it represents. */
@@ -190,13 +192,19 @@ function cartoucheElement(): Parser<string> {
   return choiceOnlyOne(
     singleUcsurWord()
       .skip(
-        match(/([\uff1a󱦝])\s*/u, "full width colon").map(([_, dot]) => dot),
+        // This includes UCSUR colon
+        // https://www.kreativekorp.com/ucsur/charts/sitelen.html
+        match(/([\uFF1A\u{F199D}])\s*/u, "full width colon")
+          .map(([_, dot]) => dot),
       ),
     sequence(
       singleUcsurWord(),
       count(
         allAtLeastOnce(
-          match(/([・。／󱦜])\s*/u, "full width dot").map(([_, dot]) => dot),
+          // This includes UCSUR middle dot
+          // https://www.kreativekorp.com/ucsur/charts/sitelen.html
+          match(/([・。／\u{F199C}])\s*/u, "full width dot")
+            .map(([_, dot]) => dot),
         ),
       ),
     )
