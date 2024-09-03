@@ -1,6 +1,6 @@
 # ilo Token
 
-A rule-based Toki Pona to English translator that translates into multiple English outputs showing many possible grammatical and semantic interpretation of the text. No machine learning involved.
+A rule-based dictionary-based Toki Pona to English translator that translates into multiple English outputs showing many possible grammatical and semantic interpretation of the text. No machine learning involved.
 
 [Try it](https://ilo-token.github.io/)
 
