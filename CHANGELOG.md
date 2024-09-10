@@ -10,6 +10,7 @@ The latest on-development version can be accessed by building the source code. O
 
 - Fixed "la" translation.
 - Consecutive adverbs are now not shown to avoid ambiguity.
+- Fixed UCSUR rendering.
 
 </details>
 
