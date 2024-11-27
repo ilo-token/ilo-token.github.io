@@ -18,7 +18,7 @@ type Elements = {
   errorList: HTMLParagraphElement;
   translateButton: HTMLButtonElement;
   settingsButton: HTMLButtonElement;
-  dialogBox: HTMLDialogElement;
+  settingsBox: HTMLDialogElement;
   confirmButton: HTMLButtonElement;
   cancelButton: HTMLButtonElement;
   resetButton: HTMLButtonElement;
@@ -35,7 +35,7 @@ function loadElements(): void {
     errorList: "error-list",
     translateButton: "translate-button",
     settingsButton: "settings-button",
-    dialogBox: "dialog-box",
+    settingsBox: "settings-box",
     confirmButton: "confirm-button",
     cancelButton: "cancel-button",
     resetButton: "reset-button",
@@ -147,15 +147,15 @@ if (typeof document !== "undefined") {
     resizeTextarea();
     elements!.input.addEventListener("input", resizeTextarea);
     elements!.settingsButton.addEventListener("click", () => {
-      elements!.dialogBox.showModal();
+      elements!.settingsBox.showModal();
     });
     elements!.confirmButton.addEventListener("click", () => {
       settings.loadFromElements();
-      elements!.dialogBox.close();
+      elements!.settingsBox.close();
     });
     elements!.cancelButton.addEventListener("click", () => {
       settings.resetElementsToCurrent();
-      elements!.dialogBox.close();
+      elements!.settingsBox.close();
     });
     elements!.resetButton.addEventListener("click", () => {
       settings.resetElementsToDefault();
