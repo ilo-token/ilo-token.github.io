@@ -71,7 +71,7 @@ dialog > div {
   margin: 10px;
   display: flex;
 }
-dialog > div > div {
+dialog > div > div, dialog > div > input[type="text"] {
   flex-grow: 1;
 }
 dialog input[type="checkbox"] {
