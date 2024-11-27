@@ -65,6 +65,7 @@ dialog > textarea {
   font-family: monospace;
   margin: 10px;
   resize: none;
+  overflow: auto;
   flex-grow: 1;
 }
 dialog > div {
