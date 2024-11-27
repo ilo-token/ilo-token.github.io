@@ -12,18 +12,18 @@ a {
 a:visited {
   color: #551a8b;
 }
+input[type="text"], textarea {
+  background-color: inherit;
+  color: inherit;
+  border-color: gray;
+  border-width: 2px;
+  border-radius: 2px;
+}
 #input {
   box-sizing: border-box;
   resize: none;
   width: 100%;
-
-  background-color: inherit;
-  color: inherit;
   padding: 5px;
-
-  border-color: gray;
-  border-width: 2px;
-  border-radius: 2px;
 }
 #error,
 #error-list {
