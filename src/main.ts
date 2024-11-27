@@ -17,8 +17,10 @@ type Elements = {
   error: HTMLParagraphElement;
   errorList: HTMLParagraphElement;
   translateButton: HTMLButtonElement;
+  customDictionaryButton: HTMLButtonElement;
   settingsButton: HTMLButtonElement;
   settingsBox: HTMLDialogElement;
+  customDictionaryBox:HTMLDialogElement;
   confirmButton: HTMLButtonElement;
   cancelButton: HTMLButtonElement;
   resetButton: HTMLButtonElement;
@@ -34,8 +36,10 @@ function loadElements(): void {
     error: "error",
     errorList: "error-list",
     translateButton: "translate-button",
+    customDictionaryButton: "custom-dictionary-button",
     settingsButton: "settings-button",
     settingsBox: "settings-box",
+    customDictionaryBox: "custom-dictionary-box",
     confirmButton: "confirm-button",
     cancelButton: "cancel-button",
     resetButton: "reset-button",
@@ -125,7 +129,7 @@ function updateOutput(): void {
     if (unreachableError instanceof Error) {
       error = unreachableError.message;
     } else {
-      error = fs`${unreachableError}`;
+      error = `${unreachableError}`;
     }
     error += " (please report this)";
     outputErrors([error], false);
@@ -159,6 +163,9 @@ if (typeof document !== "undefined") {
     });
     elements!.resetButton.addEventListener("click", () => {
       settings.resetElementsToDefault();
+    });
+    elements!.customDictionaryButton.addEventListener("click", () => {
+      elements!.customDictionaryBox.showModal();
     });
     elements!.translateButton.addEventListener("click", updateOutput);
     elements!.input.addEventListener("keydown", (event) => {
