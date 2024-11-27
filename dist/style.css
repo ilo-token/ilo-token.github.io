@@ -61,6 +61,12 @@ dialog > select {
   margin: 10px;
   margin-top: 0px;
 }
+dialog > textarea {
+  font-family: monospace;
+  margin: 10px;
+  resize: none;
+  flex-grow: 1;
+}
 dialog > div {
   margin: 10px;
   display: flex;
