@@ -49,7 +49,15 @@ dialog {
 dialog:modal {
   display: flex;
 }
-dialog > label,
+dialog details {
+  margin: 0;
+  padding: 0;
+  flex-direction: column;
+  resize: both;
+  display: flex;
+}
+dialog label,
+dialog summary,
 dialog > h1 {
   padding: 10px;
   margin: 0;
