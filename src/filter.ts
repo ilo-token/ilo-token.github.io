@@ -15,6 +15,7 @@ import {
 } from "./ast.ts";
 import { UnrecognizedError } from "./error.ts";
 import { fs } from "./misc.ts";
+import { settings } from "./settings.ts";
 import { describe } from "./token.ts";
 
 /** Array of filter rules for a word unit. */
@@ -203,8 +204,11 @@ export const MULTIPLE_MODIFIERS_RULES: Array<
     }
     return true;
   },
-  // avoid duplicate modifiers
+  // avoid duplicate modifiers when disabled by settings
   (modifiers) => {
+    if (settings.get("separate-repeated-modifiers")) {
+      return true;
+    }
     const set = new Set<string>();
     for (const modifier of modifiers) {
       let word: string;

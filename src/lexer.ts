@@ -31,6 +31,9 @@ import {
   UCSUR_TO_LATIN,
 } from "./ucsur.ts";
 import { fs } from "./misc.ts";
+import { lazy } from "./parser-lib.ts";
+import { settings } from "./settings.ts";
+import { empty } from "./parser-lib.ts";
 
 /** parses space. */
 export function spaces(): Parser<string> {
@@ -138,7 +141,7 @@ function combinedGlyphs(): Parser<Array<string>> {
 }
 /** Parses a word, either UCSUR or latin. */
 function word(): Parser<string> {
-  return choiceOnlyOne(latinWord(), singleUcsurWord());
+  return cached(choiceOnlyOne(latinWord(), singleUcsurWord()));
 }
 /** Parses proper words spanning multiple words. */
 function properWords(): Parser<string> {
@@ -174,11 +177,18 @@ function longWord(): Parser<Token & { type: "long word" }> {
     )
     .skip(spaces());
 }
-/** Parses X ala X constructions. */
+/** Parses X ala X constructions if allowed by the settings. */
 function xAlaX(): Parser<string> {
-  return word().then((word) =>
-    sequence(specificWord("ala"), specificWord(word)).map(() => word)
-  );
+  return lazy(() => {
+    if (settings.get("x-ala-x-partial-parsing")) {
+      return empty();
+    } else {
+      return word()
+        .then((word) =>
+          sequence(specificWord("ala"), specificWord(word)).map(() => word)
+        );
+    }
+  });
 }
 /** Parses a punctuation. */
 function punctuation(): Parser<string> {
@@ -344,29 +354,35 @@ function insideLongGlyph(): Parser<
     .skip(spaces())
     .map((words) => ({ type: "headed long glyph start", words }));
 }
+/** Parses a token without X ala X. */
+function lexerWithoutXAlaX(): Parser<Token> {
+  return cached(choiceOnlyOne(
+    spaceLongGlyph(),
+    headedLongGlyphStart(),
+    combinedGlyphs()
+      .skip(spaces())
+      .map((words) => ({ type: "combined glyphs", words }) as Token),
+    properWords().map((words) =>
+      ({ type: "proper word", words, kind: "latin" }) as Token
+    ),
+    longWord(),
+    multipleA().map((count) => ({ type: "multiple a", count }) as Token),
+    word().map((word) => ({ type: "word", word }) as Token),
+    // starting with non-words:
+    punctuation().map((punctuation) =>
+      ({ type: "punctuation", punctuation }) as Token
+    ),
+    headlessLongGlyphEnd(),
+    headedLongGlyphEnd(),
+    headlessLongGlyphStart(),
+    insideLongGlyph(),
+    cartouches().map((words) =>
+      ({ type: "proper word", words, kind: "cartouche" }) as Token
+    ),
+  ));
+}
 /** Parses a token. */
-export const TOKEN = cached(choiceOnlyOne(
-  spaceLongGlyph(),
-  headedLongGlyphStart(),
-  combinedGlyphs()
-    .skip(spaces())
-    .map((words) => ({ type: "combined glyphs", words }) as Token),
-  properWords().map((words) =>
-    ({ type: "proper word", words, kind: "latin" }) as Token
-  ),
-  longWord(),
-  multipleA().map((count) => ({ type: "multiple a", count }) as Token),
+export const TOKEN = choiceOnlyOne(
   xAlaX().map((word) => ({ type: "x ala x", word }) as Token),
-  word().map((word) => ({ type: "word", word }) as Token),
-  // starting with non-words:
-  punctuation().map((punctuation) =>
-    ({ type: "punctuation", punctuation }) as Token
-  ),
-  headlessLongGlyphEnd(),
-  headedLongGlyphEnd(),
-  headlessLongGlyphStart(),
-  insideLongGlyph(),
-  cartouches().map((words) =>
-    ({ type: "proper word", words, kind: "cartouche" }) as Token
-  ),
-));
+  lexerWithoutXAlaX(),
+);

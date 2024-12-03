@@ -119,11 +119,11 @@
         <summary>Advance settings</summary>
         <label>
           Allow X ala X partial parsing
-          <input type="checkbox" />
+          <input type="checkbox" id="x-ala-x-partial-parsing" />
         </label>
         <label>
           Allow separate repeated modifiers
-          <input type="checkbox" />
+          <input type="checkbox" id="separate-repeated-modifiers" />
         </label>
       </details>
       <div>
@@ -136,10 +136,13 @@
     <dialog id="custom-dictionary-box">
       <h1>Custom Dictionary (Help)</h1>
       <div>
-        <input type="text"/>
+        <input type="text" />
         <button>Add word</button>
       </div>
-      <textarea id="custom-dictionary" placeholder="Type here custom dictionary. Press Help above to get started."></textarea>
+      <textarea
+        id="custom-dictionary"
+        placeholder="Type here custom dictionary. Press Help above to get started."
+      ></textarea>
       <div>
         <div></div>
         <button>Discard Changes and Close</button>

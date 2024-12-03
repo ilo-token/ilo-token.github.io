@@ -7,6 +7,8 @@ type Settings = {
   "randomize": boolean;
   "number-settings": RedundancySettings;
   "tense-settings": RedundancySettings;
+  "x-ala-x-partial-parsing": boolean;
+  "separate-repeated-modifiers": boolean;
 };
 const LOCAL_STORAGE_AVAILABLE = (() => {
   if (typeof localStorage === "undefined") {
@@ -172,5 +174,13 @@ export const settings = new Setter<Settings>({
   "tense-settings": {
     default: "both",
     updater: redundancyUpdater,
+  },
+  "x-ala-x-partial-parsing": {
+    default: false,
+    updater: boolUpdater,
+  },
+  "separate-repeated-modifiers": {
+    default: false,
+    updater: boolUpdater,
   },
 });

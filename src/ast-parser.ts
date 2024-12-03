@@ -170,7 +170,7 @@ function optionalEmphasis(): Parser<null | Emphasis> {
 }
 /** Parses an X ala X construction. */
 function xAlaX(
-  word: Set<string>,
+  useWord: Set<string>,
   description: string,
 ): Parser<SimpleWordUnit & { type: "x ala x" }> {
   return choice(
@@ -194,7 +194,7 @@ function xAlaX(
       specificToken("headless long glyph end"),
     )
       .map(([_, left, _1, right]) => {
-        if (!word.has(left)) {
+        if (!useWord.has(left)) {
           throw new UnrecognizedError(fs`${left} as ${description}`);
         } else if (left !== right) {
           throw new UnexpectedError(fs`${right}`, fs`"${left}"`);
@@ -207,6 +207,13 @@ function xAlaX(
     specificToken("x ala x")
       .map(({ word }) =>
         ({ type: "x ala x", word }) as WordUnit & { type: "x ala x" }
+      ),
+    word()
+      .then((word) =>
+        sequence(specificWord("ala"), specificWord(word))
+          .map(() =>
+            ({ type: "x ala x", word }) as WordUnit & { type: "x ala x" }
+          )
       ),
   );
 }
