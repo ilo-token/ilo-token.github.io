@@ -166,12 +166,12 @@ ijo:
   phenomenon(n);
 
 ike:
-  negative(adj opinion) quality(n);
-
   bad(adj opinion);
   # unpleasant(adj opinion);
   # harmful(adj opinion);
   # unneeded(adj opinion);
+
+  negative(adj opinion) quality(n);
 
   badly(adv);
   # unpleasantly(adv);
@@ -183,18 +183,18 @@ ilo:
   # machine(n);
   # device(n);
 
-  tool-related(adj qualifier);
-  # implement-related(adj qualifier);
-  # machine-related(adj qualifier);
-  # device-related(adj qualifier);
+  tool-related(adj opinion);
+  # implement-related(adj opinion);
+  # machine-related(adj opinion);
+  # device-related(adj opinion);
 
 insa:
-  inside(adj origin) part(n);
+  inside(adj qualifier) part(n);
   # center(n singular);
   middle(n);
   midpoint(n);
 
-  internal(adj origin);
+  internal(adj qualifier);
 
 jaki:
   disgusting(adj opinion);
@@ -216,8 +216,8 @@ jan:
   human-like(adj qualifier);
   # person-like(adj qualifier);
 
-  human-related(adj qualifier);
-  # person-related(adj qualifier);
+  human-related(adj opinion);
+  # person-related(adj opinion);
 
 jasima:
   reflect(v) [object];
@@ -258,14 +258,14 @@ jo:
 
 kala:
   fish(n);
-  # marine(adj origin) animal(n);
+  # marine(adj qualifier) animal(n);
   # sea(adj qualifier) creature(n);
   swimming(adj qualifier) creature(n);
 
   swim(v);
 
   fish-like(adj qualifier);
-  fish-related(adj qualifier);
+  fish-related(adj opinion);
 
   swimming(adj qualifier);
 
@@ -273,7 +273,7 @@ kalama:
   produce(v) sound(n);
   sound(n);
 
-  sound-related(adj qualifier);
+  sound-related(adj opinion);
 
 kama:
   arrive(v);
@@ -306,10 +306,10 @@ kasi:
   # herb-like(adj qualifier);
   leaf-like(adj qualifier);
 
-  plant-related(adj qualifier);
-  # vegetation-related(adj qualifier);
-  # herb-related(adj qualifier);
-  leaf-related(adj qualifier);
+  plant-related(adj opinion);
+  # vegetation-related(adj opinion);
+  # herb-related(adj opinion);
+  leaf-related(adj opinion);
 
 ken:
   can(modal v) [predicate];
@@ -338,8 +338,8 @@ kijetesantakalu:
   raccoon-like(adj qualifier);
   # kinkajou-like(adj qualifier);
 
-  raccoon-related(adj qualifier);
-  # kinkajou-related(adj qualifier);
+  raccoon-related(adj opinion);
+  # kinkajou-related(adj opinion);
 
 kili:
   fruit(n);
@@ -350,9 +350,9 @@ kili:
   vegetable-like(adj qualifier);
   mushroom-like(adj qualifier);
 
-  fruit-related(adj qualifier);
-  vegetable-related(adj qualifier);
-  mushroom-related(adj qualifier);
+  fruit-related(adj opinion);
+  vegetable-related(adj opinion);
+  mushroom-related(adj opinion);
 
 kin:
   `[at sentence start]`(particle def);
@@ -415,13 +415,13 @@ kon:
   soul-like(adj qualifier);
   # ghost-like(adj qualifier);
 
-  air-related(adj qualifier);
-  # breath-related(adj qualifier);
-  # wind-related(adj qualifier);
-  essence-related(adj qualifier);
-  # spirit-related(adj qualifier);
-  soul-related(adj qualifier);
-  # ghost-related(adj qualifier);
+  air-related(adj opinion);
+  # breath-related(adj opinion);
+  # wind-related(adj opinion);
+  essence-related(adj opinion);
+  # spirit-related(adj opinion);
+  soul-related(adj opinion);
+  # ghost-related(adj opinion);
 
 ku:
   interact(v) with(prep) the(d article) Toki Pona(adj qualifier) Dictionary(n singular);
@@ -447,14 +447,14 @@ kulupu:
   # team(n);
   # crowd(n);
 
-  group-related(adj qualifier);
-  # community-related(adj qualifier);
-  # society-related(adj qualifier);
-  # company-related(adj qualifier);
-  # nation-related(adj qualifier);
-  # collection-related(adj qualifier);
-  # team-related(adj qualifier);
-  # crowd-related(adj qualifier);
+  group-related(adj opinion);
+  # community-related(adj opinion);
+  # society-related(adj opinion);
+  # company-related(adj opinion);
+  # nation-related(adj opinion);
+  # collection-related(adj opinion);
+  # team-related(adj opinion);
+  # crowd-related(adj opinion);
 
 kute:
   ear(n);
@@ -528,13 +528,13 @@ lawa:
   rule(n);
   law(n);
 
-  head-related(adj qualifier);
-  mind-related(adj qualifier);
-  brain-related(adj qualifier);
-  # government-related(adj qualifier);
-  leader-related(adj qualifier);
-  rule-related(adj qualifier);
-  law-related(adj qualifier);
+  head-related(adj opinion);
+  mind-related(adj opinion);
+  brain-related(adj opinion);
+  # government-related(adj opinion);
+  leader-related(adj opinion);
+  rule-related(adj opinion);
+  law-related(adj opinion);
 
 leko:
   square(n);
@@ -664,8 +664,8 @@ luka:
   hand-like(adj physical quality);
   arm-like(adj physical quality);
 
-  hand-related(adj qualifier);
-  arm-related(adj qualifier);
+  hand-related(adj opinion);
+  arm-related(adj opinion);
 
 lukin, oko:
   see(v) [object];
@@ -703,13 +703,13 @@ ma:
 
   outdoor(n);
 
-  earth-related(adj qualifier);
-  land-related(adj qualifier);
-  soil-related(adj qualifier);
-  # country-related(adj qualifier);
-  territory-related(adj qualifier);
-  world-related(adj qualifier);
-  outdoor-related(adj qualifier);
+  earth-related(adj opinion);
+  land-related(adj opinion);
+  soil-related(adj opinion);
+  # country-related(adj opinion);
+  territory-related(adj opinion);
+  world-related(adj opinion);
+  outdoor-related(adj opinion);
 
 majuna:
   old(adj age);
@@ -729,13 +729,13 @@ mama:
   sustainer(n);
   guardian(n);
 
-  parent-related(adj qualifier);
-  ancestor-related(adj qualifier);
-  creator-related(adj qualifier);
-  # originator-related(adj qualifier);
-  caretaker-related(adj qualifier);
-  sustainer-related(adj qualifier);
-  guardian-related(adj qualifier);
+  parent-related(adj opinion);
+  ancestor-related(adj opinion);
+  creator-related(adj opinion);
+  # originator-related(adj opinion);
+  caretaker-related(adj opinion);
+  sustainer-related(adj opinion);
+  guardian-related(adj opinion);
 
 mani:
   money(n singular);
@@ -789,7 +789,7 @@ moku:
   food(n);
   edible(adj opinion) thing(n);
 
-  food-related(adj qualifier);
+  food-related(adj opinion);
 
 moli:
   death(n singular);
@@ -803,8 +803,8 @@ monsi:
   back(n singular);
   rear(n singular);
 
-  back-related(adj qualifier);
-  rear-related(adj qualifier);
+  back-related(adj opinion);
+  rear-related(adj opinion);
 
 monsuta:
   fear(n);
@@ -868,14 +868,14 @@ mu:
 
 mun:
   # moon(n singular);
-  night sky(adj origin) object(n);
+  night sky(adj qualifier) object(n);
   # star(n);
-  celestial(adj origin) body(n);
+  celestial(adj qualifier) body(n);
 
-  celestial(adj origin);
+  celestial(adj qualifier);
 
-  moon-related(adj qualifier);
-  star-related(adj qualifier);
+  moon-related(adj opinion);
+  star-related(adj opinion);
 
 musi:
   # fun(n singular);
@@ -945,12 +945,12 @@ nasin:
   # road(n);
   # way(n);
 
-  method-related(adj qualifier);
-  doctrine-related(adj qualifier);
-  tradition-related(adj qualifier);
-  path-related(adj qualifier);
-  # road-related(adj qualifier);
-  # way-related(adj qualifier);
+  method-related(adj opinion);
+  doctrine-related(adj opinion);
+  tradition-related(adj opinion);
+  path-related(adj opinion);
+  # road-related(adj opinion);
+  # way-related(adj opinion);
 
 nena:
   protuberance(n);
@@ -959,11 +959,11 @@ nena:
   hill(n);
   nose(n);
 
-  protuberance-related(adj qualifier);
-  bump-related(adj qualifier);
-  button-related(adj qualifier);
-  hill-related(adj qualifier);
-  nose-related(adj qualifier);
+  protuberance-related(adj opinion);
+  bump-related(adj opinion);
+  button-related(adj opinion);
+  hill-related(adj opinion);
+  nose-related(adj opinion);
 
 ni:
   this/these(n);
@@ -975,8 +975,8 @@ nimi:
   word(n);
   name(n);
 
-  word-related(adj qualifier);
-  name-related(adj qualifier);
+  word-related(adj opinion);
+  name-related(adj opinion);
 
 noka:
   foot(n);
@@ -988,9 +988,9 @@ noka:
   leg-like(adj physical quality);
   root-like(adj physical quality);
 
-  foot-related(adj qualifier);
-  leg-related(adj qualifier);
-  root-related(adj qualifier);
+  foot-related(adj opinion);
+  leg-related(adj opinion);
+  root-related(adj opinion);
 
 o:
   `[marks the end of a vocative (who is being spoken to)]`(particle def);
@@ -1023,7 +1023,7 @@ open:
 
   beginning(n);
 
-  beginning-related(adj qualifier);
+  beginning-related(adj opinion);
 
 pakala:
   damaged(adj opinion);
@@ -1051,8 +1051,8 @@ pali:
   put(v) effort(n) toward(prep) [object];
   take(v) action(n) to(prep) [object];
 
-  # work-related(adj qualifier);
-  activity-related(adj qualifier);
+  # work-related(adj opinion);
+  activity-related(adj opinion);
 
 palisa:
   long(adj size) hard(adj material) thing(n);
@@ -1079,7 +1079,7 @@ pan:
   # injera(n);
 
   starchy(adj material);
-  grain-related(adj qualifier);
+  grain-related(adj opinion);
 
 pana:
   give(v) [object];
@@ -1117,11 +1117,11 @@ pilin:
 
   heart(n);
 
-  experience-related(adj qualifier);
-  emotion-related(adj qualifier);
-  # feeling-related(adj qualifier);
-  touch-related(adj qualifier);
-  heart-related(adj qualifier);
+  experience-related(adj opinion);
+  emotion-related(adj opinion);
+  # feeling-related(adj opinion);
+  touch-related(adj opinion);
+  heart-related(adj opinion);
 
 pimeja:
   dark(adj color);
@@ -1159,8 +1159,8 @@ pipi:
   insect-like(adj physical quality);
   bug-like(adj physical quality);
 
-  insect-related(adj qualifier);
-  bug-related(adj qualifier);
+  insect-related(adj opinion);
+  bug-related(adj opinion);
 
 poka:
   hip(n);
@@ -1179,17 +1179,17 @@ poki:
   # folder(n);
 
   container-like(adj physical quality);
-  container-related(adj qualifier);
+  container-related(adj opinion);
 
 pona:
-  positive(adj opinion) quality(n);
-
   good(adj opinion);
   # pleasant(adj opinion);
   # helpful(adj opinion);
   # friendly(adj opinion);
   # useful(adj opinion);
   # peaceful(adj opinion);
+
+  positive(adj opinion) quality(n);
 
   nicely(adv);
 
@@ -1230,8 +1230,8 @@ selo:
   outer(adj origin) form(n);
   boundary(n);
 
-  skin-related(adj qualifier);
-  boundary-related(adj qualifier);
+  skin-related(adj opinion);
+  boundary-related(adj opinion);
 
 seme:
   `[indicate a question by marking missing info in a sentence]`(particle def);
@@ -1263,11 +1263,11 @@ sijelo:
   substance(n);
   form(n);
 
-  body-related(adj qualifier);
-  shape-related(adj qualifier);
-  # torso-related(adj qualifier);
-  substance-related(adj qualifier);
-  form-related(adj qualifier);
+  body-related(adj opinion);
+  shape-related(adj opinion);
+  # torso-related(adj opinion);
+  substance-related(adj opinion);
+  form-related(adj opinion);
 
 sike:
   circle(n);
@@ -1310,10 +1310,10 @@ sinpin:
   front(n);
   face(n);
 
-  wall-related(adj qualifier);
-  # board-related(adj qualifier);
-  front-related(adj qualifier);
-  face-related(adj qualifier);
+  wall-related(adj opinion);
+  # board-related(adj opinion);
+  front-related(adj opinion);
+  face-related(adj opinion);
 
 sitelen:
   image(n);
@@ -1323,12 +1323,12 @@ sitelen:
   # mark(n);
   # writing(n);
 
-  image-related(adj qualifier);
-  # picture-related(adj qualifier);
-  representation-related(adj qualifier);
-  symbol-related(adj qualifier);
-  # mark-related(adj qualifier);
-  # writing-related(adj qualifier);
+  image-related(adj opinion);
+  # picture-related(adj opinion);
+  representation-related(adj opinion);
+  symbol-related(adj opinion);
+  # mark-related(adj opinion);
+  # writing-related(adj opinion);
 
 soko:
   mushroom(n);
@@ -1339,9 +1339,9 @@ soko:
   fungus-like(adj physical quality);
   lichen-like(adj physical quality);
 
-  mushroom-related(adj qualifier);
-  fungus-related(adj qualifier);
-  lichen-related(adj qualifier);
+  mushroom-related(adj opinion);
+  fungus-related(adj opinion);
+  lichen-related(adj opinion);
 
 sona:
   # TODO: be skilled in, be wise about
@@ -1355,20 +1355,20 @@ sona:
 
   knowledgeable(adj opinion);
 
-  knowledge-related(adj qualifier);
-  information-related(adj qualifier);
-  data-related(adj qualifier);
+  knowledge-related(adj opinion);
+  information-related(adj opinion);
+  data-related(adj opinion);
 
 soweli:
-  fuzzy(adj physical quality) creature(n);
-  land(adj origin) animal(n);
+  fuzzy(adj material) creature(n);
+  land(adj qualifier) animal(n);
   beast(n);
 
   animal-like(adj physical quality);
   beast-like(adj physical quality);
 
-  animal-related(adj qualifier);
-  beast-related(adj qualifier);
+  animal-related(adj opinion);
+  beast-related(adj opinion);
 
 su:
   interact(v) with(prep) Sonja's(d possessive) story(adj qualifier) book(adj qualifier) series(n singular);
@@ -1400,7 +1400,7 @@ suno:
   light(adj qualifier) source(n);
   # brightness(n);
 
-  light-related(adj qualifier);
+  light-related(adj opinion);
 
 supa:
   horizontal(adj physical quality) surface(n);
@@ -1476,12 +1476,12 @@ tenpo:
   # period(n);
   # duration(n singular);
 
-  time-related(adj qualifier);
-  # event-related(adj qualifier);
-  # situation-related(adj qualifier);
-  # moment-related(adj qualifier);
-  # period-related(adj qualifier);
-  # duration-related(adj qualifier);
+  time-related(adj opinion);
+  # event-related(adj opinion);
+  # situation-related(adj opinion);
+  # moment-related(adj opinion);
+  # period-related(adj opinion);
+  # duration-related(adj opinion);
 
 toki:
   communicate(v) about(prep) [object];
@@ -1497,12 +1497,12 @@ toki:
   # saying(adj qualifier);
   thinking(adj qualifier);
 
-  conversation-related(adj qualifier);
-  story-related(adj qualifier);
-  language-related(adj qualifier);
+  conversation-related(adj opinion);
+  story-related(adj opinion);
+  language-related(adj opinion);
 
 tomo:
-  indoor(adj origin) space(n);
+  indoor(adj qualifier) space(n);
   # shelter(n);
   # room(n);
   building(n);
@@ -1510,12 +1510,12 @@ tomo:
   # tent(n);
   # shack(n);
 
-  # shelter-related(adj qualifier);
-  # room-related(adj qualifier);
-  building-related(adj qualifier);
-  # home-related(adj qualifier);
-  # tent-related(adj qualifier);
-  # shack-related(adj qualifier);
+  # shelter-related(adj opinion);
+  # room-related(adj opinion);
+  building-related(adj opinion);
+  # home-related(adj opinion);
+  # tent-related(adj opinion);
+  # shack-related(adj opinion);
 
 tonsi:
   non-binary(adj qualifier) person(n);
@@ -1546,9 +1546,9 @@ uta:
   throat(n);
   consuming(adj qualifier) orifice(n);
 
-  mouth-related(adj qualifier);
-  lips-related(adj qualifier);
-  throat-related(adj qualifier);
+  mouth-related(adj opinion);
+  lips-related(adj opinion);
+  throat-related(adj opinion);
 
 utala:
   # fight(v) against(prep) [object];
@@ -1561,9 +1561,9 @@ utala:
   struggle(v);
   strive(v);
 
-  # fight-related(adj qualifier);
-  competition-related(adj qualifier);
-  challenge-related(adj qualifier);
+  # fight-related(adj opinion);
+  competition-related(adj opinion);
+  challenge-related(adj opinion);
 
 walo:
   light-colored(adj color);
@@ -1635,7 +1635,7 @@ wile:
 
   want(v) to(particle) [predicate v];
 
-  want-related(adj qualifier);
-  # desire-related(adj qualifier);
-  # wish-related(adj qualifier);
-  requirement-related(adj qualifier);
+  want-related(adj opinion);
+  # desire-related(adj opinion);
+  # wish-related(adj opinion);
+  requirement-related(adj opinion);
