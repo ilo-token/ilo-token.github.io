@@ -864,6 +864,7 @@ mu:
   chomp(i);
   ribbit(i);
   achoo(i);
+  dook(i); # nano li wile e ni
 
 mun:
   # moon(n singular);
