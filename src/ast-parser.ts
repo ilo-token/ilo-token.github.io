@@ -320,6 +320,8 @@ function ale(): Parser<string> {
   return choice(specificWord("ale"), specificWord("ali"));
 }
 /** Parses number words including "nasin nanpa pona". */
+// TODO: implement limits: upper limit of 99 to subAleNumber, only on nasin pona
+// ale sequence must be in descending order: "* ale ale * ale", not "* ale * ale ale"
 function number(): Parser<number> {
   return choice(
     specificWord("ala").map(() => 0),
