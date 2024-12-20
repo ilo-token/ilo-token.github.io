@@ -295,6 +295,7 @@ function optionalCombined(
       ),
   );
 }
+// TODO: handle missing definition
 function wordToNumber(word: string): number {
   return DICTIONARY[word]
     .filter((definition) => definition.type === "numeral")[0]
