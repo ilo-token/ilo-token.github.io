@@ -1,16 +1,12 @@
 /** Module for describing English AST. */
 
-import {
-  AdjectiveType,
-  DeterminerType as OriginalDeterminerType,
-} from "dictionary/type.ts";
+import { AdjectiveType, DeterminerType } from "dictionary/type.ts";
 
 export type Word = {
   word: string;
   emphasis: boolean;
 };
 export type Quantity = "singular" | "plural" | "both" | "condensed";
-export type DeterminerType = OriginalDeterminerType | "numeral";
 export type NounPhrase =
   | {
     type: "simple";

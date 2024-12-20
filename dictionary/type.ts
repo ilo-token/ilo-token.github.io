@@ -16,7 +16,8 @@ export type DeterminerType =
   | "interrogative"
   | "possessive"
   | "quantifier"
-  | "negative";
+  | "negative"
+  | "numeral";
 export type Quantity = "singular" | "plural" | "both";
 export type Determiner = {
   determiner: string;
