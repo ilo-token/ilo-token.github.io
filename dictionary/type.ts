@@ -72,7 +72,9 @@ export type Definition =
   }
   | {
     type: "preverb as linking verb";
-    linkingVerb: string;
+    presentSingular: string;
+    presentPlural: string;
+    past: string;
   }
   | {
     type: "preverb as finite verb";

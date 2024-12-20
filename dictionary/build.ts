@@ -406,7 +406,7 @@ function definition(): Parser<Definition> {
       .skip(semicolon()).map((linkingVerb) =>
         ({
           type: "preverb as linking verb",
-          linkingVerb,
+          ...conjugate(linkingVerb),
         }) as Definition
       ),
     forms().skip(tag(keyword("f")))
