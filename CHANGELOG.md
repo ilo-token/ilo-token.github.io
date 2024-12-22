@@ -10,6 +10,7 @@ The latest on-development version can be accessed by building the source code. O
 
 - Fixed "la" translation.
 - Consecutive adverbs are now not shown to avoid ambiguity.
+- Sentences ending with long string of punctuation such as "..." and "!?" are now recognized.
 - Fixed UCSUR rendering.
 
 </details>
