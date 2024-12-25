@@ -89,7 +89,7 @@ anu:
 
 awen:
   # stay(v);
-  # remain(v);
+  remain(linking v); # Thanks to ilo Tani for telling me this is supposed to be a linking verb
   # wait(v);
   pause(v) [object];
 
@@ -101,14 +101,14 @@ awen:
   continue(v) to(particle) [predicate v];
 
   # staying(n gerund);
-  # remaining(n gerund);
+  remaining(n gerund);
   # waiting(n gerund);
   pausing(n gerund);
   protecting(n gerund);
   continuing(n gerund);
 
   # staying(adj qualifier);
-  # remaining(adj qualifier);
+  remaining(adj qualifier);
   # waiting(adj qualifier);
   pausing(adj qualifier);
   protecting(adj qualifier);
