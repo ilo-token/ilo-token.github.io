@@ -89,7 +89,7 @@ anu:
 
 awen:
   # stay(v);
-  remain(linking v); # Thanks to ilo Tani for telling me this is supposed to be a linking verb
+  remain(linking v) [predicate]; # Thanks to ilo Tani for telling me this is supposed to be a linking verb
   # wait(v);
   pause(v) [object];
 
