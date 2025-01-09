@@ -152,13 +152,7 @@ function everyWordUnitInPhrase(phrase: Phrase): Array<WordUnit> {
 function everyWordUnitInMultiplePhrases(
   phrase: MultiplePhrases,
 ): Array<WordUnit> {
-  switch (phrase.type) {
-    case "single":
-      return everyWordUnitInPhrase(phrase.phrase);
-    case "and conjunction":
-    case "anu":
-      return phrase.phrases.flatMap(everyWordUnitInMultiplePhrases);
-  }
+  return everyPhraseInMultiplePhrases(phrase).flatMap(everyWordUnitInPhrase);
 }
 function everyWordUnitInPreposition(preposition: Preposition): Array<WordUnit> {
   return [
@@ -222,4 +216,52 @@ export function everyWordUnitInFullClause(clause: FullClause): Array<WordUnit> {
 export function everyWordUnitInSentence(sentence: Sentence): Array<WordUnit> {
   return [...sentence.laClauses, sentence.finalClause]
     .flatMap(everyWordUnitInFullClause);
+}
+export function everyModifierInPhrase(phrase: Phrase): Array<Modifier> {
+  switch (phrase.type) {
+    case "default":
+      return phrase.modifiers;
+    case "preverb":
+      return [
+        ...phrase.modifiers,
+        ...everyModifierInPhrase(phrase.phrase),
+      ];
+    case "preposition":
+      return [
+        ...phrase.modifiers,
+        ...everyModifierInMultiplePhrases(phrase.phrases),
+      ];
+    case "quotation":
+      return [];
+  }
+}
+export function everyModifierInMultiplePhrases(
+  phrases: MultiplePhrases,
+): Array<Modifier> {
+  return everyPhraseInMultiplePhrases(phrases).flatMap(everyModifierInPhrase);
+}
+export function everyPhraseInMultiplePhrases(
+  phrases: MultiplePhrases,
+): Array<Phrase> {
+  switch (phrases.type) {
+    case "single":
+      return [phrases.phrase];
+    case "and conjunction":
+    case "anu":
+      return phrases.phrases.flatMap(everyPhraseInMultiplePhrases);
+  }
+}
+export function everyObjectInMultiplePredicates(
+  predicates: MultiplePredicates,
+): Array<Phrase> {
+  switch (predicates.type) {
+    case "single":
+      return [];
+    case "associated":
+      return nullableAsArray(predicates.objects)
+        .flatMap(everyPhraseInMultiplePhrases);
+    case "and conjunction":
+    case "anu":
+      return predicates.predicates.flatMap(everyObjectInMultiplePredicates);
+  }
 }

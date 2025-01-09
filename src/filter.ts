@@ -3,6 +3,10 @@
 import {
   Clause,
   Emphasis,
+  everyModifierInMultiplePhrases,
+  everyModifierInPhrase,
+  everyObjectInMultiplePredicates,
+  everyPhraseInMultiplePhrases,
   everyWordUnitInSentence,
   FullClause,
   Modifier,
@@ -122,13 +126,13 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
         case "quotation":
           return false;
         case "nanpa":
-          return someModifierInPhrase(modifier.phrase, false, checker);
+          return everyModifierInPhrase(modifier.phrase).some(checker);
         case "pi":
           return true;
       }
     };
     if (modifier.type === "pi") {
-      if (someModifierInPhrase(modifier.phrase, false, checker)) {
+      if (everyModifierInPhrase(modifier.phrase).some(checker)) {
         throw new UnrecognizedError("pi inside pi");
       }
     }
@@ -292,6 +296,13 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
   (phrase) =>
     phrase.type !== "preverb" ||
     !phraseHasTopLevelEmphasis(phrase.phrase),
+  (phrase) => {
+    switch (phrase.type) {
+      case "default":
+      case "preverb":
+    }
+    return true;
+  },
 ];
 /** Array of filter rules for preposition. */
 export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
@@ -305,7 +316,9 @@ export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
   // Disallow nested preposition
   (preposition) => {
     if (
-      somePhraseInMultiplePhrases(preposition.phrases, hasPrepositionInPhrase)
+      everyPhraseInMultiplePhrases(preposition.phrases).some(
+        hasPrepositionInPhrase,
+      )
     ) {
       throw new UnrecognizedError("Preposition inside preposition");
     }
@@ -350,7 +363,9 @@ export const CLAUSE_RULE: Array<(clause: Clause) => boolean> = [
       case "quotation":
         return true;
     }
-    if (somePhraseInMultiplePhrases(phrases, hasPrepositionInPhrase)) {
+    if (
+      everyPhraseInMultiplePhrases(phrases).some(hasPrepositionInPhrase)
+    ) {
       throw new UnrecognizedError("Preposition in subject");
     }
     return true;
@@ -359,7 +374,9 @@ export const CLAUSE_RULE: Array<(clause: Clause) => boolean> = [
   (clause) => {
     if (
       (clause.type === "li clause" || clause.type === "o clause") &&
-      someObjectInMultiplePredicate(clause.predicates, hasPrepositionInPhrase)
+      everyObjectInMultiplePredicates(clause.predicates).some(
+        hasPrepositionInPhrase,
+      )
     ) {
       throw new UnrecognizedError("Preposition in object");
     }
@@ -493,95 +510,6 @@ export function filter<T>(
   rules: Array<(value: T) => boolean>,
 ): (value: T) => boolean {
   return (value) => rules.every((rule) => rule(value));
-}
-/**
- * Helper function for checking whether some modifier passes the test
- * function.
- */
-export function someModifierInPhrase(
-  phrase: Phrase,
-  whenQuotation: boolean,
-  checker: (modifier: Modifier) => boolean,
-): boolean {
-  switch (phrase.type) {
-    case "default":
-      return phrase.modifiers.some(checker);
-    case "preverb":
-      return phrase.modifiers.some(checker) ||
-        someModifierInPhrase(phrase.phrase, whenQuotation, checker);
-    case "preposition": {
-      return phrase.modifiers.some(checker) ||
-        someModifierInMultiplePhrases(
-          phrase.phrases,
-          whenQuotation,
-          checker,
-        );
-    }
-    case "quotation":
-      return whenQuotation;
-  }
-}
-/**
- * Helper function for checking whether some modifier passes the test
- * function.
- */
-export function someModifierInMultiplePhrases(
-  phrases: MultiplePhrases,
-  whenQuotation: boolean,
-  checker: (modifier: Modifier) => boolean,
-): boolean {
-  switch (phrases.type) {
-    case "single":
-      return someModifierInPhrase(phrases.phrase, whenQuotation, checker);
-    case "and conjunction":
-    case "anu":
-      return phrases.phrases
-        .some((phrases) =>
-          someModifierInMultiplePhrases(phrases, whenQuotation, checker)
-        );
-  }
-}
-/**
- * Helper function for checking whether some phrase passes the test
- * function.
- */
-export function somePhraseInMultiplePhrases(
-  phrases: MultiplePhrases,
-  checker: (modifier: Phrase) => boolean,
-): boolean {
-  switch (phrases.type) {
-    case "single":
-      return checker(phrases.phrase);
-    case "and conjunction":
-    case "anu":
-      return phrases.phrases
-        .some((phrases) => somePhraseInMultiplePhrases(phrases, checker));
-  }
-}
-/**
- * Helper function for checking whether some object phrase passes the test
- * function.
- */
-export function someObjectInMultiplePredicate(
-  predicate: MultiplePredicates,
-  checker: (object: Phrase) => boolean,
-): boolean {
-  switch (predicate.type) {
-    case "single":
-      return false;
-    case "associated":
-      if (predicate.objects) {
-        return somePhraseInMultiplePhrases(predicate.objects, checker);
-      } else {
-        return false;
-      }
-    case "and conjunction":
-    case "anu":
-      return predicate.predicates
-        .some((predicates) =>
-          someObjectInMultiplePredicate(predicates, checker)
-        );
-  }
 }
 /** Helper function for checking whether a modifier is numeric. */
 function modifierIsNumeric(modifier: Modifier): boolean {
