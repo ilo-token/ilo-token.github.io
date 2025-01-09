@@ -6,6 +6,8 @@ import {
   everyModifierInPhrase,
   everyObjectInMultiplePredicates,
   everyPhraseInMultiplePhrases,
+  everyWordUnitInPhrase,
+  everyWordUnitInPreposition,
   everyWordUnitInSentence,
   FullClause,
   Modifier,
@@ -294,10 +296,16 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
   (phrase) =>
     phrase.type !== "preverb" ||
     !phraseHasTopLevelEmphasis(phrase.phrase),
+  // Emphasis must not be nested
   (phrase) => {
-    switch (phrase.type) {
-      case "default":
-      case "preverb":
+    if (
+      (phrase.type === "default" || phrase.type === "preverb" ||
+        phrase.type === "preposition") &&
+      phrase.emphasis != null &&
+      everyWordUnitInPhrase(phrase)
+        .some((wordUnit) => wordUnit.emphasis != null)
+    ) {
+      throw new UnrecognizedError("nested emphasis");
     }
     return true;
   },
@@ -337,6 +345,17 @@ export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
   (preposition) =>
     preposition.phrases.type !== "single" ||
     !phraseHasTopLevelEmphasis(preposition.phrases.phrase),
+  // Emphasis must not be nested
+  (preposition) => {
+    if (
+      preposition.emphasis != null &&
+      everyWordUnitInPreposition(preposition)
+        .some((wordUnit) => wordUnit.emphasis != null)
+    ) {
+      throw new UnrecognizedError("nested emphasis");
+    }
+    return true;
+  },
 ];
 /** Array of filter rules for clauses. */
 export const CLAUSE_RULE: Array<(clause: Clause) => boolean> = [

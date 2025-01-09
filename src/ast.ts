@@ -117,7 +117,7 @@ export type MultipleSentences =
   | { type: "single word"; word: string }
   | { type: "sentences"; sentences: Array<Sentence> };
 
-function everyWordUnitInModifier(modifier: Modifier): Array<WordUnit> {
+export function everyWordUnitInModifier(modifier: Modifier): Array<WordUnit> {
   switch (modifier.type) {
     case "default":
       return [modifier.word];
@@ -130,7 +130,7 @@ function everyWordUnitInModifier(modifier: Modifier): Array<WordUnit> {
       return [];
   }
 }
-function everyWordUnitInPhrase(phrase: Phrase): Array<WordUnit> {
+export function everyWordUnitInPhrase(phrase: Phrase): Array<WordUnit> {
   switch (phrase.type) {
     case "default":
       return [
@@ -149,19 +149,21 @@ function everyWordUnitInPhrase(phrase: Phrase): Array<WordUnit> {
       return [];
   }
 }
-function everyWordUnitInMultiplePhrases(
+export function everyWordUnitInMultiplePhrases(
   phrase: MultiplePhrases,
 ): Array<WordUnit> {
   return everyPhraseInMultiplePhrases(phrase).flatMap(everyWordUnitInPhrase);
 }
-function everyWordUnitInPreposition(preposition: Preposition): Array<WordUnit> {
+export function everyWordUnitInPreposition(
+  preposition: Preposition,
+): Array<WordUnit> {
   return [
     preposition.preposition,
     ...preposition.modifiers.flatMap(everyWordUnitInModifier),
     ...everyWordUnitInMultiplePhrases(preposition.phrases),
   ];
 }
-function everyWordUnitInMultiplePredicates(
+export function everyWordUnitInMultiplePredicates(
   predicate: MultiplePredicates,
 ): Array<WordUnit> {
   switch (predicate.type) {
@@ -179,7 +181,7 @@ function everyWordUnitInMultiplePredicates(
       return predicate.predicates.flatMap(everyWordUnitInMultiplePredicates);
   }
 }
-function everyWordUnitInClause(clause: Clause): Array<WordUnit> {
+export function everyWordUnitInClause(clause: Clause): Array<WordUnit> {
   switch (clause.type) {
     case "phrases":
     case "o vocative":
