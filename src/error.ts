@@ -21,3 +21,9 @@ export class UnrecognizedError extends OutputError {
     super(fs`${token} is unrecognized.`);
   }
 }
+/** Represents Error due to missing dictionary entry */
+export class MissingEntryError extends OutputError {
+  constructor(definition: string, word: string) {
+    super(fs`${definition} for the word "${word}" is missing.`);
+  }
+}

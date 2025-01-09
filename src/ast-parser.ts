@@ -17,7 +17,11 @@ import {
   SimpleWordUnit,
   WordUnit,
 } from "./ast.ts";
-import { UnexpectedError, UnrecognizedError } from "./error.ts";
+import {
+  MissingEntryError,
+  UnexpectedError,
+  UnrecognizedError,
+} from "./error.ts";
 import { Output } from "./output.ts";
 import {
   CLAUSE_RULE,
@@ -295,11 +299,14 @@ function optionalCombined(
       ),
   );
 }
-// TODO: handle missing definition
 function wordToNumber(word: string): number {
-  return DICTIONARY[word]
+  const num = DICTIONARY[word]
     .filter((definition) => definition.type === "numeral")[0]
-    .numeral;
+    ?.numeral;
+  if (num == null) {
+    throw new MissingEntryError("numeral definition", word);
+  }
+  return num;
 }
 /** Parses number words in order other than "ale" and "ala". This can parse
  * nothing and return 0.
