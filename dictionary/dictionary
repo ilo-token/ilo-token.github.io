@@ -1535,7 +1535,7 @@ tu:
   split(v) [object];
 
 unpa:
-  sex(n);
+  sexual(adj qualifier) activity(n);
   have(v) sex(n singular) with(prep) [object];
 
   sexual(adj qualifier);
