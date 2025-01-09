@@ -390,9 +390,8 @@ export const CLAUSE_RULE: Array<(clause: Clause) => boolean> = [
   (clause) => {
     if (
       (clause.type === "li clause" || clause.type === "o clause") &&
-      everyObjectInMultiplePredicates(clause.predicates).some(
-        hasPrepositionInPhrase,
-      )
+      everyObjectInMultiplePredicates(clause.predicates)
+        .some(hasPrepositionInPhrase)
     ) {
       throw new UnrecognizedError("Preposition in object");
     }
