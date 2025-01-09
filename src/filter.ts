@@ -316,9 +316,8 @@ export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
   // Disallow nested preposition
   (preposition) => {
     if (
-      everyPhraseInMultiplePhrases(preposition.phrases).some(
-        hasPrepositionInPhrase,
-      )
+      everyPhraseInMultiplePhrases(preposition.phrases)
+        .some(hasPrepositionInPhrase)
     ) {
       throw new UnrecognizedError("Preposition inside preposition");
     }
