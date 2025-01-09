@@ -3,7 +3,6 @@
 import {
   Clause,
   Emphasis,
-  everyModifierInMultiplePhrases,
   everyModifierInPhrase,
   everyObjectInMultiplePredicates,
   everyPhraseInMultiplePhrases,
@@ -11,7 +10,6 @@ import {
   FullClause,
   Modifier,
   MultiplePhrases,
-  MultiplePredicates,
   Phrase,
   Preposition,
   Sentence,
