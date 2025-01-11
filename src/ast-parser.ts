@@ -806,7 +806,7 @@ function fullClause(): Parser<FullClause> {
           endingParticle,
         }) as FullClause
       )
-      .sort((clause) => {
+      .sortBy((clause) => {
         if ((clause as FullClause & { type: "default" }).anuSeme == null) {
           return 1;
         } else {
