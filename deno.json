@@ -16,7 +16,6 @@
     "compromise": "npm:compromise@14.14.3",
     "dictionary/": "./dictionary/",
     "@deno/emit": "jsr:@deno/emit@0.46.0",
-    "esbuild": "https://deno.land/x/esbuild@v0.24.0/wasm.js",
     "telo-misikeke/": "./telo-misikeke/"
   }
 }

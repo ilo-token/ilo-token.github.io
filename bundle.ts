@@ -1,4 +1,4 @@
-import { bundle } from "@deno/emit";
+import { bundle, BundleOptions } from "@deno/emit";
 import { buildTeloMisikeke } from "telo-misikeke/build.ts";
 import { buildDictionary } from "dictionary/build.ts";
 import { fs } from "./src/misc.ts";
@@ -7,6 +7,18 @@ const SOURCE = new URL("./src/main.ts", import.meta.url);
 const DESTINATION = new URL("./dist/main.js", import.meta.url);
 const IMPORT_MAP = new URL("./deno.json", import.meta.url);
 
+const buildOption: BundleOptions = {
+  compilerOptions: { inlineSourceMap: true },
+  type: "classic",
+  importMap: IMPORT_MAP,
+};
+async function build() {
+  console.log("Building main.js...");
+  const bundled = await bundle(SOURCE, buildOption);
+  const useStrict = addUseStrict(bundled.code);
+  await Deno.writeTextFile(DESTINATION, useStrict);
+  console.log("Building done!");
+}
 switch (Deno.args[0]) {
   case "build": {
     console.log("Building telo misikeke...");
@@ -15,31 +27,13 @@ switch (Deno.args[0]) {
     if (!await buildDictionary()) {
       break;
     }
-    console.log("Building main.js...");
-    const bundled = await bundle(SOURCE, {
-      type: "classic",
-      importMap: IMPORT_MAP,
-    });
-    const useStrict = addUseStrict(bundled.code);
-    const { stop, transform } = await import("esbuild");
-    const minified = await transform(useStrict, { minify: true });
-    await stop();
-    await Deno.writeTextFile(DESTINATION, minified.code);
-    console.log("Building done!");
+    await build();
     break;
   }
   case "watch": {
     const builder = debounce(async () => {
-      console.log("Starting to build...");
       try {
-        const { code } = await bundle(SOURCE, {
-          compilerOptions: { inlineSourceMap: true },
-          type: "classic",
-          importMap: IMPORT_MAP,
-        });
-        const useStrict = addUseStrict(code);
-        await Deno.writeTextFile(DESTINATION, useStrict);
-        console.log("Building done!");
+        await build();
       } catch (error) {
         console.error(error);
       }

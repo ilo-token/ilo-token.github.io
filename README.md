@@ -14,7 +14,7 @@ You'll need the following in order to run commands:
 
 ## Building
 
-This fetches more dependencies needed, builds the dictionary, and builds `./dist/main.js` as a minified file ready for production use. If you made changes to the dictionary, you'll need to run this again.
+This fetches more dependencies needed, builds the dictionary, and builds `./dist/main.js`. If you made changes to the dictionary, you'll need to run this again.
 
 ```
 deno task build
@@ -24,7 +24,7 @@ deno task build
 
 Before running this command, you'll need to run `deno task build` first. This is because `deno task watch` doesn't fetch dependencies nor builds the dictionary.
 
-This builds `./dist/main.js` as a non-minified file with source mapping, intended for testing and debugging. This command also watches the source codes in `./src/` path and rebuilds `./dist/main.js` whenever there are changes.
+This builds `./dist/main.js`. This command also watches the source codes in `./src/` path and rebuilds `./dist/main.js` whenever there are changes.
 
 ```
 deno task watch
