@@ -1,6 +1,6 @@
 /** Module describing token. */
 
-import { fs } from "./misc.ts";
+import { fs, repeat, repeatWithSpace } from "./misc.ts";
 
 /** Represents token. */
 export type Token =
@@ -53,9 +53,9 @@ export function describe(token: Token): string {
     case "inside long glyph":
       return "end of long glyph";
     case "multiple a":
-      return fs`"${new Array(token.count).fill("a").join(" ")}"`;
+      return fs`"${repeatWithSpace("a", token.count)}"`;
     case "long word":
-      return fs`"${new Array(token.length).fill(token.word).join("")}"`;
+      return fs`"${repeat(token.word, token.length)}"`;
     case "x ala x":
       return fs`"${token.word} ala ${token.word}"`;
     case "proper word":

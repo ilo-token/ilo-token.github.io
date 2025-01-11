@@ -990,9 +990,10 @@ function interjection(clause: TokiPona.Clause): Output<English.Clause> {
                 case "default":
                   return definition.interjection;
                 case "reduplication":
-                  return new Array(headWord.count)
-                    .fill(definition.interjection)
-                    .join(" ");
+                  return repeatWithSpace(
+                    definition.interjection,
+                    headWord.count,
+                  );
               }
             } else {
               return null;
@@ -1019,7 +1020,7 @@ function anuSeme(seme: TokiPona.HeadedWordUnit): English.Clause {
       interjection = "right";
       break;
     case "reduplication":
-      interjection = new Array(seme.count).fill("right").join(" ");
+      interjection = repeatWithSpace("right", seme.count);
   }
   return {
     type: "interjection",
