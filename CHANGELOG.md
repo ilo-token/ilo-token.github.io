@@ -1,5 +1,9 @@
 # Changelog
 
+<!--
+NOTE: update dependencies before publishing
+-->
+
 <details>
 
 <summary>On development changelog</summary>
