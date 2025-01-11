@@ -977,13 +977,12 @@ function emphasisAsPunctuation(
   return fs`${questionMark}${exclamationMark}`;
 }
 function interjection(clause: TokiPona.Clause): Output<English.Clause> {
-  let interjection: Output<English.Clause> = new Output();
   if (clause.type === "phrases" && clause.phrases.type === "single") {
     const phrase = clause.phrases.phrase;
     if (phrase.type === "default" && phrase.modifiers.length === 0) {
       const headWord = phrase.headWord;
       if (headWord.type === "default" || headWord.type === "reduplication") {
-        interjection = new Output(DICTIONARY[headWord.word])
+        return new Output(DICTIONARY[headWord.word])
           .filterMap((definition) => {
             if (definition.type === "interjection") {
               switch (headWord.type) {
@@ -1011,7 +1010,7 @@ function interjection(clause: TokiPona.Clause): Output<English.Clause> {
       }
     }
   }
-  return interjection;
+  return new Output();
 }
 function anuSeme(seme: TokiPona.HeadedWordUnit): English.Clause {
   let interjection: string;
