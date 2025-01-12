@@ -14,7 +14,7 @@ You'll need the following in order to run commands:
 
 ## Building
 
-This fetches more dependencies needed and builds `./dist/main.js`. If you made changes to the dictionary, you'll need to run this again.
+This fetches more dependencies needed and builds `./dist/main.js`.
 
 ```
 deno task build
