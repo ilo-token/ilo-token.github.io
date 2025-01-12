@@ -143,7 +143,7 @@ function updateOutput(): void {
   }
 }
 if (typeof document !== "undefined") {
-  document.addEventListener("DOMContentLoaded", async () => {
+  document.addEventListener("DOMContentLoaded", () => {
     loadElements();
     settings.loadFromLocalStorage();
     setVersion();
@@ -180,16 +180,21 @@ if (typeof document !== "undefined") {
         updateOutput();
       }
     });
-    const response = await fetch("./dictionary");
-    if (!response.ok) {
-      throw new Error(
-        fs`unable to fetch ./dictionary (${`${response.status}`} ${response.statusText})`,
-      );
-    }
-    loadDictionary(await response.text());
-    elements!.input.disabled = false;
-    elements!.translateButton.disabled = false;
-    elements!.translateButton.innerText = "Translate";
-    loaded = true;
+    (async () => {
+      const response = await fetch("./dictionary");
+      if (!response.ok) {
+        throw new Error(
+          fs`unable to fetch ./dictionary (${`${response.status}`} ${response.statusText})`,
+        );
+      }
+      loadDictionary(await response.text());
+      elements!.input.disabled = false;
+      elements!.translateButton.disabled = false;
+      elements!.translateButton.innerText = "Translate";
+      loaded = true;
+    })()
+      .catch((error) => {
+        throw error;
+      });
   });
 }
