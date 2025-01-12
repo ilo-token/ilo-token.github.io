@@ -235,9 +235,7 @@ export function cached<T>(parser: Parser<T>): Parser<T> {
     if (Object.hasOwn(cache, src)) {
       return cache[src];
     } else {
-      const output = parser.parser(src);
-      cache[src] = output;
-      return output;
+      return cache[src] = parser.parser(src);
     }
   });
 }
