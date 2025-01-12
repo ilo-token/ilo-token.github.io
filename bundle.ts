@@ -15,8 +15,9 @@ const buildOption: BundleOptions = {
 async function build() {
   console.log("Building main.js...");
   const bundled = await bundle(SOURCE, buildOption);
-  const useStrict = addUseStrict(bundled.code);
-  await Deno.writeTextFile(DESTINATION, useStrict);
+  const withUseStrict = bundled.code
+    .replace(/\(\s*function\s*\(\s*\)\s*\{/, '$&"use strict";');
+  await Deno.writeTextFile(DESTINATION, withUseStrict);
   console.log("Building done!");
 }
 switch (Deno.args[0]) {
@@ -54,9 +55,6 @@ switch (Deno.args[0]) {
   }
   default:
     throw new Error(fs`Unrecognized build option, ${Deno.args[0]}`);
-}
-function addUseStrict(src: string): string {
-  return src.replace(/\(\s*function\s*\(\s*\)\s*\{/, '$&"use strict";');
 }
 function debounce(callback: () => Promise<void>, delay: number): () => void {
   let previous = { aborted: true };
