@@ -225,8 +225,13 @@ export function match(
 /** Parses the end of line (or the end of sentence in context of Toki Pona) */
 export function eol(): Parser<null> {
   return new Parser((src) => {
-    if (src === "") return new Output([{ value: null, rest: "" }]);
-    else return new Output(new UnexpectedError(fs`"${src}"`, "end of text"));
+    if (src === "") {
+      return new Output([{ value: null, rest: "" }]);
+    } else if (/^\s+$/.test(src)) {
+      return new Output(new UnexpectedError("space", "end of text"));
+    } else {
+      return new Output(new UnexpectedError(fs`"${src}"`, "end of text"));
+    }
   });
 }
 export function cached<T>(parser: Parser<T>): Parser<T> {

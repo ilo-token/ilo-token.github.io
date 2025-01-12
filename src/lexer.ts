@@ -43,7 +43,13 @@ export function spaces(): Parser<string> {
 function slice(length: number, description: string): Parser<string> {
   return new Parser((src) => {
     if (src.length < length) {
-      return new Output(new UnexpectedError(src, description));
+      if (src.length === 0) {
+        return new Output(new UnexpectedError("end of text", description));
+      } else if (/^\s+$/.test(src)) {
+        return new Output(new UnexpectedError("space", description));
+      } else {
+        return new Output(new UnexpectedError(fs`"${src}"`, description));
+      }
     } else {
       return new Output([{
         rest: src.slice(length),
@@ -108,7 +114,7 @@ function ucsurWord(): Parser<string> {
   return ucsur().map((word) => {
     const latin = UCSUR_TO_LATIN[word];
     if (latin == null) {
-      throw new UnexpectedError(word, "UCSUR glyph");
+      throw new UnexpectedError(`"${word}"`, "UCSUR glyph");
     } else {
       return latin;
     }

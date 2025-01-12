@@ -173,6 +173,7 @@ function optionalEmphasis(): Parser<null | Emphasis> {
   return optional(emphasis());
 }
 /** Parses an X ala X construction. */
+// TODO: use `then` combinator
 function xAlaX(
   useWord: Set<string>,
   description: string,
@@ -199,9 +200,9 @@ function xAlaX(
     )
       .map(([_, left, _1, right]) => {
         if (!useWord.has(left)) {
-          throw new UnrecognizedError(fs`${left} as ${description}`);
+          throw new UnrecognizedError(fs`"${left}" as ${description}`);
         } else if (left !== right) {
-          throw new UnexpectedError(fs`${right}`, fs`"${left}"`);
+          throw new UnexpectedError(fs`"${right}"`, fs`"${left}"`);
         } else {
           return { type: "x ala x", word: left } as WordUnit & {
             type: "x ala x";
