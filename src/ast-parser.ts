@@ -736,10 +736,14 @@ function clause(): Parser<Clause> {
       preposition(),
       many(optionalComma().with(preposition())),
     )
-      .map(([preposition, morePreposition]) =>
+      .map(
+        ([preposition, morePreposition]) => [preposition, ...morePreposition],
+      )
+      .sortBy((prepositions) => prepositions.length)
+      .map((prepositions) =>
         ({
           type: "prepositions",
-          prepositions: [preposition, ...morePreposition],
+          prepositions,
         }) as Clause
       ),
     subjectPhrases()
