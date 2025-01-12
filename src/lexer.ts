@@ -114,7 +114,7 @@ function ucsurWord(): Parser<string> {
   return ucsur().map((word) => {
     const latin = UCSUR_TO_LATIN[word];
     if (latin == null) {
-      throw new UnexpectedError(`"${word}"`, "UCSUR glyph");
+      throw new UnexpectedError(fs`"${word}"`, "UCSUR glyph");
     } else {
       return latin;
     }

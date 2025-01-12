@@ -20,7 +20,7 @@ type Elements = {
   customDictionaryButton: HTMLButtonElement;
   settingsButton: HTMLButtonElement;
   settingsBox: HTMLDialogElement;
-  customDictionaryBox:HTMLDialogElement;
+  customDictionaryBox: HTMLDialogElement;
   confirmButton: HTMLButtonElement;
   cancelButton: HTMLButtonElement;
   resetButton: HTMLButtonElement;
@@ -144,9 +144,9 @@ if (typeof document !== "undefined") {
     // Auto resize
     function resizeTextarea() {
       elements!.input.style.height = "auto";
-      elements!.input.style.height = `${
+      elements!.input.style.height = fs`${`${
         Math.max(50, elements!.input.scrollHeight + 20)
-      }px`;
+      }`}px`;
     }
     resizeTextarea();
     elements!.input.addEventListener("input", resizeTextarea);
