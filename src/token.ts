@@ -46,6 +46,7 @@ export function describe(token: Token): string {
       return fs`combined glyphs "${token.words.join(" ")}"`;
     case "space long glyph":
     case "headed long glyph start":
+      return fs`long "${token.words.join(" ")}"`;
     case "headless long glyph start":
       return "long glyph";
     case "headless long glyph end":
@@ -63,11 +64,11 @@ export function describe(token: Token): string {
         case "cartouche":
           return "cartouche";
         case "latin":
-          return "proper word";
+          return fs`proper word "${token.words}"`;
       }
       // this is unreachable
       // fallthrough
     case "punctuation":
-      return "punctuation mark";
+      return fs`punctuation mark "${token.punctuation}"`;
   }
 }
