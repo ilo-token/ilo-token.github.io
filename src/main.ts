@@ -1,6 +1,7 @@
 /** Module for main execution in the browser. */
 
 import { translate } from "./composer.ts";
+import { loadDictionary } from "./dictionary.ts";
 import { fs, shuffle } from "./misc.ts";
 import { settings } from "./settings.ts";
 import { errors } from "telo-misikeke/telo-misikeke.js";
@@ -10,6 +11,8 @@ const DEVELOPMENT = true;
 // Don't forget these two when releasing
 const DATE_RELEASED = new Date("2024-8-15");
 const VERSION = "v0.3.1";
+
+let loaded = false;
 
 type Elements = {
   input: HTMLTextAreaElement;
@@ -98,6 +101,9 @@ function outputErrors(errors: Array<string>, asHtml: boolean): void {
   }
 }
 function updateOutput(): void {
+  if (!loaded) {
+    return;
+  }
   clearOutput();
   const source = elements!.input.value;
   try {
@@ -137,7 +143,7 @@ function updateOutput(): void {
   }
 }
 if (typeof document !== "undefined") {
-  document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", async () => {
     loadElements();
     settings.loadFromLocalStorage();
     setVersion();
@@ -174,5 +180,16 @@ if (typeof document !== "undefined") {
         updateOutput();
       }
     });
+    const response = await fetch("./dictionary");
+    if (!response.ok) {
+      throw new Error(
+        fs`unable to fetch ./dictionary (${`${response.status}`} ${response.statusText})`,
+      );
+    }
+    loadDictionary(await response.text());
+    elements!.input.disabled = false;
+    elements!.translateButton.disabled = false;
+    elements!.translateButton.innerText = "Translate";
+    loaded = true;
   });
 }

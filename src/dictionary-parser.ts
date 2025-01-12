@@ -7,7 +7,7 @@ import {
   DeterminerType,
   Dictionary,
   Noun,
-} from "./type.ts";
+} from "./dictionary-type.ts";
 import {
   all,
   choiceOnlyOne,
@@ -16,13 +16,10 @@ import {
   optionalAll,
   Parser,
   sequence,
-} from "../src/parser-lib.ts";
-import { OutputError } from "../src/output.ts";
-import { UnrecognizedError } from "../src/error.ts";
-import { fs, nullableAsArray, repeat } from "../src/misc.ts";
-
-const SOURCE = new URL("./dictionary", import.meta.url);
-const DESTINATION = new URL("./dictionary.ts", import.meta.url);
+} from "./parser-lib.ts";
+import { Output, OutputError } from "./output.ts";
+import { UnrecognizedError } from "./error.ts";
+import { fs, nullableAsArray, repeat } from "./misc.ts";
 
 function space(): Parser<null> {
   return all(
@@ -442,88 +439,18 @@ const dictionary = space()
     }
     return dictionary;
   });
-const rawTextParser = space()
-  .with(all(
-    optionalAll(head())
-      .with(
-        lex(match(/[^;]*;/, "definition"))
-          .map(([definition]) => definition),
-      ),
-  ))
-  .skip(eol());
-const insideDefinitionParser = space().with(definition()).skip(eol());
+// const rawTextParser = space()
+//   .with(all(
+//     optionalAll(head())
+//       .with(
+//         lex(match(/[^;]*;/, "definition"))
+//           .map(([definition]) => definition),
+//       ),
+//   ))
+//   .skip(eol());
+// const insideDefinitionParser = space().with(definition()).skip(eol());
 
-export async function buildDictionary(): Promise<boolean> {
-  const sourceText = await Deno.readTextFile(SOURCE);
-  const startTime = performance.now();
-  const output = dictionary.parse(sourceText);
-  if (output.isError()) {
-    const rawTexts = rawTextParser.parse(sourceText);
-    for (const text of rawTexts.output[0]) {
-      const errors = insideDefinitionParser.parse(text).errors;
-      if (errors.length > 0) {
-        console.error(fs`error with definition ${text}`);
-        for (const error of errors) {
-          console.error(error.message);
-        }
-        console.error();
-      }
-    }
-    return false;
-  } else {
-    const dictionary = output.output[0];
-    const endTime = performance.now();
-    console.log(
-      fs`dictionary built within ${`${endTime - startTime}`} milliseconds`,
-    );
-    const contentWords = Object
-      .entries(dictionary)
-      .filter(([_, definitions]) =>
-        definitions.some((definition) =>
-          definition.type !== "filler" &&
-          definition.type !== "particle definition"
-        )
-      );
-    const noNouns = contentWords
-      .filter(([_, definitions]) =>
-        definitions.every((definition) =>
-          definition.type !== "noun" &&
-          definition.type !== "personal pronoun" &&
-          definition.type !== "numeral"
-        )
-      )
-      .map(([word]) => word);
-    if (noNouns.length > 0) {
-      console.warn("the following doesn't have noun nor pronoun definition");
-      for (const word of noNouns) {
-        console.warn(word);
-      }
-      console.warn();
-    }
-    const noAdjectives = contentWords
-      .filter(([_, definitions]) =>
-        definitions.every((definition) =>
-          definition.type !== "adjective" &&
-          definition.type !== "compound adjective" &&
-          definition.type !== "determiner" &&
-          definition.type !== "numeral"
-        )
-      )
-      .map(([word]) => word);
-    if (noAdjectives.length > 0) {
-      console.warn(
-        "the following doesn't have adjective nor determiner definition",
-      );
-      for (const word of noAdjectives) {
-        console.warn(word);
-      }
-      console.warn();
-    }
-    const string = JSON.stringify(dictionary);
-    await Deno.writeTextFile(
-      DESTINATION,
-      fs`import{Dictionary}from"./type.ts";export const DICTIONARY:Dictionary=${string}`,
-    );
-    return true;
-  }
+// TODO: better error handling
+export function parseDictionary(sourceText: string): Output<Dictionary> {
+  return dictionary.parse(sourceText);
 }

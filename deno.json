@@ -3,6 +3,7 @@
     "lib": ["dom", "dom.iterable", "dom.asynciterable", "deno.ns"]
   },
   "tasks": {
+    "start": "deno run --allow-net --allow-read jsr:@std/http/file-server ./dist/",
     "build": "deno run --allow-read --allow-write --allow-env --allow-net ./bundle.ts build",
     "watch": "deno run --allow-read --allow-write --allow-env --allow-net ./bundle.ts watch"
   },
@@ -13,8 +14,7 @@
     "include": ["./**/*.ts", "./**/*.js"]
   },
   "imports": {
-    "compromise": "npm:compromise@14.14.3",
-    "dictionary/": "./dictionary/",
+    "compromise/": "https://esm.sh/compromise@14.14.3/",
     "@deno/emit": "jsr:@deno/emit@0.46.0",
     "telo-misikeke/": "./telo-misikeke/"
   }

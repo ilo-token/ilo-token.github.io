@@ -1,11 +1,10 @@
 import { bundle, BundleOptions } from "@deno/emit";
 import { buildTeloMisikeke } from "telo-misikeke/build.ts";
-import { buildDictionary } from "dictionary/build.ts";
 import { fs } from "./src/misc.ts";
 
 const SOURCE = new URL("./src/main.ts", import.meta.url);
 const DESTINATION = new URL("./dist/main.js", import.meta.url);
-const IMPORT_MAP = new URL("./deno.json", import.meta.url);
+const IMPORT_MAP = new URL("./bundle-imports.json", import.meta.url);
 
 const buildOption: BundleOptions = {
   compilerOptions: { inlineSourceMap: true },
@@ -24,10 +23,6 @@ switch (Deno.args[0]) {
   case "build": {
     console.log("Building telo misikeke...");
     await buildTeloMisikeke();
-    console.log("Building dictionary...");
-    if (!await buildDictionary()) {
-      break;
-    }
     await build();
     break;
   }
