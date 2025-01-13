@@ -62,7 +62,7 @@ function debounce(callback: () => Promise<void>, delay: number): () => void {
         current = current
           .then(() => callback())
           .catch((error) => {
-            throw error;
+            console.error(error);
           });
       }
     }, delay);

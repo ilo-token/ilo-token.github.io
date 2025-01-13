@@ -279,7 +279,7 @@ if (typeof document !== "undefined") {
       loaded = true;
     })()
       .catch((error) => {
-        throw error;
+        console.error(error);
       });
   });
 }
