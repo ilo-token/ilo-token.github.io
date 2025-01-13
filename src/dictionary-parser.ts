@@ -13,6 +13,7 @@ import {
   choiceOnlyOne,
   eol,
   match,
+  matchString,
   optionalAll,
   Parser,
   sequence,
@@ -42,7 +43,7 @@ function word(): Parser<string> {
     .filter((word) => word.length > 0);
 }
 function slash(): Parser<null> {
-  return lex(match(/\//, "slash")).map((_) => null);
+  return lex(matchString("/", "slash")).map((_) => null);
 }
 function forms(): Parser<Array<string>> {
   return sequence(word(), all(slash().with(word())))
@@ -60,14 +61,14 @@ function optionalNumber(): Parser<null | "singular" | "plural"> {
   return optionalAll(number());
 }
 function tag<T>(parser: Parser<T>): Parser<T> {
-  return lex(match(/\(/, "open parenthesis"))
+  return lex(matchString("(", "open parenthesis"))
     .with(parser)
-    .skip(lex(match(/\)/, "open parenthesis")));
+    .skip(lex(matchString(")", "close parenthesis")));
 }
 function template<T>(parser: Parser<T>): Parser<T> {
-  return lex(match(/\[/, "open parenthesis"))
+  return lex(matchString("[", "open square bracket"))
     .with(parser)
-    .skip(lex(match(/\]/, "open parenthesis")));
+    .skip(lex(matchString("]", "close square bracket")));
 }
 function simpleUnit(kind: string): Parser<string> {
   return word().skip(tag(keyword(kind)));
@@ -250,7 +251,7 @@ function adjective(): Parser<Adjective> {
     .map(([adverb, adjective, kind]) => ({ adverb, adjective, kind }));
 }
 function semicolon(): Parser<null> {
-  return lex(match(/;/, "semicolon")).map((_) => null);
+  return lex(matchString(";", "semicolon")).map((_) => null);
 }
 function definition(): Parser<Definition> {
   return choiceOnlyOne(
@@ -421,10 +422,10 @@ function singleWord(): Parser<string> {
 }
 function head(): Parser<Array<string>> {
   return sequence(
-    all(singleWord().skip(lex(match(/,/, "comma")))),
+    all(singleWord().skip(lex(matchString(",", "comma")))),
     singleWord(),
   )
-    .skip(lex(match(/:/, "colon")))
+    .skip(lex(matchString(":", "colon")))
     .map(([init, last]) => [...init, last]);
 }
 const dictionary = space()

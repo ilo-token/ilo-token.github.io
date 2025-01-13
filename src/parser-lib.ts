@@ -222,6 +222,38 @@ export function match(
     }
   });
 }
+/** parses a string of consistent length. */
+export function slice(length: number, description: string): Parser<string> {
+  return new Parser((src) => {
+    if (src.length < length) {
+      if (src.length === 0) {
+        return new Output(new UnexpectedError("end of text", description));
+      } else if (/^\s+$/.test(src)) {
+        return new Output(new UnexpectedError("space", description));
+      } else {
+        return new Output(new UnexpectedError(fs`"${src}"`, description));
+      }
+    } else {
+      return new Output([{
+        rest: src.slice(length),
+        value: src.slice(0, length),
+      }]);
+    }
+  });
+}
+/** Parses a string that exactly matches the given string. */
+export function matchString(
+  match: string,
+  description?: null | undefined | string,
+): Parser<string> {
+  return slice(match.length, fs`"${match}"`).map((slice) => {
+    if (slice === match) {
+      return match;
+    } else {
+      throw new UnexpectedError(fs`"${slice}"`, description ?? fs`"${match}"`);
+    }
+  });
+}
 /** Parses the end of line (or the end of sentence in context of Toki Pona) */
 export function eol(): Parser<null> {
   return new Parser((src) => {

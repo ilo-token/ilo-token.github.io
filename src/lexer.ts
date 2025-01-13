@@ -14,9 +14,11 @@ import {
   choiceOnlyOne,
   count,
   match,
+  matchString,
   optionalAll,
   Parser,
   sequence,
+  slice,
 } from "./parser-lib.ts";
 import { Token } from "./token.ts";
 import {
@@ -38,35 +40,6 @@ import { empty } from "./parser-lib.ts";
 /** parses space. */
 export function spaces(): Parser<string> {
   return match(/\s*/, "space").map(([space]) => space);
-}
-/** parses a string of consistent length. */
-function slice(length: number, description: string): Parser<string> {
-  return new Parser((src) => {
-    if (src.length < length) {
-      if (src.length === 0) {
-        return new Output(new UnexpectedError("end of text", description));
-      } else if (/^\s+$/.test(src)) {
-        return new Output(new UnexpectedError("space", description));
-      } else {
-        return new Output(new UnexpectedError(fs`"${src}"`, description));
-      }
-    } else {
-      return new Output([{
-        rest: src.slice(length),
-        value: src.slice(0, length),
-      }]);
-    }
-  });
-}
-/** Parses a string that exactly matches the given string. */
-function matchString(match: string): Parser<string> {
-  return slice(match.length, fs`"${match}"`).map((slice) => {
-    if (slice === match) {
-      return match;
-    } else {
-      throw new UnexpectedError(fs`"${slice}"`, fs`"${match}"`);
-    }
-  });
 }
 /** Parses lowercase latin word. */
 function latinWord(): Parser<string> {
@@ -127,7 +100,7 @@ function singleUcsurWord(): Parser<string> {
 /** Parses a joiner. */
 function joiner(): Parser<string> {
   return choiceOnlyOne(
-    match(/\u200D/, "zero width joiner").map((_) => "zero width joiner"),
+    matchString("\u200D", "zero width joiner").map((_) => "zero width joiner"),
     specificUcsurCharacter(STACKING_JOINER, "stacking joiner"),
     specificUcsurCharacter(SCALING_JOINER, "scaling joiner"),
   );
