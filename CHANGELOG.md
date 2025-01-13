@@ -12,6 +12,7 @@ NOTE: update dependencies before publishing
 
 The latest on-development version can be accessed by building the source code. On this on-development version, things can be broken.
 
+- Implement custom dictionary editor.
 - Fixed "la" translation.
 - Consecutive adverbs are now not shown to avoid ambiguity.
 - Sentences ending with long string of punctuation such as "..." and "!?" are now recognized.
