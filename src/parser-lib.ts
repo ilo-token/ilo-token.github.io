@@ -266,6 +266,14 @@ export function eol(): Parser<null> {
     }
   });
 }
+export function withSource<T>(parser: Parser<T>): Parser<[T, string]> {
+  return new Parser((src) =>
+    parser.parser(src).map((value) => ({
+      value: [value.value, src.slice(0, src.length - value.rest.length)],
+      rest: value.rest,
+    }))
+  );
+}
 export function cached<T>(parser: Parser<T>): Parser<T> {
   const cache: { [word: string]: ParserOutput<T> } = {};
   return new Parser((src) => {

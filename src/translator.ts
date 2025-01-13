@@ -231,89 +231,90 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
           count = word.count;
           break;
       }
-      return new Output(dictionary[word.word]).flatMap((definition) => {
-        switch (definition.type) {
-          case "noun":
-            return noun(definition, emphasis, count)
-              .map((noun) =>
-                ({
-                  type: "noun",
-                  noun,
-                }) as ModifierTranslation
-              );
-          case "noun preposition":
-            return noun(definition.noun, emphasis, count)
-              .map((noun) =>
-                ({
-                  type: "noun preposition",
-                  noun,
-                  preposition: definition.preposition,
-                }) as ModifierTranslation
-              );
-          case "personal pronoun":
-            return simpleNounForms(
-              definition.singular?.object,
-              definition.plural?.object,
-            )
-              .map((pronoun) =>
-                ({
-                  type: "noun",
-                  noun: {
-                    type: "simple",
-                    determiner: [],
-                    adjective: [],
+      return new Output(dictionary[word.word].definitions)
+        .flatMap((definition) => {
+          switch (definition.type) {
+            case "noun":
+              return noun(definition, emphasis, count)
+                .map((noun) =>
+                  ({
+                    type: "noun",
+                    noun,
+                  }) as ModifierTranslation
+                );
+            case "noun preposition":
+              return noun(definition.noun, emphasis, count)
+                .map((noun) =>
+                  ({
+                    type: "noun preposition",
+                    noun,
+                    preposition: definition.preposition,
+                  }) as ModifierTranslation
+                );
+            case "personal pronoun":
+              return simpleNounForms(
+                definition.singular?.object,
+                definition.plural?.object,
+              )
+                .map((pronoun) =>
+                  ({
+                    type: "noun",
                     noun: {
-                      word: repeatWithSpace(pronoun, count),
-                      emphasis,
+                      type: "simple",
+                      determiner: [],
+                      adjective: [],
+                      noun: {
+                        word: repeatWithSpace(pronoun, count),
+                        emphasis,
+                      },
+                      number: "both",
+                      postCompound: null,
+                      postAdjective: null,
+                      preposition: [],
+                      emphasis: false,
                     },
-                    number: "both",
-                    postCompound: null,
-                    postAdjective: null,
-                    preposition: [],
-                    emphasis: false,
-                  },
-                }) as ModifierTranslation
-              );
-          case "determiner":
-            return determiner(definition, word.emphasis != null, count)
-              .map((determiner) =>
-                ({
-                  type: "determiner",
-                  determiner,
-                }) as ModifierTranslation
-              );
-          case "adjective":
-            return adjective(definition, word.emphasis, count)
-              .map((adjective) =>
-                ({
-                  type: "adjective",
-                  adjective,
-                }) as ModifierTranslation
-              );
-          case "compound adjective":
-            if (word.type === "default") {
-              return compoundAdjective(definition, word.emphasis)
+                  }) as ModifierTranslation
+                );
+            case "determiner":
+              return determiner(definition, word.emphasis != null, count)
+                .map((determiner) =>
+                  ({
+                    type: "determiner",
+                    determiner,
+                  }) as ModifierTranslation
+                );
+            case "adjective":
+              return adjective(definition, word.emphasis, count)
                 .map((adjective) =>
                   ({
                     type: "adjective",
                     adjective,
                   }) as ModifierTranslation
                 );
-            } else {
+            case "compound adjective":
+              if (word.type === "default") {
+                return compoundAdjective(definition, word.emphasis)
+                  .map((adjective) =>
+                    ({
+                      type: "adjective",
+                      adjective,
+                    }) as ModifierTranslation
+                  );
+              } else {
+                return new Output();
+              }
+            case "adverb":
+              return new Output([{
+                type: "adverb",
+                adverb: {
+                  word: repeatWithSpace(definition.adverb, count),
+                  emphasis,
+                },
+              } as ModifierTranslation]);
+            default:
               return new Output();
-            }
-          case "adverb":
-            return new Output([{
-              type: "adverb",
-              adverb: {
-                word: repeatWithSpace(definition.adverb, count),
-                emphasis,
-              },
-            } as ModifierTranslation]);
-          default:
-            return new Output();
-        }
-      });
+          }
+        });
     }
   }
 }
@@ -562,7 +563,7 @@ function wordUnit(
           count = wordUnit.count;
           break;
       }
-      return new Output(dictionary[wordUnit.word])
+      return new Output(dictionary[wordUnit.word].definitions)
         .flatMap((definition) => {
           switch (definition.type) {
             case "noun": {
@@ -920,13 +921,13 @@ function clause(clause: TokiPona.Clause): Output<English.Clause> {
 function filler(filler: TokiPona.Emphasis): Array<string> {
   switch (filler.type) {
     case "word":
-      return dictionary[filler.word]
+      return dictionary[filler.word].definitions
         .filter((definition) => definition.type === "filler")
         .map((definition) =>
           fs`${definition.before}${definition.repeat}${definition.after}`
         );
     case "long word":
-      return dictionary[filler.word]
+      return dictionary[filler.word].definitions
         .filter((definition) => definition.type === "filler")
         .map((definition) =>
           `${definition.before}${
@@ -982,7 +983,7 @@ function interjection(clause: TokiPona.Clause): Output<English.Clause> {
     if (phrase.type === "default" && phrase.modifiers.length === 0) {
       const headWord = phrase.headWord;
       if (headWord.type === "default" || headWord.type === "reduplication") {
-        return new Output(dictionary[headWord.word])
+        return new Output(dictionary[headWord.word].definitions)
           .filterMap((definition) => {
             if (definition.type === "interjection") {
               switch (headWord.type) {
@@ -1284,7 +1285,7 @@ function multipleSentences(
   switch (sentences.type) {
     case "single word": {
       const { word } = sentences;
-      return new Output(dictionary[word])
+      return new Output(dictionary[word].definitions)
         .flatMap(definitionAsPlainString)
         .map((definition) =>
           ({

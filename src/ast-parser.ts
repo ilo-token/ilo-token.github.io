@@ -274,6 +274,7 @@ function optionalCombined(
 }
 function wordToNumber(word: string): number {
   const num = dictionary[word]
+    .definitions
     .filter((definition) => definition.type === "numeral")[0]
     ?.numeral;
   if (num == null) {

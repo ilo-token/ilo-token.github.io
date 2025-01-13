@@ -6,6 +6,7 @@ import {
   Determiner,
   DeterminerType,
   Dictionary,
+  Entry,
   Noun,
 } from "./dictionary-type.ts";
 import {
@@ -17,6 +18,7 @@ import {
   optionalAll,
   Parser,
   sequence,
+  withSource,
 } from "./parser-lib.ts";
 import { Output, OutputError } from "./output.ts";
 import { UnrecognizedError } from "./error.ts";
@@ -428,8 +430,12 @@ function head(): Parser<Array<string>> {
     .skip(lex(matchString(":", "colon")))
     .map(([init, last]) => [...init, last]);
 }
+function entry(): Parser<Entry> {
+  return withSource(all(definition()))
+    .map(([definitions, src]) => ({ definitions, src }));
+}
 const dictionary = space()
-  .with(all(sequence(head(), all(definition()))))
+  .with(all(sequence(head(), entry())))
   .skip(eol())
   .map((entries) => {
     const dictionary: Dictionary = {};

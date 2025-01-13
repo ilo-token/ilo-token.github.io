@@ -47,8 +47,9 @@ function update(): void {
   contentWordSet = new Set(
     Object
       .entries(dictionary)
-      .filter(([_, definitions]) =>
-        definitions
+      .filter(([_, entry]) =>
+        entry
+          .definitions
           .some((definition) =>
             definition.type !== "filler" &&
             definition.type !== "particle definition"
@@ -59,20 +60,24 @@ function update(): void {
   prepositionSet = new Set(
     Object
       .entries(dictionary)
-      .filter(([_, definitions]) =>
-        definitions.some((definition) => definition.type === "preposition")
+      .filter(([_, entry]) =>
+        entry
+          .definitions
+          .some((definition) => definition.type === "preposition")
       )
       .map(([word]) => word),
   );
   preverbSet = new Set(
     Object
       .entries(dictionary)
-      .filter(([_, definitions]) =>
-        definitions.some((definition) =>
-          definition.type === "preverb as finite verb" ||
-          definition.type === "preverb as linking verb" ||
-          definition.type === "preverb as modal verb"
-        )
+      .filter(([_, entry]) =>
+        entry
+          .definitions
+          .some((definition) =>
+            definition.type === "preverb as finite verb" ||
+            definition.type === "preverb as linking verb" ||
+            definition.type === "preverb as modal verb"
+          )
       )
       .map(([word]) => word),
   );
