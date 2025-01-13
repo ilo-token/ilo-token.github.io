@@ -2,7 +2,7 @@ import { parseDictionary } from "./dictionary-parser.ts";
 import { Dictionary } from "./dictionary-type.ts";
 import { OutputError } from "./output.ts";
 
-let defaultDictionary: Dictionary = {};
+export let defaultDictionary: Dictionary = {};
 let customDictionary: Dictionary = {};
 export let dictionary: Dictionary = {};
 

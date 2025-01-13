@@ -43,7 +43,7 @@
       >.
     </p>
     <p>
-      <button id="custom-dictionary-button">Custom Dictionary</button>
+      <button id="custom-dictionary-button" disabled>Custom Dictionary</button>
       <button id="settings-button">Settings</button>
     </p>
     <textarea
@@ -138,8 +138,8 @@
     <dialog id="custom-dictionary-box">
       <h1>Custom Dictionary (Help)</h1>
       <div>
-        <input type="text" />
-        <button>Add word</button>
+        <input id="add-word" type="text" />
+        <button id="add-word-button">Add word</button>
       </div>
       <textarea
         id="custom-dictionary"
@@ -147,8 +147,8 @@
       ></textarea>
       <div>
         <div></div>
-        <button>Discard Changes and Close</button>
-        <button>Save and Close</button>
+        <button id="discard-button">Discard Changes and Close</button>
+        <button id="save-button">Save and Close</button>
       </div>
     </dialog>
   </body>

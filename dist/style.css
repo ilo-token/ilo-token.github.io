@@ -12,7 +12,8 @@ a {
 a:visited {
   color: #551a8b;
 }
-input[type="text"], textarea {
+input[type="text"],
+textarea {
   background-color: inherit;
   color: inherit;
   border-color: gray;
@@ -80,7 +81,8 @@ dialog > div {
   margin: 10px;
   display: flex;
 }
-dialog > div > div, dialog > div > input[type="text"] {
+dialog > div > div,
+dialog > div > input[type="text"] {
   flex-grow: 1;
 }
 dialog input[type="checkbox"] {

@@ -446,18 +446,32 @@ const dictionary = space()
     }
     return dictionary;
   });
-// const rawTextParser = space()
-//   .with(all(
-//     optionalAll(head())
-//       .with(
-//         lex(match(/[^;]*;/, "definition"))
-//           .map(([definition]) => definition),
-//       ),
-//   ))
-//   .skip(eol());
-// const insideDefinitionParser = space().with(definition()).skip(eol());
+const rawTextParser = space()
+  .with(all(
+    optionalAll(head())
+      .with(
+        lex(match(/[^;]*;/, "definition"))
+          .map(([definition]) => definition),
+      ),
+  ))
+  .skip(eol());
+const insideDefinitionParser = space().with(definition()).skip(eol());
 
-// TODO: better error handling
 export function parseDictionary(sourceText: string): Output<Dictionary> {
-  return dictionary.parse(sourceText);
+  const output = dictionary.parse(sourceText);
+  if (!output.isError()) {
+    return output;
+  } else {
+    const definitions = rawTextParser.parse(sourceText);
+    if (!definitions.isError()) {
+      return Output.newErrors(
+        definitions.output[0]
+          .flatMap((definition) =>
+            insideDefinitionParser.parse(definition).errors
+          ),
+      );
+    } else {
+      return Output.newErrors(output.errors);
+    }
+  }
 }

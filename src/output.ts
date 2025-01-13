@@ -18,7 +18,7 @@ export class Output<T> {
       this.output = [];
     }
   }
-  private static newErrors<T>(errors: Array<OutputError>): Output<T> {
+  static newErrors<T>(errors: Array<OutputError>): Output<T> {
     const output = new Output<T>();
     for (const error of errors) {
       output.pushError(error);

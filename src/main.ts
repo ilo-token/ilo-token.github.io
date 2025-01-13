@@ -1,7 +1,11 @@
 /** Module for main execution in the browser. */
 
 import { translate } from "./composer.ts";
-import { loadDictionary } from "./dictionary.ts";
+import {
+  defaultDictionary,
+  loadCustomDictionary,
+  loadDictionary,
+} from "./dictionary.ts";
 import { fs, shuffle } from "./misc.ts";
 import { settings } from "./settings.ts";
 import { errors } from "telo-misikeke/telo-misikeke.js";
@@ -12,22 +16,44 @@ const DEVELOPMENT = true;
 const DATE_RELEASED = new Date("2024-8-15");
 const VERSION = "v0.3.1";
 
+const DEFAULT_MESSAGE = `# ====================================
+# Welcome to Custom Dictionary Editor!
+# ====================================
+#
+# Here you can customize the dictionary
+# used in ilo Token. You may change the
+# definitions of existing words and
+# even extend ilo Token with more
+# non-pu words. Press Help above to get
+# started.
+`;
+const DICTIONARY_KEY = "custom-dictionary";
+
 let loaded = false;
 
 type Elements = {
   input: HTMLTextAreaElement;
+
   output: HTMLUListElement;
   error: HTMLParagraphElement;
   errorList: HTMLParagraphElement;
+  version: HTMLAnchorElement;
+
   translateButton: HTMLButtonElement;
   customDictionaryButton: HTMLButtonElement;
   settingsButton: HTMLButtonElement;
+
   settingsBox: HTMLDialogElement;
-  customDictionaryBox: HTMLDialogElement;
   confirmButton: HTMLButtonElement;
   cancelButton: HTMLButtonElement;
   resetButton: HTMLButtonElement;
-  version: HTMLAnchorElement;
+
+  customDictionaryBox: HTMLDialogElement;
+  addWord: HTMLInputElement;
+  addWordButton: HTMLButtonElement;
+  customDictionary: HTMLTextAreaElement;
+  discardButton: HTMLButtonElement;
+  saveButton: HTMLButtonElement;
 };
 /** A map of all HTML elements that are used here. */
 let elements: undefined | Elements;
@@ -35,18 +61,27 @@ let elements: undefined | Elements;
 function loadElements(): void {
   const elementNames = {
     input: "input",
+
     output: "output",
     error: "error",
     errorList: "error-list",
+    version: "version",
+
     translateButton: "translate-button",
     customDictionaryButton: "custom-dictionary-button",
     settingsButton: "settings-button",
+
     settingsBox: "settings-box",
-    customDictionaryBox: "custom-dictionary-box",
     confirmButton: "confirm-button",
     cancelButton: "cancel-button",
     resetButton: "reset-button",
-    version: "version",
+
+    customDictionaryBox: "custom-dictionary-box",
+    addWord: "add-word",
+    addWordButton: "add-word-button",
+    customDictionary: "custom-dictionary",
+    discardButton: "discard-button",
+    saveButton: "save-button",
     // deno-lint-ignore no-explicit-any
   } as any;
   for (const name of Object.keys(elementNames)) {
@@ -145,8 +180,15 @@ function updateOutput(): void {
 if (typeof document !== "undefined") {
   document.addEventListener("DOMContentLoaded", () => {
     loadElements();
-    settings.loadFromLocalStorage();
     setVersion();
+    settings.loadFromLocalStorage();
+    if (
+      loadCustomDictionary(localStorage.getItem(DICTIONARY_KEY) ?? "")
+        .length > 0
+    ) {
+      elements!.error.innerText =
+        "Failed to load custom dictionary. This is mostly like because the dictionary syntax has changed. To fix, open the custom dictionary editor.";
+    }
     // Auto resize
     function resizeTextarea() {
       elements!.input.style.height = "auto";
@@ -171,7 +213,49 @@ if (typeof document !== "undefined") {
       settings.resetElementsToDefault();
     });
     elements!.customDictionaryButton.addEventListener("click", () => {
+      if (!loaded) {
+        return;
+      }
       elements!.customDictionaryBox.showModal();
+      elements!.customDictionary.value = localStorage.getItem(DICTIONARY_KEY) ??
+        DEFAULT_MESSAGE;
+    });
+    function addWord(): void {
+      const word = elements!.addWord.value.trim();
+      let add: string;
+      if (/^[a-z]+$/.test(word)) {
+        if (Object.hasOwn(defaultDictionary, word)) {
+          add = fs`\n${word}:\n  ${defaultDictionary[word].src.trim()}\n`;
+        } else {
+          add = fs`\n${word}:\n  # Definitions here\n`;
+        }
+      } else {
+        add = "\n# Error: Invalid word to add (You may remove this line)\n";
+      }
+      elements!.customDictionary.value += add;
+    }
+    elements!.addWordButton.addEventListener("click", addWord);
+    elements!.addWord.addEventListener("keydown", (event) => {
+      if (event.code === "Enter") {
+        event.preventDefault();
+        addWord();
+      }
+    });
+    elements!.discardButton.addEventListener("click", () => {
+      elements!.customDictionaryBox.close();
+    });
+    elements!.saveButton.addEventListener("click", () => {
+      const dictionary = elements!.customDictionary.value;
+      const errors = loadCustomDictionary(dictionary);
+      if (errors.length === 0) {
+        localStorage.setItem(DICTIONARY_KEY, dictionary);
+        elements!.customDictionaryBox.close();
+      } else {
+        elements!.customDictionary.value +=
+          fs`\n# Please fix these errors before saving (You may remove these when fixed):\n${
+            errors.map((error) => fs`# - ${error.message.trim()}`).join("\n")
+          }\n`;
+      }
     });
     elements!.translateButton.addEventListener("click", updateOutput);
     elements!.input.addEventListener("keydown", (event) => {
@@ -190,6 +274,7 @@ if (typeof document !== "undefined") {
       loadDictionary(await response.text());
       elements!.input.disabled = false;
       elements!.translateButton.disabled = false;
+      elements!.customDictionaryButton.disabled = false;
       elements!.translateButton.innerText = "Translate";
       loaded = true;
     })()
