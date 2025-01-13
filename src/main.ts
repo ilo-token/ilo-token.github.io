@@ -277,9 +277,6 @@ if (typeof document !== "undefined") {
       elements!.customDictionaryButton.disabled = false;
       elements!.translateButton.innerText = "Translate";
       loaded = true;
-    })()
-      .catch((error) => {
-        console.error(error);
-      });
+    })();
   });
 }

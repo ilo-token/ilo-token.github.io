@@ -60,10 +60,7 @@ function debounce(callback: () => Promise<void>, delay: number): () => void {
     setTimeout(() => {
       if (!newPrevious.aborted) {
         current = current
-          .then(() => callback())
-          .catch((error) => {
-            console.error(error);
-          });
+          .then(() => callback());
       }
     }, delay);
     previous = newPrevious;
