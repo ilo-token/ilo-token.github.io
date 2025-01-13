@@ -6,7 +6,6 @@
  * have the same capabilities.
  */
 
-import { Output } from "./output.ts";
 import { UnexpectedError, UnrecognizedError } from "./error.ts";
 import {
   allAtLeastOnce,
