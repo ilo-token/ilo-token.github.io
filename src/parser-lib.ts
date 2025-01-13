@@ -195,6 +195,20 @@ export function allAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
 export function count<T>(parser: Parser<Array<T>>): Parser<number> {
   return parser.map((array) => array.length);
 }
+function describeSrc(src: string, expected: string): OutputError {
+  if (src === "") {
+    return new UnexpectedError("end of text", expected);
+  } else {
+    const token = src.match(/[^\s]*/)![0];
+    let tokenDescription: string;
+    if (token === "") {
+      tokenDescription = "space";
+    } else {
+      tokenDescription = fs`"${token}"`;
+    }
+    return new UnexpectedError(tokenDescription, expected);
+  }
+}
 /**
  * Uses Regular Expression to create parser. The parser outputs
  * RegExpMatchArray, which is what `string.match( ... )` returns.
@@ -208,17 +222,8 @@ export function match(
     const match = src.match(newRegex);
     if (match != null) {
       return new Output([{ value: match, rest: src.slice(match[0].length) }]);
-    } else if (src === "") {
-      return new Output(new UnexpectedError("end of text", description));
     } else {
-      const token = src.match(/[^\s]*/)![0];
-      let tokenDescription: string;
-      if (token === "") {
-        tokenDescription = "space";
-      } else {
-        tokenDescription = fs`"${token}"`;
-      }
-      return new Output(new UnexpectedError(tokenDescription, description));
+      return new Output(describeSrc(src, description));
     }
   });
 }
@@ -228,10 +233,8 @@ export function slice(length: number, description: string): Parser<string> {
     if (src.length < length) {
       if (src.length === 0) {
         return new Output(new UnexpectedError("end of text", description));
-      } else if (/^\s+$/.test(src)) {
-        return new Output(new UnexpectedError("space", description));
       } else {
-        return new Output(new UnexpectedError(fs`"${src}"`, description));
+        return new Output(describeSrc(src, description));
       }
     } else {
       return new Output([{
@@ -259,10 +262,8 @@ export function eol(): Parser<null> {
   return new Parser((src) => {
     if (src === "") {
       return new Output([{ value: null, rest: "" }]);
-    } else if (/^\s+$/.test(src)) {
-      return new Output(new UnexpectedError("space", "end of text"));
     } else {
-      return new Output(new UnexpectedError(fs`"${src}"`, "end of text"));
+      return new Output(describeSrc(src, "end of text"));
     }
   });
 }
