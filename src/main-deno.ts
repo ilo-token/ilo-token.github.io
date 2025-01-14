@@ -12,7 +12,7 @@ while (true) {
     }
   } else {
     for (const translation of output.output) {
-      console.log(`- ${translation}`);
+      console.log(`  - ${translation}`);
     }
   }
 }
