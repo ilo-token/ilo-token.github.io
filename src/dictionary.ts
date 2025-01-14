@@ -42,7 +42,10 @@ function update(): void {
       ...Object.keys(customDictionary),
     ])
   ) {
-    dictionary[word] = customDictionary[word] ?? defaultDictionary[word];
+    const entry = customDictionary[word] ?? defaultDictionary[word];
+    if (entry.definitions.length > 0) {
+      dictionary[word] = entry;
+    }
   }
   contentWordSet = new Set(
     Object
