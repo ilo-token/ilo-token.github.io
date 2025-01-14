@@ -421,7 +421,7 @@ function definition(): Parser<Definition> {
   );
 }
 function singleWord(): Parser<string> {
-  return lex(match(/[a-z]+/, "word")).map(([word]) => word);
+  return lex(match(/[a-z][a-zA-Z]*/, "word")).map(([word]) => word);
 }
 function head(): Parser<Array<string>> {
   return sequence(
