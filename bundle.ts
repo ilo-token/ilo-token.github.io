@@ -7,7 +7,6 @@ const DESTINATION = new URL("./dist/main.js", import.meta.url);
 const IMPORT_MAP = new URL("./bundle-imports.json", import.meta.url);
 
 const buildOption: BundleOptions = {
-  compilerOptions: { inlineSourceMap: true },
   type: "classic",
   importMap: IMPORT_MAP,
 };
