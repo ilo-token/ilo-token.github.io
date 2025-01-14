@@ -12,7 +12,7 @@ const buildOption: BundleOptions = {
   importMap: IMPORT_MAP,
 };
 async function build() {
-  console.log("Building dictionary");
+  console.log("Building dictionary...");
   await buildDictionary();
   console.log("Building main.js...");
   const bundled = await bundle(SOURCE, buildOption);
