@@ -24,13 +24,11 @@ deno task build
 
 Before running this command, you'll need to run `deno task build` first. This is because `deno task watch` doesn't fetch dependencies. You only need to run it once.
 
-This builds `./dist/main.js`. This command also watches the codes in `./src/` as well as the dictionary and rebuilds `./dist/main.js` whenever there are changes.
-
 ```
 deno task watch
 ```
 
-To stop this command, simply press Ctrl + C.
+This builds `./dist/main.js`. This command also watches the codes in `./src/` as well as the dictionary and rebuilds `./dist/main.js` whenever there are changes. To stop this command, simply press Ctrl + C.
 
 ## Running locally with browser
 
@@ -44,4 +42,4 @@ Before running this command, you'll need to run `deno task build` first to fetch
 deno task run
 ```
 
-This will run a REPL that you can use to test ilo Token.
+This will run a REPL that you can use to test ilo Token. To stop this command, simply press Ctrl + C.
