@@ -12,7 +12,8 @@ const DEVELOPMENT = true;
 const DATE_RELEASED = new Date("2024-8-15");
 const VERSION = "v0.3.1";
 
-const DEFAULT_MESSAGE = `# ====================================
+const DEFAULT_MESSAGE = `\
+# ====================================
 # Welcome to Custom Dictionary Editor!
 # ====================================
 #
@@ -114,7 +115,8 @@ function outputErrors(errors: Array<string>, asHtml: boolean): void {
   }
   if (errors.length === 0) {
     elements!.error.innerText =
-      "An unknown error has occurred (Errors should be known, please report this)";
+      "An unknown error has occurred (Errors should be known, please report " +
+      "this)";
   } else if (errors.length === 1) {
     elements!.error.innerText = "An error has been found:";
     const list = document.createElement("li");
@@ -178,7 +180,9 @@ if (typeof document !== "undefined") {
         .length > 0
     ) {
       elements!.error.innerText =
-        "Failed to load custom dictionary. This is mostly like because the dictionary syntax has changed. To fix, open the custom dictionary editor.";
+        "Failed to load custom dictionary. This is mostly like because the " +
+        "dictionary syntax has changed. To fix, open the custom dictionary " +
+        "editor.";
     }
     // Auto resize
     function resizeTextarea() {
@@ -240,7 +244,7 @@ if (typeof document !== "undefined") {
         elements!.customDictionaryBox.close();
       } else {
         elements!.customDictionary.value +=
-          fs`\n# Please fix these errors before saving (You may remove these when fixed):\n${
+          fs`\n# Please fix these errors before saving\n# (You may remove these when fixed)\n${
             errors.map((error) => fs`# - ${error.message.trim()}`).join("\n")
           }\n`;
       }
