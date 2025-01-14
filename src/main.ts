@@ -8,7 +8,7 @@ import {
 } from "./dictionary.ts";
 import { fs, shuffle } from "./misc.ts";
 import { settings } from "./settings.ts";
-import { errors } from "telo-misikeke/telo-misikeke.js";
+import { errors } from "../telo-misikeke/telo-misikeke.js";
 
 // Set to false when releasing, set to true when developing
 const DEVELOPMENT = true;

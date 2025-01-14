@@ -1,7 +1,6 @@
 {
   "imports": {
     "compromise/": "https://esm.sh/compromise@14.14.3/",
-    "node:process": "./process.ts",
-    "telo-misikeke/": "./telo-misikeke/"
+    "node:process": "./process.ts"
   }
 }
