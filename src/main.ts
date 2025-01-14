@@ -185,7 +185,7 @@ if (typeof document !== "undefined") {
         "editor.";
     }
     // Auto resize
-    function resizeTextarea() {
+    function resizeTextarea(): voide {
       elements!.input.style.height = "auto";
       elements!.input.style.height = fs`${`${
         Math.max(50, elements!.input.scrollHeight + 20)

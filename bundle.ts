@@ -11,7 +11,7 @@ const buildOption: BundleOptions = {
   type: "classic",
   importMap: IMPORT_MAP,
 };
-async function build() {
+async function build(): Promise<void> {
   console.log("Building dictionary...");
   await buildDictionary();
   console.log("Building main.js...");

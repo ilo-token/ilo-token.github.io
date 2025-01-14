@@ -14,7 +14,7 @@ export function repeatWithSpace(text: string, count: number): string {
   return new Array(count).fill(text).join(" ");
 }
 // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
-export function shuffle<T>(array: Array<T>) {
+export function shuffle<T>(array: Array<T>): void {
   let currentIndex = array.length;
 
   // While there remain elements to shuffle...
