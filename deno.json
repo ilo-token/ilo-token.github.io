@@ -8,10 +8,20 @@
     "watch": "deno run --allow-read --allow-write --allow-env --allow-net ./bundle.ts watch"
   },
   "fmt": {
-    "include": ["./**/*.ts", "./**/*.js"]
+    "include": ["./**/*.ts", "./**/*.js"],
+    "exclude": [
+      "./dist/main.js",
+      "./telo-misikeke/rules.js",
+      "./telo-misikeke/Parser.js"
+    ]
   },
   "lint": {
-    "include": ["./**/*.ts", "./**/*.js"]
+    "include": ["./**/*.ts", "./**/*.js"],
+    "exclude": [
+      "./dist/main.js",
+      "./telo-misikeke/rules.js",
+      "./telo-misikeke/Parser.js"
+    ]
   },
   "imports": {
     "compromise": "npm:compromise@14.14.3",
