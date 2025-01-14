@@ -83,3 +83,4 @@ function update(): void {
   );
   tokiPonaWordSet = new Set(Object.keys(dictionary));
 }
+update();
