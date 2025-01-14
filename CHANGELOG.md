@@ -21,7 +21,7 @@ The latest on-development version can be accessed by building the source code. O
 
 Inside update (Intended for developers):
 
-- Distribution code no longer minified and includes source mapping as well.
+- Distribution code no longer minified.
 
 </details>
 
