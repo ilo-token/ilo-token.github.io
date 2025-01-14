@@ -215,7 +215,7 @@ if (typeof document !== "undefined") {
     function addWord(): void {
       const word = elements!.addWord.value.trim();
       let add: string;
-      if (/^[a-z]+$/.test(word)) {
+      if (/^[a-z][a-zA-Z]*$/.test(word)) {
         if (Object.hasOwn(defaultDictionary, word)) {
           add = fs`\n${word}:\n  ${defaultDictionary[word].src.trim()}\n`;
         } else {
