@@ -1,7 +1,9 @@
 # Changelog
 
 <!--
-NOTE: update dependencies before publishing
+NOTE:
+- update dependencies before publishing
+- set global variables to main.js
 -->
 
 <details>
