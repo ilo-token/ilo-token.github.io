@@ -216,6 +216,7 @@ function determinerType(): Parser<DeterminerType> {
     keyword("possessive"),
     keyword("quantifier"),
     keyword("negative"),
+    keyword("numeral"),
   );
 }
 function adjectiveKind(): Parser<AdjectiveType> {
