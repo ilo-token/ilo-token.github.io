@@ -52,11 +52,11 @@ import { describe, Token } from "./token.ts";
 import { spaces, TOKEN } from "./lexer.ts";
 import { fs } from "./misc.ts";
 import {
-  contentWordSet,
-  dictionary,
-  prepositionSet,
-  preverbSet,
-  tokiPonaWordSet,
+  getContentWordSet,
+  getDictionary,
+  getPrepositionSet,
+  getPreverbSet,
+  getTokiPonaWordSet,
 } from "./dictionary.ts";
 
 /** Parses a specific type of token. */
@@ -153,7 +153,7 @@ function xAlaX(
   return choice(
     sequence(
       specificToken("headless long glyph start"),
-      wordFrom(contentWordSet, "content word"),
+      wordFrom(getContentWordSet(), "content word"),
       specificToken("inside long glyph")
         .filter((words) => {
           if (words.words.length !== 1) {
@@ -167,7 +167,7 @@ function xAlaX(
           }
           return true;
         }),
-      wordFrom(contentWordSet, "content word"),
+      wordFrom(getContentWordSet(), "content word"),
       specificToken("headless long glyph end"),
     )
       .map(([_, left, _1, right]) => {
@@ -245,7 +245,7 @@ function binaryWords(
       );
     } else if (!word.has(words[0])) {
       throw new UnrecognizedError(fs`"${words[0]}" as ${description}`);
-    } else if (!contentWordSet.has(words[1])) {
+    } else if (!getContentWordSet().has(words[1])) {
       throw new UnrecognizedError(fs`"${words[1]}" as content word`);
     } else {
       return words as [string, string];
@@ -273,7 +273,7 @@ function optionalCombined(
   );
 }
 function wordToNumber(word: string): number {
-  const num = dictionary[word]
+  const num = getDictionary()[word]
     .definitions
     .filter((definition) => definition.type === "numeral")[0]
     ?.numeral;
@@ -369,7 +369,7 @@ function modifiers(): Parser<Array<Modifier>> {
             }) as Modifier
           )
           .filter(filter(MODIFIER_RULES)),
-        wordUnit(contentWordSet, "modifier")
+        wordUnit(getContentWordSet(), "modifier")
           .map((word) => ({ type: "default", word }) as Modifier)
           .filter(filter(MODIFIER_RULES)),
         properWords()
@@ -411,7 +411,7 @@ function phrase_(): Parser<Phrase> {
           emphasis: phraseModifier,
         }) as Phrase
       ),
-    binaryWords(preverbSet, "preveb").map(([preverb, phrase]) =>
+    binaryWords(getPreverbSet(), "preveb").map(([preverb, phrase]) =>
       ({
         type: "preverb",
         preverb: { type: "default", word: preverb, emphasis: null },
@@ -426,7 +426,7 @@ function phrase_(): Parser<Phrase> {
       }) as Phrase
     ),
     sequence(
-      optionalCombined(preverbSet, "preverb"),
+      optionalCombined(getPreverbSet(), "preverb"),
       modifiers(),
       phrase(),
       optionalEmphasis(),
@@ -445,7 +445,7 @@ function phrase_(): Parser<Phrase> {
         ({ ...preposition, type: "preposition" }) as Phrase
       ),
     sequence(
-      optionalCombined(contentWordSet, "content word"),
+      optionalCombined(getContentWordSet(), "content word"),
       modifiers(),
       optionalEmphasis(),
     )
@@ -546,7 +546,7 @@ function preposition(): Parser<Preposition> {
             );
           }
           const word = words.words[0];
-          if (!prepositionSet.has(word)) {
+          if (!getPrepositionSet().has(word)) {
             throw new UnrecognizedError(fs`"${word}" as preposition`);
           }
           return words.words;
@@ -566,7 +566,9 @@ function preposition(): Parser<Preposition> {
           phrases: { type: "single", phrase },
         } as Preposition;
       }),
-    binaryWords(prepositionSet, "preposition").map(([preposition, phrase]) =>
+    binaryWords(getPrepositionSet(), "preposition").map((
+      [preposition, phrase],
+    ) =>
       ({
         preposition: {
           type: "default",
@@ -591,7 +593,7 @@ function preposition(): Parser<Preposition> {
       }) as Preposition
     ),
     sequence(
-      optionalCombined(prepositionSet, "preposition"),
+      optionalCombined(getPrepositionSet(), "preposition"),
       modifiers(),
       nestedPhrases(["anu"]),
       optionalEmphasis(),
@@ -840,7 +842,7 @@ function sentence(): Parser<Sentence> {
 /** A multiple sentence parser for final parser. */
 const FULL_PARSER = spaces()
   .with(choiceOnlyOne(
-    wordFrom(tokiPonaWordSet, "Toki Pona word")
+    wordFrom(getTokiPonaWordSet(), "Toki Pona word")
       .skip(eol())
       .map((word) => ({ type: "single word", word }) as MultipleSentences),
     allAtLeastOnce(sentence())

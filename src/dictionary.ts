@@ -5,13 +5,28 @@ import { dictionary as text } from "../dictionary/dictionary.ts";
 
 export const defaultDictionary: Dictionary = loadDictionary(text);
 let customDictionary: Dictionary = {};
-export let dictionary: Dictionary = {};
+let dictionary: Dictionary = {};
 
-export let contentWordSet: Set<string> = new Set();
-export let prepositionSet: Set<string> = new Set();
-export let preverbSet: Set<string> = new Set();
-export let tokiPonaWordSet: Set<string> = new Set();
+let contentWordSet: Set<string> = new Set();
+let prepositionSet: Set<string> = new Set();
+let preverbSet: Set<string> = new Set();
+let tokiPonaWordSet: Set<string> = new Set();
 
+export function getDictionary(): Dictionary {
+  return dictionary;
+}
+export function getContentWordSet(): Set<string> {
+  return contentWordSet;
+}
+export function getPrepositionSet(): Set<string> {
+  return prepositionSet;
+}
+export function getPreverbSet(): Set<string> {
+  return preverbSet;
+}
+export function getTokiPonaWordSet(): Set<string> {
+  return tokiPonaWordSet;
+}
 function loadDictionary(dictionaryText: string): Dictionary {
   const output = parseDictionary(dictionaryText);
   if (output.isError()) {
