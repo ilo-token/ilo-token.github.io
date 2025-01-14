@@ -37,9 +37,8 @@ switch (Deno.args[0]) {
       }
     }, 500);
     const watcher = Deno.watchFs([
-      "./dictionary/",
+      "./dictionary/dictionary",
       "./src/",
-      "./telo-misikeke/",
     ]);
     try {
       builder();

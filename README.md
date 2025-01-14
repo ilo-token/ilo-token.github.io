@@ -24,7 +24,7 @@ deno task build
 
 Before running this command, you'll need to run `deno task build` first. This is because `deno task watch` doesn't fetch dependencies. You only need to run it once.
 
-This builds `./dist/main.js`. This command also watches the codes in `./src/` and `./dictionary/`, this includes the dictionary itself, and rebuilds `./dist/main.js` whenever there are changes.
+This builds `./dist/main.js`. This command also watches the codes in `./src/` as well as the dictionary and rebuilds `./dist/main.js` whenever there are changes.
 
 ```
 deno task watch
