@@ -1,11 +1,7 @@
 /** Module for main execution in the browser. */
 
 import { translate } from "./composer.ts";
-import {
-  defaultDictionary,
-  loadCustomDictionary,
-  loadDictionary,
-} from "./dictionary.ts";
+import { defaultDictionary, loadCustomDictionary } from "./dictionary.ts";
 import { fs, shuffle } from "./misc.ts";
 import { settings } from "./settings.ts";
 import { errors } from "../telo-misikeke/telo-misikeke.js";
@@ -264,19 +260,5 @@ if (typeof document !== "undefined") {
         updateOutput();
       }
     });
-    (async () => {
-      const response = await fetch("./dictionary");
-      if (!response.ok) {
-        throw new Error(
-          fs`unable to fetch ./dictionary (${`${response.status}`} ${response.statusText})`,
-        );
-      }
-      loadDictionary(await response.text());
-      elements!.input.disabled = false;
-      elements!.translateButton.disabled = false;
-      elements!.customDictionaryButton.disabled = false;
-      elements!.translateButton.innerText = "Translate";
-      loaded = true;
-    })();
   });
 }

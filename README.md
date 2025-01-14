@@ -34,4 +34,4 @@ To stop this command, simply press Ctrl + C.
 
 ## Running locally
 
-After building or watching, run `deno task start` to start a local server. The stdout will tell you the URL to use to test the local copy of ilo Token.
+After building or watching, you can directly run `./dist/index.html` with your browser to test ilo Token. If you wish to start a local server, run `deno task start`. The stdout will tell you the URL to use.

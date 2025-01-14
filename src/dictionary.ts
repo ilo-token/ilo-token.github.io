@@ -1,8 +1,9 @@
 import { parseDictionary } from "./dictionary-parser.ts";
 import { Dictionary } from "./dictionary-type.ts";
 import { OutputError } from "./output.ts";
+import { dictionary as text } from "../dictionary/dictionary.ts";
 
-export let defaultDictionary: Dictionary = {};
+export const defaultDictionary: Dictionary = loadDictionary(text);
 let customDictionary: Dictionary = {};
 export let dictionary: Dictionary = {};
 
@@ -11,14 +12,13 @@ export let prepositionSet: Set<string> = new Set();
 export let preverbSet: Set<string> = new Set();
 export let tokiPonaWordSet: Set<string> = new Set();
 
-export function loadDictionary(dictionaryText: string): void {
+function loadDictionary(dictionaryText: string): Dictionary {
   const output = parseDictionary(dictionaryText);
   if (output.isError()) {
     throw new AggregateError(output.errors);
   } else {
-    defaultDictionary = output.output[0];
+    return output.output[0];
   }
-  update();
 }
 export function loadCustomDictionary(
   dictionaryText: string,

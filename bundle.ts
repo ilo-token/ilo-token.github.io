@@ -1,6 +1,7 @@
 import { bundle, BundleOptions } from "@deno/emit";
 import { buildTeloMisikeke } from "./telo-misikeke/build.ts";
 import { fs } from "./src/misc.ts";
+import { buildDictionary } from "./dictionary/build.ts";
 
 const SOURCE = new URL("./src/main.ts", import.meta.url);
 const DESTINATION = new URL("./dist/main.js", import.meta.url);
@@ -11,6 +12,8 @@ const buildOption: BundleOptions = {
   importMap: IMPORT_MAP,
 };
 async function build() {
+  console.log("Building dictionary");
+  await buildDictionary();
   console.log("Building main.js...");
   const bundled = await bundle(SOURCE, buildOption);
   const withUseStrict = bundled.code
@@ -34,6 +37,7 @@ switch (Deno.args[0]) {
       }
     }, 500);
     const watcher = Deno.watchFs([
+      "./dictionary/",
       "./src/",
       "./telo-misikeke/",
     ]);

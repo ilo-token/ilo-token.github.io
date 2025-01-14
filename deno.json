@@ -10,6 +10,7 @@
   "fmt": {
     "include": ["./**/*.ts", "./**/*.js"],
     "exclude": [
+      "./dictionary/dictionary.ts",
       "./dist/main.js",
       "./telo-misikeke/rules.js",
       "./telo-misikeke/Parser.js"
@@ -18,6 +19,7 @@
   "lint": {
     "include": ["./**/*.ts", "./**/*.js"],
     "exclude": [
+      "./dictionary/dictionary.ts",
       "./dist/main.js",
       "./telo-misikeke/rules.js",
       "./telo-misikeke/Parser.js"
