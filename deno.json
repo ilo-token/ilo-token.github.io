@@ -4,7 +4,7 @@
   },
   "tasks": {
     "start": "deno run --allow-net --allow-read jsr:@std/http/file-server ./dist/",
-    "run": "deno run ./src/main-deno.ts",
+    "run": "deno run --allow-env ./src/main-deno.ts",
     "build": "deno run --allow-read --allow-write --allow-env --allow-net ./bundle.ts build",
     "watch": "deno run --allow-read --allow-write --allow-env --allow-net ./bundle.ts watch"
   },
