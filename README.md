@@ -14,7 +14,7 @@ You'll need the following in order to run commands:
 
 ## Building
 
-This fetches more dependencies needed and builds `./dist/main.js`.
+This fetches more dependencies needed, brings the dictionary to the code, and builds `./dist/main.js`.
 
 ```
 deno task build
@@ -22,9 +22,9 @@ deno task build
 
 ## Watching
 
-Before running this command, you'll need to run `deno task build` first. This is because `deno task watch` doesn't fetch dependencies.
+Before running this command, you'll need to run `deno task build` first. This is because `deno task watch` doesn't fetch dependencies. You only need to run it once.
 
-This builds `./dist/main.js`. This command also watches the source codes in `./src/` path and rebuilds `./dist/main.js` whenever there are changes.
+This builds `./dist/main.js`. This command also watches the codes in `./src/` and `./dictionary/`, this includes the dictionary itself, and rebuilds `./dist/main.js` whenever there are changes.
 
 ```
 deno task watch
@@ -38,4 +38,10 @@ After building or watching, you can directly run `./dist/index.html` with your b
 
 ## Running locally with Deno
 
-After building or watching, you can run `deno task run`. This will run a REPL that you can use to test ilo Token.
+Before running this command, you'll need to run `deno task build` first to fetch dependencies and to ensure the dictionary is within the code. You only need to run it once unless you made changes to the dictionary.
+
+```
+deno task run
+```
+
+This will run a REPL that you can use to test ilo Token.
