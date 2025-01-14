@@ -25,8 +25,6 @@ const DEFAULT_MESSAGE = `# ====================================
 `;
 const DICTIONARY_KEY = "custom-dictionary";
 
-let loaded = false;
-
 type Elements = {
   input: HTMLTextAreaElement;
 
@@ -132,9 +130,6 @@ function outputErrors(errors: Array<string>, asHtml: boolean): void {
   }
 }
 function updateOutput(): void {
-  if (!loaded) {
-    return;
-  }
   clearOutput();
   const source = elements!.input.value;
   try {
@@ -209,9 +204,6 @@ if (typeof document !== "undefined") {
       settings.resetElementsToDefault();
     });
     elements!.customDictionaryButton.addEventListener("click", () => {
-      if (!loaded) {
-        return;
-      }
       elements!.customDictionaryBox.showModal();
       elements!.customDictionary.value = localStorage.getItem(DICTIONARY_KEY) ??
         DEFAULT_MESSAGE;
