@@ -50,6 +50,10 @@ dialog {
 dialog:modal {
   display: flex;
 }
+dialog:modal#custom-dictionary-box {
+  box-sizing: border-box;
+  height: 100%;
+}
 dialog details {
   margin: 0;
   padding: 0;
