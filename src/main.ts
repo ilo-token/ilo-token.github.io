@@ -184,15 +184,6 @@ if (typeof document !== "undefined") {
         "dictionary syntax has changed. To fix, open the custom dictionary " +
         "editor.";
     }
-    // Auto resize
-    function resizeTextarea(): void {
-      elements!.input.style.height = "auto";
-      elements!.input.style.height = fs`${`${
-        Math.max(50, elements!.input.scrollHeight + 20)
-      }`}px`;
-    }
-    resizeTextarea();
-    elements!.input.addEventListener("input", resizeTextarea);
     elements!.settingsButton.addEventListener("click", () => {
       elements!.settingsBox.showModal();
     });
@@ -250,6 +241,15 @@ if (typeof document !== "undefined") {
       }
     });
     elements!.translateButton.addEventListener("click", updateOutput);
+    // Auto resize
+    function resizeTextarea(): void {
+      elements!.input.style.height = "auto";
+      elements!.input.style.height = fs`${`${
+        elements!.input.scrollHeight + 14
+      }`}px`;
+    }
+    resizeTextarea();
+    elements!.input.addEventListener("input", resizeTextarea);
     elements!.input.addEventListener("keydown", (event) => {
       if (event.code === "Enter") {
         event.preventDefault();
