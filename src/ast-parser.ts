@@ -714,7 +714,7 @@ function clause(): Parser<Clause> {
       .map(
         ([preposition, morePreposition]) => [preposition, ...morePreposition],
       )
-      .sortBy((prepositions) => prepositions.length)
+      .sortBy((prepositions) => -prepositions.length)
       .map((prepositions) =>
         ({
           type: "prepositions",
