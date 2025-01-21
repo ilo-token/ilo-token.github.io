@@ -1,8 +1,8 @@
 import { translate } from "./composer.ts";
 
 while (true) {
-  const input = prompt("> ") ?? "";
-  if (input === "") {
+  const input = prompt("> ");
+  if (input == null) {
     break;
   }
   const output = translate(input);
