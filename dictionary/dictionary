@@ -1347,7 +1347,7 @@ sona:
   # TODO: be skilled in, be wise about
   knowledge(n);
   information(n);
-  data(n);
+  datum(n); # data is not singular, silly :3
 
   know(v) [object];
 
