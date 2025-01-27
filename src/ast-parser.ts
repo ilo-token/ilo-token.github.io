@@ -47,7 +47,6 @@ import {
   optional,
   Parser,
   sequence,
-  variable,
 } from "./parser-lib.ts";
 import { describe, Token } from "./token.ts";
 import { spaces, TOKEN } from "./lexer.ts";
