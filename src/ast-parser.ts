@@ -820,7 +820,7 @@ function sentence(): Parser<Sentence> {
     .map(([laClauses, finalClause, punctuation]) => {
       const wordUnits = [...laClauses, finalClause]
         .flatMap(everyWordUnitInFullClause);
-      let interrogative = null;
+      let interrogative: null | "x ala x" | "seme" = null;
       if (wordUnits.some((wordUnit) => wordUnit.type === "x ala x")) {
         interrogative = "x ala x" as const;
       } else if (
