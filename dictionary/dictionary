@@ -8,7 +8,7 @@ a:
   # um/umm/ummm(f);
   # oy/oyy/oyyy(f);
 
-  `[placed after something for emphasis or emotion]`(particle def);
+  `[`placed after something for emphasis or emotion`]`(particle def);
 
 akesi:
   reptile(n);
@@ -25,8 +25,8 @@ ala:
   nothing(n plural);
   no(d quantifier plural);
 
-  `[negates a word or phrase]`(particle def);
-  `[forms a yes-no question]`(particle def);
+  `[`negates a word or phrase`]`(particle def);
+  `[`forms a yes-no question`]`(particle def);
 
   0(num);
 
@@ -77,7 +77,7 @@ ante:
   difference(n);
 
 anu:
-  `[separates multiple possibilities, replacing another particle]`(particle def);
+  `[`separates multiple possibilities, replacing another particle`]`(particle def);
   or(particle def);
 
   # # These are no longer in Linku
@@ -115,10 +115,10 @@ awen:
   continuing(adj qualifier);
 
 e:
-  `[marks the start of a direct object]`(particle def);
+  `[`marks the start of a direct object`]`(particle def);
 
 en:
-  `[separates multiple subjects]`(particle def);
+  `[`separates multiple subjects`]`(particle def);
 
 epiku:
   # epic(adj opinion);
@@ -355,7 +355,7 @@ kili:
   mushroom-related(adj opinion);
 
 kin:
-  `[at sentence start]`(particle def);
+  `[`at sentence start`]`(particle def);
   also(adv);
   additionally(adv);
 
@@ -474,7 +474,7 @@ kute:
   obeying(adj qualifier);
 
 la:
-  `[mark the previous statement as context to a following statement]`(particle def);
+  `[`mark the previous statement as context to a following statement`]`(particle def);
 
 lanpan:
   take(v) [object];
@@ -577,7 +577,7 @@ lete:
   # coolness(n);
 
 li:
-  `[marks the start of an indicative verb (statement)]`(particle def);
+  `[`marks the start of an indicative verb (statement)`]`(particle def);
 
 lili:
   small(adj size);
@@ -905,7 +905,7 @@ n:
   # mm/mmm/mmmm(f);
   # er/err/errr(f);
   # um/umm/ummm(f);
-  `[indicate thinking or pause]`(particle def);
+  `[`indicate thinking or pause`]`(particle def);
 
 namako:
   spice(n);
@@ -918,7 +918,7 @@ namako:
 nanpa:
   number(n);
   -th(particle def);
-  `[ordinal number]`(particle def);
+  `[`ordinal number`]`(particle def);
 
   numeric(adj opinion);
 
@@ -993,8 +993,8 @@ noka:
   root-related(adj opinion);
 
 o:
-  `[marks the end of a vocative (who is being spoken to)]`(particle def);
-  `[marks the start of an imperative (command, wish, instruction)]`(particle def);
+  `[`marks the end of a vocative (who is being spoken to)`]`(particle def);
+  `[`marks the start of an imperative (command, wish, instruction)`]`(particle def);
   should(particle def);
 
 olin:
@@ -1104,7 +1104,7 @@ pana:
   releasing(adj qualifier);
 
 pi:
-  `[modify the next word with one or more following words]`(particle def);
+  `[`modify the next word with one or more following words`]`(particle def);
 
 pilin:
   experience(n);
@@ -1194,8 +1194,8 @@ pona:
   nicely(adv);
 
 pu:
-  interact(v) with(prep) the(d article) book(n singular) titled(adj) `Toki Pona: The Language of Good`(proper n);
-  the(d article) book(n) titled(adj) `Toki Pona: The Language of Good`(proper n);
+  interact(v) with(prep) the(d article) book(n singular) titled(adj) Toki Pona`:` The Language of Good(proper n);
+  the(d article) book(n) titled(adj) Toki Pona`:` The Language of Good(proper n);
 
 sama:
   same(adj opinion);
@@ -1234,7 +1234,7 @@ selo:
   boundary-related(adj opinion);
 
 seme:
-  `[indicate a question by marking missing info in a sentence]`(particle def);
+  `[`indicate a question by marking missing info in a sentence`]`(particle def);
   what/what(n);
   which/which(n);
   what(d interrogative);
@@ -1433,7 +1433,7 @@ tan:
 taso:
   only(adj opinion);
   only(adv);
-  `[marks a sentence as qualifying or contradictory]`(particle def);
+  `[`marks a sentence as qualifying or contradictory`]`(particle def);
   but(particle def);
   however(particle def);
 
