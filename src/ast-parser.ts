@@ -47,6 +47,7 @@ import {
   optional,
   Parser,
   sequence,
+  variable,
 } from "./parser-lib.ts";
 import { describe, Token } from "./token.ts";
 import { spaces, TOKEN } from "./lexer.ts";
@@ -460,8 +461,9 @@ function phrase_(): Parser<Phrase> {
   )
     .filter(filter(PHRASE_RULE));
 }
+const PHRASE = lazy(phrase_);
 function phrase(): Parser<Phrase> {
-  return lazy(phrase_);
+  return PHRASE;
 }
 /**
  * Parses nested phrases with given nesting rule, only accepting the top level

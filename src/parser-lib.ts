@@ -83,11 +83,34 @@ export function lookAhead<T>(parser: Parser<T>): Parser<T> {
   );
 }
 /**
+ * Evaluates the parser only during parsing, useful for parser the may change
+ * e.g. due to settings.
+ */
+export function variable<T>(parser: () => Parser<T>): Parser<T> {
+  return new Parser((src) => parser().parser(src));
+}
+/**
  * Lazily evaluates the parser function only when needed. Useful for recursive
  * parsers.
+ *
+ * # Notes
+ *
+ * This combinator contains memoization, for it to be effective:
+ *
+ * - Don't use it for combinators, use `variable` instead.
+ * - Declare the parser as global constant.
  */
 export function lazy<T>(parser: () => Parser<T>): Parser<T> {
-  return new Parser((src) => parser().parser(src));
+  let cached: null | Parser<T> = null;
+  return new Parser((src) => {
+    let cachedParser: Parser<T>;
+    if (cached != null) {
+      cachedParser = cached;
+    } else {
+      cachedParser = cached = parser();
+    }
+    return cachedParser.parser(src);
+  });
 }
 /**
  * Evaluates all parsers on the same source string and sums it all on a single
@@ -150,7 +173,7 @@ export function sequence<T extends Array<unknown>>(
  */
 export function many<T>(parser: Parser<T>): Parser<Array<T>> {
   return choice(
-    sequence(parser, lazy(() => many(parser)))
+    sequence(parser, variable(() => many(parser)))
       .map(([first, rest]) => [first, ...rest]),
     nothing().map(() => []),
   );
@@ -176,7 +199,7 @@ export function manyAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
  */
 export function all<T>(parser: Parser<T>): Parser<Array<T>> {
   return choiceOnlyOne(
-    sequence(parser, lazy(() => all(parser)))
+    sequence(parser, variable(() => all(parser)))
       .map(([first, rest]) => [first, ...rest]),
     nothing().map(() => []),
   );

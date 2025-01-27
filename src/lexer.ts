@@ -32,7 +32,7 @@ import {
   UCSUR_TO_LATIN,
 } from "./ucsur.ts";
 import { fs } from "./misc.ts";
-import { lazy } from "./parser-lib.ts";
+import { variable } from "./parser-lib.ts";
 import { settings } from "./settings.ts";
 import { empty } from "./parser-lib.ts";
 
@@ -157,7 +157,7 @@ function longWord(): Parser<Token & { type: "long word" }> {
 }
 /** Parses X ala X constructions if allowed by the settings. */
 function xAlaX(): Parser<string> {
-  return lazy(() => {
+  return variable(() => {
     if (settings.get("x-ala-x-partial-parsing")) {
       return empty();
     } else {
