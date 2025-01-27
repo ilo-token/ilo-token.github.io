@@ -254,11 +254,7 @@ export function match(
 export function slice(length: number, description: string): Parser<string> {
   return new Parser((src) => {
     if (src.length < length) {
-      if (src.length === 0) {
-        return new Output(new UnexpectedError("end of text", description));
-      } else {
-        return new Output(describeSrc(src, description));
-      }
+      return new Output(describeSrc(src, description));
     } else {
       return new Output([{
         rest: src.slice(length),
