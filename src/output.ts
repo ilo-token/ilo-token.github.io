@@ -1,7 +1,10 @@
 /** Module containing the Output data type. */
 
 /** Represents Error used by Output. */
-export class OutputError extends Error {}
+export class OutputError extends Error {
+  /** Describes whether the error message contains HTML. */
+  htmlMessage = false;
+}
 /** Represents possibilities and error. */
 export class Output<T> {
   /** Represents possibilities, considered error when the array is empty. */

@@ -1,10 +1,9 @@
 /** Module for main execution in the browser. */
 
-import { translate } from "./composer.ts";
+import { OutputError, translate } from "./ilo-token.ts";
 import { defaultDictionary, loadCustomDictionary } from "./dictionary.ts";
-import { fs, shuffle } from "./misc.ts";
+import { fs } from "./misc.ts";
 import { settings } from "./settings.ts";
-import { errors } from "../telo-misikeke/telo-misikeke.js";
 
 // Set to false when releasing, set to true when developing
 const DEVELOPMENT = true;
@@ -106,68 +105,52 @@ function outputTranslations(output: Array<string>): void {
     elements!.output.appendChild(list);
   }
 }
-function outputErrors(errors: Array<string>, asHtml: boolean): void {
-  let property: "innerText" | "innerHTML";
-  if (asHtml) {
+function readError(error: unknown): [string, "innerHTML" | "innerText"] {
+  let property: "innerHTML" | "innerText";
+  if (error instanceof OutputError && error.htmlMessage) {
     property = "innerHTML";
   } else {
     property = "innerText";
   }
+  let message: string;
+  if (error instanceof Error) {
+    message = error.message;
+  } else {
+    message = `${error}`;
+  }
+  return [message, property];
+}
+function outputErrors(errors: Array<unknown>): void {
   if (errors.length === 0) {
     elements!.error.innerText =
       "An unknown error has occurred (Errors should be known, please report " +
       "this)";
   } else if (errors.length === 1) {
+    const [message, property] = readError(errors[0]);
     elements!.error.innerText = "An error has been found:";
     const list = document.createElement("li");
-    list[property] = errors[0];
+    list[property] = message;
     elements!.errorList.appendChild(list);
   } else {
     elements!.error.innerText = "Multiple errors has been found:";
-    for (const errorMessage of errors) {
+    for (const item of errors) {
+      const [message, property] = readError(item);
       const list = document.createElement("li");
-      list[property] = errorMessage;
+      list[property] = message;
       elements!.errorList.appendChild(list);
     }
   }
 }
 function updateOutput(): void {
-  clearOutput();
-  const source = elements!.input.value;
   try {
-    const translations = translate(source);
-    if (!translations.isError()) {
-      const output = [...new Set(translations.output)];
-      if (settings.get("randomize")) {
-        shuffle(output);
-      }
-      outputTranslations(output);
+    clearOutput();
+    outputTranslations(translate(elements!.input.value));
+  } catch (error) {
+    if (error instanceof AggregateError) {
+      outputErrors(error.errors);
     } else {
-      let asHtml = true;
-      let error: Array<string> = [];
-      if (settings.get("use-telo-misikeke")) {
-        error = errors(source);
-      }
-      if (error.length === 0) {
-        error = [
-          ...new Set(
-            translations.errors.map((x) => x.message),
-          ),
-        ];
-        asHtml = false;
-      }
-      outputErrors(error, asHtml);
+      outputErrors([error]);
     }
-  } catch (unreachableError) {
-    let error: string;
-    if (unreachableError instanceof Error) {
-      error = unreachableError.message;
-    } else {
-      error = `${unreachableError}`;
-    }
-    error += " (please report this)";
-    outputErrors([error], false);
-    throw unreachableError;
   }
 }
 if (typeof document !== "undefined") {

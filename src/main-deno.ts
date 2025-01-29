@@ -1,4 +1,4 @@
-import { translate } from "./composer.ts";
+import { translate } from "./ilo-token.ts";
 
 while (true) {
   const input = prompt("> ");
@@ -6,13 +6,7 @@ while (true) {
     break;
   }
   const output = translate(input);
-  if (output.isError()) {
-    for (const error of output.errors) {
-      console.error(error.message);
-    }
-  } else {
-    for (const translation of output.output) {
-      console.log(`  - ${translation}`);
-    }
+  for (const translation of output) {
+    console.log(`  - ${translation}`);
   }
 }
