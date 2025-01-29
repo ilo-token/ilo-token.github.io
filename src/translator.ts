@@ -5,7 +5,7 @@ import { TodoError } from "./error.ts";
 import { fs, nullableAsArray, repeat, repeatWithSpace } from "./misc.ts";
 import { Output } from "./output.ts";
 import { settings } from "./settings.ts";
-import * as Dictionary from "./dictionary-type.ts";
+import * as Dictionary from "../dictionary/type.ts";
 import { getDictionary } from "./dictionary.ts";
 
 const CONJUNCTION = { "and conjunction": "and", "anu": "or" } as const;

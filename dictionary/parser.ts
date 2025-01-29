@@ -8,7 +8,7 @@ import {
   Dictionary,
   Entry,
   Noun,
-} from "./dictionary-type.ts";
+} from "./type.ts";
 import {
   all,
   choiceOnlyOne,
@@ -19,10 +19,10 @@ import {
   Parser,
   sequence,
   withSource,
-} from "./parser-lib.ts";
-import { Output, OutputError } from "./output.ts";
-import { UnrecognizedError } from "./error.ts";
-import { fs, nullableAsArray, repeat } from "./misc.ts";
+} from "../src/parser-lib.ts";
+import { Output, OutputError } from "../src/output.ts";
+import { UnrecognizedError } from "../src/error.ts";
+import { fs, nullableAsArray, repeat } from "../src/misc.ts";
 
 function space(): Parser<null> {
   return all(

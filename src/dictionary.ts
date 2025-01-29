@@ -1,9 +1,8 @@
-import { parseDictionary } from "./dictionary-parser.ts";
-import { Dictionary } from "./dictionary-type.ts";
+import { parseDictionary } from "../dictionary/parser.ts";
+import { Dictionary } from "../dictionary/type.ts";
 import { OutputError } from "./output.ts";
-import { dictionary as text } from "../dictionary/dictionary.ts";
+import { dictionary as defaultDictionary } from "../dictionary/dictionary.ts";
 
-export const defaultDictionary: Dictionary = loadDictionary(text);
 let customDictionary: Dictionary = {};
 let dictionary: Dictionary = {};
 
@@ -26,14 +25,6 @@ export function getPreverbSet(): Set<string> {
 }
 export function getTokiPonaWordSet(): Set<string> {
   return tokiPonaWordSet;
-}
-function loadDictionary(dictionaryText: string): Dictionary {
-  const output = parseDictionary(dictionaryText);
-  if (output.isError()) {
-    throw new AggregateError(output.errors);
-  } else {
-    return output.output[0];
-  }
 }
 export function loadCustomDictionary(
   dictionaryText: string,

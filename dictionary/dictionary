@@ -577,7 +577,7 @@ lete:
   # coolness(n);
 
 li:
-  `[`marks the start of an indicative verb (statement)`]`(particle def);
+  `[`marks the start of an indicative verb `(`statement`)``]`(particle def);
 
 lili:
   small(adj size);
@@ -993,8 +993,8 @@ noka:
   root-related(adj opinion);
 
 o:
-  `[`marks the end of a vocative (who is being spoken to)`]`(particle def);
-  `[`marks the start of an imperative (command, wish, instruction)`]`(particle def);
+  `[`marks the end of a vocative `(`who is being spoken to`)``]`(particle def);
+  `[`marks the start of an imperative `(`command, wish, instruction`)``]`(particle def);
   should(particle def);
 
 olin:
@@ -1570,7 +1570,7 @@ walo:
   # white(adj color);
   # pale(adj color);
   # light(adv) gray(adj color);
-  c# ream-colored(adj color);
+  # cream-colored(adj color);
 
   light(adj color) color(n);
   # white(n);

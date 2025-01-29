@@ -14,7 +14,7 @@ You'll need the following in order to run commands:
 
 ## Building
 
-This fetches more dependencies needed, brings the dictionary to the code, and builds `./dist/main.js`.
+This fetches more dependencies needed, builds the dictionary, and builds `./dist/main.js`.
 
 ```
 deno task build
@@ -28,7 +28,7 @@ Before running this command, you'll need to run `deno task build` first. This is
 deno task watch
 ```
 
-This builds `./dist/main.js`. This command also watches the codes in `./src/` as well as the dictionary and rebuilds `./dist/main.js` whenever there are changes. To stop this command, simply press Ctrl + C.
+This builds `./dist/main.js`. This command also watches the codes in `./src/` and `./dictionary/` including the dictionary and rebuilds `./dist/main.js` whenever there are changes. To stop this command, simply press Ctrl + C.
 
 ## Running locally with browser
 
@@ -36,7 +36,7 @@ After building or watching, you can directly run `./dist/index.html` with your b
 
 ## Running locally with Deno
 
-Before running this command, you'll need to run `deno task build` first to fetch dependencies and to ensure the dictionary is within the code. You only need to run it once unless you made changes to the dictionary.
+Before running this command, you'll need to run `deno task build` first to fetch dependencies and to build the dictionary. You only need to run it once unless you made changes to the dictionary.
 
 ```
 deno task run

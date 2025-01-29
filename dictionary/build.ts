@@ -1,12 +1,19 @@
+import { fs } from "../src/misc.ts";
+import { parseDictionary } from "./parser.ts";
+
 const SOURCE = new URL("./dictionary", import.meta.url);
 const DESTINATION = new URL("./dictionary.ts", import.meta.url);
 
-// While we still don't have `import ... with { type: "txt" }`, we'll have to
-// do this
 export async function buildDictionary(): Promise<void> {
   const text = await Deno.readTextFile(SOURCE);
+  const dictionary = parseDictionary(text);
+  if (dictionary.isError()) {
+    throw new AggregateError(dictionary.errors);
+  }
   await Deno.writeTextFile(
     DESTINATION,
-    `export const dictionary=${JSON.stringify(text)}`,
+    fs`import{Dictionary}from"./type.ts";export const dictionary:Dictionary=${
+      JSON.stringify(dictionary.output[0])
+    }`,
   );
 }
