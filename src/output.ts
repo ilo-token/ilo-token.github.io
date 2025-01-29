@@ -4,6 +4,10 @@
 export class OutputError extends Error {
   /** Describes whether the error message contains HTML. */
   htmlMessage = false;
+  constructor(message: string) {
+    super(message);
+    this.name = "OutputError";
+  }
 }
 /** Represents possibilities and error. */
 export class Output<T> {
