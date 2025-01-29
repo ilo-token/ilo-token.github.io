@@ -468,7 +468,9 @@ export function parseDictionary(sourceText: string): Output<Dictionary> {
       return Output.newErrors(
         definitions.output[0]
           .flatMap((definition) =>
-            insideDefinitionParser.parse(definition).errors
+            insideDefinitionParser.parse(definition).errors.map((error) =>
+              new OutputError(fs`${error.message} at ${definition.trim()}`)
+            )
           ),
       );
     } else {
