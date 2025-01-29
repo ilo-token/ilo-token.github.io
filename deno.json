@@ -24,7 +24,10 @@
       "./dist/main.js",
       "./telo-misikeke/rules.js",
       "./telo-misikeke/Parser.js"
-    ]
+    ],
+    "rules": {
+      "exclude": ["no-explicit-any"]
+    }
   },
   "imports": {
     "compromise": "npm:compromise@14.14.3",

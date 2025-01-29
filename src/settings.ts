@@ -37,7 +37,6 @@ type Updater<T> = {
 class Setter<T extends { [name: string]: unknown }> {
   private settings: { [S in keyof T]: SettingsItem<T[S]> };
   constructor(option: { [S in keyof T]: Option<T[S]> }) {
-    // deno-lint-ignore no-explicit-any
     const settings: any = {};
     for (const name of Object.keys(option)) {
       const item = option[name];
@@ -55,7 +54,6 @@ class Setter<T extends { [name: string]: unknown }> {
   setUnsavedAll(settings: Partial<Settings>) {
     for (const name of NAMES) {
       if (settings[name] != null) {
-        // deno-lint-ignore no-explicit-any
         this.settings[name].value = settings[name] as any;
       }
     }

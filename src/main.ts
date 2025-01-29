@@ -77,7 +77,6 @@ function loadElements(): void {
     customDictionary: "custom-dictionary",
     discardButton: "discard-button",
     saveButton: "save-button",
-    // deno-lint-ignore no-explicit-any
   } as any;
   for (const name of Object.keys(elementNames)) {
     elementNames[name] = document.getElementById(elementNames[name]);

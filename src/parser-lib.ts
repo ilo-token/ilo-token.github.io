@@ -155,11 +155,9 @@ export function sequence<T extends Array<unknown>>(
 ): Parser<T> {
   // We resorted to using `any` types here, make sure it works properly
   return sequence.reduceRight(
-    // deno-lint-ignore no-explicit-any
     (newParser: Parser<any>, parser) =>
       parser.then((value) => newParser.map((newValue) => [value, ...newValue])),
     nothing().map(() => []),
-    // deno-lint-ignore no-explicit-any
   ) as Parser<any>;
 }
 /**

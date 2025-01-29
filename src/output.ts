@@ -160,7 +160,6 @@ export class Output<T> {
   ): Output<T> {
     // We resorted to using `any` types here, make sure it works properly
     return outputs.reduce(
-      // deno-lint-ignore no-explicit-any
       (output: Output<any>, newOutput) => {
         if (output.isError() && newOutput.isError()) {
           return Output.concat(output, newOutput);
@@ -173,7 +172,6 @@ export class Output<T> {
             .flatMap((left) => newOutput.map((right) => [...left, right]));
         }
       },
-      // deno-lint-ignore no-explicit-any
       new Output<any>([[]]),
     ) as Output<T>;
   }
