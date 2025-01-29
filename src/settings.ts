@@ -4,7 +4,7 @@ import { LOCAL_STORAGE_AVAILABLE } from "./misc.ts";
 
 /** */
 type RedundancySettings = "both" | "condensed" | "default only";
-type Settings = {
+export type Settings = {
   "use-telo-misikeke": boolean;
   "randomize": boolean;
   "number-settings": RedundancySettings;
@@ -12,6 +12,14 @@ type Settings = {
   "x-ala-x-partial-parsing": boolean;
   "separate-repeated-modifiers": boolean;
 };
+const NAMES = [
+  "use-telo-misikeke",
+  "randomize",
+  "number-settings",
+  "tense-settings",
+  "x-ala-x-partial-parsing",
+  "separate-repeated-modifiers",
+] as const;
 
 type Option<T> = {
   default: T;
@@ -40,6 +48,17 @@ class Setter<T extends { [name: string]: unknown }> {
       };
     }
     this.settings = settings;
+  }
+  setUnsaved<S extends keyof T>(name: S, value: T[S]): void {
+    this.settings[name].value = value;
+  }
+  setUnsavedAll(settings: Partial<Settings>) {
+    for (const name of NAMES) {
+      if (settings[name] != null) {
+        // deno-lint-ignore no-explicit-any
+        this.settings[name].value = settings[name] as any;
+      }
+    }
   }
   get<S extends keyof T>(name: S): T[S] {
     return this.settings[name].value as T[S];

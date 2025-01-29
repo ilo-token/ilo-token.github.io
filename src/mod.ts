@@ -2,22 +2,33 @@ import { errors } from "../telo-misikeke/telo-misikeke.js";
 import { translate as rawTranslate } from "./composer.ts";
 import { shuffle } from "./misc.ts";
 import { OutputError } from "./output.ts";
-import { settings } from "./settings.ts";
+import {
+  Settings as RawSettings,
+  settings as globalSettings,
+} from "./settings.ts";
 import { loadCustomDictionary } from "./dictionary.ts";
 
 export { OutputError };
 
-export function translate(input: string): Array<string> {
+export type Settings = Partial<RawSettings>;
+
+export function translate(
+  input: string,
+  settings?: undefined | null | Settings,
+): Array<string> {
+  if (settings != null) {
+    globalSettings.setUnsavedAll(settings);
+  }
   const output = rawTranslate(input);
   if (!output.isError()) {
     const values = [...new Set(output.output)];
-    if (settings.get("randomize")) {
+    if (globalSettings.get("randomize")) {
       shuffle(values);
     }
     return values;
   } else {
     let error: Array<OutputError> = [];
-    if (settings.get("use-telo-misikeke")) {
+    if (globalSettings.get("use-telo-misikeke")) {
       error = errors(input).map((message) => {
         const error = new OutputError(message);
         error.htmlMessage = true;
