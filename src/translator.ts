@@ -786,7 +786,6 @@ function phrase(
       return defaultPhrase(phrase, place);
     case "preverb":
     case "preposition":
-      return new Output();
     case "quotation":
       return new Output(new TodoError(fs`translation of ${phrase.type}`));
   }
