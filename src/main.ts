@@ -106,7 +106,7 @@ function outputTranslations(output: Array<string>): void {
     elements!.output.appendChild(list);
   }
 }
-function readError(error: unknown): [string, "innerHTML" | "innerText"] {
+function addError(error: unknown): void {
   let property: "innerHTML" | "innerText";
   if (error instanceof OutputError && error.htmlMessage) {
     property = "innerHTML";
@@ -119,7 +119,9 @@ function readError(error: unknown): [string, "innerHTML" | "innerText"] {
   } else {
     message = `${error}`;
   }
-  return [message, property];
+  const list = document.createElement("li");
+  list[property] = message;
+  elements!.errorList.appendChild(list);
 }
 function outputErrors(errors: Array<unknown>): void {
   if (errors.length === 0) {
@@ -127,18 +129,12 @@ function outputErrors(errors: Array<unknown>): void {
       "An unknown error has occurred (Errors should be known, please report " +
       "this)";
   } else if (errors.length === 1) {
-    const [message, property] = readError(errors[0]);
     elements!.error.innerText = "An error has been found:";
-    const list = document.createElement("li");
-    list[property] = message;
-    elements!.errorList.appendChild(list);
+    addError(errors[0]);
   } else {
     elements!.error.innerText = "Multiple errors has been found:";
     for (const item of errors) {
-      const [message, property] = readError(item);
-      const list = document.createElement("li");
-      list[property] = message;
-      elements!.errorList.appendChild(list);
+      addError(item);
     }
   }
 }
