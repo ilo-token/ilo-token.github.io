@@ -286,7 +286,9 @@ export function eol(): Parser<null> {
     }
   });
 }
-export function withSource<T>(parser: Parser<T>): Parser<[T, string]> {
+export function withSource<T>(
+  parser: Parser<T>,
+): Parser<[value: T, source: string]> {
   return new Parser((src) =>
     parser.parser(src).map((value) => ({
       value: [value.value, src.slice(0, src.length - value.rest.length)],
