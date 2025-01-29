@@ -37,6 +37,10 @@ You **don't** have to do this if:
 - It is a contribution to the dictionary
 - It is a minor edit e.g. a typo fix
 
+Please don't do the following, we can do this ourselves.
+
+- Updating dependencies
+
 Additionally, please format the code when you make changes. We use Deno's built-in formatter.
 
 [The wiki](https://github.com/ilo-token/ilo-token.github.io/wiki) contains useful for contributors.
