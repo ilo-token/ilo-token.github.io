@@ -3,7 +3,7 @@
 import { OutputError, translate } from "./mod.ts";
 import { dictionary } from "../dictionary/dictionary.ts";
 import { loadCustomDictionary } from "./dictionary.ts";
-import { fs } from "./misc.ts";
+import { fs, LOCAL_STORAGE_AVAILABLE } from "./misc.ts";
 import { settings } from "./settings.ts";
 
 // Set to false when releasing, set to true when developing
@@ -170,6 +170,28 @@ function resizeTextarea(): void {
     elements!.input.scrollHeight + 14
   }`}px`;
 }
+function openDictionary(): void {
+  elements!.customDictionaryBox.showModal();
+  if (LOCAL_STORAGE_AVAILABLE) {
+    elements!.customDictionary.value = localStorage.getItem(DICTIONARY_KEY) ??
+      DEFAULT_MESSAGE;
+  }
+}
+function saveAndCloseDictionary(): void {
+  const dictionary = elements!.customDictionary.value;
+  const errors = loadCustomDictionary(dictionary);
+  if (errors.length === 0) {
+    if (LOCAL_STORAGE_AVAILABLE) {
+      localStorage.setItem(DICTIONARY_KEY, dictionary);
+    }
+    elements!.customDictionaryBox.close();
+  } else {
+    elements!.customDictionary.value +=
+      fs`\n# Please fix these errors before saving\n# (You may remove these when fixed)\n${
+        errors.map((error) => fs`# - ${error.message.trim()}`).join("\n")
+      }\n`;
+  }
+}
 if (typeof document !== "undefined") {
   document.addEventListener("DOMContentLoaded", () => {
     loadElements();
@@ -198,11 +220,7 @@ if (typeof document !== "undefined") {
     elements!.resetButton.addEventListener("click", () => {
       settings.resetElementsToDefault();
     });
-    elements!.customDictionaryButton.addEventListener("click", () => {
-      elements!.customDictionaryBox.showModal();
-      elements!.customDictionary.value = localStorage.getItem(DICTIONARY_KEY) ??
-        DEFAULT_MESSAGE;
-    });
+    elements!.customDictionaryButton.addEventListener("click", openDictionary);
     elements!.addWordButton.addEventListener("click", addWord);
     elements!.addWord.addEventListener("keydown", (event) => {
       if (event.code === "Enter") {
@@ -213,19 +231,7 @@ if (typeof document !== "undefined") {
     elements!.discardButton.addEventListener("click", () => {
       elements!.customDictionaryBox.close();
     });
-    elements!.saveButton.addEventListener("click", () => {
-      const dictionary = elements!.customDictionary.value;
-      const errors = loadCustomDictionary(dictionary);
-      if (errors.length === 0) {
-        localStorage.setItem(DICTIONARY_KEY, dictionary);
-        elements!.customDictionaryBox.close();
-      } else {
-        elements!.customDictionary.value +=
-          fs`\n# Please fix these errors before saving\n# (You may remove these when fixed)\n${
-            errors.map((error) => fs`# - ${error.message.trim()}`).join("\n")
-          }\n`;
-      }
-    });
+    elements!.saveButton.addEventListener("click", saveAndCloseDictionary);
     elements!.translateButton.addEventListener("click", updateOutput);
     resizeTextarea();
     elements!.input.addEventListener("input", resizeTextarea);

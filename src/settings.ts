@@ -1,5 +1,7 @@
 /** Module for translation settings stored as a global state */
 
+import { LOCAL_STORAGE_AVAILABLE } from "./misc.ts";
+
 /** */
 type RedundancySettings = "both" | "condensed" | "default only";
 type Settings = {
@@ -10,34 +12,7 @@ type Settings = {
   "x-ala-x-partial-parsing": boolean;
   "separate-repeated-modifiers": boolean;
 };
-const LOCAL_STORAGE_AVAILABLE = (() => {
-  if (typeof localStorage === "undefined") {
-    return false;
-  }
-  // https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
-  try {
-    const x = "__storage_test__";
-    localStorage.setItem(x, x);
-    localStorage.removeItem(x);
-    return true;
-  } catch (e) {
-    return (
-      e instanceof DOMException &&
-      // everything except Firefox
-      (e.code === 22 ||
-        // Firefox
-        e.code === 1014 ||
-        // test name field too, because code might not be present
-        // everything except Firefox
-        e.name === "QuotaExceededError" ||
-        // Firefox
-        e.name === "NS_ERROR_DOM_QUOTA_REACHED") &&
-      // acknowledge QuotaExceededError only if there's something already stored
-      localStorage &&
-      localStorage.length > 0
-    );
-  }
-})();
+
 type Option<T> = {
   default: T;
   updater: Updater<T>;
