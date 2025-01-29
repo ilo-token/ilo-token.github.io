@@ -24,7 +24,15 @@ export function translate(input: string): Array<string> {
       });
     }
     if (error.length == 0) {
-      error = output.errors;
+      const messages: Set<string> = new Set();
+      error = output.errors.filter((error) => {
+        if (messages.has(error.message)) {
+          return false;
+        } else {
+          messages.add(error.message);
+          return true;
+        }
+      });
     }
     throw new AggregateError(error);
   }
