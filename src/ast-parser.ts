@@ -855,8 +855,23 @@ const FULL_PARSER = spaces()
   ));
 /** Turns string into Toki Pona AST. */
 export function parse(src: string): Output<MultipleSentences> {
+  let error = false;
+  let multilineError: Output<never>;
   if (/\n/.test(src.trim())) {
-    return new Output(new UnrecognizedError("multiline text"));
+    error = true;
+    multilineError = new Output(new UnrecognizedError("multiline text"));
+  } else {
+    multilineError = new Output();
+  }
+  let rangeError: Output<never>;
+  if (src.trim().length > 500) {
+    error = true;
+    rangeError = new Output(new UnrecognizedError("long text"));
+  } else {
+    rangeError = new Output();
+  }
+  if (error) {
+    return Output.concat(multilineError, rangeError);
   }
   return FULL_PARSER.parse(src);
 }

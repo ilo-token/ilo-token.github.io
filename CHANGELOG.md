@@ -21,6 +21,7 @@ The latest on-development version can be accessed by building the source code. O
 - Fixed UCSUR rendering.
 - Fixed ordering issue in Firefox.
 - Implement advanced parsing settings.
+- Long texts (>500) are no longer recognized.
 
 Inside update (Intended for developers):
 
