@@ -10,7 +10,7 @@ NOTE:
 
 <summary>On development changelog</summary>
 
-## 0.3.1 (On development)
+## 0.4.0 (On development)
 
 The latest on-development version can be accessed by building the source code. On this on-development version, things can be broken.
 

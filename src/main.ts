@@ -10,7 +10,7 @@ import { settings } from "./settings.ts";
 const DEVELOPMENT = true;
 // Don't forget these two when releasing
 const DATE_RELEASED = new Date("2024-8-15");
-const VERSION = "v0.3.1";
+const VERSION = "v0.4.0";
 
 const DEFAULT_MESSAGE = `\
 # ====================================
