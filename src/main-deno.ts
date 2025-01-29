@@ -1,4 +1,4 @@
-import { translate } from "./ilo-token.ts";
+import { translate } from "./mod.ts";
 
 while (true) {
   const input = prompt("> ");

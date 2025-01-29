@@ -1,7 +1,8 @@
 /** Module for main execution in the browser. */
 
-import { OutputError, translate } from "./ilo-token.ts";
-import { defaultDictionary, loadCustomDictionary } from "./dictionary.ts";
+import { OutputError, translate } from "./mod.ts";
+import { dictionary } from "../dictionary/dictionary.ts";
+import { loadCustomDictionary } from "./dictionary.ts";
 import { fs } from "./misc.ts";
 import { settings } from "./settings.ts";
 
@@ -190,8 +191,8 @@ if (typeof document !== "undefined") {
       const word = elements!.addWord.value.trim();
       let add: string;
       if (/^[a-z][a-zA-Z]*$/.test(word)) {
-        if (Object.hasOwn(defaultDictionary, word)) {
-          add = fs`\n${word}:\n  ${defaultDictionary[word].src.trim()}\n`;
+        if (Object.hasOwn(dictionary, word)) {
+          add = fs`\n${word}:\n  ${dictionary[word].src.trim()}\n`;
         } else {
           add = fs`\n${word}:\n  # Definitions here\n`;
         }
