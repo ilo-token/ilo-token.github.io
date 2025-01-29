@@ -37,7 +37,10 @@ switch (Deno.args[0]) {
       }
     }, 500);
     const watcher = Deno.watchFs([
-      "./dictionary/",
+      "./dictionary/build.ts",
+      "./dictionary/dictionary",
+      "./dictionary/parser.ts",
+      "./dictionary/type.ts",
       "./src/",
     ]);
     try {
