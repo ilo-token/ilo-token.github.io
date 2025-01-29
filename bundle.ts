@@ -54,7 +54,7 @@ switch (Deno.args[0]) {
     throw new Error("unreachable");
   }
   default:
-    throw new Error(fs`Unrecognized build option, ${Deno.args[0]}`);
+    throw new Error(fs`unrecognized build option: ${Deno.args[0]}`);
 }
 function debounce(callback: () => Promise<void>, delay: number): () => void {
   let previous = { aborted: true };
