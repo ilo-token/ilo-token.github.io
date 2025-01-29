@@ -150,6 +150,26 @@ function updateOutput(): void {
     }
   }
 }
+function addWord(): void {
+  const word = elements!.addWord.value.trim();
+  let add: string;
+  if (/^[a-z][a-zA-Z]*$/.test(word)) {
+    if (Object.hasOwn(dictionary, word)) {
+      add = fs`\n${word}:\n  ${dictionary[word].src.trim()}\n`;
+    } else {
+      add = fs`\n${word}:\n  # Definitions here\n`;
+    }
+  } else {
+    add = "\n# Error: Invalid word to add (You may remove this line)\n";
+  }
+  elements!.customDictionary.value += add;
+}
+function resizeTextarea(): void {
+  elements!.input.style.height = "auto";
+  elements!.input.style.height = fs`${`${
+    elements!.input.scrollHeight + 14
+  }`}px`;
+}
 if (typeof document !== "undefined") {
   document.addEventListener("DOMContentLoaded", () => {
     loadElements();
@@ -183,20 +203,6 @@ if (typeof document !== "undefined") {
       elements!.customDictionary.value = localStorage.getItem(DICTIONARY_KEY) ??
         DEFAULT_MESSAGE;
     });
-    function addWord(): void {
-      const word = elements!.addWord.value.trim();
-      let add: string;
-      if (/^[a-z][a-zA-Z]*$/.test(word)) {
-        if (Object.hasOwn(dictionary, word)) {
-          add = fs`\n${word}:\n  ${dictionary[word].src.trim()}\n`;
-        } else {
-          add = fs`\n${word}:\n  # Definitions here\n`;
-        }
-      } else {
-        add = "\n# Error: Invalid word to add (You may remove this line)\n";
-      }
-      elements!.customDictionary.value += add;
-    }
     elements!.addWordButton.addEventListener("click", addWord);
     elements!.addWord.addEventListener("keydown", (event) => {
       if (event.code === "Enter") {
@@ -221,13 +227,6 @@ if (typeof document !== "undefined") {
       }
     });
     elements!.translateButton.addEventListener("click", updateOutput);
-    // Auto resize
-    function resizeTextarea(): void {
-      elements!.input.style.height = "auto";
-      elements!.input.style.height = fs`${`${
-        elements!.input.scrollHeight + 14
-      }`}px`;
-    }
     resizeTextarea();
     elements!.input.addEventListener("input", resizeTextarea);
     elements!.input.addEventListener("keydown", (event) => {
