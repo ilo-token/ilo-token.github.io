@@ -3,6 +3,7 @@ import { translate as rawTranslate } from "./composer.ts";
 import { shuffle } from "./misc.ts";
 import { OutputError } from "./output.ts";
 import { settings } from "./settings.ts";
+import { loadCustomDictionary } from "./dictionary.ts";
 
 export { OutputError };
 
@@ -35,5 +36,11 @@ export function translate(input: string): Array<string> {
       });
     }
     throw new AggregateError(error);
+  }
+}
+export function loadDictionary(dictionary: string): void {
+  const errors = loadCustomDictionary(dictionary);
+  if (errors.length > 0) {
+    throw new AggregateError(errors);
   }
 }
