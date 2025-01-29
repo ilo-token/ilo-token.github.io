@@ -22,7 +22,7 @@ import {
 } from "../src/parser-lib.ts";
 import { Output, OutputError } from "../src/output.ts";
 import { UnrecognizedError } from "../src/error.ts";
-import { fs, nullableAsArray, repeat } from "../src/misc.ts";
+import { escapeHtml, fs, nullableAsArray, repeat } from "../src/misc.ts";
 
 function space(): Parser<null> {
   return all(
@@ -42,7 +42,8 @@ function word(): Parser<string> {
     ),
   )
     .map((word) => word.join("").replaceAll(/\s+/g, " ").trim())
-    .filter((word) => word.length > 0);
+    .filter((word) => word.length > 0)
+    .map(escapeHtml);
 }
 function slash(): Parser<null> {
   return lex(matchString("/", "slash")).map((_) => null);

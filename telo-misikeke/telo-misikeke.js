@@ -3,6 +3,7 @@
 import { ParserWithCallbacks } from "./Parser.js";
 import { build_rules, getMessage } from "./rules.js";
 import { DATA } from "./linku-data.js";
+import { escapeHtml } from "../src/misc.ts";
 
 const RULES = build_rules(DATA);
 
@@ -12,10 +13,7 @@ export function errors(text) {
     .tokenize(text)
     .filter((token) => RULES[token.ruleName].category === "error")
     .map((token) => {
-      const src = token.text
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll("&", "&amp;");
+      const src = escapeHtml(token.text);
       const message = getMessage(token.ruleName, token.match)
         .replace(/\n/g, "<br>");
       return `"${src}" ${message}`;

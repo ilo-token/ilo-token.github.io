@@ -64,3 +64,9 @@ export const LOCAL_STORAGE_AVAILABLE = (() => {
     );
   }
 })();
+export function escapeHtml(text: string): string {
+  return text
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll("&", "&amp;");
+}
