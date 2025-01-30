@@ -171,7 +171,7 @@ function xAlaX(): Parser<string> {
 function punctuation(): Parser<string> {
   // This includes UCSUR middle dot and colon
   // https://www.kreativekorp.com/ucsur/charts/sitelen.html
-  return match(/([.,:;?!\u{F199C}\u{F199D}]+)\s*/u, "punctuation")
+  return match(/([.,:;?!·\u{F199C}\u{F199D}]+)\s*/u, "punctuation")
     .map(([_, punctuation]) => punctuation);
 }
 /** Parses cartouche element and returns the phonemes or letters it represents. */
