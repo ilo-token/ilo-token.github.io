@@ -56,7 +56,9 @@ async function buildSonaLinku(): Promise<void> {
   const processedJson = parseLipuLinku(json);
   await Deno.writeTextFile(LINKU_DEST, JSON.stringify(processedJson));
 }
-function parseLipuLinku(data: any): any {
+function parseLipuLinku(
+  data: { [word: string]: { usage_category: string } },
+): [string, string][] {
   return Object.keys(data).map((word) => [word, data[word].usage_category]);
 }
 export async function buildTeloMisikeke(): Promise<void> {
