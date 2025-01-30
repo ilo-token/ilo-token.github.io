@@ -10,6 +10,15 @@ const buildOption: BundleOptions = {
   type: "classic",
   importMap: IMPORT_MAP,
 };
+const watch = [
+  "./dictionary/build.ts",
+  "./dictionary/dictionary",
+  "./dictionary/parser.ts",
+  "./dictionary/type.ts",
+  "./telo-misikeke/telo-misikeke.js",
+  "./src/",
+  "./project-data.json",
+];
 async function build(): Promise<void> {
   console.log("Building dictionary...");
   await buildDictionary();
@@ -51,13 +60,7 @@ if (import.meta.main) {
           console.error(error);
         }
       }, 500);
-      const watcher = Deno.watchFs([
-        "./dictionary/build.ts",
-        "./dictionary/dictionary",
-        "./dictionary/parser.ts",
-        "./dictionary/type.ts",
-        "./src/",
-      ]);
+      const watcher = Deno.watchFs(watch);
       try {
         builder();
         for await (const _ of watcher) {
