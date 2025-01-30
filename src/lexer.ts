@@ -174,6 +174,7 @@ function punctuation(): Parser<string> {
   return match(/([.,:;?!·。｡︒\u{F199C}\u{F199D}]+)\s*/u, "punctuation")
     .map(([_, punctuation]) => {
       switch (punctuation) {
+        case "·":
         case "。":
         case "｡":
         case "︒":
