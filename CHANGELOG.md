@@ -3,7 +3,7 @@
 <!--
 NOTE:
 - update dependencies before publishing
-- set global variables to main.js
+- set parameters on `project-data.json`
 -->
 
 <details>

@@ -5,12 +5,7 @@ import { dictionary } from "../dictionary/dictionary.ts";
 import { loadCustomDictionary } from "./dictionary.ts";
 import { LOCAL_STORAGE_AVAILABLE } from "./misc.ts";
 import { settings } from "./settings.ts";
-
-// Set to false when releasing, set to true when developing
-const DEVELOPMENT = true;
-// Don't forget these two when releasing
-const DATE_RELEASED = new Date("2024-8-15");
-const VERSION = "v0.4.0";
+import PROJECT_DATA from "../project-data.json" with { type: "json" };
 
 const DEFAULT_MESSAGE = `\
 # ====================================
@@ -84,13 +79,16 @@ function loadElements(): void {
   elements = elementNames;
 }
 function setVersion(): void {
-  if (DEVELOPMENT) {
-    elements!.version.innerText = `${VERSION} (On development)`;
+  if (PROJECT_DATA.onDevelopment) {
+    elements!.version.innerText = `${PROJECT_DATA.version} (On development)`;
   } else {
-    const date = DATE_RELEASED.toLocaleDateString(undefined, {
-      dateStyle: "short",
-    });
-    elements!.version.innerText = `${VERSION} - Released ${date}`;
+    const date = new Date(PROJECT_DATA.releaseDate).toLocaleDateString(
+      undefined,
+      {
+        dateStyle: "short",
+      },
+    );
+    elements!.version.innerText = `${PROJECT_DATA.version} - Released ${date}`;
   }
 }
 function clearOutput(): void {
