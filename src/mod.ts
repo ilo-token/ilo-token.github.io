@@ -12,14 +12,15 @@ export { OutputError };
 
 export type Settings = Partial<RawSettings>;
 
+/** Translates Toki Pona text into multiple English translations. */
 export function translate(
-  input: string,
+  tokiPona: string,
   settings?: undefined | null | Settings,
 ): Array<string> {
   if (settings != null) {
     globalSettings.setUnsavedAll(settings);
   }
-  const output = rawTranslate(input);
+  const output = rawTranslate(tokiPona);
   if (!output.isError()) {
     const values = [...new Set(output.output)];
     if (globalSettings.get("randomize")) {
@@ -29,7 +30,7 @@ export function translate(
   } else {
     let error: Array<OutputError> = [];
     if (globalSettings.get("use-telo-misikeke")) {
-      error = errors(input).map((message) => {
+      error = errors(tokiPona).map((message) => {
         const error = new OutputError(message);
         error.htmlMessage = true;
         return error;
@@ -49,6 +50,7 @@ export function translate(
     throw new AggregateError(error);
   }
 }
+/** Updates internal dictionary. */
 export function loadDictionary(dictionary: string): void {
   const errors = loadCustomDictionary(dictionary);
   if (errors.length > 0) {
