@@ -143,6 +143,21 @@ export class Output<T> {
   sortBy(mapper: (value: T) => number): Output<T> {
     return this.sort((left, right) => mapper(left) - mapper(right));
   }
+  uniqueErrors(): Output<T> {
+    if (this.isError()) {
+      const errors: Array<OutputError> = [];
+      const messages: { [message: string]: undefined | boolean } = {};
+      for (const error of this.errors) {
+        if (!messages[error.message]) {
+          errors.push(error);
+          messages[error.message] = true;
+        }
+      }
+      return Output.newErrors(errors);
+    } else {
+      return new Output(this.output);
+    }
+  }
   /** Combines all outputs. */
   static concat<U>(...outputs: Array<Output<U>>): Output<U> {
     const wholeOutput = new Output<U>();

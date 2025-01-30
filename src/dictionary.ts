@@ -29,7 +29,7 @@ export function getTokiPonaWordSet(): Set<string> {
 export function loadCustomDictionary(
   dictionaryText: string,
 ): Array<OutputError> {
-  const output = parseDictionary(dictionaryText);
+  const output = parseDictionary(dictionaryText).uniqueErrors();
   if (output.isError()) {
     customDictionary = {};
     update();

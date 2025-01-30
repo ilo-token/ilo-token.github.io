@@ -26,7 +26,7 @@ export function translate(
   if (settings != null) {
     globalSettings.setUnsavedAll(settings);
   }
-  const output = rawTranslate(tokiPona);
+  const output = rawTranslate(tokiPona).uniqueErrors();
   if (!output.isError()) {
     const values = [...new Set(output.output)];
     if (globalSettings.get("randomize")) {
@@ -43,15 +43,7 @@ export function translate(
       });
     }
     if (error.length == 0) {
-      const messages: Set<string> = new Set();
-      error = output.errors.filter((error) => {
-        if (messages.has(error.message)) {
-          return false;
-        } else {
-          messages.add(error.message);
-          return true;
-        }
-      });
+      error = output.errors;
     }
     throw new AggregateError(error);
   }
