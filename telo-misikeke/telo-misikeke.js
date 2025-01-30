@@ -2,7 +2,7 @@
 
 import { ParserWithCallbacks } from "./Parser.js";
 import { build_rules, getMessage, parseLipuLinku } from "./rules.js";
-import LINKU from "https://api.linku.la/v1/words" with { type: "json" };
+import LINKU from "sona-linku/words.json" with { type: "json" };
 import { escapeHtml } from "../src/misc.ts";
 
 const RULES = build_rules(parseLipuLinku(LINKU));

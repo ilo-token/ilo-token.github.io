@@ -1,6 +1,7 @@
 {
   "imports": {
     "compromise/": "https://esm.sh/compromise@14.14.3/",
-    "node:process": "./process.ts"
+    "node:process": "./process.ts",
+    "sona-linku/": "https://raw.githubusercontent.com/lipu-linku/sona/03410a67eb416199562c3aa7f8ba26010efcee56/api/raw/"
   }
 }
