@@ -3,7 +3,7 @@
 import { OutputError, translate } from "./mod.ts";
 import { dictionary } from "../dictionary/dictionary.ts";
 import { loadCustomDictionary } from "./dictionary.ts";
-import { fs, join, LOCAL_STORAGE_AVAILABLE } from "./misc.ts";
+import { fs, LOCAL_STORAGE_AVAILABLE } from "./misc.ts";
 import { settings } from "./settings.ts";
 
 // Set to false when releasing, set to true when developing
@@ -187,7 +187,7 @@ function saveAndCloseDictionary(): void {
   } else {
     elements!.customDictionary.value +=
       fs`\n# Please fix these errors before saving\n# (You may remove these when fixed)\n${
-        join(errors.map((error) => fs`# - ${error.message.trim()}`), "\n")
+        errors.map((error) => fs`# - ${error.message.trim()}`).join("\n")
       }\n`;
   }
 }

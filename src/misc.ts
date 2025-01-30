@@ -8,10 +8,10 @@ export function nullableAsArray<T>(
   }
 }
 export function repeat(text: string, count: number): string {
-  return join(new Array(count).fill(text));
+  return new Array(count).fill(text).join("");
 }
 export function repeatWithSpace(text: string, count: number): string {
-  return join(new Array(count).fill(text), " ");
+  return new Array(count).fill(text).join(" ");
 }
 // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
 export function shuffle<T>(array: Array<T>): void {
@@ -34,7 +34,7 @@ export function fs(
   strings: TemplateStringsArray,
   ...values: Array<string>
 ): string {
-  return join(strings.map((string, i) => `${string}${values[i] ?? ""}`));
+  return strings.map((string, i) => `${string}${values[i] ?? ""}`).join("");
 }
 export const LOCAL_STORAGE_AVAILABLE = (() => {
   if (typeof localStorage === "undefined") {
@@ -69,10 +69,4 @@ export function escapeHtml(text: string): string {
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll("&", "&amp;");
-}
-export function join(
-  array: Array<string>,
-  separator?: null | undefined | string,
-): string {
-  return array.join(separator ?? "");
 }
