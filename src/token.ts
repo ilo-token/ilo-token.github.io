@@ -1,6 +1,6 @@
 /** Module describing token. */
 
-import { fs, repeat, repeatWithSpace } from "./misc.ts";
+import { fs, join, repeat, repeatWithSpace } from "./misc.ts";
 
 /** Represents token. */
 export type Token =
@@ -43,10 +43,10 @@ export function describe(token: Token): string {
     case "word":
       return fs`"${token.word}"`;
     case "combined glyphs":
-      return fs`combined glyphs "${token.words.join(" ")}"`;
+      return fs`combined glyphs "${join(token.words, " ")}"`;
     case "space long glyph":
     case "headed long glyph start":
-      return fs`long "${token.words.join(" ")}"`;
+      return fs`long "${join(token.words, " ")}"`;
     case "headless long glyph start":
       return "long glyph";
     case "headless long glyph end":

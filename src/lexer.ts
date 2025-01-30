@@ -31,7 +31,7 @@ import {
   START_OF_REVERSE_LONG_GLYPH,
   UCSUR_TO_LATIN,
 } from "./ucsur.ts";
-import { fs } from "./misc.ts";
+import { fs, join } from "./misc.ts";
 import { variable } from "./parser-lib.ts";
 import { settings } from "./settings.ts";
 import { empty } from "./parser-lib.ts";
@@ -126,7 +126,7 @@ function properWords(): Parser<string> {
   return allAtLeastOnce(
     match(/([A-Z][a-zA-Z]*)\s*/, "proper word").map(([_, word]) => word),
   )
-    .map((array) => array.join(" "));
+    .map((array) => join(array, " "));
 }
 /** Parses a specific word, either UCSUR or latin. */
 function specificWord(thatWord: string): Parser<string> {
@@ -205,7 +205,7 @@ function cartoucheElement(): Parser<string> {
         if (morae.length < count) {
           throw new UnrecognizedError("Excess dots");
         }
-        return morae.slice(0, count).join("");
+        return join(morae.slice(0, count));
       }),
     singleUcsurWord().map((word) => word[0]),
     match(/([a-zA-Z]+)\s*/, "Latin letter")
@@ -221,13 +221,13 @@ function cartouche(): Parser<string> {
     specificUcsurCharacter(END_OF_CARTOUCHE, "end of cartouche").skip(spaces()),
   )
     .map(([_, words, _1]) => {
-      const word = words.join("");
+      const word = join(words);
       return word[0].toUpperCase() + word.slice(1);
     });
 }
 /** Parses multiple cartouches. */
 function cartouches(): Parser<string> {
-  return allAtLeastOnce(cartouche()).map((words) => words.join(" "));
+  return allAtLeastOnce(cartouche()).map((words) => join(words, " "));
 }
 /**
  * Parses long glyph container.

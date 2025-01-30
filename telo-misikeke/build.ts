@@ -1,6 +1,6 @@
 /** Build codes for telo misikeke source codes. */
 
-import { fs } from "../src/misc.ts";
+import { fs, join } from "../src/misc.ts";
 
 const SOURCE = [
   {
@@ -31,7 +31,7 @@ async function buildFile(
   let file = await response.text();
 
   // add fs`export`
-  file = file + fs`;export{${exportItems.join(",")}};`;
+  file = file + fs`;export{${join(exportItems, ",")}};`;
 
   //write the code
   await Deno.writeTextFile(destination, file);

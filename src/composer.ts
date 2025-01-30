@@ -7,7 +7,7 @@ import {
   Word,
 } from "./english-ast.ts";
 import { TodoError } from "./error.ts";
-import { fs, nullableAsArray } from "./misc.ts";
+import { fs, join, nullableAsArray } from "./misc.ts";
 import { Output, OutputError } from "./output.ts";
 import { translate as translateToAst } from "./translator.ts";
 
@@ -27,26 +27,31 @@ function compound(
   depth: number,
 ): string {
   if (depth !== 0 || elements.length === 2) {
-    return elements.join(fs` ${conjunction} `);
+    return join(elements, fs` ${conjunction} `);
   } else {
     const lastIndex = elements.length - 1;
     const init = elements.slice(0, lastIndex);
     const last = elements[lastIndex];
-    return fs`${init.join(", ")} ${conjunction} ${last}`;
+    return fs`${join(init, ", ")} ${conjunction} ${last}`;
   }
 }
 function noun(phrases: NounPhrase, depth: number): string {
   switch (phrases.type) {
     case "simple": {
-      const text = [
-        ...phrases.determiner.map((determiner) => word(determiner.determiner)),
-        ...phrases.adjective.map(adjective),
-        word(phrases.noun),
-        ...nullableAsArray(phrases.postCompound).map(noun),
-        ...nullableAsArray(phrases.postAdjective)
-          .map((adjective) => fs`${adjective.adjective} ${adjective.name}`),
-        ...phrases.preposition.map(preposition),
-      ].join(" ");
+      const text = join(
+        [
+          ...phrases.determiner.map((determiner) =>
+            word(determiner.determiner)
+          ),
+          ...phrases.adjective.map(adjective),
+          word(phrases.noun),
+          ...nullableAsArray(phrases.postCompound).map(noun),
+          ...nullableAsArray(phrases.postAdjective)
+            .map((adjective) => fs`${adjective.adjective} ${adjective.name}`),
+          ...phrases.preposition.map(preposition),
+        ],
+        " ",
+      );
       return word({ word: text, emphasis: phrases.emphasis });
     }
     case "compound":
@@ -61,8 +66,7 @@ function adjective(phrases: AdjectivePhrase, depth: number): string {
   let text: string;
   switch (phrases.type) {
     case "simple":
-      text = [...phrases.adverb.map(word), word(phrases.adjective)]
-        .join(" ");
+      text = join([...phrases.adverb.map(word), word(phrases.adjective)], " ");
       break;
     case "compound":
       text = compound(
@@ -93,7 +97,7 @@ function clause(ast: Clause): string {
           text = adjective(verb.adjective, 0);
           break;
       }
-      return [text!, ...verb.preposition.map(preposition)].join(" ");
+      return join([text!, ...verb.preposition.map(preposition)], " ");
     }
     case "subject phrase":
       return noun(ast.subject, 0);
@@ -106,12 +110,12 @@ function clause(ast: Clause): string {
   }
 }
 function sentence(sentence: Sentence): string {
-  return fs`${sentence.clauses.map(clause).join(", ")}${sentence.punctuation}`;
+  return fs`${join(sentence.clauses.map(clause), ", ")}${sentence.punctuation}`;
 }
 export function translate(src: string): Output<string> {
   try {
     return translateToAst(src)
-      .map((sentences) => sentences.map(sentence).join(" "));
+      .map((sentences) => join(sentences.map(sentence), " "));
   } catch (error) {
     if (error instanceof OutputError) {
       return new Output(error);

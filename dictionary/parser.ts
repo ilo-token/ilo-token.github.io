@@ -22,7 +22,7 @@ import {
 } from "../src/parser-lib.ts";
 import { Output, OutputError } from "../src/output.ts";
 import { UnrecognizedError } from "../src/error.ts";
-import { escapeHtml, fs, nullableAsArray, repeat } from "../src/misc.ts";
+import { escapeHtml, fs, join, nullableAsArray, repeat } from "../src/misc.ts";
 
 function space(): Parser<null> {
   return all(
@@ -41,7 +41,7 @@ function word(): Parser<string> {
       match(/#[^\n]*/, "comment").map((_) => ""),
     ),
   )
-    .map((word) => word.join("").replaceAll(/\s+/g, " ").trim())
+    .map((word) => join(word).replaceAll(/\s+/g, " ").trim())
     .filter((word) => word.length > 0)
     .map(escapeHtml);
 }
@@ -122,7 +122,7 @@ function detectRepetition(
     }
   }
   throw new OutputError(
-    fs`${source.join("/")} has no repetition pattern found`,
+    fs`${join(source, "/")} has no repetition pattern found`,
   );
 }
 function nounOnly(): Parser<

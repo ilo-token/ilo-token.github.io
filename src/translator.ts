@@ -2,7 +2,7 @@ import { parse } from "./ast-parser.ts";
 import * as TokiPona from "./ast.ts";
 import * as English from "./english-ast.ts";
 import { TodoError } from "./error.ts";
-import { fs, nullableAsArray, repeat, repeatWithSpace } from "./misc.ts";
+import { fs, join, nullableAsArray, repeat, repeatWithSpace } from "./misc.ts";
 import { Output } from "./output.ts";
 import { settings } from "./settings.ts";
 import * as Dictionary from "../dictionary/type.ts";
@@ -24,7 +24,7 @@ function condense(first: string, second: string): string {
 function condenseVerb(present: string, past: string): string {
   const [first, ...rest] = present.split(" ");
   const second = past.split(" ")[0];
-  return [condense(first, second), ...rest].join(" ");
+  return join([condense(first, second), ...rest], " ");
 }
 function unemphasized(word: string): English.Word {
   return { word, emphasis: false };
@@ -1166,13 +1166,16 @@ function sentence(
 function nounAsPlainString(definition: Dictionary.Noun): Output<string> {
   return simpleNounForms(definition.singular, definition.plural)
     .map((noun) =>
-      [
-        ...definition.determiner.map((determiner) => determiner.determiner),
-        ...definition.adjective.map((adjective) => adjective.adjective),
-        noun,
-        ...nullableAsArray(definition.postAdjective)
-          .map((adjective) => fs`${adjective.adjective} ${adjective.name}`),
-      ].join(" ")
+      join(
+        [
+          ...definition.determiner.map((determiner) => determiner.determiner),
+          ...definition.adjective.map((adjective) => adjective.adjective),
+          noun,
+          ...nullableAsArray(definition.postAdjective)
+            .map((adjective) => fs`${adjective.adjective} ${adjective.name}`),
+        ],
+        " ",
+      )
     );
 }
 function verbAsPlainString(
@@ -1208,15 +1211,16 @@ function definitionAsPlainString(
       ]);
     case "adjective":
       return new Output([
-        fs`${definition.adverb.join(" ")} ${definition.adjective}`,
+        fs`${join(definition.adverb, " ")} ${definition.adjective}`,
       ]);
     case "compound adjective": {
       const { adjective } = definition;
       if (adjective.length === 2) {
         return new Output([
-          adjective
-            .map((adjective) => adjective.adjective)
-            .join(" and "),
+          join(
+            adjective.map((adjective) => adjective.adjective),
+            "and",
+          ),
         ]);
       } else {
         const lastIndex = adjective.length - 1;
@@ -1224,7 +1228,7 @@ function definitionAsPlainString(
         const last = adjective[lastIndex];
         return new Output([
           `${
-            init.map((adjective) => adjective.adjective).join(", ")
+            join(init.map((adjective) => adjective.adjective), ", ")
           }, and ${last.adjective}`,
         ]);
       }
@@ -1250,11 +1254,14 @@ function definitionAsPlainString(
       );
       return Output.combine(verbs, directObject, indirectObject)
         .map(([verb, directObject, indirectObject]) =>
-          [
-            verb,
-            ...directObject,
-            ...indirectObject,
-          ].join(" ")
+          join(
+            [
+              verb,
+              ...directObject,
+              ...indirectObject,
+            ],
+            " ",
+          )
         );
     }
     case "filler":
