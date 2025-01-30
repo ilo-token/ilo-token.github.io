@@ -1,22 +1,23 @@
 /** Build codes for telo misikeke source codes. */
 
 /** */
+const COMMIT_ID = "c61987ed2ff7b4319b20960c596570f016755fb4";
+const TELO_MISIKEKE_URL =
+  `https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/-/raw/${COMMIT_ID}/`;
 const SOURCE = [
   {
-    source:
-      "https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/-/raw/main/public/rules.js?ref_type=heads&inline=false",
+    source: new URL("./public/rules.js", TELO_MISIKEKE_URL),
     destination: new URL("./rules.js", import.meta.url),
     exportItems: ["build_rules", "getMessage", "parseLipuLinku"],
   },
   {
-    source:
-      "https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/-/raw/main/public/Parser.js?ref_type=heads&inline=false",
+    source: new URL("./public/Parser.js", TELO_MISIKEKE_URL),
     destination: new URL("./Parser.js", import.meta.url),
     exportItems: ["ParserWithCallbacks"],
   },
 ];
 async function buildCode(
-  source: string,
+  source: URL,
   destination: URL,
   exportItems: Array<string>,
 ): Promise<void> {
