@@ -20,41 +20,6 @@ async function build(): Promise<void> {
   await Deno.writeTextFile(DESTINATION, withUseStrict);
   console.log("Building done!");
 }
-switch (Deno.args[0]) {
-  case "build": {
-    console.log("Building telo misikeke...");
-    await buildTeloMisikeke();
-    await build();
-    break;
-  }
-  case "watch": {
-    const builder = debounce(async () => {
-      try {
-        await build();
-      } catch (error) {
-        console.error(error);
-      }
-    }, 500);
-    const watcher = Deno.watchFs([
-      "./dictionary/build.ts",
-      "./dictionary/dictionary",
-      "./dictionary/parser.ts",
-      "./dictionary/type.ts",
-      "./src/",
-    ]);
-    try {
-      builder();
-      for await (const _ of watcher) {
-        builder();
-      }
-    } finally {
-      watcher.close();
-    }
-    throw new Error("unreachable");
-  }
-  default:
-    throw new Error(`unrecognized build option: ${Deno.args[0]}`);
-}
 function debounce(callback: () => Promise<void>, delay: number): () => void {
   let previous = { aborted: true };
   let current = Promise.resolve();
@@ -69,4 +34,41 @@ function debounce(callback: () => Promise<void>, delay: number): () => void {
     }, delay);
     previous = newPrevious;
   };
+}
+if (import.meta.main) {
+  switch (Deno.args[0]) {
+    case "build": {
+      console.log("Building telo misikeke...");
+      await buildTeloMisikeke();
+      await build();
+      break;
+    }
+    case "watch": {
+      const builder = debounce(async () => {
+        try {
+          await build();
+        } catch (error) {
+          console.error(error);
+        }
+      }, 500);
+      const watcher = Deno.watchFs([
+        "./dictionary/build.ts",
+        "./dictionary/dictionary",
+        "./dictionary/parser.ts",
+        "./dictionary/type.ts",
+        "./src/",
+      ]);
+      try {
+        builder();
+        for await (const _ of watcher) {
+          builder();
+        }
+      } finally {
+        watcher.close();
+      }
+      throw new Error("unreachable");
+    }
+    default:
+      throw new Error(`unrecognized build option: ${Deno.args[0]}`);
+  }
 }
