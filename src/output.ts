@@ -145,15 +145,15 @@ export class Output<T> {
   }
   deduplicateErrors(): Output<T> {
     if (this.isError()) {
-      const errors: Array<OutputError> = [];
       const messages: Set<string> = new Set();
-      for (const error of this.errors) {
-        if (!messages.has(error.message)) {
-          errors.push(error);
+      return Output.newErrors(this.errors.filter((error) => {
+        if (messages.has(error.message)) {
+          return false;
+        } else {
           messages.add(error.message);
+          return true;
         }
-      }
-      return Output.newErrors(errors);
+      }));
     } else {
       return new Output(this.output);
     }
