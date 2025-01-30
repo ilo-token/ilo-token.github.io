@@ -3,7 +3,6 @@
 import {
   Clause,
   Emphasis,
-  everyModifierInPhrase,
   everyObjectInMultiplePredicates,
   everyPhraseInMultiplePhrases,
   everyWordUnitInPhrase,
