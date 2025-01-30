@@ -2,11 +2,14 @@
 
 import { ParserWithCallbacks } from "./Parser.js";
 import { build_rules, getMessage } from "./rules.js";
-import { DATA } from "./linku-data.js";
+import LINKU from "https://api.linku.la/v1/words" with { type: "json" };
 import { escapeHtml } from "../src/misc.ts";
 
-const RULES = build_rules(DATA);
+const RULES = build_rules(parseLipuLinku(LINKU));
 
+function parseLipuLinku(data) {
+  return Object.keys(data).map((word) => [word, data[word].usage_category]);
+}
 /** Gets all telo misikeke error messages. */
 export function errors(text) {
   return new ParserWithCallbacks(RULES, false)

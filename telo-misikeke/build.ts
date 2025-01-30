@@ -15,7 +15,7 @@ const SOURCE = [
     exportItems: ["ParserWithCallbacks"],
   },
 ];
-async function buildFile(
+async function buildCode(
   source: string,
   destination: URL,
   exportItems: Array<string>,
@@ -39,7 +39,7 @@ export async function buildTeloMisikeke(): Promise<void> {
   await Promise.all(
     SOURCE
       .map((file) =>
-        buildFile(file.source, file.destination, file.exportItems)
+        buildCode(file.source, file.destination, file.exportItems)
       ),
   );
 }

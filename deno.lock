@@ -73,6 +73,9 @@
       "integrity": "sha512-I5PWXAFKx3FYnI9a+dQMWNqTxoRt6vdBdb0O+BJ1sxXCWtSoQCusc13E58f+9p4MYx/qCnEMkD5jac6K2j3dgA=="
     }
   },
+  "remote": {
+    "https://api.linku.la/v1/words": "3d2ecacf90c32f3afa81871211556e5956163efea8c456889c0cb4c9e398bda7"
+  },
   "workspace": {
     "dependencies": [
       "jsr:@deno/emit@0.46.0",
