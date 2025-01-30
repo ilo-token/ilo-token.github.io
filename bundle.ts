@@ -1,6 +1,5 @@
 import { bundle, BundleOptions } from "@deno/emit";
 import { buildTeloMisikeke } from "./telo-misikeke/build.ts";
-import { fs } from "./src/misc.ts";
 import { buildDictionary } from "./dictionary/build.ts";
 
 const SOURCE = new URL("./src/main.ts", import.meta.url);
@@ -54,7 +53,7 @@ switch (Deno.args[0]) {
     throw new Error("unreachable");
   }
   default:
-    throw new Error(fs`unrecognized build option: ${Deno.args[0]}`);
+    throw new Error(`unrecognized build option: ${Deno.args[0]}`);
 }
 function debounce(callback: () => Promise<void>, delay: number): () => void {
   let previous = { aborted: true };

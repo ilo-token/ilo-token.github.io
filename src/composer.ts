@@ -7,7 +7,7 @@ import {
   Word,
 } from "./english-ast.ts";
 import { TodoError } from "./error.ts";
-import { fs, nullableAsArray } from "./misc.ts";
+import { nullableAsArray } from "./misc.ts";
 import { Output, OutputError } from "./output.ts";
 import { translate as translateToAst } from "./translator.ts";
 
@@ -16,7 +16,7 @@ const emphasisEndingTag = "</b>";
 
 function word(word: Word): string {
   if (word.emphasis) {
-    return fs`${emphasisStartingTag}${word.word}${emphasisEndingTag}`;
+    return `${emphasisStartingTag}${word.word}${emphasisEndingTag}`;
   } else {
     return word.word;
   }
@@ -27,12 +27,12 @@ function compound(
   depth: number,
 ): string {
   if (depth !== 0 || elements.length === 2) {
-    return elements.join(fs` ${conjunction} `);
+    return elements.join(` ${conjunction} `);
   } else {
     const lastIndex = elements.length - 1;
     const init = elements.slice(0, lastIndex);
     const last = elements[lastIndex];
-    return fs`${init.join(", ")} ${conjunction} ${last}`;
+    return `${init.join(", ")} ${conjunction} ${last}`;
   }
 }
 function noun(phrases: NounPhrase, depth: number): string {
@@ -44,7 +44,7 @@ function noun(phrases: NounPhrase, depth: number): string {
         word(phrases.noun),
         ...nullableAsArray(phrases.postCompound).map(noun),
         ...nullableAsArray(phrases.postAdjective)
-          .map((adjective) => fs`${adjective.adjective} ${adjective.name}`),
+          .map((adjective) => `${adjective.adjective} ${adjective.name}`),
         ...phrases.preposition.map(preposition),
       ].join(" ");
       return word({ word: text, emphasis: phrases.emphasis });
@@ -74,7 +74,7 @@ function adjective(phrases: AdjectivePhrase, depth: number): string {
   return word({ word: text, emphasis: phrases.emphasis });
 }
 function preposition(preposition: Preposition): string {
-  return fs`${word(preposition.preposition)} ${noun(preposition.object, 0)}`;
+  return `${word(preposition.preposition)} ${noun(preposition.object, 0)}`;
 }
 function clause(ast: Clause): string {
   switch (ast.type) {
@@ -98,15 +98,15 @@ function clause(ast: Clause): string {
     case "subject phrase":
       return noun(ast.subject, 0);
     case "vocative":
-      return fs`${ast.call} ${noun(ast.addressee, 0)}`;
+      return `${ast.call} ${noun(ast.addressee, 0)}`;
     case "dependent":
-      return fs`${word(ast.conjunction)} ${clause(ast.clause)}`;
+      return `${word(ast.conjunction)} ${clause(ast.clause)}`;
     default:
-      throw new TodoError(fs`composing ${ast.type}`);
+      throw new TodoError(`composing ${ast.type}`);
   }
 }
 function sentence(sentence: Sentence): string {
-  return fs`${sentence.clauses.map(clause).join(", ")}${sentence.punctuation}`;
+  return `${sentence.clauses.map(clause).join(", ")}${sentence.punctuation}`;
 }
 export function translate(src: string): Output<string> {
   try {

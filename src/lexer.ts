@@ -31,7 +31,6 @@ import {
   START_OF_REVERSE_LONG_GLYPH,
   UCSUR_TO_LATIN,
 } from "./ucsur.ts";
-import { fs } from "./misc.ts";
 import { variable } from "./parser-lib.ts";
 import { settings } from "./settings.ts";
 import { empty } from "./parser-lib.ts";
@@ -44,7 +43,7 @@ export function spaces(): Parser<string> {
 function latinWord(): Parser<string> {
   return match(/([a-z][a-zA-Z]*)\s*/, "word").map(([_, word]) => {
     if (/[A-Z]/.test(word)) {
-      throw new UnrecognizedError(fs`"${word}"`);
+      throw new UnrecognizedError(`"${word}"`);
     } else {
       return word;
     }
@@ -74,7 +73,7 @@ function specificUcsurCharacter(
     if (word === character) {
       return true;
     } else {
-      throw new UnexpectedError(fs`"${word}"`, description);
+      throw new UnexpectedError(`"${word}"`, description);
     }
   });
 }
@@ -86,7 +85,7 @@ function ucsurWord(): Parser<string> {
   return ucsur().map((word) => {
     const latin = UCSUR_TO_LATIN[word];
     if (latin == null) {
-      throw new UnexpectedError(fs`"${word}"`, "UCSUR glyph");
+      throw new UnexpectedError(`"${word}"`, "UCSUR glyph");
     } else {
       return latin;
     }
@@ -132,7 +131,7 @@ function properWords(): Parser<string> {
 function specificWord(thatWord: string): Parser<string> {
   return word().filter((thisWord) => {
     if (thatWord === thisWord) return true;
-    else throw new UnexpectedError(fs`"${thisWord}"`, fs`"${thatWord}"`);
+    else throw new UnexpectedError(`"${thisWord}"`, `"${thatWord}"`);
   });
 }
 /** Parses multiple a. */

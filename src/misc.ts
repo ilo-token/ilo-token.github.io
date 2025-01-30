@@ -30,12 +30,6 @@ export function shuffle<T>(array: Array<T>): void {
     ];
   }
 }
-export function fs(
-  strings: TemplateStringsArray,
-  ...values: Array<string>
-): string {
-  return strings.map((string, i) => `${string}${values[i] ?? ""}`).join("");
-}
 export const LOCAL_STORAGE_AVAILABLE = (() => {
   if (typeof localStorage === "undefined") {
     return false;

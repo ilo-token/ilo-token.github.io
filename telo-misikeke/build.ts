@@ -1,7 +1,6 @@
 /** Build codes for telo misikeke source codes. */
 
-import { fs } from "../src/misc.ts";
-
+/** */
 const SOURCE = [
   {
     source:
@@ -25,13 +24,13 @@ async function buildFile(
   const response = await fetch(source);
   if (!response.ok) {
     throw new Error(
-      fs`unable to fetch ${source} (${`${response.status}`} ${response.statusText})`,
+      `unable to fetch ${source} (${response.status} ${response.statusText})`,
     );
   }
   let file = await response.text();
 
-  // add fs`export`
-  file = file + fs`;export{${exportItems.join(",")}};`;
+  // add `export`
+  file = file + `;export{${exportItems.join(",")}};`;
 
   //write the code
   await Deno.writeTextFile(destination, file);

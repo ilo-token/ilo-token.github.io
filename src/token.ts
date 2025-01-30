@@ -1,6 +1,6 @@
 /** Module describing token. */
 
-import { fs, repeat, repeatWithSpace } from "./misc.ts";
+import { repeat, repeatWithSpace } from "./misc.ts";
 
 /** Represents token. */
 export type Token =
@@ -41,12 +41,12 @@ export type Token =
 export function describe(token: Token): string {
   switch (token.type) {
     case "word":
-      return fs`"${token.word}"`;
+      return `"${token.word}"`;
     case "combined glyphs":
-      return fs`combined glyphs "${token.words.join(" ")}"`;
+      return `combined glyphs "${token.words.join(" ")}"`;
     case "space long glyph":
     case "headed long glyph start":
-      return fs`long "${token.words.join(" ")}"`;
+      return `long "${token.words.join(" ")}"`;
     case "headless long glyph start":
       return "long glyph";
     case "headless long glyph end":
@@ -54,21 +54,21 @@ export function describe(token: Token): string {
     case "inside long glyph":
       return "end of long glyph";
     case "multiple a":
-      return fs`"${repeatWithSpace("a", token.count)}"`;
+      return `"${repeatWithSpace("a", token.count)}"`;
     case "long word":
-      return fs`"${repeat(token.word, token.length)}"`;
+      return `"${repeat(token.word, token.length)}"`;
     case "x ala x":
-      return fs`"${token.word} ala ${token.word}"`;
+      return `"${token.word} ala ${token.word}"`;
     case "proper word":
       switch (token.kind) {
         case "cartouche":
           return "cartouche";
         case "latin":
-          return fs`proper word "${token.words}"`;
+          return `proper word "${token.words}"`;
       }
       // this is unreachable
       // fallthrough
     case "punctuation":
-      return fs`punctuation mark "${token.punctuation}"`;
+      return `punctuation mark "${token.punctuation}"`;
   }
 }

@@ -3,7 +3,7 @@
 import { OutputError, translate } from "./mod.ts";
 import { dictionary } from "../dictionary/dictionary.ts";
 import { loadCustomDictionary } from "./dictionary.ts";
-import { fs, LOCAL_STORAGE_AVAILABLE } from "./misc.ts";
+import { LOCAL_STORAGE_AVAILABLE } from "./misc.ts";
 import { settings } from "./settings.ts";
 
 // Set to false when releasing, set to true when developing
@@ -85,12 +85,12 @@ function loadElements(): void {
 }
 function setVersion(): void {
   if (DEVELOPMENT) {
-    elements!.version.innerText = fs`${VERSION} (On development)`;
+    elements!.version.innerText = `${VERSION} (On development)`;
   } else {
     const date = DATE_RELEASED.toLocaleDateString(undefined, {
       dateStyle: "short",
     });
-    elements!.version.innerText = fs`${VERSION} - Released ${date}`;
+    elements!.version.innerText = `${VERSION} - Released ${date}`;
   }
 }
 function clearOutput(): void {
@@ -154,9 +154,9 @@ function addWord(): void {
   let add: string;
   if (/^[a-z][a-zA-Z]*$/.test(word)) {
     if (Object.hasOwn(dictionary, word)) {
-      add = fs`\n${word}:\n  ${dictionary[word].src.trim()}\n`;
+      add = `\n${word}:\n  ${dictionary[word].src.trim()}\n`;
     } else {
-      add = fs`\n${word}:\n  # Definitions here\n`;
+      add = `\n${word}:\n  # Definitions here\n`;
     }
   } else {
     add = "\n# Error: Invalid word to add (You may remove this line)\n";
@@ -165,9 +165,7 @@ function addWord(): void {
 }
 function resizeTextarea(): void {
   elements!.input.style.height = "auto";
-  elements!.input.style.height = fs`${`${
-    elements!.input.scrollHeight + 14
-  }`}px`;
+  elements!.input.style.height = `${`${elements!.input.scrollHeight + 14}`}px`;
 }
 function openDictionary(): void {
   elements!.customDictionaryBox.showModal();
@@ -186,8 +184,8 @@ function saveAndCloseDictionary(): void {
     elements!.customDictionaryBox.close();
   } else {
     elements!.customDictionary.value +=
-      fs`\n# Please fix these errors before saving\n# (You may remove these when fixed)\n${
-        errors.map((error) => fs`# - ${error.message.trim()}`).join("\n")
+      `\n# Please fix these errors before saving\n# (You may remove these when fixed)\n${
+        errors.map((error) => `# - ${error.message.trim()}`).join("\n")
       }\n`;
   }
 }

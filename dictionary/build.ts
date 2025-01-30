@@ -1,4 +1,3 @@
-import { fs } from "../src/misc.ts";
 import { parseDictionary } from "./parser.ts";
 
 const SOURCE = new URL("./dictionary", import.meta.url);
@@ -12,7 +11,7 @@ export async function buildDictionary(): Promise<void> {
   }
   await Deno.writeTextFile(
     DESTINATION,
-    fs`import{Dictionary}from"./type.ts";export const dictionary:Dictionary=${
+    `import{Dictionary}from"./type.ts";export const dictionary:Dictionary=${
       JSON.stringify(dictionary.output[0])
     }`,
   );

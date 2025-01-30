@@ -4,7 +4,6 @@
  */
 
 import { UnexpectedError } from "./error.ts";
-import { fs } from "./misc.ts";
 import { Output, OutputError } from "./output.ts";
 
 /** A single parsing result. */
@@ -138,7 +137,7 @@ export function choiceOnlyOne<T>(
       }
     }), empty());
 }
-/** Combines `parser` and the `nothing` parser, and output fs`null | T`. */
+/** Combines `parser` and the `nothing` parser, and output `null | T`. */
 export function optional<T>(parser: Parser<T>): Parser<null | T> {
   return choice(parser, nothing());
 }
@@ -188,7 +187,7 @@ export function manyAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
     .map(([first, rest]) => [first, ...rest]);
 }
 /**
- * Parses `parser` multiple times and returns an fs`Array<T>`. This function is
+ * Parses `parser` multiple times and returns an `Array<T>`. This function is
  * exhaustive unlike `many`.
  *
  * ## ⚠️ Warning
@@ -225,7 +224,7 @@ function describeSrc(src: string, expected: string): OutputError {
     if (token === "") {
       tokenDescription = "space";
     } else {
-      tokenDescription = fs`"${token}"`;
+      tokenDescription = `"${token}"`;
     }
     return new UnexpectedError(tokenDescription, expected);
   }
@@ -238,7 +237,7 @@ export function match(
   regex: RegExp,
   description: string,
 ): Parser<RegExpMatchArray> {
-  const newRegex = new RegExp(fs`^${regex.source}`, regex.flags);
+  const newRegex = new RegExp(`^${regex.source}`, regex.flags);
   return new Parser((src) => {
     const match = src.match(newRegex);
     if (match != null) {
@@ -266,11 +265,11 @@ export function matchString(
   match: string,
   description?: null | undefined | string,
 ): Parser<string> {
-  return slice(match.length, fs`"${match}"`).map((slice) => {
+  return slice(match.length, `"${match}"`).map((slice) => {
     if (slice === match) {
       return match;
     } else {
-      throw new UnexpectedError(fs`"${slice}"`, description ?? fs`"${match}"`);
+      throw new UnexpectedError(`"${slice}"`, description ?? `"${match}"`);
     }
   });
 }

@@ -22,7 +22,7 @@ import {
 } from "../src/parser-lib.ts";
 import { Output, OutputError } from "../src/output.ts";
 import { UnrecognizedError } from "../src/error.ts";
-import { escapeHtml, fs, nullableAsArray, repeat } from "../src/misc.ts";
+import { escapeHtml, nullableAsArray, repeat } from "../src/misc.ts";
 
 function space(): Parser<null> {
   return all(
@@ -91,7 +91,7 @@ function conjugate(verb: string): {
     FutureTense: string;
   };
   if (conjugations == null) {
-    throw new OutputError(fs`no verb conjugation found for ${verb}`);
+    throw new OutputError(`no verb conjugation found for ${verb}`);
   }
   return {
     presentSingular: conjugations.PresentTense,
@@ -115,14 +115,14 @@ function detectRepetition(
     const after = first.slice(i + 1);
     const passed = [...rest.entries()]
       .every(([i, test]) =>
-        test === fs`${before}${repeat(repeatString, i + 2)}${after}`
+        test === `${before}${repeat(repeatString, i + 2)}${after}`
       );
     if (passed) {
       return { before, repeat: repeatString, after };
     }
   }
   throw new OutputError(
-    fs`${source.join("/")} has no repetition pattern found`,
+    `${source.join("/")} has no repetition pattern found`,
   );
 }
 function nounOnly(): Parser<
@@ -154,7 +154,7 @@ function nounOnly(): Parser<
               .text();
             if (singular === "" || plural === "") {
               throw new OutputError(
-                fs`no singular or plural form found for ${first}`,
+                `no singular or plural form found for ${first}`,
               );
             }
           } else {
@@ -470,7 +470,7 @@ export function parseDictionary(sourceText: string): Output<Dictionary> {
         definitions.output[0]
           .flatMap((definition) =>
             insideDefinitionParser.parse(definition).errors.map((error) =>
-              new OutputError(fs`${error.message} at ${definition.trim()}`)
+              new OutputError(`${error.message} at ${definition.trim()}`)
             )
           ),
       );
