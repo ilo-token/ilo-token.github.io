@@ -6,7 +6,7 @@ const SOURCE = [
     source:
       "https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/-/raw/main/public/rules.js?ref_type=heads&inline=false",
     destination: new URL("./rules.js", import.meta.url),
-    exportItems: ["build_rules", "getMessage"],
+    exportItems: ["build_rules", "getMessage", "parseLipuLinku"],
   },
   {
     source:
