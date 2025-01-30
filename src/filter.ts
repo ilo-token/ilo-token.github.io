@@ -117,27 +117,27 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
     }
     return true;
   },
-  // pi cannot be nested
-  (modifier) => {
-    const checker = (modifier: Modifier) => {
-      switch (modifier.type) {
-        case "default":
-        case "proper words":
-        case "quotation":
-          return false;
-        case "nanpa":
-          return everyModifierInPhrase(modifier.phrase).some(checker);
-        case "pi":
-          return true;
-      }
-    };
-    if (modifier.type === "pi") {
-      if (everyModifierInPhrase(modifier.phrase).some(checker)) {
-        throw new UnrecognizedError("pi inside pi");
-      }
-    }
-    return true;
-  },
+  // // pi cannot be nested
+  // (modifier) => {
+  //   const checker = (modifier: Modifier) => {
+  //     switch (modifier.type) {
+  //       case "default":
+  //       case "proper words":
+  //       case "quotation":
+  //         return false;
+  //       case "nanpa":
+  //         return everyModifierInPhrase(modifier.phrase).some(checker);
+  //       case "pi":
+  //         return true;
+  //     }
+  //   };
+  //   if (modifier.type === "pi") {
+  //     if (everyModifierInPhrase(modifier.phrase).some(checker)) {
+  //       throw new UnrecognizedError("pi inside pi");
+  //     }
+  //   }
+  //   return true;
+  // },
   // pi cannot have emphasis particle
   (modifier) => {
     if (modifier.type === "pi") {
@@ -177,13 +177,13 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
 export const MULTIPLE_MODIFIERS_RULES: Array<
   (modifier: Array<Modifier>) => boolean
 > = [
-  // no multiple pi
-  (modifiers) => {
-    if (modifiers.filter((modifier) => modifier.type === "pi").length > 1) {
-      throw new UnrecognizedError("multiple pi");
-    }
-    return true;
-  },
+  // // no multiple pi
+  // (modifiers) => {
+  //   if (modifiers.filter((modifier) => modifier.type === "pi").length > 1) {
+  //     throw new UnrecognizedError("multiple pi");
+  //   }
+  //   return true;
+  // },
   // no multiple nanpa
   (modifiers) => {
     if (modifiers.filter((modifier) => modifier.type === "nanpa").length > 1) {
