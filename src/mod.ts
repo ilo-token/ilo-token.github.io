@@ -26,7 +26,7 @@ export function translate(
   if (settings != null) {
     globalSettings.setUnsavedAll(settings);
   }
-  const output = rawTranslate(tokiPona).uniqueErrors();
+  const output = rawTranslate(tokiPona).deduplicateErrors();
   if (!output.isError()) {
     const values = [...new Set(output.output)];
     if (globalSettings.get("randomize")) {

@@ -143,7 +143,7 @@ export class Output<T> {
   sortBy(mapper: (value: T) => number): Output<T> {
     return this.sort((left, right) => mapper(left) - mapper(right));
   }
-  uniqueErrors(): Output<T> {
+  deduplicateErrors(): Output<T> {
     if (this.isError()) {
       const errors: Array<OutputError> = [];
       const messages: Set<string> = new Set();
