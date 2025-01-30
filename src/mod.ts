@@ -9,7 +9,13 @@ import {
 import { loadCustomDictionary } from "./dictionary.ts";
 
 export { OutputError };
+export type { RedundancySettings } from "./settings.ts";
 
+/**
+ * Interface for configuring translation. See
+ * https://github.com/ilo-token/ilo-token.github.io/wiki/Settings-Help for more
+ * info.
+ */
 export type Settings = Partial<RawSettings>;
 
 /** Translates Toki Pona text into multiple English translations. */

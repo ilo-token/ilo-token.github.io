@@ -2,7 +2,7 @@
 
 /** Represents Error used by Output. */
 export class OutputError extends Error {
-  /** Describes whether the error message contains HTML. */
+  /** Determines whether the error message contains HTML. */
   htmlMessage = false;
   constructor(message: string) {
     super(message);
