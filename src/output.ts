@@ -146,11 +146,11 @@ export class Output<T> {
   uniqueErrors(): Output<T> {
     if (this.isError()) {
       const errors: Array<OutputError> = [];
-      const messages: { [message: string]: undefined | boolean } = {};
+      const messages: Set<string> = new Set();
       for (const error of this.errors) {
-        if (!messages[error.message]) {
+        if (!messages.has(error.message)) {
           errors.push(error);
-          messages[error.message] = true;
+          messages.add(error.message);
         }
       }
       return Output.newErrors(errors);
