@@ -1,14 +1,23 @@
 /** Build codes for telo misikeke source codes. */
 
-/** */
-const COMMIT_ID = "c61987ed2ff7b4319b20960c596570f016755fb4";
+import PROJECT_DATA from "../project-data.json" with { type: "json" };
+
 const TELO_MISIKEKE_URL =
-  `https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/-/raw/${COMMIT_ID}/`;
+  `https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/-/raw/${PROJECT_DATA.commitId.teloMisikeke}/`;
+const LINKU_URL =
+  `https://raw.githubusercontent.com/lipu-linku/sona/${PROJECT_DATA.commitId.sonaLinku}/api/raw/words.json`;
+const LINKU_DEST = new URL("./linku-data.json", import.meta.url);
 const SOURCE = [
   {
     source: new URL("./public/rules.js", TELO_MISIKEKE_URL),
     destination: new URL("./rules.js", import.meta.url),
-    exportItems: ["build_rules", "getMessage", "parseLipuLinku"],
+    exportItems: [
+      "getCategory",
+      "getMessage",
+      "rulesByCategory",
+      "parseLipuLinku",
+      "build_rules",
+    ],
   },
   {
     source: new URL("./public/Parser.js", TELO_MISIKEKE_URL),
@@ -36,11 +45,28 @@ async function buildCode(
   //write the code
   await Deno.writeTextFile(destination, file);
 }
+async function buildSonaLinku(): Promise<void> {
+  const response = await fetch(LINKU_URL);
+  if (!response.ok) {
+    throw new Error(
+      `unable to fetch ${LINKU_URL} (${response.status} ${response.statusText})`,
+    );
+  }
+  const json = await response.json();
+  const processedJson = parseLipuLinku(json);
+  await Deno.writeTextFile(LINKU_DEST, JSON.stringify(processedJson));
+}
+function parseLipuLinku(data: any): any {
+  return Object.keys(data).map((word) => [word, data[word].usage_category]);
+}
 export async function buildTeloMisikeke(): Promise<void> {
   await Promise.all(
-    SOURCE
-      .map((file) =>
-        buildCode(file.source, file.destination, file.exportItems)
-      ),
+    [
+      buildSonaLinku(),
+      ...SOURCE
+        .map((file) =>
+          buildCode(file.source, file.destination, file.exportItems)
+        ),
+    ],
   );
 }

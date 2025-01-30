@@ -3,3 +3,4 @@ dictionary/dictionary.ts
 dist/main.js
 telo-misikeke/rules.js
 telo-misikeke/Parser.js
+telo-misikeke/linku-data.json

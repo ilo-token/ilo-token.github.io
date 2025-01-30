@@ -1,11 +1,11 @@
 /** Glue code for telo misikeke */
 
 import { ParserWithCallbacks } from "./Parser.js";
-import { build_rules, getMessage, parseLipuLinku } from "./rules.js";
-import LINKU from "sona-linku/words.json" with { type: "json" };
+import { build_rules, getMessage } from "./rules.js";
+import LINKU from "./linku-data.json" with { type: "json" };
 import { escapeHtml } from "../src/misc.ts";
 
-const RULES = build_rules(parseLipuLinku(LINKU));
+const RULES = build_rules(LINKU);
 
 /** Gets all telo misikeke error messages. */
 export function errors(text) {

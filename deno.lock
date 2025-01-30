@@ -73,9 +73,6 @@
       "integrity": "sha512-I5PWXAFKx3FYnI9a+dQMWNqTxoRt6vdBdb0O+BJ1sxXCWtSoQCusc13E58f+9p4MYx/qCnEMkD5jac6K2j3dgA=="
     }
   },
-  "remote": {
-    "https://raw.githubusercontent.com/lipu-linku/sona/03410a67eb416199562c3aa7f8ba26010efcee56/api/raw/words.json": "6c97597d0b1dc84ff36c25b92d583777a5097bc15ce156bc1238007f3d914198"
-  },
   "workspace": {
     "dependencies": [
       "jsr:@deno/emit@0.46.0",
