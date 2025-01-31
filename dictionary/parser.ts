@@ -8,6 +8,7 @@ import {
   Dictionary,
   Entry,
   Noun,
+  VerbOnly,
 } from "./type.ts";
 import {
   all,
@@ -75,29 +76,6 @@ function template<T>(parser: Parser<T>): Parser<T> {
 }
 function simpleUnit(kind: string): Parser<string> {
   return word().skip(tag(keyword(kind)));
-}
-function conjugate(verb: string): {
-  presentSingular: string;
-  presentPlural: string;
-  past: string;
-} {
-  const sentence = nlp(verb);
-  sentence.tag("Verb");
-  const conjugations = sentence.verbs().conjugate()[0] as undefined | {
-    Infinitive: string;
-    PastTense: string;
-    PresentTense: string;
-    Gerund: string;
-    FutureTense: string;
-  };
-  if (conjugations == null) {
-    throw new OutputError(`no verb conjugation found for ${verb}`);
-  }
-  return {
-    presentSingular: conjugations.PresentTense,
-    presentPlural: conjugations.Infinitive,
-    past: conjugations.PastTense,
-  };
 }
 function detectRepetition(
   source: Array<string>,
@@ -233,6 +211,39 @@ function adjectiveKind(): Parser<AdjectiveType> {
     keyword("qualifier"),
   );
 }
+function verbOnly(): Parser<VerbOnly> {
+  return choiceOnlyOne(
+    sequence(
+      word().skip(slash()),
+      word().skip(slash()),
+      word(),
+    )
+      .map(([presentPlural, presentSingular, past]) => ({
+        presentPlural,
+        presentSingular,
+        past,
+      })),
+    word().map((verb) => {
+      const sentence = nlp(verb);
+      sentence.tag("Verb");
+      const conjugations = sentence.verbs().conjugate()[0] as undefined | {
+        Infinitive: string;
+        PastTense: string;
+        PresentTense: string;
+        Gerund: string;
+        FutureTense: string;
+      };
+      if (conjugations == null) {
+        throw new OutputError(`no verb conjugation found for ${verb}`);
+      }
+      return {
+        presentPlural: conjugations.Infinitive,
+        presentSingular: conjugations.PresentTense,
+        past: conjugations.PastTense,
+      };
+    }),
+  );
+}
 function determiner(): Parser<Determiner> {
   return sequence(
     word(),
@@ -277,7 +288,7 @@ function definition(): Parser<Definition> {
       .skip(semicolon())
       .map((noun) => ({ type: "noun", ...noun }) as Definition),
     sequence(
-      simpleUnit("v"),
+      verbOnly().skip(tag(keyword("v"))),
       optionalAll(template(keyword("object"))),
       optionalAll(
         sequence(simpleUnit("prep"), noun())
@@ -289,14 +300,14 @@ function definition(): Parser<Definition> {
       .map(([verb, forObject, indirectObject]) =>
         ({
           type: "verb",
-          ...conjugate(verb),
+          ...verb,
           directObject: null,
           indirectObject,
           forObject: forObject != null,
         }) as Definition
       ),
     sequence(
-      simpleUnit("v"),
+      verbOnly().skip(tag(keyword("v"))),
       optionalAll(noun()),
       optionalAll(simpleUnit("prep").skip(template(keyword("object")))),
     )
@@ -304,7 +315,7 @@ function definition(): Parser<Definition> {
       .map(([verb, directObject, preposition]) =>
         ({
           type: "verb",
-          ...conjugate(verb),
+          ...verb,
           directObject,
           indirectObject: [],
           forObject: preposition ?? false,
@@ -344,13 +355,16 @@ function definition(): Parser<Definition> {
           return { type: "numeral", numeral } as Definition;
         }
       }),
-    sequence(simpleUnit("v"), optionalAll(simpleUnit("particle")))
+    sequence(
+      verbOnly().skip(tag(keyword("v"))),
+      optionalAll(simpleUnit("particle")),
+    )
       .skip(template(sequence(keyword("predicate"), keyword("v"))))
       .skip(semicolon())
       .map(([verb, particle]) =>
         ({
           type: "preverb as finite verb",
-          ...conjugate(verb),
+          ...verb,
           particle,
         }) as Definition
       ),
@@ -402,13 +416,13 @@ function definition(): Parser<Definition> {
           verb,
         }) as Definition
       ),
-    word()
+    verbOnly()
       .skip(tag(sequence(keyword("v"), keyword("linking"))))
       .skip(template(keyword("predicate")))
       .skip(semicolon()).map((linkingVerb) =>
         ({
           type: "preverb as linking verb",
-          ...conjugate(linkingVerb),
+          ...linkingVerb,
         }) as Definition
       ),
     forms().skip(tag(keyword("f")))

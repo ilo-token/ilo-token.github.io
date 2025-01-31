@@ -39,6 +39,11 @@ export type Adjective = {
   adjective: string;
   kind: AdjectiveType;
 };
+export type VerbOnly = {
+  presentPlural: string;
+  presentSingular: string;
+  past: string;
+};
 export type Definition =
   | { type: "filler"; before: string; repeat: string; after: string }
   | { type: "particle definition"; definition: string }
@@ -58,31 +63,20 @@ export type Definition =
   | ({ type: "adjective" } & Adjective)
   | { type: "compound adjective"; adjective: Array<Adjective> }
   | { type: "adverb"; adverb: string }
-  | {
-    type: "verb";
-    presentSingular: string;
-    presentPlural: string;
-    past: string;
-    directObject: null | Noun;
-    indirectObject: Array<{
-      preposition: string;
-      object: Noun;
-    }>;
-    forObject: boolean | string;
-  }
-  | {
-    type: "preverb as linking verb";
-    presentSingular: string;
-    presentPlural: string;
-    past: string;
-  }
-  | {
-    type: "preverb as finite verb";
-    presentSingular: string;
-    presentPlural: string;
-    past: string;
-    particle: null | string;
-  }
+  | (
+    & {
+      type: "verb";
+      directObject: null | Noun;
+      indirectObject: Array<{
+        preposition: string;
+        object: Noun;
+      }>;
+      forObject: boolean | string;
+    }
+    & VerbOnly
+  )
+  | ({ type: "preverb as linking verb" } & VerbOnly)
+  | ({ type: "preverb as finite verb"; particle: null | string } & VerbOnly)
   | {
     type: "preverb as modal verb";
     verb: string;
