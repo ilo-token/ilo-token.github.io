@@ -1,7 +1,7 @@
 import { parseDictionary } from "../dictionary/parser.ts";
 import { Dictionary } from "../dictionary/type.ts";
 import { OutputError } from "./output.ts";
-import { dictionary as defaultDictionary } from "../dictionary/dictionary.ts";
+import { dictionary as globalDictionary } from "../dictionary/dictionary.ts";
 
 let customDictionary: Dictionary = {};
 let dictionary: Dictionary = {};
@@ -45,11 +45,11 @@ function update(): void {
   dictionary = {};
   for (
     const word of new Set([
-      ...Object.keys(defaultDictionary),
+      ...Object.keys(globalDictionary),
       ...Object.keys(customDictionary),
     ])
   ) {
-    const entry = customDictionary[word] ?? defaultDictionary[word];
+    const entry = customDictionary[word] ?? globalDictionary[word];
     if (entry.definitions.length > 0) {
       dictionary[word] = entry;
     }
