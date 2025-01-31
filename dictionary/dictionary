@@ -148,7 +148,7 @@ esun:
   # exchanging(n gerund);
   swapping(n gerund);
   buying(n gerund);
-  sell(n gerund);
+  selling(n gerund);
 
   # trading(adj qualifier);
   # bartering(adj qualifier);
