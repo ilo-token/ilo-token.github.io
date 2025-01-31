@@ -32,7 +32,7 @@ ala:
 
 alasa:
   # hunt(v) [object];
-  search(v) [object];
+  search(v) for(prep) [object];
 
   try(v) to(particle) [predicate];
 
