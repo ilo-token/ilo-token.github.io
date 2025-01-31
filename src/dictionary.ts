@@ -1,5 +1,5 @@
 import { parseDictionary } from "../dictionary/parser.ts";
-import { Dictionary } from "../dictionary/type.ts";
+import { Definition, Dictionary } from "../dictionary/type.ts";
 import { OutputError } from "./output.ts";
 import { dictionary as globalDictionary } from "../dictionary/dictionary.ts";
 
@@ -25,6 +25,19 @@ export function getPreverbSet(): Set<string> {
 }
 export function getTokiPonaWordSet(): Set<string> {
   return tokiPonaWordSet;
+}
+function wordSet(
+  filter: (definition: Definition) => boolean,
+): Set<string> {
+  return new Set(
+    Object
+      .entries(dictionary)
+      .filter(([_, entry]) => entry.definitions.some(filter))
+      .map(([word]) => word),
+  );
+}
+function wordSetWithType(types: Array<Definition["type"]>): Set<string> {
+  return wordSet((definition) => types.includes(definition.type));
 }
 export function loadCustomDictionary(
   dictionaryText: string,
@@ -54,43 +67,16 @@ function update(): void {
       dictionary[word] = entry;
     }
   }
-  contentWordSet = new Set(
-    Object
-      .entries(dictionary)
-      .filter(([_, entry]) =>
-        entry
-          .definitions
-          .some((definition) =>
-            definition.type !== "filler" &&
-            definition.type !== "particle definition"
-          )
-      )
-      .map(([word]) => word),
+  contentWordSet = wordSet((definition) =>
+    definition.type !== "filler" &&
+    definition.type !== "particle definition"
   );
-  prepositionSet = new Set(
-    Object
-      .entries(dictionary)
-      .filter(([_, entry]) =>
-        entry
-          .definitions
-          .some((definition) => definition.type === "preposition")
-      )
-      .map(([word]) => word),
-  );
-  preverbSet = new Set(
-    Object
-      .entries(dictionary)
-      .filter(([_, entry]) =>
-        entry
-          .definitions
-          .some((definition) =>
-            definition.type === "preverb as finite verb" ||
-            definition.type === "preverb as linking verb" ||
-            definition.type === "preverb as modal verb"
-          )
-      )
-      .map(([word]) => word),
-  );
+  prepositionSet = wordSetWithType(["preposition"]);
+  preverbSet = wordSetWithType([
+    "preverb as finite verb",
+    "preverb as linking verb",
+    "preverb as modal verb",
+  ]);
   tokiPonaWordSet = new Set(Object.keys(dictionary));
 }
 update();
