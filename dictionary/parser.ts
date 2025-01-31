@@ -190,7 +190,7 @@ function noun(): Parser<Noun> {
     nounOnly(),
     optionalAll(
       sequence(simpleUnit("adj"), word())
-        .skip(tag(sequence(keyword("proper"), keyword("n")))),
+        .skip(tag(sequence(keyword("n"), keyword("proper")))),
     ),
   )
     .map(([determiner, adjective, noun, post]) => {
@@ -403,7 +403,7 @@ function definition(): Parser<Definition> {
         }) as Definition
       ),
     word()
-      .skip(tag(sequence(keyword("linking"), keyword("v"))))
+      .skip(tag(sequence(keyword("v"), keyword("linking"))))
       .skip(template(keyword("predicate")))
       .skip(semicolon()).map((linkingVerb) =>
         ({

@@ -89,7 +89,7 @@ anu:
 
 awen:
   # stay(v);
-  remain(linking v) [predicate]; # Thanks to ilo Tani for telling me this is supposed to be a linking verb
+  remain(v linking) [predicate]; # Thanks to ilo Tani for telling me this is supposed to be a linking verb
   # wait(v);
   pause(v) [object];
 
@@ -282,7 +282,7 @@ kama:
 
   future(adj age);
 
-  become(linking v) [predicate];
+  become(v linking) [predicate];
   began(v) to(particle) [predicate v];
 
   arriving(n gerund);
@@ -1194,8 +1194,8 @@ pona:
   nicely(adv);
 
 pu:
-  interact(v) with(prep) the(d article) book(n singular) titled(adj) Toki Pona`:` The Language of Good(proper n);
-  the(d article) book(n) titled(adj) Toki Pona`:` The Language of Good(proper n);
+  interact(v) with(prep) the(d article) book(n singular) titled(adj) Toki Pona`:` The Language of Good(n proper);
+  the(d article) book(n) titled(adj) Toki Pona`:` The Language of Good(n proper);
 
 sama:
   same(adj opinion);
