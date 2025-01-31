@@ -359,7 +359,7 @@ function definition(): Parser<Definition> {
       verbOnly().skip(tag(keyword("v"))),
       optionalAll(simpleUnit("particle")),
     )
-      .skip(template(sequence(keyword("predicate"), keyword("v"))))
+      .skip(template(keyword("predicate")))
       .skip(semicolon())
       .map(([verb, particle]) =>
         ({
@@ -408,7 +408,7 @@ function definition(): Parser<Definition> {
         }) as Definition
       ),
     word()
-      .skip(tag(sequence(keyword("modal"), keyword("v"))))
+      .skip(tag(sequence(keyword("v"), keyword("modal"))))
       .skip(template(keyword("predicate")))
       .skip(semicolon()).map((verb) =>
         ({
