@@ -866,6 +866,23 @@ mu:
   achoo(i);
   dook(i); # nano li wile e ni
 
+  barking(n gerund);
+  coughing(n gerund);
+  roaring(n gerund);
+  humming(n gerund);
+  quacking(n gerund);
+  hissing(n gerund);
+  buzzing(n gerund);
+  growling(n gerund);
+  yawning(n gerund);
+  screeching(n gerund);
+  chirping(n gerund);
+  gobbling(n gerund);
+  purring(n gerund);
+  honking(n gerund);
+  burping(n gerund);
+  chomping(n gerund);
+
 mun:
   # moon(n singular);
   night sky(adj qualifier) object(n);
