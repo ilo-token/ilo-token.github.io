@@ -30,15 +30,16 @@ export function loadCustomDictionary(
   dictionaryText: string,
 ): Array<OutputError> {
   const output = parseDictionary(dictionaryText).deduplicateErrors();
+  let errors: Array<OutputError>;
   if (output.isError()) {
     customDictionary = {};
-    update();
-    return output.errors;
+    errors = output.errors;
   } else {
     customDictionary = output.output[0];
-    update();
-    return [];
+    errors = [];
   }
+  update();
+  return errors;
 }
 function update(): void {
   dictionary = {};
