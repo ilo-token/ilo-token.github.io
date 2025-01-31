@@ -379,10 +379,10 @@ function definition(): Parser<Definition> {
         }) as Definition
       ),
     sequence(
+      word().skip(slash()),
+      word().skip(slash()),
+      word().skip(slash()),
       word(),
-      slash().with(word()),
-      slash().with(word()),
-      slash().with(word()),
     )
       .skip(tag(sequence(keyword("personal"), keyword("pronoun"))))
       .skip(semicolon())
@@ -394,8 +394,8 @@ function definition(): Parser<Definition> {
         }) as Definition
       ),
     sequence(
+      word().skip(slash()),
       word(),
-      slash().with(word()),
       tag(keyword("personal").with(keyword("pronoun")).with(number())),
     )
       .skip(semicolon())
