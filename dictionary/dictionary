@@ -825,7 +825,7 @@ mu:
   roar(v);
   hum(v);
   quack(v);
-  hiss(v);
+  hiss/hisses/hissed(v);
   buzz(v);
   growl(v);
   yawn(v);
