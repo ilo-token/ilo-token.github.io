@@ -174,9 +174,9 @@ function punctuation(): Parser<string> {
   return match(/([.,:;?!…·。｡︒\u{F199C}\u{F199D}]+)\s*/u, "punctuation")
     .map(([_, punctuation]) =>
       punctuation
-        .replaceAll("...", "…")
         .replaceAll(/[·。｡︒\u{F199C}]/gu, ".")
         .replaceAll("\u{F199D}", ":")
+        .replaceAll("...", "…")
     );
 }
 /** Parses cartouche element and returns the phonemes or letters it represents. */
