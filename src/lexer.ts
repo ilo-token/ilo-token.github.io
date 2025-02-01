@@ -34,6 +34,7 @@ import {
 import { variable } from "./parser-lib.ts";
 import { settings } from "./settings.ts";
 import { empty } from "./parser-lib.ts";
+import { choice } from "./parser-lib.ts";
 
 /** parses space. */
 export function spaces(): Parser<string> {
@@ -140,7 +141,10 @@ function multipleA(): Parser<number> {
 }
 /** Parses lengthened words. */
 function longWord(): Parser<Token & { type: "long word" }> {
-  return match(/[an]/, 'long "a" or "n"')
+  return choice(
+    matchString("a", '"a"'),
+    matchString("n", '"n"'),
+  )
     .then((word) =>
       count(allAtLeastOnce(matchString(word)))
         .map((count) =>
