@@ -146,7 +146,7 @@ function longWord(): Parser<Token & { type: "long word" }> {
     matchString("n", '"n"'),
   )
     .then((word) =>
-      count(allAtLeastOnce(matchString(word)))
+      count(allAtLeastOnce(matchString(word, `"${word}"`)))
         .map((count) =>
           ({
             type: "long word",
