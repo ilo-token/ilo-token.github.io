@@ -294,25 +294,27 @@ function ale(): Parser<string> {
   return choice(specificWord("ale"), specificWord("ali"));
 }
 /** Parses number words including "nasin nanpa pona". */
-// TODO: implement limits: upper limit of 99 to subAleNumber, only on nasin pona
-// ale sequence must be in descending order: "* ale ale * ale", not "* ale * ale ale"
 function number(): Parser<number> {
   return choice(
     specificWord("ala").map(() => 0),
     sequence(
       manyAtLeastOnce(
         sequence(
-          subAleNumber().filter((number) => number !== 0),
+          subAleNumber().filter((number) => 0 < number && number < 100),
           count(manyAtLeastOnce(ale())),
         ),
       ),
-      subAleNumber(),
+      subAleNumber().filter((number) => number < 100),
     )
-      .map(([rest, last]) =>
-        [...rest, [last, 0]].reduce(
-          (result, [sub, ale]) => result + sub * 100 ** ale,
-          0,
+      .map(([rest, last]) => [...rest, [last, 0]] as Array<[number, number]>)
+      // Ensure the ale is in decreasing order
+      .filter((numbers) =>
+        numbers.every((number, i) =>
+          i === numbers.length - 1 || number[1] > numbers[i + 1][1]
         )
+      )
+      .map((numbers) =>
+        numbers.reduce((result, [sub, ale]) => result + sub * 100 ** ale, 0)
       ),
     sequence(
       count(many(ale())),
