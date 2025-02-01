@@ -11,24 +11,6 @@ export const prepositionSet: Set<string> = new Set();
 export const preverbSet: Set<string> = new Set();
 export const tokiPonaWordSet: Set<string> = new Set();
 
-function addSet(
-  set: Set<string>,
-  filter: (definition: Definition) => boolean,
-): void {
-  const array = Object
-    .entries(dictionary)
-    .filter(([_, entry]) => entry.definitions.some(filter))
-    .map(([word]) => word);
-  for (const word of array) {
-    set.add(word);
-  }
-}
-function addSetWithType(
-  set: Set<string>,
-  types: Array<Definition["type"]>,
-): void {
-  return addSet(set, (definition) => types.includes(definition.type));
-}
 export function loadCustomDictionary(
   dictionaryText: string,
 ): Array<OutputError> {
@@ -78,5 +60,23 @@ function update(): void {
     "preverb as modal verb",
   ]);
   addSet(tokiPonaWordSet, () => true);
+}
+function addSet(
+  set: Set<string>,
+  filter: (definition: Definition) => boolean,
+): void {
+  const array = Object
+    .entries(dictionary)
+    .filter(([_, entry]) => entry.definitions.some(filter))
+    .map(([word]) => word);
+  for (const word of array) {
+    set.add(word);
+  }
+}
+function addSetWithType(
+  set: Set<string>,
+  types: Array<Definition["type"]>,
+): void {
+  return addSet(set, (definition) => types.includes(definition.type));
 }
 update();
