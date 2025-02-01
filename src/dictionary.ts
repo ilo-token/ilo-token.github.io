@@ -3,59 +3,55 @@ import { Definition, Dictionary } from "../dictionary/type.ts";
 import { OutputError } from "./output.ts";
 import { dictionary as globalDictionary } from "../dictionary/dictionary.ts";
 
-let customDictionary: Dictionary = {};
-let dictionary: Dictionary = {};
+const customDictionary: Dictionary = {};
+export const dictionary: Dictionary = {};
 
-let contentWordSet: Set<string> = new Set();
-let prepositionSet: Set<string> = new Set();
-let preverbSet: Set<string> = new Set();
-let tokiPonaWordSet: Set<string> = new Set();
+export const contentWordSet: Set<string> = new Set();
+export const prepositionSet: Set<string> = new Set();
+export const preverbSet: Set<string> = new Set();
+export const tokiPonaWordSet: Set<string> = new Set();
 
-export function getDictionary(): Dictionary {
-  return dictionary;
-}
-export function getContentWordSet(): Set<string> {
-  return contentWordSet;
-}
-export function getPrepositionSet(): Set<string> {
-  return prepositionSet;
-}
-export function getPreverbSet(): Set<string> {
-  return preverbSet;
-}
-export function getTokiPonaWordSet(): Set<string> {
-  return tokiPonaWordSet;
-}
-function wordSet(
+function addSet(
+  set: Set<string>,
   filter: (definition: Definition) => boolean,
-): Set<string> {
-  return new Set(
-    Object
-      .entries(dictionary)
-      .filter(([_, entry]) => entry.definitions.some(filter))
-      .map(([word]) => word),
-  );
+): void {
+  const array = Object
+    .entries(dictionary)
+    .filter(([_, entry]) => entry.definitions.some(filter))
+    .map(([word]) => word);
+  for (const word of array) {
+    set.add(word);
+  }
 }
-function wordSetWithType(types: Array<Definition["type"]>): Set<string> {
-  return wordSet((definition) => types.includes(definition.type));
+function addSetWithType(
+  set: Set<string>,
+  types: Array<Definition["type"]>,
+): void {
+  return addSet(set, (definition) => types.includes(definition.type));
 }
 export function loadCustomDictionary(
   dictionaryText: string,
 ): Array<OutputError> {
   const output = parseDictionary(dictionaryText).deduplicateErrors();
   let errors: Array<OutputError>;
+  for (const key of Object.keys(customDictionary)) {
+    delete customDictionary[key];
+  }
   if (output.isError()) {
-    customDictionary = {};
     errors = output.errors;
   } else {
-    customDictionary = output.output[0];
+    for (const [key, value] of Object.entries(output.output[0])) {
+      customDictionary[key] = value;
+    }
     errors = [];
   }
   update();
   return errors;
 }
 function update(): void {
-  dictionary = {};
+  for (const key of Object.keys(dictionary)) {
+    delete dictionary[key];
+  }
   for (
     const word of new Set([
       ...Object.keys(globalDictionary),
@@ -67,16 +63,20 @@ function update(): void {
       dictionary[word] = entry;
     }
   }
-  contentWordSet = wordSet((definition) =>
+  for (
+    const set of [contentWordSet, prepositionSet, preverbSet, tokiPonaWordSet]
+  ) {
+    set.clear();
+  }
+  addSet(contentWordSet, (definition) =>
     definition.type !== "filler" &&
-    definition.type !== "particle definition"
-  );
-  prepositionSet = wordSetWithType(["preposition"]);
-  preverbSet = wordSetWithType([
+    definition.type !== "particle definition");
+  addSetWithType(prepositionSet, ["preposition"]);
+  addSetWithType(preverbSet, [
     "preverb as finite verb",
     "preverb as linking verb",
     "preverb as modal verb",
   ]);
-  tokiPonaWordSet = new Set(Object.keys(dictionary));
+  addSet(tokiPonaWordSet, () => true);
 }
 update();

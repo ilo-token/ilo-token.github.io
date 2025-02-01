@@ -6,7 +6,7 @@ import { nullableAsArray, repeat, repeatWithSpace } from "./misc.ts";
 import { Output } from "./output.ts";
 import { settings } from "./settings.ts";
 import * as Dictionary from "../dictionary/type.ts";
-import { getDictionary } from "./dictionary.ts";
+import { dictionary } from "./dictionary.ts";
 
 const CONJUNCTION = { "and conjunction": "and", "anu": "or" } as const;
 
@@ -231,7 +231,7 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
           count = word.count;
           break;
       }
-      return new Output(getDictionary()[word.word].definitions)
+      return new Output(dictionary[word.word].definitions)
         .flatMap((definition) => {
           switch (definition.type) {
             case "noun":
@@ -563,7 +563,7 @@ function wordUnit(
           count = wordUnit.count;
           break;
       }
-      return new Output(getDictionary()[wordUnit.word].definitions)
+      return new Output(dictionary[wordUnit.word].definitions)
         .flatMap((definition) => {
           switch (definition.type) {
             case "noun": {
@@ -920,13 +920,13 @@ function clause(clause: TokiPona.Clause): Output<English.Clause> {
 function filler(filler: TokiPona.Emphasis): Array<string> {
   switch (filler.type) {
     case "word":
-      return getDictionary()[filler.word].definitions
+      return dictionary[filler.word].definitions
         .filter((definition) => definition.type === "filler")
         .map((definition) =>
           `${definition.before}${definition.repeat}${definition.after}`
         );
     case "long word":
-      return getDictionary()[filler.word].definitions
+      return dictionary[filler.word].definitions
         .filter((definition) => definition.type === "filler")
         .map((definition) =>
           `${definition.before}${
@@ -982,7 +982,7 @@ function interjection(clause: TokiPona.Clause): Output<English.Clause> {
     if (phrase.type === "default" && phrase.modifiers.length === 0) {
       const headWord = phrase.headWord;
       if (headWord.type === "default" || headWord.type === "reduplication") {
-        return new Output(getDictionary()[headWord.word].definitions)
+        return new Output(dictionary[headWord.word].definitions)
           .filterMap((definition) => {
             if (definition.type === "interjection") {
               switch (headWord.type) {
@@ -1284,7 +1284,7 @@ function multipleSentences(
   switch (sentences.type) {
     case "single word": {
       const { word } = sentences;
-      return new Output(getDictionary()[word].definitions)
+      return new Output(dictionary[word].definitions)
         .flatMap(definitionAsPlainString)
         .map((definition) =>
           ({
