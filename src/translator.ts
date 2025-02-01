@@ -1115,7 +1115,7 @@ function sentence(
     const engClauses = Output.combine(
       startingFiller,
       givenClauses,
-      Output.concat(lastEngClause, interjectionClause),
+      Output.concat(interjectionClause, lastEngClause),
     )
       .map(([filler, givenClauses, lastClause]) => [
         ...nullableAsArray(filler),
