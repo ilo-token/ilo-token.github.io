@@ -41,13 +41,15 @@ export function spaces(): Parser<string> {
 }
 /** Parses lowercase latin word. */
 function latinWord(): Parser<string> {
-  return match(/([a-z][a-zA-Z]*)\s*/, "word").map(([_, word]) => {
-    if (/[A-Z]/.test(word)) {
-      throw new UnrecognizedError(`"${word}"`);
-    } else {
-      return word;
-    }
-  });
+  return match(/[a-z][a-zA-Z]*/, "word")
+    .map(([word]) => {
+      if (/[A-Z]/.test(word)) {
+        throw new UnrecognizedError(`"${word}"`);
+      } else {
+        return word;
+      }
+    })
+    .skip(spaces());
 }
 /** Parses variation selector. */
 function variationSelector(): Parser<string> {
@@ -123,7 +125,9 @@ function word(): Parser<string> {
 /** Parses proper words spanning multiple words. */
 function properWords(): Parser<string> {
   return allAtLeastOnce(
-    match(/([A-Z][a-zA-Z]*)\s*/, "proper word").map(([_, word]) => word),
+    match(/[A-Z][a-zA-Z]*/, "proper word")
+      .map(([word]) => word)
+      .skip(spaces()),
   )
     .map((array) => array.join(" "));
 }
@@ -171,13 +175,14 @@ function xAlaX(): Parser<string> {
 function punctuation(): Parser<string> {
   // This includes UCSUR middle dot and colon
   // https://www.kreativekorp.com/ucsur/charts/sitelen.html
-  return match(/([.,:;?!…·。｡︒\u{F199C}\u{F199D}]+)\s*/u, "punctuation")
-    .map(([_, punctuation]) =>
+  return match(/[.,:;?!…·。｡︒\u{F199C}\u{F199D}]+/u, "punctuation")
+    .map(([punctuation]) =>
       punctuation
         .replaceAll(/[·。｡︒\u{F199C}]/gu, ".")
         .replaceAll("\u{F199D}", ":")
         .replaceAll("...", "…")
-    );
+    )
+    .skip(spaces());
 }
 /** Parses cartouche element and returns the phonemes or letters it represents. */
 function cartoucheElement(): Parser<string> {
@@ -186,8 +191,9 @@ function cartoucheElement(): Parser<string> {
       .skip(
         // This includes UCSUR colon
         // https://www.kreativekorp.com/ucsur/charts/sitelen.html
-        match(/([\uFF1A\u{F199D}])\s*/u, "full width colon")
-          .map(([_, dot]) => dot),
+        match(/[\uFF1A\u{F199D}]/u, "full width colon")
+          .map(([dot]) => dot)
+          .skip(spaces()),
       ),
     sequence(
       singleUcsurWord(),
@@ -195,8 +201,9 @@ function cartoucheElement(): Parser<string> {
         allAtLeastOnce(
           // This includes UCSUR middle dot
           // https://www.kreativekorp.com/ucsur/charts/sitelen.html
-          match(/([・。／\u{F199C}])\s*/u, "full width dot")
-            .map(([_, dot]) => dot),
+          match(/[・。／\u{F199C}]/u, "full width dot")
+            .map(([dot]) => dot)
+            .skip(spaces()),
         ),
       ),
     )
@@ -212,8 +219,9 @@ function cartoucheElement(): Parser<string> {
         return morae.slice(0, count).join("");
       }),
     singleUcsurWord().map((word) => word[0]),
-    match(/([a-zA-Z]+)\s*/, "Latin letter")
-      .map(([_, letter]) => letter.toLowerCase()),
+    match(/[a-zA-Z]+/, "Latin letter")
+      .map(([letter]) => letter.toLowerCase())
+      .skip(spaces()),
   );
 }
 /** Parses a single cartouche. */
