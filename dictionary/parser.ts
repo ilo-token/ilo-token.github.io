@@ -15,6 +15,7 @@ import {
   choiceOnlyOne,
   eol,
   match,
+  matchCapture,
   matchString,
   optionalAll,
   Parser,
@@ -37,8 +38,8 @@ function lex<T>(parser: Parser<T>): Parser<T> {
 function word(): Parser<string> {
   return all(
     choiceOnlyOne(
-      match(/[^():;#/`]/, "word").map(([character]) => character),
-      match(/`([^`]*)`/, "quoted words").map(([_, words]) => words),
+      match(/[^():;#/`]/, "word"),
+      matchCapture(/`([^`]*)`/, "quoted words").map(([_, words]) => words),
       match(/#[^\n]*/, "comment").map((_) => ""),
     ),
   )
@@ -55,7 +56,6 @@ function forms(): Parser<Array<string>> {
 }
 function keyword<T extends string>(keyword: T): Parser<T> {
   return lex(match(/[a-z]+/, keyword))
-    .map(([keyword]) => keyword)
     .filter((that) => that === keyword) as Parser<T>;
 }
 function number(): Parser<"singular" | "plural"> {
@@ -436,7 +436,7 @@ function definition(): Parser<Definition> {
   );
 }
 function singleWord(): Parser<string> {
-  return lex(match(/[a-z][a-zA-Z]*/, "word")).map(([word]) => word);
+  return lex(match(/[a-z][a-zA-Z]*/, "word"));
 }
 function head(): Parser<Array<string>> {
   return sequence(
@@ -463,13 +463,7 @@ const dictionary = space()
     return dictionary;
   });
 const rawTextParser = space()
-  .with(all(
-    optionalAll(head())
-      .with(
-        lex(match(/[^;]*;/, "definition"))
-          .map(([definition]) => definition),
-      ),
-  ))
+  .with(all(optionalAll(head()).with(lex(match(/[^;]*;/, "definition")))))
   .skip(eol());
 const insideDefinitionParser = space().with(definition()).skip(eol());
 

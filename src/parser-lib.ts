@@ -233,7 +233,7 @@ function describeSrc(src: string, expected: string): OutputError {
  * Uses Regular Expression to create parser. The parser outputs
  * RegExpMatchArray, which is what `string.match( ... )` returns.
  */
-export function match(
+export function matchCapture(
   regex: RegExp,
   description: string,
 ): Parser<RegExpMatchArray> {
@@ -246,6 +246,9 @@ export function match(
       return new Output(describeSrc(src, description));
     }
   });
+}
+export function match(regex: RegExp, description: string): Parser<string> {
+  return matchCapture(regex, description).map(([matched]) => matched);
 }
 /** parses a string of consistent length. */
 export function slice(length: number, description: string): Parser<string> {

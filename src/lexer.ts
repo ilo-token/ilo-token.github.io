@@ -37,12 +37,12 @@ import { empty } from "./parser-lib.ts";
 
 /** parses space. */
 export function spaces(): Parser<string> {
-  return match(/\s*/, "space").map(([space]) => space);
+  return match(/\s*/, "space");
 }
 /** Parses lowercase latin word. */
 function latinWord(): Parser<string> {
   return match(/[a-z][a-zA-Z]*/, "word")
-    .map(([word]) => {
+    .map((word) => {
       if (/[A-Z]/.test(word)) {
         throw new UnrecognizedError(`"${word}"`);
       } else {
@@ -53,8 +53,7 @@ function latinWord(): Parser<string> {
 }
 /** Parses variation selector. */
 function variationSelector(): Parser<string> {
-  return match(/[\uFE00-\uFE0F]/, "variation selector")
-    .map(([character]) => character);
+  return match(/[\uFE00-\uFE0F]/, "variation selector");
 }
 /**
  * Parses an UCSUR character, this doesn't parse space and so must be manually
@@ -124,11 +123,7 @@ function word(): Parser<string> {
 }
 /** Parses proper words spanning multiple words. */
 function properWords(): Parser<string> {
-  return allAtLeastOnce(
-    match(/[A-Z][a-zA-Z]*/, "proper word")
-      .map(([word]) => word)
-      .skip(spaces()),
-  )
+  return allAtLeastOnce(match(/[A-Z][a-zA-Z]*/, "proper word").skip(spaces()))
     .map((array) => array.join(" "));
 }
 /** Parses a specific word, either UCSUR or latin. */
@@ -146,7 +141,7 @@ function multipleA(): Parser<number> {
 /** Parses lengthened words. */
 function longWord(): Parser<Token & { type: "long word" }> {
   return match(/[an]/, 'long "a" or "n"')
-    .then(([word, _]) =>
+    .then((word) =>
       count(allAtLeastOnce(matchString(word)))
         .map((count) =>
           ({
@@ -176,7 +171,7 @@ function punctuation(): Parser<string> {
   // This includes UCSUR middle dot and colon
   // https://www.kreativekorp.com/ucsur/charts/sitelen.html
   return match(/[.,:;?!…·。｡︒\u{F199C}\u{F199D}]+/u, "punctuation")
-    .map(([punctuation]) =>
+    .map((punctuation) =>
       punctuation
         .replaceAll(/[·。｡︒\u{F199C}]/gu, ".")
         .replaceAll("\u{F199D}", ":")
@@ -186,24 +181,16 @@ function punctuation(): Parser<string> {
 }
 /** Parses cartouche element and returns the phonemes or letters it represents. */
 function cartoucheElement(): Parser<string> {
+  // This includes UCSUR middle dot and colon
+  // https://www.kreativekorp.com/ucsur/charts/sitelen.html
   return choiceOnlyOne(
     singleUcsurWord()
-      .skip(
-        // This includes UCSUR colon
-        // https://www.kreativekorp.com/ucsur/charts/sitelen.html
-        match(/[\uFF1A\u{F199D}]/u, "full width colon")
-          .map(([dot]) => dot)
-          .skip(spaces()),
-      ),
+      .skip(match(/[\uFF1A\u{F199D}]/u, "full width colon").skip(spaces())),
     sequence(
       singleUcsurWord(),
       count(
         allAtLeastOnce(
-          // This includes UCSUR middle dot
-          // https://www.kreativekorp.com/ucsur/charts/sitelen.html
-          match(/[・。／\u{F199C}]/u, "full width dot")
-            .map(([dot]) => dot)
-            .skip(spaces()),
+          match(/[・。／\u{F199C}]/u, "full width dot").skip(spaces()),
         ),
       ),
     )
@@ -220,7 +207,7 @@ function cartoucheElement(): Parser<string> {
       }),
     singleUcsurWord().map((word) => word[0]),
     match(/[a-zA-Z]+/, "Latin letter")
-      .map(([letter]) => letter.toLowerCase())
+      .map((letter) => letter.toLowerCase())
       .skip(spaces()),
   );
 }
@@ -270,7 +257,7 @@ function longSpaceContainer(): Parser<number> {
   return longContainer(
     START_OF_LONG_GLYPH,
     END_OF_LONG_GLYPH,
-    match(/\s+/, "space").map(([space]) => space.length),
+    spaces().map((space) => space.length),
   )
     .skip(spaces());
 }
