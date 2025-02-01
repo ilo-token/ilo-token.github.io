@@ -119,7 +119,7 @@ function combinedGlyphs(): Parser<Array<string>> {
 }
 /** Parses a word, either UCSUR or latin. */
 function word(): Parser<string> {
-  return cached(choiceOnlyOne(latinWord(), singleUcsurWord()));
+  return choiceOnlyOne(latinWord(), singleUcsurWord());
 }
 /** Parses proper words spanning multiple words. */
 function properWords(): Parser<string> {
