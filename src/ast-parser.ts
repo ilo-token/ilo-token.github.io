@@ -144,7 +144,6 @@ function optionalEmphasis(): Parser<null | Emphasis> {
   return optional(emphasis());
 }
 /** Parses an X ala X construction. */
-// TODO: use `then` combinator
 function xAlaX(
   useWord: Set<string>,
   description: string,
@@ -152,7 +151,7 @@ function xAlaX(
   return choice(
     sequence(
       specificToken("headless long glyph start"),
-      wordFrom(contentWordSet, "content word"),
+      wordFrom(useWord, description),
       specificToken("inside long glyph")
         .filter((words) => {
           if (words.words.length !== 1) {
@@ -166,20 +165,14 @@ function xAlaX(
           }
           return true;
         }),
-      wordFrom(contentWordSet, "content word"),
-      specificToken("headless long glyph end"),
     )
-      .map(([_, left, _1, right]) => {
-        if (!useWord.has(left)) {
-          throw new UnrecognizedError(`"${left}" as ${description}`);
-        } else if (left !== right) {
-          throw new UnexpectedError(`"${right}"`, `"${left}"`);
-        } else {
-          return { type: "x ala x", word: left } as WordUnit & {
-            type: "x ala x";
-          };
-        }
-      }),
+      .then(([_, word]) =>
+        specificWord(word)
+          .skip(specificToken("headless long glyph end"))
+          .map(() =>
+            ({ type: "x ala x", word }) as WordUnit & { type: "x ala x" }
+          )
+      ),
     specificToken("x ala x")
       .map(({ word }) =>
         ({ type: "x ala x", word }) as WordUnit & { type: "x ala x" }
