@@ -172,20 +172,11 @@ function punctuation(): Parser<string> {
   // This includes UCSUR middle dot and colon
   // https://www.kreativekorp.com/ucsur/charts/sitelen.html
   return match(/([.,:;?!·。｡︒\u{F199C}\u{F199D}]+)\s*/u, "punctuation")
-    .map(([_, punctuation]) => {
-      switch (punctuation) {
-        case "·":
-        case "。":
-        case "｡":
-        case "︒":
-        case "\u{F199C}":
-          return ".";
-        case "\u{F199D}":
-          return ":";
-        default:
-          return punctuation;
-      }
-    });
+    .map(([_, punctuation]) =>
+      punctuation
+        .replaceAll(/[·。｡︒\u{F199C}]/gu, ".")
+        .replaceAll("\u{F199D}", ":")
+    );
 }
 /** Parses cartouche element and returns the phonemes or letters it represents. */
 function cartoucheElement(): Parser<string> {
