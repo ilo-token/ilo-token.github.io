@@ -82,8 +82,9 @@ export function lookAhead<T>(parser: Parser<T>): Parser<T> {
   );
 }
 /**
- * Evaluates the parser only during parsing, useful for parser the may change
- * e.g. due to settings.
+ * Evaluates the parser only during parsing, useful for parser that may change
+ * e.g. due to settings. Could also be used for recursive parser but consider
+ * using `lazy` instead.
  */
 export function variable<T>(parser: () => Parser<T>): Parser<T> {
   return new Parser((src) => parser().parser(src));
@@ -296,6 +297,12 @@ export function withSource<T>(
     }))
   );
 }
+/**
+ * Enables memoization, for it to be effective:
+ *
+ * - Don't use it for combinators.
+ * - Declare the parser as global constant.
+ */
 export function cached<T>(parser: Parser<T>): Parser<T> {
   const cache: { [word: string]: ParserOutput<T> } = {};
   return new Parser((src) => {
