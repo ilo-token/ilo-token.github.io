@@ -389,8 +389,8 @@ function modifiers(): Parser<Array<Modifier>> {
     .filter(filter(MULTIPLE_MODIFIERS_RULES));
 }
 /** Parses phrases. */
-function phrase_(): Parser<Phrase> {
-  return choice(
+const PHRASE: Parser<Phrase> = lazy(() =>
+  choice(
     sequence(
       number(),
       optionalEmphasis(),
@@ -452,9 +452,8 @@ function phrase_(): Parser<Phrase> {
         }) as Phrase
       ),
   )
-    .filter(filter(PHRASE_RULE));
-}
-const PHRASE = lazy(phrase_);
+    .filter(filter(PHRASE_RULE))
+);
 /**
  * Parses nested phrases with given nesting rule, only accepting the top level
  * operation.
