@@ -302,6 +302,7 @@ export function withSource<T>(
  *
  * - Don't use it for combinators.
  * - Declare the parser as global constant.
+ * - It must not contain variable parsers e.g. with `variable`.
  */
 export function cached<T>(parser: Parser<T>): Parser<T> {
   const cache: { [word: string]: ParserOutput<T> } = {};
