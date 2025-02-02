@@ -335,8 +335,8 @@ function insideLongGlyph(): Parser<
     .skip(spaces())
     .map((words) => ({ type: "headed long glyph start", words }));
 }
-/** Parses a token without X ala X. */
-const LEXER_WITHOUT_X_ALA_X = cached(choiceOnlyOne(
+/** Parses a token aside from X ala X. */
+const TOKEN_EXCEPT_X_ALA_X = cached(choiceOnlyOne(
   spaceLongGlyph(),
   headedLongGlyphStart(),
   combinedGlyphs()
@@ -363,5 +363,5 @@ const LEXER_WITHOUT_X_ALA_X = cached(choiceOnlyOne(
 /** Parses a token. */
 export const TOKEN = choiceOnlyOne(
   xAlaX().map((word) => ({ type: "x ala x", word }) as Token),
-  LEXER_WITHOUT_X_ALA_X,
+  TOKEN_EXCEPT_X_ALA_X,
 );
