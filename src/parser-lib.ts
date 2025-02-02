@@ -277,7 +277,7 @@ export function matchString(
     }
   });
 }
-/** Parses the end of line (or the end of sentence in context of Toki Pona) */
+/** Parses the end of text */
 export function eol(): Parser<null> {
   return new Parser((src) => {
     if (src === "") {
