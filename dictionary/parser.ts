@@ -450,7 +450,7 @@ function entry(): Parser<Entry> {
   return withSource(all(definition()))
     .map(([definitions, src]) => ({ definitions, src }));
 }
-const dictionary = space()
+const DICTIONARY = space()
   .with(all(sequence(head(), entry())))
   .skip(eol())
   .map((entries) => {
@@ -462,22 +462,22 @@ const dictionary = space()
     }
     return dictionary;
   });
-const rawTextParser = space()
+const DEFINITION_EXTRACT = space()
   .with(all(optionalAll(head()).with(lex(match(/[^;]*;/, "definition")))))
   .skip(eol());
-const insideDefinitionParser = space().with(definition()).skip(eol());
+const DEFINITION = space().with(definition()).skip(eol());
 
 export function parseDictionary(sourceText: string): Output<Dictionary> {
-  const output = dictionary.parse(sourceText);
+  const output = DICTIONARY.parse(sourceText);
   if (!output.isError()) {
     return output;
   } else {
-    const definitions = rawTextParser.parse(sourceText);
+    const definitions = DEFINITION_EXTRACT.parse(sourceText);
     if (!definitions.isError()) {
       return Output.newErrors(
         definitions.output[0]
           .flatMap((definition) =>
-            insideDefinitionParser.parse(definition).errors.map((error) =>
+            DEFINITION.parse(definition).errors.map((error) =>
               new OutputError(`${error.message} at ${definition.trim()}`)
             )
           ),

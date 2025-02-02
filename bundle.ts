@@ -6,11 +6,11 @@ const SOURCE = new URL("./src/main.ts", import.meta.url);
 const DESTINATION = new URL("./dist/main.js", import.meta.url);
 const IMPORT_MAP = new URL("./bundle-imports.json", import.meta.url);
 
-const buildOption: BundleOptions = {
+const BUILD_OPTION: BundleOptions = {
   type: "classic",
   importMap: IMPORT_MAP,
 };
-const watch = [
+const WATCH = [
   "./dictionary/build.ts",
   "./dictionary/dictionary",
   "./dictionary/parser.ts",
@@ -23,7 +23,7 @@ async function build(): Promise<void> {
   console.log("Building dictionary...");
   await buildDictionary();
   console.log("Building main.js...");
-  const bundled = await bundle(SOURCE, buildOption);
+  const bundled = await bundle(SOURCE, BUILD_OPTION);
   const withUseStrict = bundled.code
     .replace(/\(\s*function\s*\(\s*\)\s*\{/, '$&"use strict";');
   await Deno.writeTextFile(DESTINATION, withUseStrict);
@@ -60,7 +60,7 @@ if (import.meta.main) {
           console.error(error);
         }
       }, 500);
-      const watcher = Deno.watchFs(watch);
+      const watcher = Deno.watchFs(WATCH);
       try {
         builder();
         for await (const _ of watcher) {

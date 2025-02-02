@@ -118,7 +118,7 @@ class Setter<T extends { [name: string]: unknown }> {
     }
   }
 }
-const boolUpdater: Updater<boolean> = {
+const BOOL_UPDATER: Updater<boolean> = {
   parse: (value) => {
     switch (value) {
       case "T":
@@ -141,7 +141,7 @@ const boolUpdater: Updater<boolean> = {
     (input as HTMLInputElement).checked = value;
   },
 };
-const redundancyUpdater: Updater<RedundancySettings> = {
+const REDUNDANCY_UPDATER: Updater<RedundancySettings> = {
   parse: (value) => {
     if (["both", "condensed", "default only"].includes(value)) {
       return value as RedundancySettings;
@@ -158,26 +158,26 @@ const redundancyUpdater: Updater<RedundancySettings> = {
 export const settings = new Setter<Settings>({
   "use-telo-misikeke": {
     default: true,
-    updater: boolUpdater,
+    updater: BOOL_UPDATER,
   },
   "randomize": {
     default: false,
-    updater: boolUpdater,
+    updater: BOOL_UPDATER,
   },
   "number-settings": {
     default: "both",
-    updater: redundancyUpdater,
+    updater: REDUNDANCY_UPDATER,
   },
   "tense-settings": {
     default: "both",
-    updater: redundancyUpdater,
+    updater: REDUNDANCY_UPDATER,
   },
   "x-ala-x-partial-parsing": {
     default: false,
-    updater: boolUpdater,
+    updater: BOOL_UPDATER,
   },
   "separate-repeated-modifiers": {
     default: false,
-    updater: boolUpdater,
+    updater: BOOL_UPDATER,
   },
 });

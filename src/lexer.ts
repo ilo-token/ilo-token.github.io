@@ -336,34 +336,32 @@ function insideLongGlyph(): Parser<
     .map((words) => ({ type: "headed long glyph start", words }));
 }
 /** Parses a token without X ala X. */
-function lexerWithoutXAlaX(): Parser<Token> {
-  return cached(choiceOnlyOne(
-    spaceLongGlyph(),
-    headedLongGlyphStart(),
-    combinedGlyphs()
-      .skip(spaces())
-      .map((words) => ({ type: "combined glyphs", words }) as Token),
-    properWords().map((words) =>
-      ({ type: "proper word", words, kind: "latin" }) as Token
-    ),
-    longWord(),
-    multipleA().map((count) => ({ type: "multiple a", count }) as Token),
-    word().map((word) => ({ type: "word", word }) as Token),
-    // starting with non-words:
-    punctuation().map((punctuation) =>
-      ({ type: "punctuation", punctuation }) as Token
-    ),
-    headlessLongGlyphEnd(),
-    headedLongGlyphEnd(),
-    headlessLongGlyphStart(),
-    insideLongGlyph(),
-    cartouches().map((words) =>
-      ({ type: "proper word", words, kind: "cartouche" }) as Token
-    ),
-  ));
-}
+const LEXER_WITHOUT_X_ALA_X = cached(choiceOnlyOne(
+  spaceLongGlyph(),
+  headedLongGlyphStart(),
+  combinedGlyphs()
+    .skip(spaces())
+    .map((words) => ({ type: "combined glyphs", words }) as Token),
+  properWords().map((words) =>
+    ({ type: "proper word", words, kind: "latin" }) as Token
+  ),
+  longWord(),
+  multipleA().map((count) => ({ type: "multiple a", count }) as Token),
+  word().map((word) => ({ type: "word", word }) as Token),
+  // starting with non-words:
+  punctuation().map((punctuation) =>
+    ({ type: "punctuation", punctuation }) as Token
+  ),
+  headlessLongGlyphEnd(),
+  headedLongGlyphEnd(),
+  headlessLongGlyphStart(),
+  insideLongGlyph(),
+  cartouches().map((words) =>
+    ({ type: "proper word", words, kind: "cartouche" }) as Token
+  ),
+));
 /** Parses a token. */
 export const TOKEN = choiceOnlyOne(
   xAlaX().map((word) => ({ type: "x ala x", word }) as Token),
-  lexerWithoutXAlaX(),
+  LEXER_WITHOUT_X_ALA_X,
 );

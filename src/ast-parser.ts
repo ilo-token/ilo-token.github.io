@@ -341,11 +341,11 @@ function pi(): Parser<Modifier & { type: "pi" }> {
           }
           return true;
         }),
-      phrase(),
+      PHRASE,
       specificToken("headless long glyph end"),
     )
       .map(([_, phrase]) => phrase),
-    specificWord("pi").with(phrase()),
+    specificWord("pi").with(PHRASE),
   )
     .map((phrase) => ({ type: "pi", phrase }) as Modifier & { type: "pi" })
     .filter(filter(MODIFIER_RULES));
@@ -372,7 +372,7 @@ function modifiers(): Parser<Array<Modifier>> {
       ),
     ),
     many(
-      sequence(wordUnit(new Set(["nanpa"]), '"nanpa"'), phrase())
+      sequence(wordUnit(new Set(["nanpa"]), '"nanpa"'), PHRASE)
         .map(([nanpa, phrase]) =>
           ({ type: "nanpa", nanpa, phrase }) as Modifier
         )
@@ -422,7 +422,7 @@ function phrase_(): Parser<Phrase> {
     sequence(
       optionalCombined(preverbSet, "preverb"),
       modifiers(),
-      phrase(),
+      PHRASE,
       optionalEmphasis(),
     )
       .map(([[preverb, modifier], modifiers, phrase, emphasis]) =>
@@ -455,9 +455,6 @@ function phrase_(): Parser<Phrase> {
     .filter(filter(PHRASE_RULE));
 }
 const PHRASE = lazy(phrase_);
-function phrase(): Parser<Phrase> {
-  return PHRASE;
-}
 /**
  * Parses nested phrases with given nesting rule, only accepting the top level
  * operation.
@@ -466,7 +463,7 @@ function nestedPhrasesOnly(
   nestingRule: Array<"en" | "li" | "o" | "e" | "anu">,
 ): Parser<MultiplePhrases> {
   if (nestingRule.length === 0) {
-    return phrase()
+    return PHRASE
       .map((phrase) => ({ type: "single", phrase }) as MultiplePhrases);
   } else {
     const [first, ...rest] = nestingRule;
@@ -495,7 +492,7 @@ function nestedPhrases(
   nestingRule: Array<"en" | "li" | "o" | "e" | "anu">,
 ): Parser<MultiplePhrases> {
   if (nestingRule.length === 0) {
-    return phrase()
+    return PHRASE
       .map((phrase) => ({ type: "single", phrase }) as MultiplePhrases);
   } else {
     return choice(
@@ -509,7 +506,7 @@ function subjectPhrases(): Parser<MultiplePhrases> {
   return choice(
     nestedPhrasesOnly(["en", "anu"]),
     nestedPhrasesOnly(["anu", "en"]),
-    phrase().map((phrase) => ({ type: "single", phrase })),
+    PHRASE.map((phrase) => ({ type: "single", phrase })),
   );
 }
 /** Parses prepositional phrase. */
@@ -517,7 +514,7 @@ function preposition(): Parser<Preposition> {
   return choice(
     sequence(
       specificToken("headless long glyph start"),
-      phrase(),
+      PHRASE,
       specificToken("headless long glyph end"),
     )
       .map(([_, phrase]) =>
@@ -546,7 +543,7 @@ function preposition(): Parser<Preposition> {
           }
           return words.words;
         }),
-      phrase(),
+      PHRASE,
       specificToken("headless long glyph end"),
     )
       .map(([words, phrase]) => {
@@ -637,7 +634,7 @@ function multiplePredicates(
   if (nestingRule.length === 0) {
     return choice(
       associatedPredicates([]),
-      phrase().map((predicate) =>
+      PHRASE.map((predicate) =>
         ({ type: "single", predicate }) as MultiplePredicates
       ),
     );

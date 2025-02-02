@@ -11,12 +11,12 @@ import { nullableAsArray } from "./misc.ts";
 import { Output, OutputError } from "./output.ts";
 import { translate as translateToAst } from "./translator.ts";
 
-const emphasisStartingTag = "<b>";
-const emphasisEndingTag = "</b>";
+const EMPHASIS_STARTING_TAG = "<b>";
+const EMPHASIS_ENDING_TAG = "</b>";
 
 function word(word: Word): string {
   if (word.emphasis) {
-    return `${emphasisStartingTag}${word.word}${emphasisEndingTag}`;
+    return `${EMPHASIS_STARTING_TAG}${word.word}${EMPHASIS_ENDING_TAG}`;
   } else {
     return word.word;
   }
