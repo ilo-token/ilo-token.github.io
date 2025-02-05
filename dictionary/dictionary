@@ -96,8 +96,6 @@ awen:
   protect(v) [object];
   # keep safe(v);
 
-  continue(v);
-
   continue to(v) [predicate];
 
   # staying(n gerund);

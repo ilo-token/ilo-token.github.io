@@ -72,11 +72,11 @@ export type Definition =
         object: Noun;
       }>;
       forObject: boolean | string;
+      forPredicate: boolean;
     }
     & VerbOnly
   )
   | ({ type: "preverb as linking verb" } & VerbOnly)
-  | ({ type: "preverb as finite verb" } & VerbOnly)
   | {
     type: "preverb as modal verb";
     verb: string;

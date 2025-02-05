@@ -1272,8 +1272,6 @@ function definitionAsPlainString(
       return new Output([definition.preposition]);
     case "preverb as linking verb":
       return verbAsPlainString(definition);
-    case "preverb as finite verb":
-      return verbAsPlainString(definition);
     case "preverb as modal verb":
       return new Output([definition.verb]);
   }

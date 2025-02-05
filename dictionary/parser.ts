@@ -323,6 +323,7 @@ function definition(): Parser<Definition> {
           directObject: null,
           indirectObject,
           forObject: forObject != null,
+          forPredicate: false,
         }) as Definition
       ),
     sequence(
@@ -338,6 +339,7 @@ function definition(): Parser<Definition> {
           directObject,
           indirectObject: [],
           forObject: preposition ?? false,
+          forPredicate: false,
         }) as Definition
       ),
     simpleUnit("i")
@@ -379,8 +381,12 @@ function definition(): Parser<Definition> {
       .skip(semicolon())
       .map((verb) =>
         ({
-          type: "preverb as finite verb",
+          type: "verb",
           ...verb,
+          directObject: null,
+          indirectObject: [],
+          forObject: false,
+          forPredicate: true,
         }) as Definition
       ),
     sequence(noun(), simpleUnit("prep"))
