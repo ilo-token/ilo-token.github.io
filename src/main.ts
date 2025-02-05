@@ -197,8 +197,7 @@ if (typeof document !== "undefined") {
     ) {
       elements!.error.innerText =
         "Failed to load custom dictionary. This is mostly like because the " +
-        "dictionary syntax has changed. To fix, open the custom dictionary " +
-        "editor.";
+        "dictionary syntax has changed. Please fix it.";
     }
     elements!.settingsButton.addEventListener("click", () => {
       elements!.settingsBox.showModal();
