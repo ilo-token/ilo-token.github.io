@@ -56,11 +56,16 @@ class Setter<T extends { [name: string]: unknown }> {
   setUnsaved<S extends keyof T>(name: S, value: T[S]): void {
     this.settings[name].value = value;
   }
-  setUnsavedAll(settings: Partial<Settings>) {
+  setAllUnsaved(settings: Partial<Settings>): void {
     for (const name of NAMES) {
       if (settings[name] != null) {
         this.settings[name].value = settings[name] as any;
       }
+    }
+  }
+  resetUnsaved(): void {
+    for (const name of Object.keys(this.settings)) {
+      this.settings[name].value = this.settings[name].default;
     }
   }
   get<S extends keyof T>(name: S): T[S] {

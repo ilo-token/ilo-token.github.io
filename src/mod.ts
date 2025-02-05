@@ -19,13 +19,7 @@ export type { RedundancySettings } from "./settings.ts";
 export type Settings = Partial<RawSettings>;
 
 /** Translates Toki Pona text into multiple English translations. */
-export function translate(
-  tokiPona: string,
-  settings?: undefined | null | Settings,
-): Array<string> {
-  if (settings != null) {
-    globalSettings.setUnsavedAll(settings);
-  }
+export function translate(tokiPona: string): Array<string> {
   const output = rawTranslate(tokiPona).deduplicateErrors();
   if (!output.isError()) {
     const values = [...new Set(output.output)];
@@ -47,6 +41,14 @@ export function translate(
     }
     throw new AggregateError(error);
   }
+}
+/** Changes translation settings. */
+export function setSettings(settings: Settings): void {
+  globalSettings.setAllUnsaved(settings);
+}
+/** resets settings to default. */
+export function resetSettings(): void {
+  globalSettings.resetUnsaved();
 }
 /** Updates internal dictionary. */
 export function loadDictionary(dictionary: string): void {
