@@ -30,7 +30,7 @@ function space(): Parser<null> {
   return all(
     choiceOnlyOne(match(/\s/, "space"), match(/#[^\n]*/, "comment")),
   )
-    .map((_) => null);
+    .map(() => null);
 }
 function lex<T>(parser: Parser<T>): Parser<T> {
   return parser.skip(space());
@@ -40,15 +40,15 @@ function word(): Parser<string> {
     choiceOnlyOne(
       match(/[^():;#/`]/, "word"),
       matchCapture(/`([^`]*)`/, "quoted words").map(([_, words]) => words),
-      match(/#[^\n]*/, "comment").map((_) => ""),
+      match(/#[^\n]*/, "comment").map(() => ""),
     ),
   )
     .map((word) => word.join("").replaceAll(/\s+/g, " ").trim())
     .filter((word) => word.length > 0)
     .map(escapeHtml);
 }
-function slash(): Parser<null> {
-  return lex(matchString("/", "slash")).map((_) => null);
+function slash(): Parser<string> {
+  return lex(matchString("/", "slash"));
 }
 function forms(): Parser<Array<string>> {
   return sequence(word(), all(slash().with(word())))
@@ -205,7 +205,7 @@ function adjectiveKind(): Parser<AdjectiveType> {
     keyword("opinion"),
     keyword("size"),
     sequence(keyword("physical"), keyword("quality"))
-      .map((_) => "physical quality"),
+      .map(() => "physical quality"),
     keyword("age"),
     keyword("color"),
     keyword("origin"),
@@ -284,8 +284,8 @@ function adjective(): Parser<Adjective> {
   )
     .map(([adverb, adjective, kind]) => ({ adverb, adjective, kind }));
 }
-function semicolon(): Parser<null> {
-  return lex(matchString(";", "semicolon")).map((_) => null);
+function semicolon(): Parser<string> {
+  return lex(matchString(";", "semicolon"));
 }
 function definition(): Parser<Definition> {
   return choiceOnlyOne(

@@ -100,7 +100,7 @@ function singleUcsurWord(): Parser<string> {
 /** Parses a joiner. */
 function joiner(): Parser<string> {
   return choiceOnlyOne(
-    matchString("\u200D", "zero width joiner").map((_) => "zero width joiner"),
+    matchString("\u200D", "zero width joiner").map(() => "zero width joiner"),
     specificUcsurCharacter(STACKING_JOINER, "stacking joiner"),
     specificUcsurCharacter(SCALING_JOINER, "scaling joiner"),
   );
@@ -305,7 +305,7 @@ function headlessLongGlyphEnd(): Parser<
 > {
   return specificUcsurCharacter(END_OF_LONG_GLYPH, "end of long glyph")
     .skip(spaces())
-    .map((_) => ({ type: "headless long glyph end" }));
+    .map(() => ({ type: "headless long glyph end" }));
 }
 function headlessLongGlyphStart(): Parser<
   Token & { type: "headless long glyph end" }
@@ -315,7 +315,7 @@ function headlessLongGlyphStart(): Parser<
     "start of reverse long glyph",
   )
     .skip(spaces())
-    .map((_) => ({ type: "headless long glyph end" }));
+    .map(() => ({ type: "headless long glyph end" }));
 }
 function headedLongGlyphEnd(): Parser<
   Token & { type: "headed long glyph start" }
