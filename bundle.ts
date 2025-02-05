@@ -1,6 +1,7 @@
 import { bundle, BundleOptions } from "@deno/emit";
 import { buildTeloMisikeke } from "./telo-misikeke/build.ts";
 import { buildDictionary } from "./dictionary/build.ts";
+import { debounce } from "./src/misc.ts";
 
 const SOURCE = new URL("./src/main.ts", import.meta.url);
 const DESTINATION = new URL("./dist/main.js", import.meta.url);
@@ -28,21 +29,6 @@ async function build(): Promise<void> {
     .replace(/\(\s*function\s*\(\s*\)\s*\{/, '$&"use strict";');
   await Deno.writeTextFile(DESTINATION, withUseStrict);
   console.log("Building done!");
-}
-function debounce(callback: () => Promise<void>, delay: number): () => void {
-  let previous = { aborted: true };
-  let current = Promise.resolve();
-  return () => {
-    previous.aborted = true;
-    const newPrevious = { aborted: false };
-    setTimeout(() => {
-      if (!newPrevious.aborted) {
-        current = current
-          .then(() => callback());
-      }
-    }, delay);
-    previous = newPrevious;
-  };
 }
 if (import.meta.main) {
   switch (Deno.args[0]) {

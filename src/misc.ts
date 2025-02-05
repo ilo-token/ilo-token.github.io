@@ -94,3 +94,21 @@ export async function fetchOk(url: string | URL): Promise<Response> {
   }
   return response;
 }
+export function debounce(
+  callback: () => Promise<void>,
+  delay: number,
+): () => void {
+  let previous = { aborted: true };
+  let current = Promise.resolve();
+  return () => {
+    previous.aborted = true;
+    const newPrevious = { aborted: false };
+    setTimeout(() => {
+      if (!newPrevious.aborted) {
+        current = current
+          .then(() => callback());
+      }
+    }, delay);
+    previous = newPrevious;
+  };
+}
