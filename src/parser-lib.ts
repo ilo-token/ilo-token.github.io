@@ -123,7 +123,7 @@ export function choice<T>(...choices: Array<Parser<T>>): Parser<T> {
 }
 /**
  * Tries to evaluate each parsers one at a time and only only use the output of
- * the parser that is successful.
+ * the first parser that is successful.
  */
 export function choiceOnlyOne<T>(
   ...choices: Array<Parser<T>>
