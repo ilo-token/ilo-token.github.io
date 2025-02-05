@@ -230,7 +230,7 @@ function cartouche(): Parser<string> {
   )
     .map(([_, words, _1]) => {
       const word = words.join("");
-      return word[0].toUpperCase() + word.slice(1);
+      return `${word[0].toUpperCase()}${word.slice(1)}`;
     });
 }
 /** Parses multiple cartouches. */
