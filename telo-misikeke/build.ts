@@ -7,7 +7,7 @@ const TELO_MISIKEKE_URL =
   `https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/-/raw/${PROJECT_DATA.commitId.teloMisikeke}/`;
 const LINKU_URL =
   `https://raw.githubusercontent.com/lipu-linku/sona/${PROJECT_DATA.commitId.sonaLinku}/api/raw/words.json`;
-const LINKU_DEST = new URL("./linku-data.json", import.meta.url);
+const LINKU_DESTINATION = new URL("./linku-data.json", import.meta.url);
 const SOURCE = [
   {
     source: new URL("./public/rules.js", TELO_MISIKEKE_URL),
@@ -45,7 +45,7 @@ async function buildSonaLinku(): Promise<void> {
   const response = await fetchOk(LINKU_URL);
   const json = await response.json();
   const processedJson = parseLipuLinku(json);
-  await Deno.writeTextFile(LINKU_DEST, JSON.stringify(processedJson));
+  await Deno.writeTextFile(LINKU_DESTINATION, JSON.stringify(processedJson));
 }
 function parseLipuLinku(
   data: { [word: string]: { usage_category: string } },
