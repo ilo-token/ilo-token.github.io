@@ -48,6 +48,8 @@ type Elements = {
 /** A map of all HTML elements that are used here. */
 let elements: undefined | Elements;
 
+let customDictionaryOpen = false;
+
 function loadElements(): void {
   const elementNames = {
     input: "input",
@@ -171,6 +173,7 @@ function openDictionary(): void {
     elements!.customDictionary.value = localStorage.getItem(DICTIONARY_KEY) ??
       DEFAULT_MESSAGE;
   }
+  customDictionaryOpen = true;
 }
 function saveAndCloseDictionary(): void {
   const dictionary = elements!.customDictionary.value;
@@ -180,6 +183,7 @@ function saveAndCloseDictionary(): void {
       localStorage.setItem(DICTIONARY_KEY, dictionary);
     }
     elements!.customDictionaryBox.close();
+    customDictionaryOpen = false;
   } else {
     elements!.customDictionary.value +=
       `\n# Please fix these errors before saving\n# (You may remove these when fixed)\n${
@@ -225,6 +229,7 @@ if (typeof document !== "undefined") {
     });
     elements!.discardButton.addEventListener("click", () => {
       elements!.customDictionaryBox.close();
+      customDictionaryOpen = false;
     });
     elements!.saveButton.addEventListener("click", saveAndCloseDictionary);
     elements!.translateButton.addEventListener("click", updateOutput);
@@ -234,6 +239,11 @@ if (typeof document !== "undefined") {
       if (event.code === "Enter") {
         event.preventDefault();
         updateOutput();
+      }
+    });
+    addEventListener("beforeunload", (event) => {
+      if (customDictionaryOpen) {
+        event.preventDefault();
       }
     });
   });
