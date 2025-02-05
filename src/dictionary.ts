@@ -50,13 +50,13 @@ function update(): void {
   ) {
     set.clear();
   }
-  addSet(contentWordSet, (definition) =>
-    definition.type !== "filler" &&
-    definition.type !== "particle definition");
   addSet(
-    prepositionSet,
-    (definition) => definition.type === "preposition",
+    contentWordSet,
+    (definition) =>
+      definition.type !== "filler" &&
+      definition.type !== "particle definition",
   );
+  addSet(prepositionSet, (definition) => definition.type === "preposition");
   addSet(
     preverbSet,
     (definition) =>
