@@ -3,7 +3,7 @@
 import { OutputError, translate } from "./mod.ts";
 import { dictionary } from "../dictionary/dictionary.ts";
 import { loadCustomDictionary } from "./dictionary.ts";
-import { LOCAL_STORAGE_AVAILABLE } from "./misc.ts";
+import { LOCAL_STORAGE_AVAILABLE, setIgnoreError } from "./misc.ts";
 import { settings } from "./settings.ts";
 import PROJECT_DATA from "../project-data.json" with { type: "json" };
 
@@ -179,9 +179,7 @@ function saveAndCloseDictionary(): void {
   const dictionary = elements!.customDictionary.value;
   const errors = loadCustomDictionary(dictionary);
   if (errors.length === 0) {
-    if (LOCAL_STORAGE_AVAILABLE) {
-      localStorage.setItem(DICTIONARY_KEY, dictionary);
-    }
+    setIgnoreError(DICTIONARY_KEY, dictionary);
     elements!.customDictionaryBox.close();
     customDictionaryOpen = false;
   } else {

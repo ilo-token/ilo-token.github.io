@@ -1,6 +1,6 @@
 /** Module for translation settings stored as a global state */
 
-import { LOCAL_STORAGE_AVAILABLE } from "./misc.ts";
+import { LOCAL_STORAGE_AVAILABLE, setIgnoreError } from "./misc.ts";
 
 /**
  * Options for determining how to show different forms or conjugations of nouns
@@ -92,9 +92,7 @@ class Setter<T extends { [name: string]: unknown }> {
       settings.value = settings.updater.load(
         document.getElementById(name) as HTMLInputElement | HTMLSelectElement,
       );
-      if (LOCAL_STORAGE_AVAILABLE) {
-        localStorage.setItem(name, settings.updater.stringify(settings.value));
-      }
+      setIgnoreError(name, settings.updater.stringify(settings.value));
     }
   }
   /** This function is for browser only. */

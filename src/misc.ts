@@ -64,3 +64,17 @@ export function escapeHtml(text: string): string {
     .replaceAll(">", "&gt;")
     .replaceAll("&", "&amp;");
 }
+export function setIgnoreError(key: string, value: string): void {
+  if (!LOCAL_STORAGE_AVAILABLE) {
+    return;
+  }
+  try {
+    localStorage.setItem(key, value);
+  } catch (error) {
+    if (
+      !(error instanceof DOMException) || error.name !== "QuotaExceededError"
+    ) {
+      throw error;
+    }
+  }
+}
