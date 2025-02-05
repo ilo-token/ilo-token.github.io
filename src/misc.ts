@@ -111,3 +111,10 @@ export function debounce(
     }, delay);
   };
 }
+export function aggregateErrors(error: unknown): Array<unknown> {
+  if (error instanceof AggregateError) {
+    return error.errors;
+  } else {
+    return [error];
+  }
+}

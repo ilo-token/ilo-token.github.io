@@ -1,6 +1,5 @@
 import { parseDictionary } from "../dictionary/parser.ts";
 import { Definition, Dictionary } from "../dictionary/type.ts";
-import { OutputError } from "./output.ts";
 import { dictionary as globalDictionary } from "../dictionary/dictionary.ts";
 
 const customDictionary: Dictionary = {};
@@ -11,24 +10,21 @@ export const prepositionSet: Set<string> = new Set();
 export const preverbSet: Set<string> = new Set();
 export const tokiPonaWordSet: Set<string> = new Set();
 
-export function loadCustomDictionary(
-  dictionaryText: string,
-): Array<OutputError> {
+/** Updates custom dictionary. */
+export function loadCustomDictionary(dictionaryText: string): void {
   const output = parseDictionary(dictionaryText).deduplicateErrors();
-  let errors: Array<OutputError>;
   for (const key of Object.keys(customDictionary)) {
     delete customDictionary[key];
   }
   if (output.isError()) {
-    errors = output.errors;
+    update();
+    throw new AggregateError(output.errors);
   } else {
     for (const [key, value] of Object.entries(output.output[0])) {
       customDictionary[key] = value;
     }
-    errors = [];
+    update();
   }
-  update();
-  return errors;
 }
 function update(): void {
   for (const key of Object.keys(dictionary)) {

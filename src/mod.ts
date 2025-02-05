@@ -6,8 +6,8 @@ import {
   Settings as RawSettings,
   settings as globalSettings,
 } from "./settings.ts";
-import { loadCustomDictionary } from "./dictionary.ts";
 
+export { loadCustomDictionary } from "./dictionary.ts";
 export { OutputError } from "./output.ts";
 export type { RedundancySettings } from "./settings.ts";
 
@@ -49,11 +49,4 @@ export function setSettings(settings: Settings): void {
 /** resets settings to default. */
 export function resetSettings(): void {
   globalSettings.resetUnsaved();
-}
-/** Updates internal dictionary. */
-export function loadDictionary(dictionary: string): void {
-  const errors = loadCustomDictionary(dictionary);
-  if (errors.length > 0) {
-    throw new AggregateError(errors);
-  }
 }

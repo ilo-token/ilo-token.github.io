@@ -4,7 +4,7 @@ import { translate } from "./mod.ts";
 import { OutputError } from "./output.ts";
 import { dictionary } from "../dictionary/dictionary.ts";
 import { loadCustomDictionary } from "./dictionary.ts";
-import { checkLocalStorage, setIgnoreError } from "./misc.ts";
+import { aggregateErrors, checkLocalStorage, setIgnoreError } from "./misc.ts";
 import { settings } from "./settings.ts";
 import PROJECT_DATA from "../project-data.json" with { type: "json" };
 
@@ -121,31 +121,26 @@ function addError(error: unknown): void {
   list[property] = message;
   elements!.errorList.appendChild(list);
 }
-function outputErrors(errors: Array<unknown>): void {
-  if (errors.length === 0) {
-    elements!.error.innerText =
-      "An unknown error has occurred (Errors should be known, please report " +
-      "this)";
-  } else if (errors.length === 1) {
-    elements!.error.innerText = "An error has been found:";
-    addError(errors[0]);
-  } else {
-    elements!.error.innerText = "Multiple errors has been found:";
-    for (const item of errors) {
-      addError(item);
-    }
-  }
-}
 function updateOutput(): void {
   try {
     clearOutput();
     outputTranslations(translate(elements!.input.value));
   } catch (error) {
-    if (error instanceof AggregateError) {
-      outputErrors(error.errors);
+    const errors = aggregateErrors(error);
+    if (errors.length === 0) {
+      elements!.error.innerText =
+        "An unknown error has occurred (Errors should be known, please report " +
+        "this)";
+    } else if (errors.length === 1) {
+      elements!.error.innerText = "An error has been found:";
+      addError(errors[0]);
     } else {
-      outputErrors([error]);
+      elements!.error.innerText = "Multiple errors has been found:";
+      for (const item of errors) {
+        addError(item);
+      }
     }
+    console.error(error);
   }
 }
 function addWord(): void {
@@ -175,15 +170,24 @@ function openDictionary(): void {
 }
 function saveAndCloseDictionary(): void {
   const dictionary = elements!.customDictionary.value;
-  const errors = loadCustomDictionary(dictionary);
-  if (errors.length === 0) {
+  try {
+    loadCustomDictionary(dictionary);
     setIgnoreError(DICTIONARY_KEY, dictionary);
     elements!.customDictionaryBox.close();
-  } else {
+  } catch (error) {
+    const errors = aggregateErrors(error);
     elements!.customDictionary.value +=
-      `\n# Please fix these errors before saving\n# (You may remove these when fixed)\n${
-        errors.map((error) => `# - ${error.message.trim()}`).join("\n")
-      }\n`;
+      "\n# Please fix these errors before saving\n# (You may remove these when fixed)\n";
+    for (const item of errors) {
+      let message: string;
+      if (item instanceof Error) {
+        message = item.message;
+      } else {
+        message = `${item}`;
+      }
+      elements!.customDictionary.value += `# - ${message.trim()}\n`;
+    }
+    console.error(error);
   }
 }
 if (typeof document !== "undefined") {
@@ -191,13 +195,23 @@ if (typeof document !== "undefined") {
     loadElements();
     setVersion();
     settings.loadFromLocalStorage();
-    if (
-      loadCustomDictionary(localStorage.getItem(DICTIONARY_KEY) ?? "")
-        .length > 0
-    ) {
-      elements!.error.innerText =
-        "Failed to load custom dictionary. This is mostly like because the " +
-        "dictionary syntax has changed. Please fix it.";
+    try {
+      loadCustomDictionary(localStorage.getItem(DICTIONARY_KEY) ?? "");
+    } catch (error) {
+      let message: string;
+      if (
+        error instanceof OutputError ||
+        (error instanceof AggregateError &&
+          error.errors.some((error) => error instanceof OutputError))
+      ) {
+        message =
+          "Failed to load custom dictionary. This is mostly like because the " +
+          "dictionary syntax has changed. Please fix it.";
+      } else {
+        message = "Failed to load custom dictionary.";
+      }
+      elements!.error.innerText = message;
+      console.error(error);
     }
     elements!.settingsButton.addEventListener("click", () => {
       elements!.settingsBox.showModal();
