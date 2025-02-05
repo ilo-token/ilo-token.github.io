@@ -102,13 +102,12 @@ export function debounce(
   let current = Promise.resolve();
   return () => {
     previous.aborted = true;
-    const newPrevious = { aborted: false };
+    const newPrevious = previous = { aborted: false };
     setTimeout(() => {
       if (!newPrevious.aborted) {
         current = current
           .then(() => callback());
       }
     }, delay);
-    previous = newPrevious;
   };
 }
