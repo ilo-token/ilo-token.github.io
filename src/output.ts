@@ -175,16 +175,16 @@ export class Output<T> {
   ): Output<T> {
     // We resorted to using `any` types here, make sure it works properly
     return outputs.reduce(
-      (output: Output<any>, newOutput) => {
-        if (output.isError() && newOutput.isError()) {
-          return Output.concat(output, newOutput);
-        } else if (output.isError()) {
-          return Output.newErrors(output.errors);
-        } else if (newOutput.isError()) {
-          return Output.newErrors(newOutput.errors);
+      (left: Output<any>, right) => {
+        if (left.isError() && right.isError()) {
+          return Output.concat(left, right);
+        } else if (left.isError()) {
+          return Output.newErrors(left.errors);
+        } else if (right.isError()) {
+          return Output.newErrors(right.errors);
         } else {
-          return output
-            .flatMap((left) => newOutput.map((right) => [...left, right]));
+          return left
+            .flatMap((left) => right.map((right) => [...left, right]));
         }
       },
       new Output<any>([[]]),

@@ -128,11 +128,11 @@ export function choice<T>(...choices: Array<Parser<T>>): Parser<T> {
 export function choiceOnlyOne<T>(
   ...choices: Array<Parser<T>>
 ): Parser<T> {
-  return choices.reduceRight((newParser, parser) =>
+  return choices.reduceRight((right, left) =>
     new Parser((src) => {
-      const output = parser.parser(src);
+      const output = left.parser(src);
       if (output.isError()) {
-        return Output.concat(output, newParser.parser(src));
+        return Output.concat(output, right.parser(src));
       } else {
         return output;
       }
@@ -155,8 +155,8 @@ export function sequence<T extends Array<unknown>>(
 ): Parser<T> {
   // We resorted to using `any` types here, make sure it works properly
   return sequence.reduceRight(
-    (newParser: Parser<any>, parser) =>
-      parser.then((value) => newParser.map((newValue) => [value, ...newValue])),
+    (right: Parser<any>, left) =>
+      left.then((value) => right.map((newValue) => [value, ...newValue])),
     nothing().map(() => []),
   ) as Parser<any>;
 }
