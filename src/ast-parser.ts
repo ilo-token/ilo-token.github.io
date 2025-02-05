@@ -105,8 +105,11 @@ function wordFrom(set: Set<string>, description: string): Parser<string> {
 /** Parses a specific word. */
 function specificWord(thatWord: string): Parser<string> {
   return word().filter((thisWord) => {
-    if (thatWord === thisWord) return true;
-    else throw new UnexpectedError(`"${thisWord}"`, `"${thatWord}"`);
+    if (thatWord === thisWord) {
+      return true;
+    } else {
+      throw new UnexpectedError(`"${thisWord}"`, `"${thatWord}"`);
+    }
   });
 }
 /** Parses an emphasis particle. */

@@ -130,8 +130,11 @@ function properWords(): Parser<string> {
 /** Parses a specific word, either UCSUR or latin. */
 function specificWord(thatWord: string): Parser<string> {
   return word().filter((thisWord) => {
-    if (thatWord === thisWord) return true;
-    else throw new UnexpectedError(`"${thisWord}"`, `"${thatWord}"`);
+    if (thatWord === thisWord) {
+      return true;
+    } else {
+      throw new UnexpectedError(`"${thisWord}"`, `"${thatWord}"`);
+    }
   });
 }
 /** Parses multiple a. */
