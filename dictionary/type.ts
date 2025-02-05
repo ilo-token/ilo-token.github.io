@@ -76,10 +76,7 @@ export type Definition =
     }
     & VerbOnly
   )
-  | {
-    type: "modal verb";
-    verb: string;
-  }
+  | { type: "modal verb"; verb: string }
   | { type: "preposition"; preposition: string }
   | { type: "interjection"; interjection: string };
 export type Entry = { definitions: Array<Definition>; src: string };
