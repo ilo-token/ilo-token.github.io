@@ -312,9 +312,15 @@ function number(): Parser<number> {
       .map(([rest, last]) => [...rest, [last, 0]] as Array<[number, number]>)
       // Ensure the ale is in decreasing order
       .filter((numbers) =>
-        numbers.every((number, i) =>
-          i === numbers.length - 1 || number[1] > numbers[i + 1][1]
-        )
+        numbers.every((number, i) => {
+          if (i === numbers.length - 1) {
+            return true;
+          } else {
+            const [_, firstAle] = number;
+            const [_1, secondAle] = numbers[i + 1];
+            return firstAle > secondAle;
+          }
+        })
       )
       .map((numbers) =>
         numbers.reduce((result, [sub, ale]) => result + sub * 100 ** ale, 0)

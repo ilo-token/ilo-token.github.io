@@ -176,7 +176,8 @@ function noun(): Parser<Noun> {
       if (post == null) {
         postAdjective = null;
       } else {
-        postAdjective = { adjective: post[0], name: post[1] };
+        const [adjective, name] = post;
+        postAdjective = { adjective, name };
       }
       return {
         determiner,
