@@ -1,6 +1,7 @@
 /** Build codes for telo misikeke source codes. */
 
 import PROJECT_DATA from "../project-data.json" with { type: "json" };
+import { fetchOk } from "../src/misc.ts";
 
 const TELO_MISIKEKE_URL =
   `https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/-/raw/${PROJECT_DATA.commitId.teloMisikeke}/`;
@@ -61,13 +62,4 @@ export async function buildTeloMisikeke(): Promise<void> {
         ),
     ],
   );
-}
-async function fetchOk(url: string | URL): Promise<Response> {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(
-      `unable to fetch ${LINKU_URL} (${response.status} ${response.statusText})`,
-    );
-  }
-  return response;
 }
