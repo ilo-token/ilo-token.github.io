@@ -186,7 +186,9 @@ function punctuation(): Parser<string> {
     )
     .skip(spaces());
 }
-/** Parses cartouche element and returns the phonemes or letters it represents. */
+/**
+ * Parses cartouche element and returns the phonemes or letters it represents.
+ */
 function cartoucheElement(): Parser<string> {
   // This includes UCSUR middle dot and colon
   // https://www.kreativekorp.com/ucsur/charts/sitelen.html

@@ -1,4 +1,7 @@
-/** Module for AST Parser. It is responsible for turning an array of token tree into AST. */
+/**
+ * Module for AST Parser. It is responsible for turning an array of token tree
+ * into AST.
+ */
 
 import {
   Clause,

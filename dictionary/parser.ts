@@ -145,7 +145,8 @@ function nounOnly(): Parser<
         case "plural":
           if (second != null) {
             throw new OutputError(
-              "number inside tag may not be provided when two forms of noun are already provided",
+              "number inside tag may not be provided when two forms of noun " +
+                "are already provided",
             );
           }
           switch (number) {

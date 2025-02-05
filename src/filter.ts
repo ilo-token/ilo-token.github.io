@@ -529,7 +529,8 @@ function modifierIsNumeric(modifier: Modifier): boolean {
   return modifier.type === "default" && modifier.word.type === "number";
 }
 /**
- * Helper function for checking if the modifiers is exactly just "ala" or nothing.
+ * Helper function for checking if the modifiers is exactly just "ala" or
+ * nothing.
  */
 function modifiersIsAlaOrNone(modifiers: Array<Modifier>): boolean {
   if (modifiers.length > 1) {
