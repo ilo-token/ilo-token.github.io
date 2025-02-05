@@ -31,12 +31,7 @@ async function buildCode(
   exportItems: Array<string>,
 ): Promise<void> {
   // fetch source code
-  const response = await fetch(source);
-  if (!response.ok) {
-    throw new Error(
-      `unable to fetch ${source} (${response.status} ${response.statusText})`,
-    );
-  }
+  const response = await fetchOk(source);
   let file = await response.text();
 
   // add `export`
@@ -46,12 +41,7 @@ async function buildCode(
   await Deno.writeTextFile(destination, file);
 }
 async function buildSonaLinku(): Promise<void> {
-  const response = await fetch(LINKU_URL);
-  if (!response.ok) {
-    throw new Error(
-      `unable to fetch ${LINKU_URL} (${response.status} ${response.statusText})`,
-    );
-  }
+  const response = await fetchOk(LINKU_URL);
   const json = await response.json();
   const processedJson = parseLipuLinku(json);
   await Deno.writeTextFile(LINKU_DEST, JSON.stringify(processedJson));
@@ -71,4 +61,13 @@ export async function buildTeloMisikeke(): Promise<void> {
         ),
     ],
   );
+}
+async function fetchOk(url: string | URL): Promise<Response> {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(
+      `unable to fetch ${LINKU_URL} (${response.status} ${response.statusText})`,
+    );
+  }
+  return response;
 }
