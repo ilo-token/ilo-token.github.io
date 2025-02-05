@@ -7,11 +7,14 @@ export function nullableAsArray<T>(
     return [value];
   }
 }
+export function repeatArray<T>(value: T, count: number): Array<T> {
+  return new Array<T>(count).fill(value);
+}
 export function repeat(text: string, count: number): string {
-  return new Array(count).fill(text).join("");
+  return repeatArray(text, count).join("");
 }
 export function repeatWithSpace(text: string, count: number): string {
-  return new Array(count).fill(text).join(" ");
+  return repeatArray(text, count).join(" ");
 }
 // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
 export function shuffle<T>(array: Array<T>): void {
