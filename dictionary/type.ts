@@ -72,13 +72,12 @@ export type Definition =
         object: Noun;
       }>;
       forObject: boolean | string;
-      forPredicate: boolean;
+      predicateType: null | "verb" | "noun adjective";
     }
     & VerbOnly
   )
-  | ({ type: "preverb as linking verb" } & VerbOnly)
   | {
-    type: "preverb as modal verb";
+    type: "modal verb";
     verb: string;
   }
   | { type: "preposition"; preposition: string }

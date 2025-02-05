@@ -323,7 +323,7 @@ function definition(): Parser<Definition> {
           directObject: null,
           indirectObject,
           forObject: forObject != null,
-          forPredicate: false,
+          predicateType: null,
         }) as Definition
       ),
     sequence(
@@ -339,7 +339,7 @@ function definition(): Parser<Definition> {
           directObject,
           indirectObject: [],
           forObject: preposition ?? false,
-          forPredicate: false,
+          predicateType: null,
         }) as Definition
       ),
     simpleUnit("i")
@@ -386,7 +386,7 @@ function definition(): Parser<Definition> {
           directObject: null,
           indirectObject: [],
           forObject: false,
-          forPredicate: true,
+          predicateType: "verb",
         }) as Definition
       ),
     sequence(noun(), simpleUnit("prep"))
@@ -433,17 +433,21 @@ function definition(): Parser<Definition> {
       .skip(template(keyword("predicate")))
       .skip(semicolon()).map((verb) =>
         ({
-          type: "preverb as modal verb",
+          type: "modal verb",
           verb,
         }) as Definition
       ),
     verbOnly()
       .skip(tag(sequence(keyword("v"), keyword("linking"))))
       .skip(template(keyword("predicate")))
-      .skip(semicolon()).map((linkingVerb) =>
+      .skip(semicolon()).map((verb) =>
         ({
-          type: "preverb as linking verb",
-          ...linkingVerb,
+          type: "verb",
+          ...verb,
+          directObject: null,
+          indirectObject: [],
+          forObject: false,
+          predicateType: "noun adjective",
         }) as Definition
       ),
     forms().skip(tag(keyword("f")))

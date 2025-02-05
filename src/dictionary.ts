@@ -53,12 +53,16 @@ function update(): void {
   addSet(contentWordSet, (definition) =>
     definition.type !== "filler" &&
     definition.type !== "particle definition");
-  addSetWithType(prepositionSet, ["preposition"]);
-  addSetWithType(preverbSet, [
-    "preverb as finite verb",
-    "preverb as linking verb",
-    "preverb as modal verb",
-  ]);
+  addSet(
+    prepositionSet,
+    (definition) => definition.type === "preposition",
+  );
+  addSet(
+    preverbSet,
+    (definition) =>
+      (definition.type === "verb" && definition.predicateType != null) ||
+      definition.type === "modal verb",
+  );
   addSet(tokiPonaWordSet, () => true);
 }
 function addSet(
@@ -72,11 +76,5 @@ function addSet(
   for (const word of array) {
     set.add(word);
   }
-}
-function addSetWithType(
-  set: Set<string>,
-  types: Array<Definition["type"]>,
-): void {
-  return addSet(set, (definition) => types.includes(definition.type));
 }
 update();
