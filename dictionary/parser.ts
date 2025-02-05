@@ -220,6 +220,23 @@ function verbOnly(): Parser<VerbOnly> {
       word().skip(slash()),
       word(),
     )
+      .filter(([presentPlural, presentSingular, past]) => {
+        const [_, ...pluralParticles] = presentPlural.split(" ");
+        const [_1, ...singularParticles] = presentSingular.split(" ");
+        const [_2, ...pastParticles] = past.split(" ");
+        if (
+          pluralParticles.length !== singularParticles.length ||
+          pluralParticles.length !== pastParticles.length ||
+          pluralParticles.some((particle, i) =>
+            particle !== singularParticles[i] || particle !== pastParticles[i]
+          )
+        ) {
+          throw new UnrecognizedError(
+            `mismatched verb particles ${presentPlural}/${presentSingular}/${past}`,
+          );
+        }
+        return true;
+      })
       .map(([presentPlural, presentSingular, past]) => ({
         presentPlural,
         presentSingular,
