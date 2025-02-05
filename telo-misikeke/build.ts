@@ -53,13 +53,11 @@ function parseLipuLinku(
   return Object.keys(data).map((word) => [word, data[word].usage_category]);
 }
 export async function buildTeloMisikeke(): Promise<void> {
-  await Promise.all(
-    [
-      buildSonaLinku(),
-      ...SOURCE
-        .map((file) =>
-          buildCode(file.source, file.destination, file.exportItems)
-        ),
-    ],
-  );
+  await Promise.all([
+    buildSonaLinku(),
+    ...SOURCE
+      .map((file) =>
+        buildCode(file.source, file.destination, file.exportItems)
+      ),
+  ]);
 }

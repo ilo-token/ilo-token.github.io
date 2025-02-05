@@ -570,9 +570,7 @@ function preposition(): Parser<Preposition> {
           phrases: { type: "single", phrase },
         } as Preposition;
       }),
-    binaryWords(prepositionSet, "preposition").map((
-      [preposition, phrase],
-    ) =>
+    binaryWords(prepositionSet, "preposition").map(([preposition, phrase]) =>
       ({
         preposition: {
           type: "default",
