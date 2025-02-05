@@ -39,7 +39,7 @@ function word(): Parser<string> {
   return all(
     choiceOnlyOne(
       match(/[^():;#/`]/, "word"),
-      matchCapture(/`([^`]*)`/, "quoted words").map(([_, words]) => words),
+      matchCapture(/`([^`])`/u, "quoted character").map(([_, words]) => words),
       match(/#[^\n]*/, "comment").map(() => ""),
     ),
   )
