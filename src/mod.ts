@@ -8,7 +8,7 @@ import {
 } from "./settings.ts";
 import { loadCustomDictionary } from "./dictionary.ts";
 
-export { OutputError };
+export { OutputError } from "./output.ts";
 export type { RedundancySettings } from "./settings.ts";
 
 /**
