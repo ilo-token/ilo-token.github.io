@@ -213,12 +213,12 @@ function adjectiveKind(): Parser<AdjectiveType> {
     keyword("qualifier"),
   );
 }
-function verbOnly(): Parser<VerbOnly> {
+function verbOnly(tagInside: Parser<unknown>): Parser<VerbOnly> {
   return choiceOnlyOne(
     sequence(
       word().skip(slash()),
       word().skip(slash()),
-      word(),
+      word().skip(tag(tagInside)),
     )
       .filter(([presentPlural, presentSingular, past]) => {
         const [_, ...pluralParticles] = presentPlural.split(" ");
@@ -242,25 +242,27 @@ function verbOnly(): Parser<VerbOnly> {
         presentSingular,
         past,
       })),
-    word().map((verb) => {
-      const sentence = nlp(verb);
-      sentence.tag("Verb");
-      const conjugations = sentence.verbs().conjugate()[0] as undefined | {
-        Infinitive: string;
-        PastTense: string;
-        PresentTense: string;
-        Gerund: string;
-        FutureTense: string;
-      };
-      if (conjugations == null) {
-        throw new OutputError(`no verb conjugation found for ${verb}`);
-      }
-      return {
-        presentPlural: conjugations.Infinitive,
-        presentSingular: conjugations.PresentTense,
-        past: conjugations.PastTense,
-      };
-    }),
+    word()
+      .skip(tag(tagInside))
+      .map((verb) => {
+        const sentence = nlp(verb);
+        sentence.tag("Verb");
+        const conjugations = sentence.verbs().conjugate()[0] as undefined | {
+          Infinitive: string;
+          PastTense: string;
+          PresentTense: string;
+          Gerund: string;
+          FutureTense: string;
+        };
+        if (conjugations == null) {
+          throw new OutputError(`no verb conjugation found for ${verb}`);
+        }
+        return {
+          presentPlural: conjugations.Infinitive,
+          presentSingular: conjugations.PresentTense,
+          past: conjugations.PastTense,
+        };
+      }),
   );
 }
 function determiner(): Parser<Determiner> {
@@ -307,7 +309,7 @@ function definition(): Parser<Definition> {
       .skip(semicolon())
       .map((noun) => ({ type: "noun", ...noun }) as Definition),
     sequence(
-      verbOnly().skip(tag(keyword("v"))),
+      verbOnly(keyword("v")),
       optionalAll(template(keyword("object"))),
       optionalAll(
         sequence(simpleUnit("prep"), noun())
@@ -327,7 +329,7 @@ function definition(): Parser<Definition> {
         }) as Definition
       ),
     sequence(
-      verbOnly().skip(tag(keyword("v"))),
+      verbOnly(keyword("v")),
       optionalAll(noun()),
       optionalAll(simpleUnit("prep").skip(template(keyword("object")))),
     )
@@ -376,7 +378,7 @@ function definition(): Parser<Definition> {
           return { type: "numeral", numeral } as Definition;
         }
       }),
-    verbOnly().skip(tag(keyword("v")))
+    verbOnly(keyword("v"))
       .skip(template(keyword("predicate")))
       .skip(semicolon())
       .map((verb) =>
@@ -437,8 +439,7 @@ function definition(): Parser<Definition> {
           verb,
         }) as Definition
       ),
-    verbOnly()
-      .skip(tag(sequence(keyword("v"), keyword("linking"))))
+    verbOnly(sequence(keyword("v"), keyword("linking")))
       .skip(template(keyword("predicate")))
       .skip(semicolon()).map((verb) =>
         ({
