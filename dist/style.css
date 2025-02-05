@@ -31,9 +31,6 @@ textarea {
 #error-list {
   color: #b60000;
 }
-.align-right {
-  text-align: right;
-}
 summary {
   cursor: pointer;
 }
@@ -51,7 +48,7 @@ dialog {
 dialog:modal {
   display: flex;
 }
-dialog:modal#custom-dictionary-box {
+#custom-dictionary-box {
   box-sizing: border-box;
   height: 100%;
 }
@@ -123,7 +120,4 @@ dialog input[type="checkbox"] {
   #error-list {
     color: #ff5e5e;
   }
-}
-.hide {
-  display: none;
 }
