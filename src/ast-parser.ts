@@ -57,6 +57,7 @@ import {
   preverbSet,
   tokiPonaWordSet,
 } from "./dictionary.ts";
+import { nullableAsArray } from "./misc.ts";
 
 /** Parses a specific type of token. */
 function specificToken<T extends Token["type"]>(
@@ -251,19 +252,19 @@ function binaryWords(
 function optionalCombined(
   word: Set<string>,
   description: string,
-): Parser<[WordUnit, Array<Modifier>]> {
+): Parser<[WordUnit, null | Modifier]> {
   return choice(
     wordUnit(word, description)
-      .map((wordUnit) => [wordUnit, []] as [WordUnit, Array<Modifier>]),
+      .map((wordUnit) => [wordUnit, null] as [WordUnit, null | Modifier]),
     binaryWords(word, description)
       .map(([first, second]) =>
         [
           { type: "default", word: first },
-          [{
+          {
             type: "default",
             word: { type: "default", word: second },
-          }],
-        ] as [WordUnit, Array<Modifier>]
+          },
+        ] as [WordUnit, null | Modifier]
       ),
   );
 }
@@ -438,7 +439,7 @@ const PHRASE: Parser<Phrase> = lazy(() =>
         ({
           type: "preverb",
           preverb,
-          modifiers: [...modifier, ...modifiers],
+          modifiers: [...nullableAsArray(modifier), ...modifiers],
           phrase,
           emphasis,
         }) as Phrase
@@ -456,7 +457,7 @@ const PHRASE: Parser<Phrase> = lazy(() =>
         ({
           type: "default",
           headWord,
-          modifiers: [...modifier, ...modifiers],
+          modifiers: [...nullableAsArray(modifier), ...modifiers],
           emphasis,
         }) as Phrase
       ),
@@ -601,7 +602,7 @@ function preposition(): Parser<Preposition> {
       .map(([[preposition, modifier], modifiers, phrases, emphasis]) =>
         ({
           preposition,
-          modifiers: [...modifier, ...modifiers],
+          modifiers: [...nullableAsArray(modifier), ...modifiers],
           phrases,
           emphasis,
         }) as Preposition
