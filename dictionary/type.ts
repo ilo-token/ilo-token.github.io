@@ -76,7 +76,7 @@ export type Definition =
     & VerbOnly
   )
   | ({ type: "preverb as linking verb" } & VerbOnly)
-  | ({ type: "preverb as finite verb"; particle: null | string } & VerbOnly)
+  | ({ type: "preverb as finite verb" } & VerbOnly)
   | {
     type: "preverb as modal verb";
     verb: string;

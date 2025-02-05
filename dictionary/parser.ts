@@ -374,17 +374,13 @@ function definition(): Parser<Definition> {
           return { type: "numeral", numeral } as Definition;
         }
       }),
-    sequence(
-      verbOnly().skip(tag(keyword("v"))),
-      optionalAll(simpleUnit("particle")),
-    )
+    verbOnly().skip(tag(keyword("v")))
       .skip(template(keyword("predicate")))
       .skip(semicolon())
-      .map(([verb, particle]) =>
+      .map((verb) =>
         ({
           type: "preverb as finite verb",
           ...verb,
-          particle,
         }) as Definition
       ),
     sequence(noun(), simpleUnit("prep"))

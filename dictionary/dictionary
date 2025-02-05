@@ -34,7 +34,7 @@ alasa:
   # hunt(v) [object];
   search(v) for(prep) [object];
 
-  try(v) to(particle) [predicate];
+  try to(v) [predicate];
 
   # hunting(n gerund);
   searching(n gerund);
@@ -98,7 +98,7 @@ awen:
 
   continue(v);
 
-  continue(v) to(particle) [predicate];
+  continue to(v) [predicate];
 
   # staying(n gerund);
   remaining(n gerund);
@@ -283,7 +283,7 @@ kama:
   future(adj age);
 
   become(v linking) [predicate];
-  began(v) to(particle) [predicate];
+  began to(v) [predicate];
 
   arriving(n gerund);
   # approaching(n gerund);
@@ -680,7 +680,7 @@ lukin, oko:
   eye(n);
   seeing(adj qualifier) organ(n);
 
-  try(v) to(particle) [predicate];
+  try to(v) [predicate];
 
 lupa:
   hole(n);
@@ -1368,7 +1368,7 @@ sona:
 
   know(v) [object];
 
-  know(v) how to(particle) [predicate];
+  know how to(v) [predicate];
 
   knowledgeable(adj opinion);
 
@@ -1650,7 +1650,7 @@ wile:
   # wish(n);
   requirement(n);
 
-  want(v) to(particle) [predicate];
+  want to(v) [predicate];
 
   want-related(adj opinion);
   # desire-related(adj opinion);
