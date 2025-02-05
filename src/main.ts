@@ -226,7 +226,7 @@ if (typeof document !== "undefined") {
           } else {
             message = `${item}`;
           }
-          elements!.customDictionary.value += `# - ${message.trim()}\n`;
+          elements!.customDictionary.value += `# - ${message}\n`;
         }
         console.error(error);
       }
