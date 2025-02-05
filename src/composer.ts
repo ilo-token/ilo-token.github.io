@@ -11,8 +11,8 @@ import { nullableAsArray } from "./misc.ts";
 import { Output, OutputError } from "./output.ts";
 import { translate as translateToAst } from "./translator.ts";
 
-const EMPHASIS_STARTING_TAG = "<b>";
-const EMPHASIS_ENDING_TAG = "</b>";
+const EMPHASIS_STARTING_TAG = "<strong>";
+const EMPHASIS_ENDING_TAG = "</strong>";
 
 function word(word: Word): string {
   if (word.emphasis) {
