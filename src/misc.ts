@@ -33,35 +33,38 @@ export function shuffle<T>(array: Array<T>): void {
     ];
   }
 }
-export const LOCAL_STORAGE_AVAILABLE = (() => {
-  if (typeof localStorage === "undefined") {
-    return false;
+let localStorageAvailable: undefined | boolean;
+export function checkLocalStorage(): boolean {
+  if (localStorageAvailable == null) {
+    if (typeof localStorage === "undefined") {
+      localStorageAvailable = false;
+    } else {
+      // https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
+      try {
+        const x = "__storage_test__";
+        localStorage.setItem(x, x);
+        localStorage.removeItem(x);
+        localStorageAvailable = true;
+      } catch (e) {
+        localStorageAvailable = e instanceof DOMException &&
+          // everything except Firefox
+          (e.code === 22 ||
+            // Firefox
+            e.code === 1014 ||
+            // test name field too, because code might not be present
+            // everything except Firefox
+            e.name === "QuotaExceededError" ||
+            // Firefox
+            e.name === "NS_ERROR_DOM_QUOTA_REACHED") &&
+          // acknowledge QuotaExceededError only if there's something already
+          // stored
+          localStorage &&
+          localStorage.length > 0;
+      }
+    }
   }
-  // https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
-  try {
-    const x = "__storage_test__";
-    localStorage.setItem(x, x);
-    localStorage.removeItem(x);
-    return true;
-  } catch (e) {
-    return (
-      e instanceof DOMException &&
-      // everything except Firefox
-      (e.code === 22 ||
-        // Firefox
-        e.code === 1014 ||
-        // test name field too, because code might not be present
-        // everything except Firefox
-        e.name === "QuotaExceededError" ||
-        // Firefox
-        e.name === "NS_ERROR_DOM_QUOTA_REACHED") &&
-      // acknowledge QuotaExceededError only if there's something already
-      // stored
-      localStorage &&
-      localStorage.length > 0
-    );
-  }
-})();
+  return localStorageAvailable;
+}
 export function escapeHtml(text: string): string {
   return text
     .replaceAll("<", "&lt;")
@@ -69,7 +72,7 @@ export function escapeHtml(text: string): string {
     .replaceAll("&", "&amp;");
 }
 export function setIgnoreError(key: string, value: string): void {
-  if (!LOCAL_STORAGE_AVAILABLE) {
+  if (!checkLocalStorage()) {
     return;
   }
   try {

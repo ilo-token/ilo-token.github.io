@@ -4,7 +4,7 @@ import { translate } from "./mod.ts";
 import { OutputError } from "./output.ts";
 import { dictionary } from "../dictionary/dictionary.ts";
 import { loadCustomDictionary } from "./dictionary.ts";
-import { LOCAL_STORAGE_AVAILABLE, setIgnoreError } from "./misc.ts";
+import { checkLocalStorage, setIgnoreError } from "./misc.ts";
 import { settings } from "./settings.ts";
 import PROJECT_DATA from "../project-data.json" with { type: "json" };
 
@@ -168,7 +168,7 @@ function resizeTextarea(): void {
 }
 function openDictionary(): void {
   elements!.customDictionaryBox.showModal();
-  if (LOCAL_STORAGE_AVAILABLE) {
+  if (checkLocalStorage()) {
     elements!.customDictionary.value = localStorage.getItem(DICTIONARY_KEY) ??
       DEFAULT_MESSAGE;
   }
