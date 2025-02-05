@@ -83,8 +83,8 @@ export function lookAhead<T>(parser: Parser<T>): Parser<T> {
 }
 /**
  * Evaluates the parser only during parsing, useful for parser that may change
- * e.g. due to settings. Could also be used for recursive parser but consider
- * using `lazy` instead.
+ * e.g. due to settings. Could also be used for non-changing recursive parser
+ * but consider using `lazy` instead.
  */
 export function variable<T>(parser: () => Parser<T>): Parser<T> {
   return new Parser((src) => parser().parser(src));
