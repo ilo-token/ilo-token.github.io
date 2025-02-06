@@ -150,13 +150,11 @@ function longWord(): Parser<Token & { type: "long word" }> {
   )
     .then((word) =>
       count(allAtLeastOnce(matchString(word, `"${word}"`)))
-        .map((count) =>
-          ({
-            type: "long word",
-            word,
-            length: count + 1,
-          }) as Token & { type: "long word" }
-        )
+        .map<Token & { type: "long word" }>((count) => ({
+          type: "long word",
+          word,
+          length: count + 1,
+        }))
     )
     .skip(spaces());
 }
@@ -341,32 +339,30 @@ function insideLongGlyph(): Parser<
     .map((words) => ({ type: "headed long glyph start", words }));
 }
 /** Parses a token aside from X ala X. */
-const TOKEN_EXCEPT_X_ALA_X = cached(choiceOnlyOne(
+const TOKEN_EXCEPT_X_ALA_X = cached(choiceOnlyOne<Token>(
   spaceLongGlyph(),
   headedLongGlyphStart(),
   combinedGlyphs()
     .skip(spaces())
-    .map((words) => ({ type: "combined glyphs", words }) as Token),
-  properWords().map((words) =>
-    ({ type: "proper word", words, kind: "latin" }) as Token
-  ),
+    .map((words) => ({ type: "combined glyphs", words })),
+  properWords().map((words) => ({ type: "proper word", words, kind: "latin" })),
   longWord(),
-  multipleA().map((count) => ({ type: "multiple a", count }) as Token),
-  word().map((word) => ({ type: "word", word }) as Token),
+  multipleA().map((count) => ({ type: "multiple a", count })),
+  word().map((word) => ({ type: "word", word })),
   // starting with non-words:
-  punctuation().map((punctuation) =>
-    ({ type: "punctuation", punctuation }) as Token
-  ),
+  punctuation().map((punctuation) => ({ type: "punctuation", punctuation })),
   headlessLongGlyphEnd(),
   headedLongGlyphEnd(),
   headlessLongGlyphStart(),
   insideLongGlyph(),
-  cartouches().map((words) =>
-    ({ type: "proper word", words, kind: "cartouche" }) as Token
-  ),
+  cartouches().map((words) => ({
+    type: "proper word",
+    words,
+    kind: "cartouche",
+  })),
 ));
 /** Parses a token. */
-export const TOKEN = choiceOnlyOne(
-  xAlaX().map((word) => ({ type: "x ala x", word }) as Token),
+export const TOKEN = choiceOnlyOne<Token>(
+  xAlaX().map((word) => ({ type: "x ala x", word })),
   TOKEN_EXCEPT_X_ALA_X,
 );
