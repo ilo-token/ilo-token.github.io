@@ -6,9 +6,13 @@ if (import.meta.main) {
     if (input == null) {
       break;
     }
-    const output = translate(input);
-    for (const translation of output) {
-      console.log(`  - ${translation}`);
+    try {
+      const output = translate(input);
+      for (const translation of output) {
+        console.log(`  - ${translation}`);
+      }
+    } catch (error) {
+      console.error(error);
     }
   }
 }
