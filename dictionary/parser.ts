@@ -493,14 +493,15 @@ const DEFINITION_EXTRACT = space()
   .skip(eol());
 const DEFINITION = space().with(definition()).skip(eol());
 
-export function parseDictionary(sourceText: string): Output<Dictionary> {
+export function parseDictionary(sourceText: string): Dictionary {
   const output = DICTIONARY.parse(sourceText);
   if (!output.isError()) {
-    return output;
+    return output.output[0];
   } else {
     const definitions = DEFINITION_EXTRACT.parse(sourceText);
+    let errors: Output<never>;
     if (!definitions.isError()) {
-      return Output.newErrors(
+      errors = Output.newErrors(
         definitions.output[0]
           .flatMap((definition) =>
             DEFINITION.parse(definition).errors.map((error) =>
@@ -509,7 +510,8 @@ export function parseDictionary(sourceText: string): Output<Dictionary> {
           ),
       );
     } else {
-      return Output.newErrors(output.errors);
+      errors = Output.newErrors(output.errors);
     }
+    throw new AggregateError(errors.deduplicateErrors().errors);
   }
 }
