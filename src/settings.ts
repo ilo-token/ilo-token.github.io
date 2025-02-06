@@ -85,7 +85,7 @@ class Setter<T extends { [name: string]: unknown }> {
         settings.value = settings.default;
       }
       settings.updater.set(
-        document.getElementById(name) as HTMLInputElement,
+        document.getElementById(name) as HTMLInputElement | HTMLSelectElement,
         settings.value,
       );
     }
