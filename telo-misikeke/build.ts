@@ -31,15 +31,12 @@ async function buildCode(
   destination: URL,
   exportItems: Array<string>,
 ): Promise<void> {
-  // fetch source code
   const response = await fetchOk(source);
-  let file = await response.text();
-
-  // add `export`
-  file = file + `;export{${exportItems.join(",")}};`;
-
-  //write the code
-  await Deno.writeTextFile(destination, file);
+  const code = await response.text();
+  await Deno.writeTextFile(
+    destination,
+    `${code};export{${exportItems.join(",")}}`,
+  );
 }
 async function buildSonaLinku(): Promise<void> {
   const response = await fetchOk(LINKU_URL);
