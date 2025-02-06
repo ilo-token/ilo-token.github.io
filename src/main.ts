@@ -33,9 +33,9 @@ started.`;
 const EMPTY_DEFINITION_PLACEHOLDER = "Definitions here";
 
 const DICTIONARY_LOADING_FAILED_FIXABLE_MESSAGE =
-  "Failed to load custom dictionary. This is mostly like because the syntax " +
-  "has updated and your custom dictionary still uses the old syntax. Please " +
-  "fix it. Apologies for the inconvenience.";
+  "Failed to load custom dictionary. This is mostly likely because the " +
+  "syntax has been updated and your custom dictionary still uses the old " +
+  "syntax. Please fix it. Apologies for the inconvenience.";
 const DICTIONARY_LOADING_FAILED_UNFIXABLE_MESSAGE =
   "Failed to load custom dictionary. Please report this.";
 const INVALID_WORD_ERROR =
