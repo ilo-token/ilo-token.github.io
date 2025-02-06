@@ -10,6 +10,9 @@ export const prepositionSet: Set<string> = new Set();
 export const preverbSet: Set<string> = new Set();
 export const tokiPonaWordSet: Set<string> = new Set();
 
+export function asComment(text: string): string {
+  return text.replaceAll(/^/mg, "# ");
+}
 /** Updates custom dictionary. */
 export function loadCustomDictionary(dictionaryText: string): void {
   const output = parseDictionary(dictionaryText).deduplicateErrors();

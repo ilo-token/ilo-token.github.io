@@ -71,6 +71,12 @@ export function escapeHtml(text: string): string {
     .replaceAll(">", "&gt;")
     .replaceAll("&", "&amp;");
 }
+export function newlineAsHtml(text: string): string {
+  return text.replaceAll(/\r\n|\n|\r/g, "<br/>");
+}
+export function escapeHtmlWithNewline(text: string): string {
+  return newlineAsHtml(escapeHtml(text));
+}
 export function setIgnoreError(key: string, value: string): void {
   if (!checkLocalStorage()) {
     return;

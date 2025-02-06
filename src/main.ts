@@ -3,23 +3,45 @@
 import { translate } from "./mod.ts";
 import { OutputError } from "./output.ts";
 import { dictionary } from "../dictionary/dictionary.ts";
-import { loadCustomDictionary } from "./dictionary.ts";
-import { checkLocalStorage, setIgnoreError } from "./misc.ts";
+import { asComment, loadCustomDictionary } from "./dictionary.ts";
+import {
+  checkLocalStorage,
+  escapeHtmlWithNewline,
+  setIgnoreError,
+} from "./misc.ts";
 import { settings } from "./settings.ts";
 import PROJECT_DATA from "../project-data.json" with { type: "json" };
 
-const DEFAULT_MESSAGE = `\
-# ====================================
-# Welcome to Custom Dictionary Editor!
-# ====================================
-#
-# Here you can customize the dictionary
-# used in ilo Token. You may change the
-# definitions of existing words and
-# even extend ilo Token with more
-# non-pu words. Press Help above to get
-# started.
-`;
+const UNKNOWN_ERROR_MESSAGE =
+  "An unknown error has occurred (Errors should be known, please report this)";
+const SINGULAR_ERROR_MESSAGE = "An error has been found:";
+const MULTIPLE_ERROR_MESSAGE = "Multiple errors has been found:";
+
+const DEFAULT_CUSTOM_DICTIONARY_MESSAGE = `\
+====================================
+Welcome to Custom Dictionary Editor!
+====================================
+
+Here you can customize the dictionary
+used in ilo Token. You may change the
+definitions of existing words and
+even extend ilo Token with more
+non-pu words. Press Help above to get
+started.`;
+const EMPTY_DEFINITION_PLACEHOLDER = "Definitions here";
+
+const DICTIONARY_LOADING_FAILED_FIXABLE_MESSAGE =
+  "Failed to load custom dictionary. This is mostly like because the " +
+  "syntax has changed. Please fix it.";
+const DICTIONARY_LOADING_FAILED_UNFIXABLE_MESSAGE =
+  "Failed to load custom dictionary.";
+const INVALID_WORD_ERROR =
+  "Error: Invalid word to add (You may remove this line)";
+const DICTIONARY_ERROR_FIXABLE_MESSAGE =
+  "Please fix these errors before saving\n(You may remove these when fixed)";
+const DICTIONARY_ERROR_UNFIXABLE_MESSAGE =
+  "An error has occurred. Please report this.";
+
 const DICTIONARY_KEY = "custom-dictionary";
 
 if (typeof document !== "undefined") {
@@ -116,11 +138,13 @@ if (typeof document !== "undefined") {
           (error instanceof AggregateError &&
             error.errors.every((error) => error instanceof OutputError))
         ) {
-          message =
-            "Failed to load custom dictionary. This is mostly like because the " +
-            "dictionary syntax has changed. Please fix it.";
+          message = escapeHtmlWithNewline(
+            DICTIONARY_LOADING_FAILED_FIXABLE_MESSAGE,
+          );
         } else {
-          message = "Failed to load custom dictionary.";
+          message = escapeHtmlWithNewline(
+            DICTIONARY_LOADING_FAILED_UNFIXABLE_MESSAGE,
+          );
         }
         errorDisplay.innerText = message;
         console.error(error);
@@ -161,13 +185,15 @@ if (typeof document !== "undefined") {
           errors = [error];
         }
         if (errors.length === 0) {
-          errorDisplay.innerText =
-            "An unknown error has occurred (Errors should be known, please report " +
-            "this)";
+          errorDisplay.innerHTML = escapeHtmlWithNewline(UNKNOWN_ERROR_MESSAGE);
         } else if (errors.length === 1) {
-          errorDisplay.innerText = "An error has been found:";
+          errorDisplay.innerText = escapeHtmlWithNewline(
+            SINGULAR_ERROR_MESSAGE,
+          );
         } else {
-          errorDisplay.innerText = "Multiple errors has been found:";
+          errorDisplay.innerText = escapeHtmlWithNewline(
+            MULTIPLE_ERROR_MESSAGE,
+          );
         }
         for (const item of errors) {
           let property: "innerHTML" | "innerText";
@@ -207,7 +233,7 @@ if (typeof document !== "undefined") {
       customDictionaryDialogBox.showModal();
       if (checkLocalStorage()) {
         customDictionaryTextBox.value = localStorage.getItem(DICTIONARY_KEY) ??
-          DEFAULT_MESSAGE;
+          `${asComment(DEFAULT_CUSTOM_DICTIONARY_MESSAGE)}\n`;
       }
     });
     addWordButton.addEventListener("click", addWord);
@@ -224,10 +250,12 @@ if (typeof document !== "undefined") {
         if (Object.hasOwn(dictionary, word)) {
           add = `\n${word}:\n  ${dictionary[word].src.trim()}\n`;
         } else {
-          add = `\n${word}:\n  # Definitions here\n`;
+          add = `\n${word}:\n${
+            asComment(EMPTY_DEFINITION_PLACEHOLDER).replaceAll(/^/gm, "  ")
+          }\n`;
         }
       } else {
-        add = "\n# Error: Invalid word to add (You may remove this line)\n";
+        add = `\n${asComment(INVALID_WORD_ERROR)}\n`;
       }
       customDictionaryTextBox.value += add;
     }
@@ -260,11 +288,13 @@ if (typeof document !== "undefined") {
           errors = [`${error}`];
         }
         if (fixable) {
-          customDictionaryTextBox.value +=
-            "\n# Please fix these errors before saving\n# (You may remove these when fixed)\n";
+          customDictionaryTextBox.value += `\n${
+            asComment(DICTIONARY_ERROR_FIXABLE_MESSAGE)
+          }\n`;
         } else {
-          customDictionaryTextBox.value +=
-            "\n# Errors have occurred, please report this.\n";
+          customDictionaryTextBox.value += `\n${
+            asComment(DICTIONARY_ERROR_UNFIXABLE_MESSAGE)
+          }\n`;
         }
         for (const message of errors) {
           customDictionaryTextBox.value += `# - ${message}\n`;
