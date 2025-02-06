@@ -22,128 +22,132 @@ const DEFAULT_MESSAGE = `\
 `;
 const DICTIONARY_KEY = "custom-dictionary";
 
-type Elements = {
-  input: HTMLTextAreaElement;
-
-  output: HTMLUListElement;
-  error: HTMLParagraphElement;
-  errorList: HTMLParagraphElement;
-  version: HTMLAnchorElement;
-
-  translateButton: HTMLButtonElement;
-  customDictionaryButton: HTMLButtonElement;
-  settingsButton: HTMLButtonElement;
-
-  settingsBox: HTMLDialogElement;
-  confirmButton: HTMLButtonElement;
-  cancelButton: HTMLButtonElement;
-  resetButton: HTMLButtonElement;
-
-  customDictionaryBox: HTMLDialogElement;
-  addWord: HTMLInputElement;
-  addWordButton: HTMLButtonElement;
-  customDictionary: HTMLTextAreaElement;
-  discardButton: HTMLButtonElement;
-  saveButton: HTMLButtonElement;
-};
-/** A map of all HTML elements that are used here. */
-let elements: undefined | Elements;
-
-function updateOutput(): void {
-  // clear output
-  elements!.output.innerHTML = "";
-  elements!.errorList.innerHTML = "";
-  elements!.error.innerText = "";
-  try {
-    // display translations
-    for (const translation of translate(elements!.input.value)) {
-      const list = document.createElement("li");
-      list.innerHTML = translation;
-      elements!.output.appendChild(list);
-    }
-  } catch (error) {
-    const errors = aggregateErrors(error);
-    if (errors.length === 0) {
-      elements!.error.innerText =
-        "An unknown error has occurred (Errors should be known, please report " +
-        "this)";
-    } else if (errors.length === 1) {
-      elements!.error.innerText = "An error has been found:";
-    } else {
-      elements!.error.innerText = "Multiple errors has been found:";
-    }
-    for (const item of errors) {
-      let property: "innerHTML" | "innerText";
-      if (item instanceof OutputError && item.htmlMessage) {
-        property = "innerHTML";
-      } else {
-        property = "innerText";
-      }
-      let message: string;
-      if (item instanceof Error) {
-        message = item.message;
-      } else {
-        message = `${item}`;
-      }
-      const list = document.createElement("li");
-      list[property] = message;
-      elements!.errorList.appendChild(list);
-    }
-    console.error(error);
-  }
-}
-function addWord(): void {
-  const word = elements!.addWord.value.trim();
-  let add: string;
-  if (/^[a-z][a-zA-Z]*$/.test(word)) {
-    if (Object.hasOwn(dictionary, word)) {
-      add = `\n${word}:\n  ${dictionary[word].src.trim()}\n`;
-    } else {
-      add = `\n${word}:\n  # Definitions here\n`;
-    }
-  } else {
-    add = "\n# Error: Invalid word to add (You may remove this line)\n";
-  }
-  elements!.customDictionary.value += add;
-}
-function resizeTextarea(): void {
-  elements!.input.style.height = "auto";
-  elements!.input.style.height = `${`${elements!.input.scrollHeight + 14}`}px`;
-}
 if (typeof document !== "undefined") {
   document.addEventListener("DOMContentLoaded", () => {
     // load elements
-    const elementNames = {
-      input: "input",
+    const inputTextBox = document.getElementById(
+      "input",
+    ) as HTMLTextAreaElement;
 
-      output: "output",
-      error: "error",
-      errorList: "error-list",
-      version: "version",
+    const outputDisplay = document.getElementById("output") as HTMLUListElement;
+    const errorDisplay = document.getElementById(
+      "error",
+    ) as HTMLParagraphElement;
+    const errorList = document.getElementById(
+      "error-list",
+    ) as HTMLParagraphElement;
 
-      translateButton: "translate-button",
-      customDictionaryButton: "custom-dictionary-button",
-      settingsButton: "settings-button",
+    const translateButton = document.getElementById(
+      "translate-button",
+    ) as HTMLButtonElement;
+    const customDictionaryButton = document.getElementById(
+      "custom-dictionary-button",
+    ) as HTMLButtonElement;
+    const settingsButton = document.getElementById(
+      "settings-button",
+    ) as HTMLButtonElement;
 
-      settingsBox: "settings-box",
-      confirmButton: "confirm-button",
-      cancelButton: "cancel-button",
-      resetButton: "reset-button",
+    const settingsDialogBox = document.getElementById(
+      "settings-box",
+    ) as HTMLDialogElement;
+    const confirmButton = document.getElementById(
+      "confirm-button",
+    ) as HTMLButtonElement;
+    const cancelButton = document.getElementById(
+      "cancel-button",
+    ) as HTMLButtonElement;
+    const resetButton = document.getElementById(
+      "reset-button",
+    ) as HTMLButtonElement;
 
-      customDictionaryBox: "custom-dictionary-box",
-      addWord: "add-word",
-      addWordButton: "add-word-button",
-      customDictionary: "custom-dictionary",
-      discardButton: "discard-button",
-      saveButton: "save-button",
-    } as any;
-    for (const name of Object.keys(elementNames)) {
-      elementNames[name] = document.getElementById(elementNames[name]);
+    const customDictionaryDialogBox = document.getElementById(
+      "custom-dictionary-box",
+    ) as HTMLDialogElement;
+    const addWordTextBox = document.getElementById(
+      "add-word",
+    ) as HTMLInputElement;
+    const addWordButton = document.getElementById(
+      "add-word-button",
+    ) as HTMLButtonElement;
+    const customDictionaryTextBox = document.getElementById(
+      "custom-dictionary",
+    ) as HTMLTextAreaElement;
+    const discardButton = document.getElementById(
+      "discard-button",
+    ) as HTMLButtonElement;
+    const saveButton = document.getElementById(
+      "save-button",
+    ) as HTMLButtonElement;
+
+    const versionDisplay = document.getElementById(
+      "version",
+    ) as HTMLAnchorElement;
+
+    function updateOutput(): void {
+      // clear output
+      outputDisplay.innerHTML = "";
+      errorList.innerHTML = "";
+      errorDisplay.innerText = "";
+      try {
+        // display translations
+        for (const translation of translate(inputTextBox.value)) {
+          const list = document.createElement("li");
+          list.innerHTML = translation;
+          outputDisplay.appendChild(list);
+        }
+      } catch (error) {
+        // Display errors
+        const errors = aggregateErrors(error);
+        if (errors.length === 0) {
+          errorDisplay.innerText =
+            "An unknown error has occurred (Errors should be known, please report " +
+            "this)";
+        } else if (errors.length === 1) {
+          errorDisplay.innerText = "An error has been found:";
+        } else {
+          errorDisplay.innerText = "Multiple errors has been found:";
+        }
+        for (const item of errors) {
+          let property: "innerHTML" | "innerText";
+          if (item instanceof OutputError && item.htmlMessage) {
+            property = "innerHTML";
+          } else {
+            property = "innerText";
+          }
+          let message: string;
+          if (item instanceof Error) {
+            message = item.message;
+          } else {
+            message = `${item}`;
+          }
+          const list = document.createElement("li");
+          list[property] = message;
+          errorList.appendChild(list);
+        }
+        console.error(error);
+      }
     }
-    elements = elementNames;
+    function addWord(): void {
+      const word = addWordTextBox.value.trim();
+      let add: string;
+      if (/^[a-z][a-zA-Z]*$/.test(word)) {
+        if (Object.hasOwn(dictionary, word)) {
+          add = `\n${word}:\n  ${dictionary[word].src.trim()}\n`;
+        } else {
+          add = `\n${word}:\n  # Definitions here\n`;
+        }
+      } else {
+        add = "\n# Error: Invalid word to add (You may remove this line)\n";
+      }
+      customDictionaryTextBox.value += add;
+    }
+    function resizeTextarea(): void {
+      inputTextBox.style.height = "auto";
+      inputTextBox.style.height = `${`${inputTextBox.scrollHeight + 14}`}px`;
+    }
     // set version
     if (PROJECT_DATA.onDevelopment) {
-      elements!.version.innerText = `${PROJECT_DATA.version} (On development)`;
+      versionDisplay.innerText = `${PROJECT_DATA.version} (On development)`;
     } else {
       const date = new Date(PROJECT_DATA.releaseDate).toLocaleDateString(
         undefined,
@@ -151,8 +155,7 @@ if (typeof document !== "undefined") {
           dateStyle: "short",
         },
       );
-      elements!.version.innerText =
-        `${PROJECT_DATA.version} - Released ${date}`;
+      versionDisplay.innerText = `${PROJECT_DATA.version} - Released ${date}`;
     }
     // load settings
     settings.loadFromLocalStorage();
@@ -172,52 +175,52 @@ if (typeof document !== "undefined") {
       } else {
         message = "Failed to load custom dictionary.";
       }
-      elements!.error.innerText = message;
+      errorDisplay.innerText = message;
       console.error(error);
     }
     // initial text area size
     resizeTextarea();
     // add all event listener
-    elements!.settingsButton.addEventListener("click", () => {
-      elements!.settingsBox.showModal();
+    settingsButton.addEventListener("click", () => {
+      settingsDialogBox.showModal();
     });
-    elements!.confirmButton.addEventListener("click", () => {
+    confirmButton.addEventListener("click", () => {
       settings.loadFromElements();
-      elements!.settingsBox.close();
+      settingsDialogBox.close();
     });
-    elements!.cancelButton.addEventListener("click", () => {
+    cancelButton.addEventListener("click", () => {
       settings.resetElementsToCurrent();
-      elements!.settingsBox.close();
+      settingsDialogBox.close();
     });
-    elements!.resetButton.addEventListener("click", () => {
+    resetButton.addEventListener("click", () => {
       settings.resetElementsToDefault();
     });
-    elements!.customDictionaryButton.addEventListener("click", () => {
-      elements!.customDictionaryBox.showModal();
+    customDictionaryButton.addEventListener("click", () => {
+      customDictionaryDialogBox.showModal();
       if (checkLocalStorage()) {
-        elements!.customDictionary.value =
-          localStorage.getItem(DICTIONARY_KEY) ?? DEFAULT_MESSAGE;
+        customDictionaryTextBox.value = localStorage.getItem(DICTIONARY_KEY) ??
+          DEFAULT_MESSAGE;
       }
     });
-    elements!.addWordButton.addEventListener("click", addWord);
-    elements!.addWord.addEventListener("keydown", (event) => {
+    addWordButton.addEventListener("click", addWord);
+    addWordTextBox.addEventListener("keydown", (event) => {
       if (event.code === "Enter") {
         event.preventDefault();
         addWord();
       }
     });
-    elements!.discardButton.addEventListener("click", () => {
-      elements!.customDictionaryBox.close();
+    discardButton.addEventListener("click", () => {
+      customDictionaryDialogBox.close();
     });
-    elements!.saveButton.addEventListener("click", () => {
-      const dictionary = elements!.customDictionary.value;
+    saveButton.addEventListener("click", () => {
+      const dictionary = customDictionaryTextBox.value;
       try {
         loadCustomDictionary(dictionary);
         setIgnoreError(DICTIONARY_KEY, dictionary);
-        elements!.customDictionaryBox.close();
+        customDictionaryDialogBox.close();
       } catch (error) {
         const errors = aggregateErrors(error);
-        elements!.customDictionary.value +=
+        customDictionaryTextBox.value +=
           "\n# Please fix these errors before saving\n# (You may remove these when fixed)\n";
         for (const item of errors) {
           let message: string;
@@ -226,21 +229,21 @@ if (typeof document !== "undefined") {
           } else {
             message = `${item}`;
           }
-          elements!.customDictionary.value += `# - ${message}\n`;
+          customDictionaryTextBox.value += `# - ${message}\n`;
         }
         console.error(error);
       }
     });
-    elements!.translateButton.addEventListener("click", updateOutput);
-    elements!.input.addEventListener("input", resizeTextarea);
-    elements!.input.addEventListener("keydown", (event) => {
+    translateButton.addEventListener("click", updateOutput);
+    inputTextBox.addEventListener("input", resizeTextarea);
+    inputTextBox.addEventListener("keydown", (event) => {
       if (event.code === "Enter") {
         event.preventDefault();
         updateOutput();
       }
     });
     addEventListener("beforeunload", (event) => {
-      if (elements!.customDictionaryBox.open) {
+      if (customDictionaryDialogBox.open) {
         event.preventDefault();
       }
     });
