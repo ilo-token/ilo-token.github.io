@@ -138,15 +138,11 @@ if (typeof document !== "undefined") {
           (error instanceof AggregateError &&
             error.errors.every((error) => error instanceof OutputError))
         ) {
-          message = escapeHtmlWithNewline(
-            DICTIONARY_LOADING_FAILED_FIXABLE_MESSAGE,
-          );
+          message = DICTIONARY_LOADING_FAILED_FIXABLE_MESSAGE;
         } else {
-          message = escapeHtmlWithNewline(
-            DICTIONARY_LOADING_FAILED_UNFIXABLE_MESSAGE,
-          );
+          message = DICTIONARY_LOADING_FAILED_UNFIXABLE_MESSAGE;
         }
-        errorDisplay.innerText = message;
+        errorDisplay.innerText = escapeHtmlWithNewline(message);
         console.error(error);
       }
     }
@@ -184,17 +180,19 @@ if (typeof document !== "undefined") {
         } else {
           errors = [error];
         }
-        if (errors.length === 0) {
-          errorDisplay.innerHTML = escapeHtmlWithNewline(UNKNOWN_ERROR_MESSAGE);
-        } else if (errors.length === 1) {
-          errorDisplay.innerText = escapeHtmlWithNewline(
-            SINGULAR_ERROR_MESSAGE,
-          );
-        } else {
-          errorDisplay.innerText = escapeHtmlWithNewline(
-            MULTIPLE_ERROR_MESSAGE,
-          );
+        let message: string;
+        switch (errors.length) {
+          case 0:
+            message = UNKNOWN_ERROR_MESSAGE;
+            break;
+          case 1:
+            message = SINGULAR_ERROR_MESSAGE;
+            break;
+          default:
+            message = MULTIPLE_ERROR_MESSAGE;
+            break;
         }
+        errorDisplay.innerHTML = escapeHtmlWithNewline(message);
         for (const item of errors) {
           let property: "innerHTML" | "innerText";
           if (item instanceof OutputError && item.htmlMessage) {
@@ -245,19 +243,18 @@ if (typeof document !== "undefined") {
     });
     function addWord(): void {
       const word = addWordTextBox.value.trim();
-      let add: string;
       if (/^[a-z][a-zA-Z]*$/.test(word)) {
+        let definitions: string;
         if (Object.hasOwn(dictionary, word)) {
-          add = `\n${word}:\n  ${dictionary[word].src.trim()}\n`;
+          definitions = `  ${dictionary[word].src.trim()}`;
         } else {
-          add = `\n${word}:\n${
-            asComment(EMPTY_DEFINITION_PLACEHOLDER).replaceAll(/^/gm, "  ")
-          }\n`;
+          definitions = asComment(EMPTY_DEFINITION_PLACEHOLDER)
+            .replaceAll(/^/gm, "  ");
         }
+        customDictionaryTextBox.value += `\n${word}:\n${definitions}\n`;
       } else {
-        add = `\n${asComment(INVALID_WORD_ERROR)}\n`;
+        customDictionaryTextBox.value += `\n${asComment(INVALID_WORD_ERROR)}\n`;
       }
-      customDictionaryTextBox.value += add;
     }
     discardButton.addEventListener("click", () => {
       customDictionaryDialogBox.close();
@@ -287,15 +284,13 @@ if (typeof document !== "undefined") {
           fixable = false;
           errors = [`${error}`];
         }
+        let message: string;
         if (fixable) {
-          customDictionaryTextBox.value += `\n${
-            asComment(DICTIONARY_ERROR_FIXABLE_MESSAGE)
-          }\n`;
+          message = DICTIONARY_ERROR_FIXABLE_MESSAGE;
         } else {
-          customDictionaryTextBox.value += `\n${
-            asComment(DICTIONARY_ERROR_UNFIXABLE_MESSAGE)
-          }\n`;
+          message = DICTIONARY_ERROR_UNFIXABLE_MESSAGE;
         }
+        customDictionaryTextBox.value += `\n${asComment(message)}\n`;
         for (const message of errors) {
           customDictionaryTextBox.value += `# - ${message}\n`;
         }
