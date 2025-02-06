@@ -1,3 +1,5 @@
+import { escape } from "@std/html/entities";
+
 export function nullableAsArray<T>(
   value?: T | null | undefined,
 ): Array<NonNullable<T>> {
@@ -7,15 +9,10 @@ export function nullableAsArray<T>(
     return [value];
   }
 }
-export function repeatArray<T>(value: T, count: number): Array<T> {
-  return new Array<T>(count).fill(value);
-}
-export function repeat(text: string, count: number): string {
-  return repeatArray(text, count).join("");
-}
 export function repeatWithSpace(text: string, count: number): string {
-  return repeatArray(text, count).join(" ");
+  return new Array(count).fill(text).join(" ");
 }
+// TODO: use @std/random/shuffle when stable
 // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
 export function shuffle<T>(array: Array<T>): void {
   let currentIndex = array.length;
@@ -56,17 +53,11 @@ export function checkLocalStorage(): boolean {
   }
   return localStorageAvailable;
 }
-export function escapeHtml(text: string): string {
-  return text
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll("&", "&amp;");
-}
 export function newlineAsHtml(text: string): string {
   return text.replaceAll(/\r\n|\n|\r/g, "<br/>");
 }
 export function escapeHtmlWithNewline(text: string): string {
-  return newlineAsHtml(escapeHtml(text));
+  return newlineAsHtml(escape(text));
 }
 export function setIgnoreError(key: string, value: string): void {
   if (!checkLocalStorage()) {
@@ -91,6 +82,8 @@ export async function fetchOk(url: string | URL): Promise<Response> {
   }
   return response;
 }
+// This is different from @std/async/debounce, this ensures the callback is
+// awaited before running another callback
 export function debounce(
   callback: () => Promise<void>,
   delay: number,

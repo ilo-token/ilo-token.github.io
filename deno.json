@@ -30,7 +30,8 @@
     }
   },
   "imports": {
-    "compromise": "npm:compromise@14.14.3",
+    "@std/html": "jsr:@std/html@^1.0.3",
+    "compromise": "npm:compromise@^14.14.3",
     "@deno/emit": "jsr:@deno/emit@0.46.0"
   }
 }

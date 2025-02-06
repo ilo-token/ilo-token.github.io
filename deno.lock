@@ -2,14 +2,15 @@
   "version": "4",
   "specifiers": {
     "jsr:@deno/cache-dir@0.13.2": "0.13.2",
-    "jsr:@deno/emit@0.46.0": "0.46.0",
+    "jsr:@deno/emit@0.46": "0.46.0",
     "jsr:@std/assert@0.223": "0.223.0",
     "jsr:@std/bytes@0.223": "0.223.0",
     "jsr:@std/fmt@0.223": "0.223.0",
     "jsr:@std/fs@0.223": "0.223.0",
+    "jsr:@std/html@^1.0.3": "1.0.3",
     "jsr:@std/io@0.223": "0.223.0",
     "jsr:@std/path@0.223": "0.223.0",
-    "npm:compromise@14.14.3": "14.14.3"
+    "npm:compromise@^14.14.3": "14.14.4"
   },
   "jsr": {
     "@deno/cache-dir@0.13.2": {
@@ -40,6 +41,9 @@
     "@std/fs@0.223.0": {
       "integrity": "3b4b0550b2c524cbaaa5a9170c90e96cbb7354e837ad1bdaf15fc9df1ae9c31c"
     },
+    "@std/html@1.0.3": {
+      "integrity": "7a0ac35e050431fb49d44e61c8b8aac1ebd55937e0dc9ec6409aa4bab39a7988"
+    },
     "@std/io@0.223.0": {
       "integrity": "2d8c3c2ab3a515619b90da2c6ff5ea7b75a94383259ef4d02116b228393f84f1",
       "dependencies": [
@@ -55,8 +59,8 @@
     }
   },
   "npm": {
-    "compromise@14.14.3": {
-      "integrity": "sha512-nR/3bJJ/Q2LZF9is66s9zhwhm63zcZ+/EaZWUJ8PgEO40ROctfrKdYQmO+UbwVsrp1/crDhCrsMJu0rgo/JirQ==",
+    "compromise@14.14.4": {
+      "integrity": "sha512-QdbJwronwxeqb7a5KFK/+Y5YieZ4PE1f7ai0vU58Pp4jih+soDCBMuKVbhDEPQ+6+vI3vSiG4UAAjTAXLJw1Qw==",
       "dependencies": [
         "efrt",
         "grad-school",
@@ -75,8 +79,9 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@deno/emit@0.46.0",
-      "npm:compromise@14.14.3"
+      "jsr:@deno/emit@0.46",
+      "jsr:@std/html@^1.0.3",
+      "npm:compromise@^14.14.3"
     ]
   }
 }

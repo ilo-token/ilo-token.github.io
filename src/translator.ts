@@ -2,7 +2,7 @@ import { parse } from "./ast-parser.ts";
 import * as TokiPona from "./ast.ts";
 import * as English from "./english-ast.ts";
 import { TodoError } from "./error.ts";
-import { nullableAsArray, repeat, repeatWithSpace } from "./misc.ts";
+import { nullableAsArray, repeatWithSpace } from "./misc.ts";
 import { Output } from "./output.ts";
 import { settings } from "./settings.ts";
 import * as Dictionary from "../dictionary/type.ts";
@@ -157,7 +157,7 @@ function adjective(
         so = "so";
         break;
       case "long word":
-        so = `s${repeat("o", emphasis.length)}`;
+        so = `s${"o".repeat(emphasis.length)}`;
         break;
     }
   }
@@ -930,11 +930,11 @@ function filler(filler: TokiPona.Emphasis): Array<string> {
         .filter((definition) => definition.type === "filler")
         .map((definition) =>
           `${definition.before}${
-            repeat(definition.repeat, filler.length)
+            definition.repeat.repeat(filler.length)
           }${definition.after}`
         );
     case "multiple a":
-      return [repeat("ha", filler.count)];
+      return ["ha".repeat(filler.count)];
   }
 }
 function emphasisAsPunctuation(
@@ -964,7 +964,7 @@ function emphasisAsPunctuation(
       case "long word":
         switch (emphasis.word as "a" | "n") {
           case "a":
-            exclamationMark = repeat("!", emphasis.length);
+            exclamationMark = "!".repeat(emphasis.length);
             break;
           case "n":
             return null;

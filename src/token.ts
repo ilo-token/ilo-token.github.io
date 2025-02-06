@@ -1,6 +1,6 @@
 /** Module describing token. */
 
-import { repeat, repeatWithSpace } from "./misc.ts";
+import { repeatWithSpace } from "./misc.ts";
 
 /** Represents token. */
 export type Token =
@@ -56,7 +56,7 @@ export function describe(token: Token): string {
     case "multiple a":
       return `"${repeatWithSpace("a", token.count)}"`;
     case "long word":
-      return `"${repeat(token.word, token.length)}"`;
+      return `"${token.word.repeat(token.length)}"`;
     case "x ala x":
       return `"${token.word} ala ${token.word}"`;
     case "proper word":

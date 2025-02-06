@@ -1,6 +1,7 @@
 {
   "imports": {
-    "compromise/": "https://esm.sh/compromise@14.14.3/",
+    "@std/html/entities": "https://esm.sh/jsr/@std/html@^1.0.3/entities?bundle=false",
+    "compromise/three": "https://esm.sh/compromise@^14.14.3/three?bundle=false",
     "node:process": "./process.ts"
   }
 }

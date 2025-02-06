@@ -24,7 +24,8 @@ import {
 } from "../src/parser-lib.ts";
 import { Output, OutputError } from "../src/output.ts";
 import { UnrecognizedError } from "../src/error.ts";
-import { escapeHtml, nullableAsArray, repeat } from "../src/misc.ts";
+import { nullableAsArray } from "../src/misc.ts";
+import { escape } from "@std/html/entities";
 
 function comment(): Parser<string> {
   return match(/#[^\r\n]*/, "comment");
@@ -48,7 +49,7 @@ function word(): Parser<string> {
   )
     .map((word) => word.join("").replaceAll(/\s+/g, " ").trim())
     .filter((word) => word.length > 0)
-    .map(escapeHtml);
+    .map(escape);
 }
 function slash(): Parser<string> {
   return lex(matchString("/", "slash"));
@@ -96,7 +97,7 @@ function detectRepetition(
     const after = first.slice(i + 1);
     const passed = [...rest.entries()]
       .every(([i, test]) =>
-        test === `${before}${repeat(repeatString, i + 2)}${after}`
+        test === `${before}${repeatString.repeat(i + 2)}${after}`
       );
     if (passed) {
       return { before, repeat: repeatString, after };
