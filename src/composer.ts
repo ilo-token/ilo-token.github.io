@@ -8,7 +8,7 @@ import {
 } from "./english-ast.ts";
 import { TodoError } from "./error.ts";
 import { nullableAsArray } from "./misc.ts";
-import { Output, OutputError } from "./output.ts";
+import { Output } from "./output.ts";
 import { translate as translateToAst } from "./translator.ts";
 
 const EMPHASIS_STARTING_TAG = "<strong>";
