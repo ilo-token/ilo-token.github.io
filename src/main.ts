@@ -95,8 +95,10 @@ if (typeof document !== "undefined") {
       );
       versionDisplay.innerText = `${PROJECT_DATA.version} - Released ${date}`;
     }
+
     // load settings
     settings.loadFromLocalStorage();
+
     // load custom dictionary
     let customDictionary: string;
     if (checkLocalStorage()) {
@@ -124,12 +126,14 @@ if (typeof document !== "undefined") {
         console.error(error);
       }
     }
+
     // initial text area size
     resizeTextarea();
     function resizeTextarea(): void {
       inputTextBox.style.height = "auto";
       inputTextBox.style.height = `${`${inputTextBox.scrollHeight + 14}`}px`;
     }
+
     // add all event listener
     translateButton.addEventListener("click", updateOutput);
     inputTextBox.addEventListener("input", resizeTextarea);
@@ -140,19 +144,16 @@ if (typeof document !== "undefined") {
       }
     });
     function updateOutput(): void {
-      // clear output
       outputDisplay.innerHTML = "";
       errorList.innerHTML = "";
       errorDisplay.innerText = "";
       try {
-        // display translations
         for (const translation of translate(inputTextBox.value)) {
           const list = document.createElement("li");
           list.innerHTML = translation;
           outputDisplay.appendChild(list);
         }
       } catch (error) {
-        // Display errors
         let errors: Array<unknown>;
         if (error instanceof AggregateError) {
           errors = error.errors;
