@@ -34,7 +34,8 @@ const EMPTY_DEFINITION_PLACEHOLDER = "Definitions here";
 
 const DICTIONARY_LOADING_FAILED_FIXABLE_MESSAGE =
   "Failed to load custom dictionary. This is mostly like because the " +
-  "syntax has changed. Please fix it.";
+  "syntax has changed and your custom dictionary still uses the old syntax. " +
+  "Please fix it. I'm sorry for the inconvenience.";
 const DICTIONARY_LOADING_FAILED_UNFIXABLE_MESSAGE =
   "Failed to load custom dictionary. Please report this.";
 const INVALID_WORD_ERROR =
