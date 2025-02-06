@@ -111,12 +111,8 @@ function main(): void {
   if (PROJECT_DATA.onDevelopment) {
     versionDisplay.innerText = `${PROJECT_DATA.version} (On development)`;
   } else {
-    const date = new Date(PROJECT_DATA.releaseDate).toLocaleDateString(
-      undefined,
-      {
-        dateStyle: "short",
-      },
-    );
+    const date = new Date(PROJECT_DATA.releaseDate)
+      .toLocaleDateString(undefined, { dateStyle: "short" });
     versionDisplay.innerText = `${PROJECT_DATA.version} - Released ${date}`;
   }
 
