@@ -4,7 +4,7 @@ import { translate } from "./mod.ts";
 import { OutputError } from "./output.ts";
 import { dictionary } from "../dictionary/dictionary.ts";
 import { loadCustomDictionary } from "./dictionary.ts";
-import { aggregateErrors, checkLocalStorage, setIgnoreError } from "./misc.ts";
+import { checkLocalStorage, setIgnoreError } from "./misc.ts";
 import { settings } from "./settings.ts";
 import PROJECT_DATA from "../project-data.json" with { type: "json" };
 
@@ -97,7 +97,12 @@ if (typeof document !== "undefined") {
         }
       } catch (error) {
         // Display errors
-        const errors = aggregateErrors(error);
+        let errors: Array<unknown>;
+        if (error instanceof AggregateError) {
+          errors = error.errors;
+        } else {
+          errors = [error];
+        }
         if (errors.length === 0) {
           errorDisplay.innerText =
             "An unknown error has occurred (Errors should be known, please report " +
@@ -167,7 +172,7 @@ if (typeof document !== "undefined") {
       if (
         error instanceof OutputError ||
         (error instanceof AggregateError &&
-          error.errors.some((error) => error instanceof OutputError))
+          error.errors.every((error) => error instanceof OutputError))
       ) {
         message =
           "Failed to load custom dictionary. This is mostly like because the " +
@@ -219,16 +224,32 @@ if (typeof document !== "undefined") {
         setIgnoreError(DICTIONARY_KEY, dictionary);
         customDictionaryDialogBox.close();
       } catch (error) {
-        const errors = aggregateErrors(error);
-        customDictionaryTextBox.value +=
-          "\n# Please fix these errors before saving\n# (You may remove these when fixed)\n";
-        for (const item of errors) {
-          let message: string;
-          if (item instanceof Error) {
-            message = item.message;
-          } else {
-            message = `${item}`;
-          }
+        let fixable: boolean;
+        let errors: Array<string>;
+        if (error instanceof OutputError) {
+          fixable = true;
+          errors = [error.message];
+        } else if (
+          error instanceof AggregateError &&
+          error.errors.every((error) => error instanceof OutputError)
+        ) {
+          fixable = true;
+          errors = error.errors.map((error) => error.message);
+        } else if (error instanceof Error) {
+          fixable = false;
+          errors = [error.message];
+        } else {
+          fixable = false;
+          errors = [`${error}`];
+        }
+        if (fixable) {
+          customDictionaryTextBox.value +=
+            "\n# Please fix these errors before saving\n# (You may remove these when fixed)\n";
+        } else {
+          customDictionaryTextBox.value +=
+            "\n# Errors have occurred, please report this.\n";
+        }
+        for (const message of errors) {
           customDictionaryTextBox.value += `# - ${message}\n`;
         }
         console.error(error);
