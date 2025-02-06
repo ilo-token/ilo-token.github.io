@@ -26,9 +26,12 @@ import { Output, OutputError } from "../src/output.ts";
 import { UnrecognizedError } from "../src/error.ts";
 import { escapeHtml, nullableAsArray, repeat } from "../src/misc.ts";
 
+function comment(): Parser<string> {
+  return match(/#[^\r\n]*/, "comment");
+}
 function space(): Parser<null> {
   return all(
-    choiceOnlyOne(match(/\s/, "space"), match(/#[^\n]*/, "comment")),
+    choiceOnlyOne(match(/\s/, "space"), comment()),
   )
     .map(() => null);
 }
@@ -40,7 +43,7 @@ function word(): Parser<string> {
     choiceOnlyOne(
       match(/[^():;#/`]/, "word"),
       matchCapture(/`([^`])`/u, "quoted character").map(([_, words]) => words),
-      match(/#[^\n]*/, "comment").map(() => ""),
+      comment().map(() => ""),
     ),
   )
     .map((word) => word.join("").replaceAll(/\s+/g, " ").trim())
