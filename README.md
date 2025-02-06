@@ -42,4 +42,4 @@ Before running this command, you'll need to run `deno task build` first to fetch
 deno task run
 ```
 
-This will run a REPL that you can use to test ilo Token. To stop this command, simply press Ctrl + C.
+This will run a REPL that you can use to test ilo Token. To stop this command, simply press Escape or Ctrl + C.

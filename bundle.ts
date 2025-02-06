@@ -39,6 +39,7 @@ if (import.meta.main) {
       break;
     }
     case "watch": {
+      console.log("Press ctrl+c to exit.");
       const builder = debounce(async () => {
         try {
           await build();
@@ -47,6 +48,10 @@ if (import.meta.main) {
         }
       }, 500);
       const watcher = Deno.watchFs(WATCH);
+      Deno.addSignalListener("SIGINT", () => {
+        watcher.close();
+        Deno.exit();
+      });
       try {
         builder();
         for await (const _ of watcher) {
