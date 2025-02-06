@@ -3,7 +3,7 @@
 import { translate } from "./mod.ts";
 import { OutputError } from "./output.ts";
 import { dictionary } from "../dictionary/dictionary.ts";
-import { asComment, loadCustomDictionary } from "./dictionary.ts";
+import { loadCustomDictionary } from "./dictionary.ts";
 import {
   checkLocalStorage,
   escapeHtmlWithNewline,
@@ -11,6 +11,7 @@ import {
 } from "./misc.ts";
 import { settings } from "./settings.ts";
 import PROJECT_DATA from "../project-data.json" with { type: "json" };
+import { asComment } from "../dictionary/misc.ts";
 
 const UNKNOWN_ERROR_MESSAGE =
   "An unknown error has occurred (Errors should be known, please report this)";
