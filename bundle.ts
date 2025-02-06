@@ -7,10 +7,7 @@ const SOURCE = new URL("./src/main.ts", import.meta.url);
 const DESTINATION = new URL("./dist/main.js", import.meta.url);
 const IMPORT_MAP = new URL("./bundle-imports.json", import.meta.url);
 
-const BUILD_OPTION: BundleOptions = {
-  type: "classic",
-  importMap: IMPORT_MAP,
-};
+const BUILD_OPTION: BundleOptions = { type: "classic", importMap: IMPORT_MAP };
 const WATCH = [
   "./dictionary/build.ts",
   "./dictionary/dictionary",
