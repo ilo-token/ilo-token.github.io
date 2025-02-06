@@ -12,17 +12,14 @@ export const tokiPonaWordSet: Set<string> = new Set();
 
 /** Updates custom dictionary. */
 export function loadCustomDictionary(dictionaryText: string): void {
+  const dictionary = parseDictionary(dictionaryText);
   for (const key of Object.keys(customDictionary)) {
     delete customDictionary[key];
   }
-  try {
-    const dictionary = parseDictionary(dictionaryText);
-    for (const [key, value] of Object.entries(dictionary)) {
-      customDictionary[key] = value;
-    }
-  } finally {
-    update();
+  for (const [key, value] of Object.entries(dictionary)) {
+    customDictionary[key] = value;
   }
+  update();
 }
 function update(): void {
   for (const key of Object.keys(dictionary)) {
