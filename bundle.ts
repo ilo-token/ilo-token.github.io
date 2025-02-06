@@ -21,8 +21,6 @@ const WATCH = [
   "./project-data.json",
 ];
 async function build(): Promise<void> {
-  console.log("Building dictionary...");
-  await buildDictionary();
   console.log("Building main.js...");
   const bundled = await bundle(SOURCE, BUILD_OPTION);
   const withUseStrict = bundled.code
@@ -33,8 +31,8 @@ async function build(): Promise<void> {
 if (import.meta.main) {
   switch (Deno.args[0]) {
     case "build": {
-      console.log("Building telo misikeke...");
-      await buildTeloMisikeke();
+      console.log("Building dictionary and telo misikeke...");
+      await Promise.all([buildDictionary(), buildTeloMisikeke()]);
       await build();
       break;
     }
@@ -42,6 +40,8 @@ if (import.meta.main) {
       console.log("Press ctrl+c to exit.");
       const builder = debounce(async () => {
         try {
+          console.log("Building dictionary...");
+          await buildDictionary();
           await build();
         } catch (error) {
           console.error(error);
