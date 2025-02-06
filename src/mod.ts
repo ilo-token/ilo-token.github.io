@@ -20,7 +20,7 @@ export type Settings = Partial<RawSettings>;
 
 /** Translates Toki Pona text into multiple English translations. */
 export function translate(tokiPona: string): Array<string> {
-  const output = rawTranslate(tokiPona).deduplicateErrors();
+  const output = rawTranslate(tokiPona);
   if (!output.isError()) {
     const values = [...new Set(output.output)];
     if (globalSettings.get("randomize")) {
@@ -37,7 +37,7 @@ export function translate(tokiPona: string): Array<string> {
       });
     }
     if (error.length == 0) {
-      error = output.errors;
+      error = output.deduplicateErrors().errors;
     }
     throw new AggregateError(error);
   }
