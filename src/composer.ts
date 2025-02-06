@@ -109,14 +109,6 @@ function sentence(sentence: Sentence): string {
   return `${sentence.clauses.map(clause).join(", ")}${sentence.punctuation}`;
 }
 export function translate(src: string): Output<string> {
-  try {
-    return translateToAst(src)
-      .map((sentences) => sentences.map(sentence).join(" "));
-  } catch (error) {
-    if (error instanceof OutputError) {
-      return new Output(error);
-    } else {
-      throw error;
-    }
-  }
+  return translateToAst(src)
+    .map((sentences) => sentences.map(sentence).join(" "));
 }
