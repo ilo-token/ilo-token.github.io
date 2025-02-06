@@ -209,14 +209,14 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
       } else {
         number = "plural";
       }
-      return new Output([{
+      return new Output<ModifierTranslation>([{
         type: "determiner",
         determiner: {
           determiner: { word: `${word.number}`, emphasis },
           kind: "numeral",
           number,
         },
-      } as ModifierTranslation]);
+      }]);
     }
     case "x ala x":
       return new Output();
@@ -236,81 +236,69 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
           switch (definition.type) {
             case "noun":
               return noun(definition, emphasis, count)
-                .map((noun) =>
-                  ({
-                    type: "noun",
-                    noun,
-                  }) as ModifierTranslation
-                );
+                .map<ModifierTranslation>((noun) => ({
+                  type: "noun",
+                  noun,
+                }));
             case "noun preposition":
               return noun(definition.noun, emphasis, count)
-                .map((noun) =>
-                  ({
-                    type: "noun preposition",
-                    noun,
-                    preposition: definition.preposition,
-                  }) as ModifierTranslation
-                );
+                .map<ModifierTranslation>((noun) => ({
+                  type: "noun preposition",
+                  noun,
+                  preposition: definition.preposition,
+                }));
             case "personal pronoun":
               return simpleNounForms(
                 definition.singular?.object,
                 definition.plural?.object,
               )
-                .map((pronoun) =>
-                  ({
-                    type: "noun",
+                .map<ModifierTranslation>((pronoun) => ({
+                  type: "noun",
+                  noun: {
+                    type: "simple",
+                    determiner: [],
+                    adjective: [],
                     noun: {
-                      type: "simple",
-                      determiner: [],
-                      adjective: [],
-                      noun: {
-                        word: repeatWithSpace(pronoun, count),
-                        emphasis,
-                      },
-                      number: "both",
-                      postCompound: null,
-                      postAdjective: null,
-                      preposition: [],
-                      emphasis: false,
+                      word: repeatWithSpace(pronoun, count),
+                      emphasis,
                     },
-                  }) as ModifierTranslation
-                );
+                    number: "both",
+                    postCompound: null,
+                    postAdjective: null,
+                    preposition: [],
+                    emphasis: false,
+                  },
+                }));
             case "determiner":
               return determiner(definition, word.emphasis != null, count)
-                .map((determiner) =>
-                  ({
-                    type: "determiner",
-                    determiner,
-                  }) as ModifierTranslation
-                );
+                .map<ModifierTranslation>((determiner) => ({
+                  type: "determiner",
+                  determiner,
+                }));
             case "adjective":
               return adjective(definition, word.emphasis, count)
-                .map((adjective) =>
-                  ({
-                    type: "adjective",
-                    adjective,
-                  }) as ModifierTranslation
-                );
+                .map<ModifierTranslation>((adjective) => ({
+                  type: "adjective",
+                  adjective,
+                }));
             case "compound adjective":
               if (word.type === "default") {
                 return compoundAdjective(definition, word.emphasis)
-                  .map((adjective) =>
-                    ({
-                      type: "adjective",
-                      adjective,
-                    }) as ModifierTranslation
-                  );
+                  .map<ModifierTranslation>((adjective) => ({
+                    type: "adjective",
+                    adjective,
+                  }));
               } else {
                 return new Output();
               }
             case "adverb":
-              return new Output([{
+              return new Output<ModifierTranslation>([{
                 type: "adverb",
                 adverb: {
                   word: repeatWithSpace(definition.adverb, count),
                   emphasis,
                 },
-              } as ModifierTranslation]);
+              }]);
             default:
               return new Output();
           }
@@ -334,7 +322,9 @@ function modifier(modifier: TokiPona.Modifier): Output<ModifierTranslation> {
           modifier.type != "adjective" || modifier.inWayPhrase == null
         );
     case "nanpa":
-      return phrase(modifier.phrase, "object").filterMap((phrase) => {
+      return phrase(modifier.phrase, "object").filterMap<
+        ModifierTranslation | null
+      >((phrase) => {
         if (
           phrase.type === "noun" &&
           (phrase.noun as English.NounPhrase & { type: "simple" })
@@ -356,7 +346,7 @@ function modifier(modifier: TokiPona.Modifier): Output<ModifierTranslation> {
               preposition: [],
               emphasis: false,
             },
-          } as ModifierTranslation;
+          };
         } else {
           return null;
         }
@@ -415,7 +405,7 @@ function multipleModifiers(
         inPositionPhrase.length <= 1 &&
         (noun.length === 0 || inPositionPhrase.length === 0)
       ) {
-        adjectival = new Output([{
+        adjectival = new Output<MultipleModifierTranslation>([{
           type: "adjectival",
           nounPreposition: nounPreposition[0] ?? null,
           determiner,
@@ -423,7 +413,7 @@ function multipleModifiers(
           name: name[0] ?? null,
           ofPhrase: noun[0] ?? null,
           inPositionPhrase: inPositionPhrase[0] ?? null,
-        } as MultipleModifierTranslation]);
+        }]);
       } else {
         adjectival = new Output();
       }
@@ -452,11 +442,11 @@ function multipleModifiers(
         } else {
           inWayPhrase = null;
         }
-        adverbial = new Output([{
+        adverbial = new Output<MultipleModifierTranslation>([{
           type: "adverbial",
           adverb,
           inWayPhrase,
-        } as MultipleModifierTranslation]);
+        }]);
       } else {
         adverbial = new Output();
       }
@@ -513,14 +503,16 @@ function fixAdjective(
   adjective: Array<English.AdjectivePhrase>,
 ): Array<English.AdjectivePhrase> {
   return (adjective
-    .flatMap((adjective) => {
+    .flatMap<English.AdjectivePhrase & { type: "simple" }>((adjective) => {
       switch (adjective.type) {
         case "simple":
           return [adjective];
         case "compound":
-          return adjective.adjective;
+          return adjective.adjective as Array<
+            English.AdjectivePhrase & { type: "simple" }
+          >;
       }
-    }) as Array<English.AdjectivePhrase & { type: "simple" }>)
+    }))
     .sort((a, b) => rankAdjective(a.kind) - rankAdjective(b.kind));
 }
 type WordUnitTranslation =
@@ -542,14 +534,14 @@ function wordUnit(
 ): Output<WordUnitTranslation> {
   switch (wordUnit.type) {
     case "number":
-      return new Output([{
+      return new Output<WordUnitTranslation>([{
         type: "noun",
         determiner: [],
         adjective: [],
         singular: `${wordUnit.number}`,
         plural: null,
         postAdjective: null,
-      } as WordUnitTranslation]);
+      }]);
     case "x ala x":
       return new Output();
     case "default":
@@ -574,16 +566,14 @@ function wordUnit(
                 .combine(...definition.adjective
                   .map((definition) => adjective(definition, null, 1)));
               return Output.combine(engDeterminer, engAdjective)
-                .map(([determiner, adjective]) =>
-                  ({
-                    type: "noun",
-                    determiner,
-                    adjective,
-                    singular: definition.singular,
-                    plural: definition.plural,
-                    postAdjective: definition.postAdjective,
-                  }) as WordUnitTranslation
-                );
+                .map<WordUnitTranslation>(([determiner, adjective]) => ({
+                  type: "noun",
+                  determiner,
+                  adjective,
+                  singular: definition.singular,
+                  plural: definition.plural,
+                  postAdjective: definition.postAdjective,
+                }));
             }
             case "personal pronoun": {
               let singular: null | string;
@@ -598,26 +588,28 @@ function wordUnit(
                   plural = definition.plural?.object ?? null;
                   break;
               }
-              return new Output([{
+              return new Output<WordUnitTranslation>([{
                 type: "noun",
                 determiner: [],
                 adjective: [],
                 singular,
                 plural,
                 postAdjective: null,
-              } as WordUnitTranslation]);
+              }]);
             }
             case "adjective":
               return adjective(definition, wordUnit.emphasis, count)
-                .map((adjective) =>
-                  ({ type: "adjective", adjective }) as WordUnitTranslation
-                );
+                .map<WordUnitTranslation>((adjective) => ({
+                  type: "adjective",
+                  adjective,
+                }));
             case "compound adjective":
               if (wordUnit.type === "default") {
                 return compoundAdjective(definition, wordUnit.emphasis)
-                  .map((adjective) =>
-                    ({ type: "adjective", adjective }) as WordUnitTranslation
-                  );
+                  .map<WordUnitTranslation>((adjective) => ({
+                    type: "adjective",
+                    adjective,
+                  }));
               } else {
                 return new Output();
               }
@@ -742,7 +734,7 @@ function defaultPhrase(
           noun = new Output();
         }
         return noun
-          .map((noun) => ({ type: "noun", noun }) as PhraseTranslation);
+          .map<PhraseTranslation>((noun) => ({ type: "noun", noun }));
       } else if (
         headWord.type === "adjective" && modifier.type === "adverbial"
       ) {
@@ -752,7 +744,7 @@ function defaultPhrase(
           if (adverb.length > 1) {
             return new Output();
           }
-          return new Output([{
+          return new Output<PhraseTranslation>([{
             type: "adjective",
             adjective: {
               ...adjective,
@@ -760,15 +752,15 @@ function defaultPhrase(
               emphasis: phrase.emphasis != null,
             },
             inWayPhrase: modifier.inWayPhrase,
-          } as PhraseTranslation]);
+          }]);
         } else if (
           adjective.type === "compound" && modifier.adverb.length === 0
         ) {
-          return new Output([{
+          return new Output<PhraseTranslation>([{
             type: "adjective",
             adjective,
             inWayPhrase: modifier.inWayPhrase,
-          } as PhraseTranslation]);
+          }]);
         } else {
           return new Output();
         }
@@ -804,7 +796,7 @@ function multiplePhrases(
         .combine(
           ...phrases.phrases.map((phrases) => multiplePhrases(phrases, place)),
         )
-        .filterMap((phrase) => {
+        .filterMap<PhraseTranslation | null>((phrase) => {
           if (phrase.every((phrase) => phrase.type === "noun")) {
             const nouns = phrase
               .map((noun) => noun.noun)
@@ -836,7 +828,7 @@ function multiplePhrases(
                 preposition: [],
                 number,
               },
-            } as PhraseTranslation;
+            };
           } else if (
             phrases.type === "anu" &&
             phrase.every((phrase) =>
@@ -863,8 +855,10 @@ function multiplePhrases(
                       return [adjective];
                     }
                   }),
+                emphasis: false,
               },
-            } as PhraseTranslation;
+              inWayPhrase: null,
+            };
           } else {
             return null;
           }
@@ -875,33 +869,35 @@ function multiplePhrases(
 function clause(clause: TokiPona.Clause): Output<English.Clause> {
   switch (clause.type) {
     case "phrases":
-      return multiplePhrases(clause.phrases, "object").map((phrase) => {
-        switch (phrase.type) {
-          case "noun":
-            return {
-              type: "subject phrase",
-              subject: phrase.noun,
-            } as English.Clause;
-          case "adjective":
-            return {
-              type: "implied it's",
-              verb: {
-                type: "linking adjective",
-                linkingVerb: {
-                  word: "is",
-                  emphasis: false,
+      return multiplePhrases(clause.phrases, "object").map<English.Clause>(
+        (phrase) => {
+          switch (phrase.type) {
+            case "noun":
+              return {
+                type: "subject phrase",
+                subject: phrase.noun,
+              };
+            case "adjective":
+              return {
+                type: "implied it's",
+                verb: {
+                  type: "linking adjective",
+                  linkingVerb: {
+                    word: "is",
+                    emphasis: false,
+                  },
+                  adjective: phrase.adjective,
+                  preposition: nullableAsArray(phrase.inWayPhrase)
+                    .map((object) => ({
+                      preposition: { word: "in", emphasis: false },
+                      object,
+                    })),
                 },
-                adjective: phrase.adjective,
-                preposition: nullableAsArray(phrase.inWayPhrase)
-                  .map((object) => ({
-                    preposition: { word: "in", emphasis: false },
-                    object,
-                  })),
-              },
-              preposition: [],
-            } as English.Clause;
-        }
-      });
+                preposition: [],
+              };
+          }
+        },
+      );
     case "o vocative":
       return multiplePhrases(clause.phrases, "object").filterMap((phrase) => {
         if (phrase.type === "noun") {
@@ -998,15 +994,13 @@ function interjection(clause: TokiPona.Clause): Output<English.Clause> {
               return null;
             }
           })
-          .map((interjection) =>
-            ({
-              type: "interjection",
-              interjection: {
-                word: interjection,
-                emphasis: headWord.emphasis != null,
-              },
-            }) as English.Clause
-          );
+          .map<English.Clause>((interjection) => ({
+            type: "interjection",
+            interjection: {
+              word: interjection,
+              emphasis: headWord.emphasis != null,
+            },
+          }));
       }
     }
   }
@@ -1039,18 +1033,16 @@ function sentence(
   }
   if (sentence.finalClause.type === "filler") {
     return new Output(filler(sentence.finalClause.emphasis))
-      .map((interjection) =>
-        ({
-          clauses: [{
-            type: "interjection",
-            interjection: {
-              word: interjection,
-              emphasis: false,
-            },
-          }],
-          punctuation: sentence.punctuation,
-        }) as English.Sentence
-      );
+      .map<English.Sentence>((interjection) => ({
+        clauses: [{
+          type: "interjection",
+          interjection: {
+            word: interjection,
+            emphasis: false,
+          },
+        }],
+        punctuation: sentence.punctuation,
+      }));
   } else {
     const startingParticle = ((sentence.laClauses[0] ?? sentence.finalClause) as
       & TokiPona.FullClause
@@ -1075,16 +1067,14 @@ function sentence(
     const givenClauses = Output
       .combine(...laClauses.map(clause))
       .map((clauses) =>
-        clauses.map((clause) =>
-          ({
-            type: "dependent",
-            conjunction: {
-              word: "given",
-              emphasis: false,
-            },
-            clause,
-          }) as English.Clause
-        )
+        clauses.map<English.Clause>((clause) => ({
+          type: "dependent",
+          conjunction: {
+            word: "given",
+            emphasis: false,
+          },
+          clause,
+        }))
       );
     const {
       kinOrTaso,
@@ -1282,12 +1272,10 @@ function multipleSentences(
       const { word } = sentences;
       return new Output(dictionary[word].definitions)
         .flatMap(definitionAsPlainString)
-        .map((definition) =>
-          ({
-            clauses: [{ type: "free form", text: definition }],
-            punctuation: "",
-          }) as English.Sentence
-        )
+        .map<English.Sentence>((definition) => ({
+          clauses: [{ type: "free form", text: definition }],
+          punctuation: "",
+        }))
         .map((definition) => [definition]);
     }
     case "sentences":
