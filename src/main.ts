@@ -7,6 +7,7 @@ import { loadCustomDictionary } from "./dictionary.ts";
 import {
   checkLocalStorage,
   escapeHtmlWithNewline,
+  extractErrorMessage,
   setIgnoreError,
 } from "./misc.ts";
 import { settings } from "./settings.ts";
@@ -136,7 +137,7 @@ if (typeof document !== "undefined") {
         let message: string;
         if (
           error instanceof OutputError ||
-          (error instanceof AggregateError &&
+          (error instanceof AggregateError && error.errors.length > 0 &&
             error.errors.every((error) => error instanceof OutputError))
         ) {
           message = DICTIONARY_LOADING_FAILED_FIXABLE_MESSAGE;
@@ -201,14 +202,8 @@ if (typeof document !== "undefined") {
           } else {
             property = "innerText";
           }
-          let message: string;
-          if (item instanceof Error) {
-            message = item.message;
-          } else {
-            message = `${item}`;
-          }
           const list = document.createElement("li");
-          list[property] = message;
+          list[property] = extractErrorMessage(item);
           errorList.appendChild(list);
         }
         console.error(error);
@@ -272,18 +267,21 @@ if (typeof document !== "undefined") {
         if (error instanceof OutputError) {
           fixable = true;
           errors = [error.message];
-        } else if (
-          error instanceof AggregateError &&
-          error.errors.every((error) => error instanceof OutputError)
-        ) {
-          fixable = true;
-          errors = error.errors.map((error) => error.message);
-        } else if (error instanceof Error) {
-          fixable = false;
-          errors = [error.message];
+        } else if (error instanceof AggregateError) {
+          const rawErrors = error.errors;
+          if (
+            rawErrors.length > 0 &&
+            rawErrors.every((error) => error instanceof OutputError)
+          ) {
+            fixable = true;
+            errors = rawErrors.map((error) => error.message);
+          } else {
+            fixable = false;
+            errors = rawErrors.map(extractErrorMessage);
+          }
         } else {
           fixable = false;
-          errors = [`${error}`];
+          errors = [extractErrorMessage(error)];
         }
         let message: string;
         if (fixable) {
