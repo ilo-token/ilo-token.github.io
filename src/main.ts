@@ -15,7 +15,7 @@ import PROJECT_DATA from "../project-data.json" with { type: "json" };
 import { asComment } from "../dictionary/misc.ts";
 
 const UNKNOWN_ERROR_MESSAGE =
-  "An unknown error has occurred (Errors should be known, please report this)";
+  "An unknown error has occurred (Errors should be known, please report this).";
 const SINGULAR_ERROR_MESSAGE = "An error has been found:";
 const MULTIPLE_ERROR_MESSAGE = "Multiple errors has been found:";
 
@@ -36,13 +36,13 @@ const DICTIONARY_LOADING_FAILED_FIXABLE_MESSAGE =
   "Failed to load custom dictionary. This is mostly like because the " +
   "syntax has changed. Please fix it.";
 const DICTIONARY_LOADING_FAILED_UNFIXABLE_MESSAGE =
-  "Failed to load custom dictionary.";
+  "Failed to load custom dictionary. Please report this.";
 const INVALID_WORD_ERROR =
-  "Error: Invalid word to add (You may remove this line)";
+  "Error: Invalid word to add (You may remove this line).";
 const DICTIONARY_ERROR_FIXABLE_MESSAGE =
-  "Please fix these errors before saving\n(You may remove these when fixed)";
+  "Please fix these errors before saving.\n(You may remove these when fixed)";
 const DICTIONARY_ERROR_UNFIXABLE_MESSAGE =
-  "An error has occurred. Please report this.";
+  "Unable to save dictionary due to error. Please report this.";
 
 const DICTIONARY_KEY = "custom-dictionary";
 
