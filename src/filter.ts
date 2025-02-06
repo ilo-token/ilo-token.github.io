@@ -533,14 +533,17 @@ function modifierIsNumeric(modifier: Modifier): boolean {
  * nothing.
  */
 function modifiersIsAlaOrNone(modifiers: Array<Modifier>): boolean {
-  if (modifiers.length > 1) {
-    return false;
-  } else if (modifiers.length === 1) {
-    const [modifier] = modifiers;
-    return modifier.type === "default" && modifier.word.type === "default" &&
-      modifier.word.word === "ala";
+  switch (modifiers.length) {
+    case 0:
+      return true;
+    case 1: {
+      const [modifier] = modifiers;
+      return modifier.type === "default" && modifier.word.type === "default" &&
+        modifier.word.word === "ala";
+    }
+    default:
+      return false;
   }
-  return true;
 }
 /**
  * Helper function for determining whether the phrase has a preposition inside.
