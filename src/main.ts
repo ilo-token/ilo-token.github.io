@@ -83,6 +83,137 @@ if (typeof document !== "undefined") {
       "version",
     ) as HTMLAnchorElement;
 
+    // set version
+    if (PROJECT_DATA.onDevelopment) {
+      versionDisplay.innerText = `${PROJECT_DATA.version} (On development)`;
+    } else {
+      const date = new Date(PROJECT_DATA.releaseDate).toLocaleDateString(
+        undefined,
+        {
+          dateStyle: "short",
+        },
+      );
+      versionDisplay.innerText = `${PROJECT_DATA.version} - Released ${date}`;
+    }
+    // load settings
+    settings.loadFromLocalStorage();
+    // load custom dictionary
+    let customDictionary: string;
+    if (checkLocalStorage()) {
+      customDictionary = "";
+    } else {
+      customDictionary = localStorage.getItem(DICTIONARY_KEY) ?? "";
+    }
+    if (customDictionary.trim() !== "") {
+      try {
+        loadCustomDictionary(customDictionary);
+      } catch (error) {
+        let message: string;
+        if (
+          error instanceof OutputError ||
+          (error instanceof AggregateError &&
+            error.errors.every((error) => error instanceof OutputError))
+        ) {
+          message =
+            "Failed to load custom dictionary. This is mostly like because the " +
+            "dictionary syntax has changed. Please fix it.";
+        } else {
+          message = "Failed to load custom dictionary.";
+        }
+        errorDisplay.innerText = message;
+        console.error(error);
+      }
+    }
+    // initial text area size
+    function resizeTextarea(): void {
+      inputTextBox.style.height = "auto";
+      inputTextBox.style.height = `${`${inputTextBox.scrollHeight + 14}`}px`;
+    }
+    resizeTextarea();
+    // add all event listener
+    settingsButton.addEventListener("click", () => {
+      settingsDialogBox.showModal();
+    });
+    confirmButton.addEventListener("click", () => {
+      settings.loadFromElements();
+      settingsDialogBox.close();
+    });
+    cancelButton.addEventListener("click", () => {
+      settings.resetElementsToCurrent();
+      settingsDialogBox.close();
+    });
+    resetButton.addEventListener("click", () => {
+      settings.resetElementsToDefault();
+    });
+    customDictionaryButton.addEventListener("click", () => {
+      customDictionaryDialogBox.showModal();
+      if (checkLocalStorage()) {
+        customDictionaryTextBox.value = localStorage.getItem(DICTIONARY_KEY) ??
+          DEFAULT_MESSAGE;
+      }
+    });
+    function addWord(): void {
+      const word = addWordTextBox.value.trim();
+      let add: string;
+      if (/^[a-z][a-zA-Z]*$/.test(word)) {
+        if (Object.hasOwn(dictionary, word)) {
+          add = `\n${word}:\n  ${dictionary[word].src.trim()}\n`;
+        } else {
+          add = `\n${word}:\n  # Definitions here\n`;
+        }
+      } else {
+        add = "\n# Error: Invalid word to add (You may remove this line)\n";
+      }
+      customDictionaryTextBox.value += add;
+    }
+    addWordButton.addEventListener("click", addWord);
+    addWordTextBox.addEventListener("keydown", (event) => {
+      if (event.code === "Enter") {
+        event.preventDefault();
+        addWord();
+      }
+    });
+    discardButton.addEventListener("click", () => {
+      customDictionaryDialogBox.close();
+    });
+    saveButton.addEventListener("click", () => {
+      const dictionary = customDictionaryTextBox.value;
+      try {
+        loadCustomDictionary(dictionary);
+        setIgnoreError(DICTIONARY_KEY, dictionary);
+        customDictionaryDialogBox.close();
+      } catch (error) {
+        let fixable: boolean;
+        let errors: Array<string>;
+        if (error instanceof OutputError) {
+          fixable = true;
+          errors = [error.message];
+        } else if (
+          error instanceof AggregateError &&
+          error.errors.every((error) => error instanceof OutputError)
+        ) {
+          fixable = true;
+          errors = error.errors.map((error) => error.message);
+        } else if (error instanceof Error) {
+          fixable = false;
+          errors = [error.message];
+        } else {
+          fixable = false;
+          errors = [`${error}`];
+        }
+        if (fixable) {
+          customDictionaryTextBox.value +=
+            "\n# Please fix these errors before saving\n# (You may remove these when fixed)\n";
+        } else {
+          customDictionaryTextBox.value +=
+            "\n# Errors have occurred, please report this.\n";
+        }
+        for (const message of errors) {
+          customDictionaryTextBox.value += `# - ${message}\n`;
+        }
+        console.error(error);
+      }
+    });
     function updateOutput(): void {
       // clear output
       outputDisplay.innerHTML = "";
@@ -132,137 +263,6 @@ if (typeof document !== "undefined") {
         console.error(error);
       }
     }
-    function addWord(): void {
-      const word = addWordTextBox.value.trim();
-      let add: string;
-      if (/^[a-z][a-zA-Z]*$/.test(word)) {
-        if (Object.hasOwn(dictionary, word)) {
-          add = `\n${word}:\n  ${dictionary[word].src.trim()}\n`;
-        } else {
-          add = `\n${word}:\n  # Definitions here\n`;
-        }
-      } else {
-        add = "\n# Error: Invalid word to add (You may remove this line)\n";
-      }
-      customDictionaryTextBox.value += add;
-    }
-    function resizeTextarea(): void {
-      inputTextBox.style.height = "auto";
-      inputTextBox.style.height = `${`${inputTextBox.scrollHeight + 14}`}px`;
-    }
-    // set version
-    if (PROJECT_DATA.onDevelopment) {
-      versionDisplay.innerText = `${PROJECT_DATA.version} (On development)`;
-    } else {
-      const date = new Date(PROJECT_DATA.releaseDate).toLocaleDateString(
-        undefined,
-        {
-          dateStyle: "short",
-        },
-      );
-      versionDisplay.innerText = `${PROJECT_DATA.version} - Released ${date}`;
-    }
-    // load settings
-    settings.loadFromLocalStorage();
-    // load custom dictionary
-    let customDictionary: string;
-    if (checkLocalStorage()) {
-      customDictionary = "";
-    } else {
-      customDictionary = localStorage.getItem(DICTIONARY_KEY) ?? "";
-    }
-    if (customDictionary.trim() !== "") {
-      try {
-        loadCustomDictionary(customDictionary);
-      } catch (error) {
-        let message: string;
-        if (
-          error instanceof OutputError ||
-          (error instanceof AggregateError &&
-            error.errors.every((error) => error instanceof OutputError))
-        ) {
-          message =
-            "Failed to load custom dictionary. This is mostly like because the " +
-            "dictionary syntax has changed. Please fix it.";
-        } else {
-          message = "Failed to load custom dictionary.";
-        }
-        errorDisplay.innerText = message;
-        console.error(error);
-      }
-    }
-    // initial text area size
-    resizeTextarea();
-    // add all event listener
-    settingsButton.addEventListener("click", () => {
-      settingsDialogBox.showModal();
-    });
-    confirmButton.addEventListener("click", () => {
-      settings.loadFromElements();
-      settingsDialogBox.close();
-    });
-    cancelButton.addEventListener("click", () => {
-      settings.resetElementsToCurrent();
-      settingsDialogBox.close();
-    });
-    resetButton.addEventListener("click", () => {
-      settings.resetElementsToDefault();
-    });
-    customDictionaryButton.addEventListener("click", () => {
-      customDictionaryDialogBox.showModal();
-      if (checkLocalStorage()) {
-        customDictionaryTextBox.value = localStorage.getItem(DICTIONARY_KEY) ??
-          DEFAULT_MESSAGE;
-      }
-    });
-    addWordButton.addEventListener("click", addWord);
-    addWordTextBox.addEventListener("keydown", (event) => {
-      if (event.code === "Enter") {
-        event.preventDefault();
-        addWord();
-      }
-    });
-    discardButton.addEventListener("click", () => {
-      customDictionaryDialogBox.close();
-    });
-    saveButton.addEventListener("click", () => {
-      const dictionary = customDictionaryTextBox.value;
-      try {
-        loadCustomDictionary(dictionary);
-        setIgnoreError(DICTIONARY_KEY, dictionary);
-        customDictionaryDialogBox.close();
-      } catch (error) {
-        let fixable: boolean;
-        let errors: Array<string>;
-        if (error instanceof OutputError) {
-          fixable = true;
-          errors = [error.message];
-        } else if (
-          error instanceof AggregateError &&
-          error.errors.every((error) => error instanceof OutputError)
-        ) {
-          fixable = true;
-          errors = error.errors.map((error) => error.message);
-        } else if (error instanceof Error) {
-          fixable = false;
-          errors = [error.message];
-        } else {
-          fixable = false;
-          errors = [`${error}`];
-        }
-        if (fixable) {
-          customDictionaryTextBox.value +=
-            "\n# Please fix these errors before saving\n# (You may remove these when fixed)\n";
-        } else {
-          customDictionaryTextBox.value +=
-            "\n# Errors have occurred, please report this.\n";
-        }
-        for (const message of errors) {
-          customDictionaryTextBox.value += `# - ${message}\n`;
-        }
-        console.error(error);
-      }
-    });
     translateButton.addEventListener("click", updateOutput);
     inputTextBox.addEventListener("input", resizeTextarea);
     inputTextBox.addEventListener("keydown", (event) => {
