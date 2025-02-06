@@ -858,7 +858,7 @@ const FULL_PARSER = spaces()
 export function parse(src: string): Output<MultipleSentences> {
   let error = false;
   let multilineError: Output<never>;
-  if (/\r\n|\n|\r/.test(src.trim())) {
+  if (/[\n\r]/.test(src.trim())) {
     error = true;
     multilineError = new Output(new UnrecognizedError("multiline text"));
   } else {
