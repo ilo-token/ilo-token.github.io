@@ -165,23 +165,31 @@ if (typeof document !== "undefined") {
     // load settings
     settings.loadFromLocalStorage();
     // load custom dictionary
-    try {
-      loadCustomDictionary(localStorage.getItem(DICTIONARY_KEY) ?? "");
-    } catch (error) {
-      let message: string;
-      if (
-        error instanceof OutputError ||
-        (error instanceof AggregateError &&
-          error.errors.every((error) => error instanceof OutputError))
-      ) {
-        message =
-          "Failed to load custom dictionary. This is mostly like because the " +
-          "dictionary syntax has changed. Please fix it.";
-      } else {
-        message = "Failed to load custom dictionary.";
+    let customDictionary: string;
+    if (checkLocalStorage()) {
+      customDictionary = "";
+    } else {
+      customDictionary = localStorage.getItem(DICTIONARY_KEY) ?? "";
+    }
+    if (customDictionary.trim() !== "") {
+      try {
+        loadCustomDictionary(customDictionary);
+      } catch (error) {
+        let message: string;
+        if (
+          error instanceof OutputError ||
+          (error instanceof AggregateError &&
+            error.errors.every((error) => error instanceof OutputError))
+        ) {
+          message =
+            "Failed to load custom dictionary. This is mostly like because the " +
+            "dictionary syntax has changed. Please fix it.";
+        } else {
+          message = "Failed to load custom dictionary.";
+        }
+        errorDisplay.innerText = message;
+        console.error(error);
       }
-      errorDisplay.innerText = message;
-      console.error(error);
     }
     // initial text area size
     resizeTextarea();
