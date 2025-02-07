@@ -1,7 +1,8 @@
 import * as English from "./ast.ts";
 import { nullableAsArray } from "../misc.ts";
 import { Output, TodoError } from "../output.ts";
-import { translate as translateToAst } from "./sentence.ts";
+import { parse } from "../parser/parser.ts";
+import { multipleSentences } from "./sentence.ts";
 
 const EMPHASIS_STARTING_TAG = "<strong>";
 const EMPHASIS_ENDING_TAG = "</strong>";
@@ -101,6 +102,7 @@ function sentence(sentence: English.Sentence): string {
   return `${sentence.clauses.map(clause).join(", ")}${sentence.punctuation}`;
 }
 export function translate(src: string): Output<string> {
-  return translateToAst(src)
+  return parse(src)
+    .flatMap(multipleSentences)
     .map((sentences) => sentences.map(sentence).join(" "));
 }

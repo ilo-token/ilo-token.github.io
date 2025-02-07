@@ -5,7 +5,6 @@ import { nullableAsArray, repeatWithSpace } from "../misc.ts";
 import { Output, TodoError } from "../output.ts";
 import { definitionAsPlainString } from "./as-string.ts";
 import { clause } from "./clause.ts";
-import { parse } from "../parser/parser.ts";
 
 function filler(filler: TokiPona.Emphasis): Array<string> {
   switch (filler.type) {
@@ -247,7 +246,7 @@ function sentence(
     );
   }
 }
-function multipleSentences(
+export function multipleSentences(
   sentences: TokiPona.MultipleSentences,
 ): Output<Array<English.Sentence>> {
   switch (sentences.type) {
@@ -264,7 +263,4 @@ function multipleSentences(
     case "sentences":
       return Output.combine(...sentences.sentences.map(sentence));
   }
-}
-export function translate(src: string): Output<Array<English.Sentence>> {
-  return parse(src).flatMap(multipleSentences);
 }
