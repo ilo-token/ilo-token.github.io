@@ -1,6 +1,6 @@
 /** Module for describing English AST. */
 
-import { AdjectiveType, DeterminerType } from "../../dictionary/type.ts";
+import * as Dictionary from "../../dictionary/type.ts";
 
 export type Word = {
   word: string;
@@ -26,14 +26,14 @@ export type NounPhrase =
     number: Quantity;
   };
 export type Determiner = {
-  kind: DeterminerType;
+  kind: Dictionary.DeterminerType;
   determiner: Word;
   number: Quantity;
 };
 export type AdjectivePhrase =
   | {
     type: "simple";
-    kind: AdjectiveType;
+    kind: Dictionary.AdjectiveType;
     adverb: Array<Word>;
     adjective: Word;
     emphasis: boolean;

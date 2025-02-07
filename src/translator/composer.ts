@@ -1,11 +1,4 @@
-import {
-  AdjectivePhrase,
-  Clause,
-  NounPhrase,
-  Preposition,
-  Sentence,
-  Word,
-} from "./ast.ts";
+import * as English from "./ast.ts";
 import { nullableAsArray } from "../misc.ts";
 import { Output, TodoError } from "../output.ts";
 import { translate as translateToAst } from "./sentence.ts";
@@ -13,7 +6,7 @@ import { translate as translateToAst } from "./sentence.ts";
 const EMPHASIS_STARTING_TAG = "<strong>";
 const EMPHASIS_ENDING_TAG = "</strong>";
 
-function word(word: Word): string {
+function word(word: English.Word): string {
   if (word.emphasis) {
     return `${EMPHASIS_STARTING_TAG}${word.word}${EMPHASIS_ENDING_TAG}`;
   } else {
@@ -34,7 +27,7 @@ function compound(
     return `${init.join(", ")} ${conjunction} ${last}`;
   }
 }
-function noun(phrases: NounPhrase, depth: number): string {
+function noun(phrases: English.NounPhrase, depth: number): string {
   switch (phrases.type) {
     case "simple": {
       const text = [
@@ -56,7 +49,7 @@ function noun(phrases: NounPhrase, depth: number): string {
       );
   }
 }
-function adjective(phrases: AdjectivePhrase, depth: number): string {
+function adjective(phrases: English.AdjectivePhrase, depth: number): string {
   let text: string;
   switch (phrases.type) {
     case "simple":
@@ -72,10 +65,10 @@ function adjective(phrases: AdjectivePhrase, depth: number): string {
   }
   return word({ word: text, emphasis: phrases.emphasis });
 }
-function preposition(preposition: Preposition): string {
+function preposition(preposition: English.Preposition): string {
   return `${word(preposition.preposition)} ${noun(preposition.object, 0)}`;
 }
-function clause(ast: Clause): string {
+function clause(ast: English.Clause): string {
   switch (ast.type) {
     case "free form":
       return ast.text;
@@ -104,7 +97,7 @@ function clause(ast: Clause): string {
       throw new TodoError(`composing ${ast.type}`);
   }
 }
-function sentence(sentence: Sentence): string {
+function sentence(sentence: English.Sentence): string {
   return `${sentence.clauses.map(clause).join(", ")}${sentence.punctuation}`;
 }
 export function translate(src: string): Output<string> {
