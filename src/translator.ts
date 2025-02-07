@@ -143,26 +143,27 @@ function determiner(
       number: definition.number,
     }));
 }
+function so(emphasis: null | TokiPona.Emphasis): null | string {
+  if (emphasis == null) {
+    return null;
+  } else {
+    switch (emphasis.type) {
+      case "word":
+        return "so";
+      case "long word":
+        return `s${"o".repeat(emphasis.length)}`;
+      case "multiple a":
+        return null;
+    }
+  }
+}
 function adjective(
   definition: Dictionary.Adjective,
   emphasis: null | TokiPona.Emphasis,
   count: number,
 ): Output<English.AdjectivePhrase & { type: "simple" }> {
-  let so: null | string;
-  if (emphasis == null) {
-    so = null;
-  } else {
-    switch (emphasis.type) {
-      case "word":
-        so = "so";
-        break;
-      case "long word":
-        so = `s${"o".repeat(emphasis.length)}`;
-        break;
-    }
-  }
   return new Output([
-    ...nullableAsArray(so!).map((so) => ({ emphasis: false, so })),
+    ...nullableAsArray(so(emphasis)).map((so) => ({ emphasis: false, so })),
     { emphasis: emphasis != null, so: null },
   ])
     .map(({ emphasis, so }) => ({
@@ -199,25 +200,30 @@ type ModifierTranslation =
   | { type: "adverb"; adverb: English.Word }
   | { type: "name"; name: string }
   | { type: "in position phrase"; noun: English.NounPhrase };
+function numberModifier(
+  word: number,
+  emphasis: boolean,
+): Output<ModifierTranslation> {
+  let number: English.Quantity;
+  if (word === 1) {
+    number = "singular";
+  } else {
+    number = "plural";
+  }
+  return new Output([{
+    type: "determiner",
+    determiner: {
+      determiner: { word: `${word}`, emphasis },
+      kind: "numeral",
+      number,
+    },
+  }]);
+}
 function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
   const emphasis = word.emphasis != null;
   switch (word.type) {
-    case "number": {
-      let number: English.Quantity;
-      if (word.number === 1) {
-        number = "singular";
-      } else {
-        number = "plural";
-      }
-      return new Output<ModifierTranslation>([{
-        type: "determiner",
-        determiner: {
-          determiner: { word: `${word.number}`, emphasis },
-          kind: "numeral",
-          number,
-        },
-      }]);
-    }
+    case "number":
+      return numberModifier(word.number, emphasis);
     case "x ala x":
       return new Output();
     case "default":
@@ -306,6 +312,49 @@ function defaultModifier(word: TokiPona.WordUnit): Output<ModifierTranslation> {
     }
   }
 }
+function piModifier(
+  insidePhrase: TokiPona.Phrase,
+): Output<ModifierTranslation> {
+  return phrase(insidePhrase, "object")
+    .filter((modifier) =>
+      modifier.type !== "noun" || modifier.noun.type !== "simple" ||
+      modifier.noun.preposition.length === 0
+    )
+    .filter((modifier) =>
+      modifier.type != "adjective" || modifier.inWayPhrase == null
+    );
+}
+function nanpaModifier(
+  nanpa: TokiPona.Modifier & { type: "nanpa" },
+): Output<ModifierTranslation> {
+  return phrase(nanpa.phrase, "object").filterMap((phrase) => {
+    if (
+      phrase.type === "noun" &&
+      (phrase.noun as English.NounPhrase & { type: "simple" })
+          .preposition.length === 0
+    ) {
+      return {
+        type: "in position phrase",
+        noun: {
+          type: "simple",
+          determiner: [],
+          adjective: [],
+          noun: {
+            word: "position",
+            emphasis: nanpa.nanpa.emphasis != null,
+          },
+          number: "singular",
+          postCompound: phrase.noun,
+          postAdjective: null,
+          preposition: [],
+          emphasis: false,
+        },
+      };
+    } else {
+      return null;
+    }
+  });
+}
 function modifier(modifier: TokiPona.Modifier): Output<ModifierTranslation> {
   switch (modifier.type) {
     case "default":
@@ -313,44 +362,9 @@ function modifier(modifier: TokiPona.Modifier): Output<ModifierTranslation> {
     case "proper words":
       return new Output([{ type: "name", name: modifier.words }]);
     case "pi":
-      return phrase(modifier.phrase, "object")
-        .filter((modifier) =>
-          modifier.type !== "noun" || modifier.noun.type !== "simple" ||
-          modifier.noun.preposition.length === 0
-        )
-        .filter((modifier) =>
-          modifier.type != "adjective" || modifier.inWayPhrase == null
-        );
+      return piModifier(modifier.phrase);
     case "nanpa":
-      return phrase(modifier.phrase, "object").filterMap<
-        ModifierTranslation | null
-      >((phrase) => {
-        if (
-          phrase.type === "noun" &&
-          (phrase.noun as English.NounPhrase & { type: "simple" })
-              .preposition.length === 0
-        ) {
-          return {
-            type: "in position phrase",
-            noun: {
-              type: "simple",
-              determiner: [],
-              adjective: [],
-              noun: {
-                word: "position",
-                emphasis: modifier.nanpa.emphasis != null,
-              },
-              number: "singular",
-              postCompound: phrase.noun,
-              postAdjective: null,
-              preposition: [],
-              emphasis: false,
-            },
-          };
-        } else {
-          return null;
-        }
-      });
+      return nanpaModifier(modifier);
     case "quotation":
       return new Output(new TodoError(`translation of ${modifier.type}`));
   }
@@ -453,27 +467,28 @@ function multipleModifiers(
       return Output.concat(adjectival, adverbial);
     });
 }
+function filterDeterminer(
+  determiners: Array<English.Determiner>,
+  kinds: Array<Dictionary.DeterminerType>,
+): Array<English.Determiner> {
+  return determiners.filter((determiner) => kinds.includes(determiner.kind));
+}
 function fixDeterminer(
   determiner: Array<English.Determiner>,
 ): null | Array<English.Determiner> {
-  const negative = determiner
-    .filter((determiner) => determiner.kind === "negative");
-  const first = determiner
-    .filter((determiner) =>
-      ["article", "demonstrative", "possessive"].includes(determiner.kind)
-    );
-  const distributive = determiner
-    .filter((determiner) => determiner.kind === "distributive");
-  const interrogative = determiner
-    .filter((determiner) => determiner.kind === "interrogative");
-  const numerical = determiner
-    .filter((determiner) =>
-      determiner.kind === "numeral" || determiner.kind === "quantifier"
-    );
+  const negative = filterDeterminer(determiner, ["negative"]);
+  const first = filterDeterminer(determiner, [
+    "article",
+    "demonstrative",
+    "possessive",
+  ]);
+  const distributive = filterDeterminer(determiner, ["distributive"]);
+  const interrogative = filterDeterminer(determiner, ["interrogative"]);
+  const numerical = filterDeterminer(determiner, ["numeral", "quantifier"]);
   if (
     negative.length > 1 || first.length > 1 || distributive.length > 1 ||
     interrogative.length > 1 || numerical.length > 1 ||
-    negative.length > 0 && interrogative.length > 0
+    (negative.length > 0 && interrogative.length > 0)
   ) {
     return null;
   } else {
@@ -502,7 +517,7 @@ function rankAdjective(kind: Dictionary.AdjectiveType): number {
 function fixAdjective(
   adjective: Array<English.AdjectivePhrase>,
 ): Array<English.AdjectivePhrase> {
-  return (adjective
+  return adjective
     .flatMap<English.AdjectivePhrase & { type: "simple" }>((adjective) => {
       switch (adjective.type) {
         case "simple":
@@ -512,7 +527,7 @@ function fixAdjective(
             English.AdjectivePhrase & { type: "simple" }
           >;
       }
-    }))
+    })
     .sort((a, b) => rankAdjective(a.kind) - rankAdjective(b.kind));
 }
 type WordUnitTranslation =
@@ -528,20 +543,23 @@ type WordUnitTranslation =
     type: "adjective";
     adjective: English.AdjectivePhrase;
   };
+function numberWordUnit(word: number): Output<WordUnitTranslation> {
+  return new Output<WordUnitTranslation>([{
+    type: "noun",
+    determiner: [],
+    adjective: [],
+    singular: `${word}`,
+    plural: null,
+    postAdjective: null,
+  }]);
+}
 function wordUnit(
   wordUnit: TokiPona.WordUnit,
   place: "subject" | "object",
 ): Output<WordUnitTranslation> {
   switch (wordUnit.type) {
     case "number":
-      return new Output<WordUnitTranslation>([{
-        type: "noun",
-        determiner: [],
-        adjective: [],
-        singular: `${wordUnit.number}`,
-        plural: null,
-        postAdjective: null,
-      }]);
+      return numberWordUnit(wordUnit.number);
     case "x ala x":
       return new Output();
     case "default":
