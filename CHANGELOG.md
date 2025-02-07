@@ -12,13 +12,16 @@ NOTE:
 
 ## 0.4.0 (On development)
 
-The latest on-development version can be accessed by building the source code. On this on-development version, things can be broken.
+The latest on-development version can be accessed by building the source code.
+On this on-development version, things can be broken.
 
 - Implement custom dictionary editor.
 - Fixed "la" translation.
 - Consecutive adverbs are now not shown to avoid ambiguity.
-- Sentences ending with long string of punctuation such as "…" and "!?" are now recognized.
-- Interpunct or middle dot (·) and ideographic period (。) are now recognized as sentence separator.
+- Sentences ending with long string of punctuation such as "…" and "!?" are now
+  recognized.
+- Interpunct or middle dot (·) and ideographic period (。) are now recognized as
+  sentence separator.
 - Fixed UCSUR rendering.
 - Fixed ordering issue in Firefox.
 - Implement advanced parsing settings.
@@ -34,35 +37,46 @@ Inside update (Intended for developers):
 
 Released 15 Aug 2024
 
-This is a huge update now with better quality translations, configurable settings, UCSUR support, and expanded vocabulary!
+This is a huge update now with better quality translations, configurable
+settings, UCSUR support, and expanded vocabulary!
 
 - Reimplement the word "a". This were dropped due to parser rewrite.
 - The vocabulary has been expanded to _nimi ku suli_ plus _nimi su!_.
-- New "dictionary mode", just enter a single word and ilo Token will output all definition from its own dictionary. This also works for particles. To bypass this and translate the word as if it is the whole sentence, just add a period.
+- New "dictionary mode", just enter a single word and ilo Token will output all
+  definition from its own dictionary. This also works for particles. To bypass
+  this and translate the word as if it is the whole sentence, just add a period.
 - Implement UCSUR support! It supports:
   - Cartouche with nasin sitelen kalama
   - Combined glyphs
   - Long glyphs
   - (Deprecated characters and combiners are not supported)
 - Implement [nasin nanpa pona](https://sona.pona.la/wiki/nasin_nanpa_pona).
-- Implement settings dialog. [More info](https://github.com/ilo-token/ilo-token.github.io/wiki/Settings-Help).
+- Implement settings dialog.
+  [More info](https://github.com/ilo-token/ilo-token.github.io/wiki/Settings-Help).
 - Changes in error messages:
   - All possible errors will now be listed.
-  - ilo Token now uses telo misikeke for error messages. This can be disabled from the settings.
+  - ilo Token now uses telo misikeke for error messages. This can be disabled
+    from the settings.
 - Multiline text will no longer be recognized.
 - Add icons.
 
-You may not notice this, we take good grammar for granted, but ilo Token now has generally better quality translations thanks to the following:
+You may not notice this, we take good grammar for granted, but ilo Token now has
+generally better quality translations thanks to the following:
 
-- It is now aware determiners are separate from adjectives. So you won't see adjectives like "nicely my", since adverbs can't modify determiners.
-- It tries to ensure adjectives are in proper order. Yes this matters, it's "big red fruit" and not "red big fruit".
-- Just like adjectives, determiners are also ordered, but unlike adjectives, they're also filtered (some combinations are not shown). You won't see "my your animal".
+- It is now aware determiners are separate from adjectives. So you won't see
+  adjectives like "nicely my", since adverbs can't modify determiners.
+- It tries to ensure adjectives are in proper order. Yes this matters, it's "big
+  red fruit" and not "red big fruit".
+- Just like adjectives, determiners are also ordered, but unlike adjectives,
+  they're also filtered (some combinations are not shown). You won't see "my
+  your animal".
 - It is aware of grammatical numbers. So you won't see "2 stick" or "1 sticks".
 
 Inside update (intended for developers):
 
 - Implement lexer and english AST.
-- Overhaul dictionary: It is now a separate file with nicer syntax as opposed to written inside the code.
+- Overhaul dictionary: It is now a separate file with nicer syntax as opposed to
+  written inside the code.
 
 ## 0.2.2
 
@@ -74,10 +88,12 @@ Update missed links.
 
 Released 24 Jan 2024
 
-The project has been renamed to ilo Token. The definition list has been given a huge overhaul.
+The project has been renamed to ilo Token. The definition list has been given a
+huge overhaul.
 
 - Change name to ilo Token.
-- Remove unintended commas, these were found when translating "en" with more than 3 phrases.
+- Remove unintended commas, these were found when translating "en" with more
+  than 3 phrases.
 - Remove copyright and license footer.
 - Update definition list:
   - It now uses latest Linku definition as the base.
@@ -88,7 +104,9 @@ The project has been renamed to ilo Token. The definition list has been given a 
 
 Released 24 Jan 2024
 
-For this version. The whole code has been rewritten. The translator can now translate few more things! Although it's still not capable of translating full sentences.
+For this version. The whole code has been rewritten. The translator can now
+translate few more things! Although it's still not capable of translating full
+sentences.
 
 - Implement translator for:
   - Extended numbering system
@@ -102,7 +120,10 @@ For this version. The whole code has been rewritten. The translator can now tran
 - (Downgrade) Translator is somewhat slower.
 - Remove Discord DM as contact option.
 - Update translation list:
-  - _tonsi_ &ndash; change nouns "transgender", "transgenders", "non-binary", and "non-binaries" into "transgender person", "transgender people", "non-binary person", and "non-binary people" (I DIDN'T MEAN TO OBJECTIFY THEM OMFG I'M SO SORRY 😭😭😭)
+  - _tonsi_ &ndash; change nouns "transgender", "transgenders", "non-binary",
+    and "non-binaries" into "transgender person", "transgender people",
+    "non-binary person", and "non-binary people" (I DIDN'T MEAN TO OBJECTIFY
+    THEM OMFG I'M SO SORRY 😭😭😭)
 
 Inside update (intended for developers):
 
@@ -110,7 +131,8 @@ Inside update (intended for developers):
 - Rewritten parser to use parser combinator.
 - Add language codes to html.
 - New wiki for contributors and thinkerers.
-- Overhaul `README.md`, only including build instruction. Information about the translator is now moved to wiki.
+- Overhaul `README.md`, only including build instruction. Information about the
+  translator is now moved to wiki.
 
 ## 0.1.1
 
@@ -130,39 +152,49 @@ Released 11 Jan 2024
 - Add basic "la" translation: "given X, Y" and "if X, then Y".
 - Fix multiple _o_ error being triggered when there's only one _o_.
 - Update translation list:
-  - _ante_ &ndash; change "other" into "different", "different" have broader meaning than "other".
+  - _ante_ &ndash; change "other" into "different", "different" have broader
+    meaning than "other".
 
 ## 0.0.2
 
 Released 23 Dec 2022
 
-For this version. Major bugs related to phrase translation has been fixed. The translation lists has been updated as well.
+For this version. Major bugs related to phrase translation has been fixed. The
+translation lists has been updated as well.
 
-You may need to force restart the webpage: shift + click the restart button; or ctrl + shift + R.
+You may need to force restart the webpage: shift + click the restart button; or
+ctrl + shift + R.
 
 - Translator can now put emphasis on whole phrases.
 - Fix "(content word) a" not being parsed properly.
 - Fix "a (words)" not being parsed properly.
-- Proper name now can't modify adjective translations &ndash; translations like "good named Nimi" are now removed.
+- Proper name now can't modify adjective translations &ndash; translations like
+  "good named Nimi" are now removed.
 - Untranslatable phrases now handled as untranslatable error.
 - New kind of error where the sentence can't be translated but it should be
 - Replaced "whoops" error with untranslatable error.
 - Having at most one modifier after "pi" is now considered unrecognized error.
 - Multiple "pi" is now considered unrecognized error.
 - Fix adverbs and adjective not being translated properly.
-- Handle multiple proper word as error &ndash; phrases like "jan Sonja pona Lang" will be unrecognizable.
+- Handle multiple proper word as error &ndash; phrases like "jan Sonja pona
+  Lang" will be unrecognizable.
 - Simplify translation lists:
   - _toki_ &ndash; merge adjectives "speaking" and "writing" as "communicating".
-  - _mun_ &ndash; merge "moon", "moons", "star", "stars", "planet" and "planets" into "celestial object" and "celestial objects".
-  - _pilin_ &ndash; remove "feeling" and "feelings", "emotion" and "emotions" seems enough
-  - _sona_ &ndash; remove "knowledgeably", doesn't seems to match the definition of _sona_.
+  - _mun_ &ndash; merge "moon", "moons", "star", "stars", "planet" and "planets"
+    into "celestial object" and "celestial objects".
+  - _pilin_ &ndash; remove "feeling" and "feelings", "emotion" and "emotions"
+    seems enough
+  - _sona_ &ndash; remove "knowledgeably", doesn't seems to match the definition
+    of _sona_.
 - Replace translation words:
   - _ante_ &ndash; replace nouns "change" and "changes" with noun "changing".
   - _jan_ &ndash; replace "humanly" with "person-like".
   - _kama_ &ndash; replace "arrival" and "arrivals" with noun "arriving".
   - _pona_ &ndash; replace "properly" with "nicely".
-  - _toki_ &ndash; replace "speech" and "speeches" with "communication" and "communications".
-  - _selo_ &ndash; replace "shape" and "shapes" with "outer form", "boundary", and "boundaries".
+  - _toki_ &ndash; replace "speech" and "speeches" with "communication" and
+    "communications".
+  - _selo_ &ndash; replace "shape" and "shapes" with "outer form", "boundary",
+    and "boundaries".
   - _sewi_ &ndash; replace "up" with "above".
 - Add translation words:
   - _anpa_ &ndash; add "under".
@@ -182,12 +214,19 @@ You may need to force restart the webpage: shift + click the restart button; or 
 
 Released 19 Dec 2022
 
-For this version, the word list and translations have been updated. Few words that have been missed has been added. Translation lists has been updated. This includes simplifying translation lists such as deduplicating translation words that have mostly the same meaning, as well as adding more translation words.
+For this version, the word list and translations have been updated. Few words
+that have been missed has been added. Translation lists has been updated. This
+includes simplifying translation lists such as deduplicating translation words
+that have mostly the same meaning, as well as adding more translation words.
 
-The webpage has been updated as well. The color contrast has been updated to be accessible. The discord link has been updated so it points to the dedicated channel.
+The webpage has been updated as well. The color contrast has been updated to be
+accessible. The discord link has been updated so it points to the dedicated
+channel.
 
 - Start versioning
-- Add Nimi Ku Suli custom dictionary for [Code Spell Checker](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker) user
+- Add Nimi Ku Suli custom dictionary for
+  [Code Spell Checker](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker)
+  user
 - Change color of hyperlinks and error message to conform to WCAG 2.0 AAA
 - Update discord links
 - Add footnote
@@ -206,14 +245,16 @@ The webpage has been updated as well. The color contrast has been updated to be 
   - _linja_ &ndash; deduplicate "long flexible"
   - _mama_ &ndash; remove "caring" as noun
   - _ni_ &ndash; remove "these" and "those", "this" and "that" seems enough
-  - _pana_ &ndash; remove "emission" and "emissions", these doesn't makes sense (smh my head, why did I added these)
+  - _pana_ &ndash; remove "emission" and "emissions", these doesn't makes sense
+    (smh my head, why did I added these)
   - _pimeja_ &ndash; remove "grey", "gray" is kept
   - _sama_ &ndash; remove "likeness", "similarity" seems enough
   - _sewi_ &ndash; remove "divinities", "divinity" seems enough
   - _sona_ &ndash; remove "knowledges", "knowledge" seems enough
   - _utala_ &ndash; remove "fight", "conflict" seems enough
   - _utala_ &ndash; remove "fighting", conflicting" seems enough
-  - _wan_ &ndash; remove "lonliness". remove "single" as adjective, "one" seems enough
+  - _wan_ &ndash; remove "lonliness". remove "single" as adjective, "one" seems
+    enough
 - Change translations:
   - _wan_ &ndash; change noun "single" to "one"
   - _pona_ &ndash; change "goodly" to "properly"

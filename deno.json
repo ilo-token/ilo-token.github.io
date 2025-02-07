@@ -9,7 +9,14 @@
     "watch": "deno run --allow-read --allow-write --allow-env --allow-net --no-prompt ./bundle.ts watch"
   },
   "fmt": {
-    "include": ["./**/*.ts", "./**/*.js"],
+    "include": [
+      "./**/*.ts",
+      "./**/*.js",
+      "./**/*.md",
+      "./**/*.json",
+      "./**/*.css",
+      "./**/*.html"
+    ],
     "exclude": [
       "./dictionary/dictionary.ts",
       "./dist/main.js",
