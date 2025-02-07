@@ -88,9 +88,6 @@ function detectRepetition(
     return { before: source[0], repeat: "", after: "" };
   }
   const [first, ...rest] = source;
-  if (first.length <= 0) {
-    throw new UnrecognizedError('no word before "/"');
-  }
   for (let i = 0; i < first.length; i++) {
     const before = first.slice(0, i);
     const repeatString = first.slice(i, i + 1);
