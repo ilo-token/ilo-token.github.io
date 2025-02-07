@@ -50,7 +50,7 @@ function defaultPhrase(
           return new Output();
         }
         const adjective = fixAdjective([
-          ...modifier.adjective.reverse(),
+          ...modifier.adjective.slice().reverse(),
           ...headWord.adjective,
         ]);
         let postAdjective: null | {
@@ -129,7 +129,10 @@ function defaultPhrase(
       ) {
         const adjective = headWord.adjective;
         if (adjective.type === "simple") {
-          const adverb = [...modifier.adverb.reverse(), ...adjective.adverb];
+          const adverb = [
+            ...modifier.adverb.slice().reverse(),
+            ...adjective.adverb,
+          ];
           if (adverb.length > 1) {
             return new Output();
           }
