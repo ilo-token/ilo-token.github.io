@@ -6,7 +6,6 @@
  * have the same capabilities.
  */
 
-import { UnexpectedError, UnrecognizedError } from "../output/error.ts";
 import {
   allAtLeastOnce,
   cached,
@@ -18,6 +17,8 @@ import {
   Parser,
   sequence,
   slice,
+  UnexpectedError,
+  UnrecognizedError,
 } from "./parser-lib.ts";
 import { Token } from "./token.ts";
 import {

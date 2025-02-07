@@ -1,7 +1,7 @@
 /** Module for main execution in the browser. */
 
 import { translate } from "./mod.ts";
-import { OutputError } from "./output/output.ts";
+import { OutputError } from "./output.ts";
 import { dictionary } from "../dictionary/dictionary.ts";
 import { loadCustomDictionary } from "./dictionary.ts";
 import {

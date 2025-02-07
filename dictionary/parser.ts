@@ -20,10 +20,10 @@ import {
   optionalAll,
   Parser,
   sequence,
+  UnrecognizedError,
   withSource,
 } from "../src/parser/parser-lib.ts";
-import { Output, OutputError } from "../src/output/output.ts";
-import { UnrecognizedError } from "../src/output/error.ts";
+import { Output, OutputError } from "../src/output.ts";
 import { nullableAsArray } from "../src/misc.ts";
 import { escape } from "@std/html/entities";
 

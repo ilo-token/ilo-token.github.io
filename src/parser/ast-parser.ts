@@ -19,12 +19,7 @@ import {
   SimpleHeadedWordUnit,
   SimpleWordUnit,
 } from "./ast.ts";
-import {
-  MissingEntryError,
-  UnexpectedError,
-  UnrecognizedError,
-} from "../output/error.ts";
-import { Output } from "../output/output.ts";
+import { Output } from "../output.ts";
 import {
   CLAUSE_RULE,
   filter,
@@ -49,12 +44,15 @@ import {
   optional,
   Parser,
   sequence,
+  UnexpectedError,
+  UnrecognizedError,
 } from "./parser-lib.ts";
 import { describe, Token } from "./token.ts";
 import { spaces, TOKEN } from "./lexer.ts";
 import {
   contentWordSet,
   dictionary,
+  MissingEntryError,
   prepositionSet,
   preverbSet,
   tokiPonaWordSet,

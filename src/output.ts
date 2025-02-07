@@ -9,6 +9,13 @@ export class OutputError extends Error {
     this.name = "OutputError";
   }
 }
+/** Represents Error due to things not implemented yet. */
+export class TodoError extends OutputError {
+  constructor(token: string) {
+    super(`${token} is not yet implemented`);
+    this.name = "TodoError";
+  }
+}
 /** Represents possibilities and error. */
 export class Output<T> {
   /** Represents possibilities, considered error when the array is empty. */

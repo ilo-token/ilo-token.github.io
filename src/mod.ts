@@ -1,14 +1,14 @@
 import { errors } from "../telo-misikeke/telo-misikeke.js";
 import { translate as rawTranslate } from "./translator/composer.ts";
 import { shuffle } from "./misc.ts";
-import { OutputError } from "./output/output.ts";
+import { OutputError } from "./output.ts";
 import {
   Settings as RawSettings,
   settings as globalSettings,
 } from "./settings.ts";
 
 export { loadCustomDictionary } from "./dictionary.ts";
-export { OutputError } from "./output/output.ts";
+export { OutputError } from "./output.ts";
 export type { RedundancySettings } from "./settings.ts";
 
 /**

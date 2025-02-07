@@ -3,8 +3,7 @@
  * and AST parser.
  */
 
-import { UnexpectedError } from "../output/error.ts";
-import { Output, OutputError } from "../output/output.ts";
+import { Output, OutputError } from "../output.ts";
 
 /** A single parsing result. */
 export type ValueRest<T> = { rest: string; value: T };
@@ -61,6 +60,20 @@ export class Parser<T> {
   }
   parse(src: string): Output<T> {
     return this.parser(src).map(({ value }) => value);
+  }
+}
+/** Represents Error with unexpected and expected elements. */
+export class UnexpectedError extends OutputError {
+  constructor(unexpected: string, expected: string) {
+    super(`unexpected ${unexpected}. ${expected} were expected instead`);
+    this.name = "UnexpectedError";
+  }
+}
+/** Represents Error caused by unrecognized elements. */
+export class UnrecognizedError extends OutputError {
+  constructor(token: string) {
+    super(`${token} is unrecognized`);
+    this.name = "UnrecognizedError";
   }
 }
 /** Parser that always outputs an error. */

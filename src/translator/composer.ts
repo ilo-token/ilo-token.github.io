@@ -6,9 +6,8 @@ import {
   Sentence,
   Word,
 } from "./english-ast.ts";
-import { TodoError } from "../output/error.ts";
 import { nullableAsArray } from "../misc.ts";
-import { Output } from "../output/output.ts";
+import { Output, TodoError } from "../output.ts";
 import { translate as translateToAst } from "./translator.ts";
 
 const EMPHASIS_STARTING_TAG = "<strong>";

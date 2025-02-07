@@ -16,9 +16,9 @@ import {
   Sentence,
   WordUnit,
 } from "./ast.ts";
-import { UnrecognizedError } from "../output/error.ts";
 import { settings } from "../settings.ts";
 import { describe } from "./token.ts";
+import { UnrecognizedError } from "./parser-lib.ts";
 
 /** Array of filter rules for a word unit. */
 export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
