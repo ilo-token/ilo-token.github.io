@@ -1,6 +1,6 @@
 import { parse } from "../parser/ast-parser.ts";
 import * as TokiPona from "../parser/ast.ts";
-import * as English from "./english-ast.ts";
+import * as English from "./ast.ts";
 import { nullableAsArray, repeatWithSpace } from "../misc.ts";
 import { Output, TodoError } from "../output.ts";
 import { settings } from "../settings.ts";

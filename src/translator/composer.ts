@@ -5,7 +5,7 @@ import {
   Preposition,
   Sentence,
   Word,
-} from "./english-ast.ts";
+} from "./ast.ts";
 import { nullableAsArray } from "../misc.ts";
 import { Output, TodoError } from "../output.ts";
 import { translate as translateToAst } from "./translator.ts";
