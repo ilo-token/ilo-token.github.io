@@ -5,7 +5,7 @@ import { nullableAsArray, repeatWithSpace } from "../misc.ts";
 import { Output, TodoError } from "../output.ts";
 import { definitionAsPlainString } from "./as-string.ts";
 import { clause } from "./clause.ts";
-import { parse } from "../parser/ast-parser.ts";
+import { parse } from "../parser/parser.ts";
 
 function filler(filler: TokiPona.Emphasis): Array<string> {
   switch (filler.type) {
