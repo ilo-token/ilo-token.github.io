@@ -16,8 +16,8 @@ import {
   Sentence,
   WordUnit,
 } from "./ast.ts";
-import { UnrecognizedError } from "./error.ts";
-import { settings } from "./settings.ts";
+import { UnrecognizedError } from "../output/error.ts";
+import { settings } from "../settings.ts";
 import { describe } from "./token.ts";
 
 /** Array of filter rules for a word unit. */

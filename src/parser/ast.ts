@@ -1,6 +1,6 @@
 /** Module for describing Toki Pona AST. */
 
-import { nullableAsArray } from "./misc.ts";
+import { nullableAsArray } from "../misc.ts";
 
 /** Represents an emphasis particle. */
 export type Emphasis =

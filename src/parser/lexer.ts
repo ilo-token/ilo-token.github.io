@@ -6,7 +6,7 @@
  * have the same capabilities.
  */
 
-import { UnexpectedError, UnrecognizedError } from "./error.ts";
+import { UnexpectedError, UnrecognizedError } from "../output/error.ts";
 import {
   allAtLeastOnce,
   cached,
@@ -32,7 +32,7 @@ import {
   UCSUR_TO_LATIN,
 } from "./ucsur.ts";
 import { variable } from "./parser-lib.ts";
-import { settings } from "./settings.ts";
+import { settings } from "../settings.ts";
 import { empty } from "./parser-lib.ts";
 import { choice } from "./parser-lib.ts";
 

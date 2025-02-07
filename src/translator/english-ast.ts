@@ -1,6 +1,6 @@
 /** Module for describing English AST. */
 
-import { AdjectiveType, DeterminerType } from "../dictionary/type.ts";
+import { AdjectiveType, DeterminerType } from "../../dictionary/type.ts";
 
 export type Word = {
   word: string;

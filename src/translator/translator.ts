@@ -1,12 +1,12 @@
-import { parse } from "./ast-parser.ts";
-import * as TokiPona from "./ast.ts";
+import { parse } from "../parser/ast-parser.ts";
+import * as TokiPona from "../parser/ast.ts";
 import * as English from "./english-ast.ts";
-import { TodoError } from "./error.ts";
-import { nullableAsArray, repeatWithSpace } from "./misc.ts";
-import { Output } from "./output.ts";
-import { settings } from "./settings.ts";
-import * as Dictionary from "../dictionary/type.ts";
-import { dictionary } from "./dictionary.ts";
+import { TodoError } from "../output/error.ts";
+import { nullableAsArray, repeatWithSpace } from "../misc.ts";
+import { Output } from "../output/output.ts";
+import { settings } from "../settings.ts";
+import * as Dictionary from "../../dictionary/type.ts";
+import { dictionary } from "../dictionary.ts";
 
 const CONJUNCTION = { "and conjunction": "and", "anu": "or" } as const;
 

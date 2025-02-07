@@ -23,8 +23,8 @@ import {
   MissingEntryError,
   UnexpectedError,
   UnrecognizedError,
-} from "./error.ts";
-import { Output } from "./output.ts";
+} from "../output/error.ts";
+import { Output } from "../output/output.ts";
 import {
   CLAUSE_RULE,
   filter,
@@ -58,8 +58,8 @@ import {
   prepositionSet,
   preverbSet,
   tokiPonaWordSet,
-} from "./dictionary.ts";
-import { nullableAsArray } from "./misc.ts";
+} from "../dictionary.ts";
+import { nullableAsArray } from "../misc.ts";
 
 /** Parses a specific type of token. */
 function specificToken<T extends Token["type"]>(

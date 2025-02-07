@@ -1,6 +1,6 @@
 /** Module describing token. */
 
-import { repeatWithSpace } from "./misc.ts";
+import { repeatWithSpace } from "../misc.ts";
 
 /** Represents token. */
 export type Token =
