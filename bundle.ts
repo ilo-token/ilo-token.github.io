@@ -1,13 +1,9 @@
-import { bundle, BundleOptions } from "@deno/emit";
 import { buildTeloMisikeke } from "./telo-misikeke/build.ts";
 import { buildDictionary } from "./dictionary/build.ts";
 import { debounce } from "./src/misc.ts";
+import { build } from "esbuild";
+import { denoPlugins } from "@luca/esbuild-deno-loader";
 
-const SOURCE = new URL("./src/main.ts", import.meta.url);
-const DESTINATION = new URL("./dist/main.js", import.meta.url);
-const IMPORT_MAP = new URL("./bundle-imports.json", import.meta.url);
-
-const BUILD_OPTION: BundleOptions = { type: "classic", importMap: IMPORT_MAP };
 const WATCH = [
   "./dictionary/build.ts",
   "./dictionary/dictionary",
@@ -17,12 +13,17 @@ const WATCH = [
   "./src/",
   "./project-data.json",
 ];
-async function build(): Promise<void> {
+async function buildIloToken(minify: boolean): Promise<void> {
   console.log("Building main.js...");
-  const bundled = await bundle(SOURCE, BUILD_OPTION);
-  const withUseStrict = bundled.code
-    .replace(/\(\s*function\s*\(\s*\)\s*\{/, '$&"use strict";');
-  await Deno.writeTextFile(DESTINATION, withUseStrict);
+  await build({
+    entryPoints: ["./src/main.ts"],
+    outfile: "./dist/main.js",
+    format: "iife",
+    bundle: true,
+    minify,
+    sourcemap: "linked",
+    plugins: [...denoPlugins()],
+  });
   console.log("Building done!");
 }
 if (import.meta.main) {
@@ -30,7 +31,7 @@ if (import.meta.main) {
     case "build": {
       console.log("Building dictionary and telo misikeke...");
       await Promise.all([buildDictionary(), buildTeloMisikeke()]);
-      await build();
+      await buildIloToken(true);
       break;
     }
     case "watch": {
@@ -39,7 +40,7 @@ if (import.meta.main) {
         try {
           console.log("Building dictionary...");
           await buildDictionary();
-          await build();
+          await buildIloToken(false);
         } catch (error) {
           console.error(error);
         }

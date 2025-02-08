@@ -1,6 +1,7 @@
 .vscode/
 dictionary/dictionary.ts
 dist/main.js
+dist/main.js.map
 telo-misikeke/rules.js
 telo-misikeke/Parser.js
 telo-misikeke/linku-data.json

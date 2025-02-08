@@ -3,10 +3,10 @@
     "lib": ["dom", "dom.iterable", "dom.asynciterable", "deno.ns"]
   },
   "tasks": {
-    "build": "deno run --allow-read --allow-write --allow-env --allow-net --no-prompt ./bundle.ts build",
+    "build": "deno run --allow-read --allow-write --allow-env --allow-net --allow-run --no-prompt ./bundle.ts build",
     "run": "deno run --allow-env --no-prompt ./src/main-deno.ts",
     "start": "deno run --allow-net --allow-read --no-prompt jsr:@std/http/file-server ./dist/",
-    "watch": "deno run --allow-read --allow-write --allow-env --allow-net --no-prompt ./bundle.ts watch"
+    "watch": "deno run --allow-read --allow-write --allow-env --allow-net --allow-run --no-prompt ./bundle.ts watch"
   },
   "fmt": {
     "include": [
@@ -37,8 +37,9 @@
     }
   },
   "imports": {
+    "@luca/esbuild-deno-loader": "jsr:@luca/esbuild-deno-loader@^0.11.1",
     "@std/html": "jsr:@std/html@^1.0.3",
     "compromise": "npm:compromise@^14.14.3",
-    "@deno/emit": "jsr:@deno/emit@0.46.0"
+    "esbuild": "npm:esbuild@^0.25.0"
   }
 }
