@@ -247,7 +247,7 @@ jo:
   # hold(v) [object];
   carry(v) [object];
   contain(v) [object];
-  own(v) [object];
+  own/owns/owned(v) [object];
 
   # holding(n gerund);
   carrying(n gerund);
@@ -281,7 +281,7 @@ kama:
   future(adj age);
 
   become(v linking) [predicate];
-  began to(v) [predicate];
+  begin to(v) [predicate];
 
   arriving(n gerund);
   # approaching(n gerund);
@@ -1366,7 +1366,7 @@ sona:
 
   know(v) [object];
 
-  know how to(v) [predicate];
+  know how to/knows how to/knew how to(v) [predicate];
 
   knowledgeable(adj opinion);
 

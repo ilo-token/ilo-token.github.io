@@ -101,7 +101,7 @@ function detectRepetition(
     }
   }
   throw new OutputError(
-    `${source.join("/")} has no repetition pattern found`,
+    `"${source.join("/")}" has no repetition pattern found`,
   );
 }
 function nounOnly(): Parser<
@@ -133,7 +133,13 @@ function nounOnly(): Parser<
               .text();
             if (singular === "" || plural === "") {
               throw new OutputError(
-                `no singular or plural form found for ${first}`,
+                `no singular or plural form found for "${first}"`,
+              );
+            }
+            if (first !== singular) {
+              throw new OutputError(
+                `conjugation error: "${first}" is not "${singular}". ` +
+                  "consider providing both singular and plural forms instead",
               );
             }
           } else {
@@ -233,7 +239,8 @@ function verbOnly(tagInside: Parser<unknown>): Parser<VerbOnly> {
           )
         ) {
           throw new UnrecognizedError(
-            `mismatched verb particles ${presentPlural}/${presentSingular}/${past}`,
+            "mismatched verb particles " +
+              `"${presentPlural}/${presentSingular}/${past}"`,
           );
         }
         return true;
@@ -256,7 +263,14 @@ function verbOnly(tagInside: Parser<unknown>): Parser<VerbOnly> {
           FutureTense: string;
         };
         if (conjugations == null) {
-          throw new OutputError(`no verb conjugation found for ${verb}`);
+          throw new OutputError(`no verb conjugation found for "${verb}"`);
+        }
+        if (verb !== conjugations.Infinitive) {
+          throw new OutputError(
+            `conjugation error: "${verb}" is not ` +
+              `"${conjugations.Infinitive}". consider providing all ` +
+              "conjugations instead",
+          );
         }
         return {
           presentPlural: conjugations.Infinitive,
@@ -363,7 +377,7 @@ function definition(): Parser<Definition> {
       .map((unit) => {
         const numeral = Number.parseInt(unit);
         if (Number.isNaN(numeral)) {
-          throw new UnrecognizedError("non-number on numeral");
+          throw new UnrecognizedError(`"${unit}" is not a number`);
         } else {
           return { type: "numeral", numeral };
         }
