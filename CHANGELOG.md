@@ -2,8 +2,7 @@
 
 <!--
 NOTE: Before publishing:
-- update dependencies before publishing
-- run `deno task update` to update telo misikeke and Linku data
+- run `deno task update` to update all dependencies including telo misikeke
 - set parameters on `project-data.json`
 -->
 
