@@ -209,7 +209,7 @@ function cartoucheElement(): Parser<string> {
         }
         const morae = word.match(/[aeiou]|[jklmnpstw][aeiou]|n/g)!;
         if (morae.length < count) {
-          throw new UnrecognizedError("Excess dots");
+          throw new UnrecognizedError("excess dots");
         }
         return morae.slice(0, count).join("");
       }),

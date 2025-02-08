@@ -269,7 +269,7 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
       phrase.headWord.type === "number" &&
       phrase.modifiers.some(modifierIsNumeric)
     ) {
-      throw new UnrecognizedError("Multiple number words");
+      throw new UnrecognizedError("multiple number words");
     }
     return true;
   },
@@ -323,7 +323,7 @@ export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
       everyPhraseInMultiplePhrases(preposition.phrases)
         .some(hasPrepositionInPhrase)
     ) {
-      throw new UnrecognizedError("Preposition inside preposition");
+      throw new UnrecognizedError("preposition inside preposition");
     }
     return true;
   },
@@ -380,7 +380,7 @@ export const CLAUSE_RULE: Array<(clause: Clause) => boolean> = [
     if (
       everyPhraseInMultiplePhrases(phrases).some(hasPrepositionInPhrase)
     ) {
-      throw new UnrecognizedError("Preposition in subject");
+      throw new UnrecognizedError("preposition in subject");
     }
     return true;
   },
@@ -391,7 +391,7 @@ export const CLAUSE_RULE: Array<(clause: Clause) => boolean> = [
       everyObjectInMultiplePredicates(clause.predicates)
         .some(hasPrepositionInPhrase)
     ) {
-      throw new UnrecognizedError("Preposition in object");
+      throw new UnrecognizedError("preposition in object");
     }
     return true;
   },
@@ -513,7 +513,7 @@ export const MULTIPLE_SENTENCES_RULE: Array<
   // Only allow at most 2 sentences
   (sentences) => {
     if (sentences.length > 2) {
-      throw new UnrecognizedError("Multiple sentences");
+      throw new UnrecognizedError("multiple sentences");
     }
     return true;
   },
