@@ -26,6 +26,7 @@ import {
   END_OF_LONG_GLYPH,
   END_OF_REVERSE_LONG_GLYPH,
   SCALING_JOINER,
+  SPECIAL_UCSUR_DESCRIPTIONS,
   STACKING_JOINER,
   START_OF_CARTOUCHE,
   START_OF_LONG_GLYPH,
@@ -210,12 +211,6 @@ function cartouche(): Parser<string> {
 function cartouches(): Parser<string> {
   return allAtLeastOnce(cartouche()).map((words) => words.join(" "));
 }
-const LONG_GLYPH_DESCRIPTION: { [character: string]: string } = {
-  [START_OF_LONG_GLYPH]: "start of long glyph",
-  [END_OF_LONG_GLYPH]: "end of long glyph",
-  [START_OF_REVERSE_LONG_GLYPH]: "start of reverse long glyph",
-  [END_OF_REVERSE_LONG_GLYPH]: "end of reverse long glyph",
-};
 /**
  * Parses long glyph container.
  *
@@ -228,9 +223,9 @@ function longContainer<T>(
   inside: Parser<T>,
 ): Parser<T> {
   return sequence(
-    matchString(left, LONG_GLYPH_DESCRIPTION[left]),
+    matchString(left, SPECIAL_UCSUR_DESCRIPTIONS[left]),
     inside,
-    matchString(right, LONG_GLYPH_DESCRIPTION[right]),
+    matchString(right, SPECIAL_UCSUR_DESCRIPTIONS[right]),
   )
     .map(([_, inside, _1]) => inside);
 }
