@@ -45,6 +45,9 @@ ${withoutCjs};
 export { ${exports} };
 `;
   await Deno.writeTextFile(destination, code);
+  if (withoutCjs.includes("module.exports")) {
+    throw new Error(`unable to remove CommonJS exports on ${destination}`);
+  }
 }
 async function buildSonaLinku(): Promise<void> {
   const response = await fetchOk(LINKU_URL);
