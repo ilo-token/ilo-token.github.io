@@ -49,7 +49,9 @@ async function buildSonaLinku(): Promise<void> {
 function parseLipuLinku(
   data: { [word: string]: { usage_category: string } },
 ): [string, string][] {
-  return Object.keys(data).map((word) => [word, data[word].usage_category]);
+  return Object.keys(data)
+    .map<[string, string]>((word) => [word, data[word].usage_category])
+    .filter(([_, category]) => category !== "sandbox");
 }
 export async function buildTeloMisikeke(): Promise<void> {
   await Promise.all([
