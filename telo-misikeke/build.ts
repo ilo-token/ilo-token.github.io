@@ -26,6 +26,8 @@ const SOURCE = [
     exportItems: ["ParserWithCallbacks"],
   },
 ];
+const COMMONJS_EXPORT =
+  /if\s*\(\s*typeof\s*\(\s*module\s*\)\s*!=\s*["']undefined["']\s*\)\s*\{\s*module\s*.\s*exports\s*=\s*\{\s*[^}]*\}\s*;?\s*\}/g;
 async function buildCode(
   source: URL,
   destination: URL,
@@ -35,7 +37,7 @@ async function buildCode(
   const code = await response.text();
   await Deno.writeTextFile(
     destination,
-    `${code};export{${exportItems.join(",")}}`,
+    `${code.replaceAll(COMMONJS_EXPORT, "")};export{${exportItems.join(",")}}`,
   );
 }
 async function buildSonaLinku(): Promise<void> {
