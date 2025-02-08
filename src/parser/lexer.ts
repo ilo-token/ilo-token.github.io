@@ -145,12 +145,9 @@ function multipleA(): Parser<number> {
 }
 /** Parses lengthened words. */
 function longWord(): Parser<Token & { type: "long word" }> {
-  return choice(
-    matchString("a", '"a"'),
-    matchString("n", '"n"'),
-  )
+  return choice(matchString("a"), matchString("n"))
     .then((word) =>
-      count(allAtLeastOnce(matchString(word, `"${word}"`)))
+      count(allAtLeastOnce(matchString(word)))
         .map<Token & { type: "long word" }>((count) => ({
           type: "long word",
           word,

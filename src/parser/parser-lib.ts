@@ -282,11 +282,12 @@ export function matchString(
   match: string,
   description?: null | undefined | string,
 ): Parser<string> {
-  return slice(match.length, `"${match}"`).map((slice) => {
-    if (slice === match) {
-      return match;
+  const useDescription = description ?? `"${match}"`;
+  return slice(match.length, useDescription).filter((slice) => {
+    if (slice !== match) {
+      throw new UnexpectedError(`"${slice}"`, useDescription);
     } else {
-      throw new UnexpectedError(`"${slice}"`, description ?? `"${match}"`);
+      return true;
     }
   });
 }
