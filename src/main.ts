@@ -15,7 +15,8 @@ import PROJECT_DATA from "../project-data.json" with { type: "json" };
 import { asComment } from "../dictionary/misc.ts";
 
 const UNKNOWN_ERROR_MESSAGE =
-  "An unknown error has occurred (Errors should be known, please report this).";
+  "An unknown error has occurred (Errors should be known, please report " +
+  "this).";
 const SINGULAR_ERROR_MESSAGE = "An error has been found:";
 const MULTIPLE_ERROR_MESSAGE = "Multiple errors has been found:";
 
