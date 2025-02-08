@@ -233,7 +233,7 @@ function describeSrc(src: string, expected: string): OutputError {
   if (src === "") {
     return new UnexpectedError("end of text", expected);
   } else {
-    const token = src.match(/[^\s]*/)![0];
+    const token = src.match(/\S*/)![0];
     let tokenDescription: string;
     if (token === "") {
       tokenDescription = "space";
