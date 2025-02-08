@@ -10,14 +10,6 @@
     "update": "deno outdated --update && deno run --allow-write --allow-net --no-prompt ./telo-misikeke/update.ts"
   },
   "fmt": {
-    "include": [
-      "./**/*.ts",
-      "./**/*.js",
-      "./**/*.md",
-      "./**/*.json",
-      "./**/*.css",
-      "./**/*.html"
-    ],
     "exclude": [
       "./dictionary/dictionary.ts",
       "./dist/main.js",
@@ -27,7 +19,6 @@
     ]
   },
   "lint": {
-    "include": ["./**/*.ts", "./**/*.js"],
     "exclude": [
       "./dictionary/dictionary.ts",
       "./dist/main.js",
