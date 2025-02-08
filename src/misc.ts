@@ -84,19 +84,19 @@ export async function fetchOk(url: string | URL): Promise<Response> {
 }
 // This is different from @std/async/debounce, this ensures the callback is
 // awaited before running another callback
-export function debounce(
-  callback: () => Promise<void>,
+export function debounce<T extends Array<unknown>>(
+  callback: (...args: T) => Promise<void>,
   delay: number,
-): () => void {
+): (...args: T) => void {
   let previous = { aborted: true };
   let current = Promise.resolve();
-  return () => {
+  return (...args) => {
     previous.aborted = true;
     const newPrevious = previous = { aborted: false };
     setTimeout(() => {
       if (!newPrevious.aborted) {
         current = current
-          .then(() => callback());
+          .then(() => callback(...args));
       }
     }, delay);
   };

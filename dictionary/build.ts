@@ -3,7 +3,7 @@ import { parseDictionary } from "./parser.ts";
 const SOURCE = new URL("./dictionary", import.meta.url);
 const DESTINATION = new URL("./dictionary.ts", import.meta.url);
 
-export async function buildDictionary(): Promise<void> {
+export async function build(): Promise<void> {
   const text = await Deno.readTextFile(SOURCE);
   const json = JSON.stringify(parseDictionary(text), undefined, 2);
   const code = `\
