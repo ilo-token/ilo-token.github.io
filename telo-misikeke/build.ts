@@ -27,7 +27,7 @@ const SOURCE = [
   },
 ];
 const COMMONJS_EXPORT =
-  /if\s*\(\s*typeof\s*\(\s*module\s*\)\s*!=\s*["']undefined["']\s*\)\s*\{\s*module\s*.\s*exports\s*=\s*\{\s*[^}]*\}\s*;?\s*\}/g;
+  /if\s*\(\s*typeof\s*\(\s*module\s*\)\s*!=\s*(["'`])undefined\1\s*\)\s*\{\s*module\s*.\s*exports\s*=\s*\{\s*[^}]*\}\s*;?\s*\}/g;
 async function buildCode(
   source: URL,
   destination: URL,
