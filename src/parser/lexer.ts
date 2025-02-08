@@ -9,6 +9,7 @@
 import {
   allAtLeastOnce,
   cached,
+  character,
   choiceOnlyOne,
   count,
   match,
@@ -16,7 +17,6 @@ import {
   optionalAll,
   Parser,
   sequence,
-  slice,
   UnexpectedError,
   UnrecognizedError,
 } from "./parser-lib.ts";
@@ -58,34 +58,11 @@ function variationSelector(): Parser<string> {
   return match(/[\uFE00-\uFE0F]/, "variation selector");
 }
 /**
- * Parses an UCSUR character, this doesn't parse space and so must be manually
- * added if needed.
- */
-function ucsur(): Parser<string> {
-  return slice(2, "UCSUR character");
-}
-/**
- * Parses a specific UCSUR character, this doesn't parse space and so must be
- * manually added if needed
- */
-function specificUcsurCharacter(
-  character: string,
-  description: string,
-): Parser<string> {
-  return ucsur().filter((word) => {
-    if (word === character) {
-      return true;
-    } else {
-      throw new UnexpectedError(`"${word}"`, description);
-    }
-  });
-}
-/**
  * Parses UCSUR word, this doesn't parse space and so must be manually added if
  * needed
  */
 function ucsurWord(): Parser<string> {
-  return ucsur().map((word) => {
+  return character().map((word) => {
     const latin = UCSUR_TO_LATIN[word];
     if (latin == null) {
       throw new UnexpectedError(`"${word}"`, "UCSUR glyph");
@@ -102,8 +79,8 @@ function singleUcsurWord(): Parser<string> {
 function joiner(): Parser<string> {
   return choiceOnlyOne(
     matchString("\u200D", "zero width joiner").map(() => "zero width joiner"),
-    specificUcsurCharacter(STACKING_JOINER, "stacking joiner"),
-    specificUcsurCharacter(SCALING_JOINER, "scaling joiner"),
+    matchString(STACKING_JOINER, "stacking joiner"),
+    matchString(SCALING_JOINER, "scaling joiner"),
   );
 }
 /**
@@ -219,10 +196,10 @@ function cartoucheElement(): Parser<string> {
 /** Parses a single cartouche. */
 function cartouche(): Parser<string> {
   return sequence(
-    specificUcsurCharacter(START_OF_CARTOUCHE, "start of cartouche")
+    matchString(START_OF_CARTOUCHE, "start of cartouche")
       .skip(spaces()),
     allAtLeastOnce(cartoucheElement()),
-    specificUcsurCharacter(END_OF_CARTOUCHE, "end of cartouche").skip(spaces()),
+    matchString(END_OF_CARTOUCHE, "end of cartouche").skip(spaces()),
   )
     .map(([_, words, _1]) => {
       const word = words.join("");
@@ -233,6 +210,12 @@ function cartouche(): Parser<string> {
 function cartouches(): Parser<string> {
   return allAtLeastOnce(cartouche()).map((words) => words.join(" "));
 }
+const LONG_GLYPH_DESCRIPTION: { [character: string]: string } = {
+  [START_OF_LONG_GLYPH]: "start of long glyph",
+  [END_OF_LONG_GLYPH]: "end of long glyph",
+  [START_OF_REVERSE_LONG_GLYPH]: "start of reverse long glyph",
+  [END_OF_REVERSE_LONG_GLYPH]: "end of reverse long glyph",
+};
 /**
  * Parses long glyph container.
  *
@@ -244,16 +227,10 @@ function longContainer<T>(
   right: string,
   inside: Parser<T>,
 ): Parser<T> {
-  const description: { [character: string]: string } = {
-    [START_OF_LONG_GLYPH]: "start of long glyph",
-    [END_OF_LONG_GLYPH]: "end of long glyph",
-    [START_OF_REVERSE_LONG_GLYPH]: "start of reverse long glyph",
-    [END_OF_REVERSE_LONG_GLYPH]: "end of reverse long glyph",
-  };
   return sequence(
-    specificUcsurCharacter(left, description[left]),
+    matchString(left, LONG_GLYPH_DESCRIPTION[left]),
     inside,
-    specificUcsurCharacter(right, description[right]),
+    matchString(right, LONG_GLYPH_DESCRIPTION[right]),
   )
     .map(([_, inside, _1]) => inside);
 }
@@ -291,7 +268,7 @@ function headedLongGlyphStart(): Parser<
   Token & { type: "headed long glyph start" }
 > {
   return longGlyphHead().skip(
-    specificUcsurCharacter(START_OF_LONG_GLYPH, "start of long glyph"),
+    matchString(START_OF_LONG_GLYPH, "start of long glyph"),
   )
     .skip(spaces())
     .map((words) => ({ type: "headed long glyph start", words }));
@@ -299,14 +276,14 @@ function headedLongGlyphStart(): Parser<
 function headlessLongGlyphEnd(): Parser<
   Token & { type: "headless long glyph end" }
 > {
-  return specificUcsurCharacter(END_OF_LONG_GLYPH, "end of long glyph")
+  return matchString(END_OF_LONG_GLYPH, "end of long glyph")
     .skip(spaces())
     .map(() => ({ type: "headless long glyph end" }));
 }
 function headlessLongGlyphStart(): Parser<
   Token & { type: "headless long glyph end" }
 > {
-  return specificUcsurCharacter(
+  return matchString(
     START_OF_REVERSE_LONG_GLYPH,
     "start of reverse long glyph",
   )
@@ -316,7 +293,7 @@ function headlessLongGlyphStart(): Parser<
 function headedLongGlyphEnd(): Parser<
   Token & { type: "headed long glyph start" }
 > {
-  return specificUcsurCharacter(
+  return matchString(
     END_OF_REVERSE_LONG_GLYPH,
     "end of reverse long glyph",
   )
@@ -327,12 +304,12 @@ function headedLongGlyphEnd(): Parser<
 function insideLongGlyph(): Parser<
   Token & { type: "headed long glyph start" }
 > {
-  return specificUcsurCharacter(
+  return matchString(
     END_OF_REVERSE_LONG_GLYPH,
     "end of reverse long glyph",
   )
     .with(longGlyphHead())
-    .skip(specificUcsurCharacter(START_OF_LONG_GLYPH, "start of long glyph"))
+    .skip(matchString(START_OF_LONG_GLYPH, "start of long glyph"))
     .skip(spaces())
     .map((words) => ({ type: "headed long glyph start", words }));
 }

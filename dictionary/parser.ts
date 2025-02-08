@@ -12,10 +12,10 @@ import {
 } from "./type.ts";
 import {
   all,
+  character,
   choiceOnlyOne,
   eol,
   match,
-  matchCapture,
   matchString,
   optionalAll,
   Parser,
@@ -39,11 +39,15 @@ function space(): Parser<null> {
 function lex<T>(parser: Parser<T>): Parser<T> {
   return parser.skip(space());
 }
+function backtick(): Parser<string> {
+  return matchString("`", "backtick");
+}
 function word(): Parser<string> {
   return all(
     choiceOnlyOne(
       match(/[^():;#/`]/, "word"),
-      matchCapture(/`([^`])`/u, "quoted character").map(([_, words]) => words),
+      sequence(backtick(), character(), backtick())
+        .map(([_, character]) => character),
       comment().map(() => ""),
     ),
   )

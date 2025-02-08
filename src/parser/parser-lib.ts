@@ -291,6 +291,9 @@ export function matchString(
     }
   });
 }
+export function character(): Parser<string> {
+  return match(/./us, "character");
+}
 /** Parses the end of text */
 export function eol(): Parser<null> {
   return new Parser((src) => {
