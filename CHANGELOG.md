@@ -27,10 +27,6 @@ On this on-development version, things can be broken.
 - Implement advanced parsing settings.
 - Long texts (>500) are no longer recognized.
 
-Inside update (Intended for developers):
-
-- Distribution code no longer minified.
-
 </details>
 
 ## 0.3.0
