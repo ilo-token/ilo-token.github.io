@@ -26,13 +26,14 @@ async function buildIloToken(minify: boolean): Promise<void> {
   });
   console.log("Building done!");
 }
-const buildDebounced = debounce(async () => {
+async function buildLogError(): Promise<void> {
   try {
     await buildIloToken(false);
   } catch (error) {
     console.error(error);
   }
-}, 500);
+}
+const buildDebounced = debounce(buildLogError, 500);
 if (import.meta.main) {
   switch (Deno.args[0]) {
     case "build": {
@@ -41,8 +42,8 @@ if (import.meta.main) {
     }
     case "watch": {
       console.log("Press ctrl+c to exit.");
+      await buildLogError();
       const watcher = Deno.watchFs(WATCH);
-      buildDebounced();
       for await (const _ of watcher) {
         buildDebounced();
       }
