@@ -4,7 +4,6 @@ import { build } from "esbuild";
 import { denoPlugins } from "@luca/esbuild-deno-loader";
 
 const WATCH = [
-  "./dictionary/build.ts",
   "./dictionary/dictionary",
   "./dictionary/parser.ts",
   "./dictionary/type.ts",

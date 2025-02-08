@@ -25,20 +25,26 @@ const SOURCE = [
   },
 ];
 const COMMONJS_EXPORT =
-  /if\s*\(\s*typeof\s*\(\s*module\s*\)\s*!=\s*(["'`])undefined\1\s*\)\s*\{\s*module\s*\.\s*exports\s*=\s*\{\s*[^}]*\}\s*;?\s*\}/g;
+  /\s*if\s*\(\s*typeof\s*\(\s*module\s*\)\s*!=\s*(["'`])undefined\1\s*\)\s*\{\s*module\s*\.\s*exports\s*=\s*\{\s*[^}]*\}\s*;?\s*\}\s*/g;
 async function buildCode(
   source: URL,
   destination: URL,
   exportItems: Array<string>,
 ): Promise<void> {
   const response = await fetchOk(source);
-  const code = await response.text();
-  await Deno.writeTextFile(
-    destination,
-    `// This code is from\n// ${source}\n//\n// It is automatically modified to be an ES module\n\n${
-      code.replaceAll(COMMONJS_EXPORT, "")
-    };export{${exportItems.join(",")}}`,
-  );
+  const rawCode = await response.text();
+  const withoutCjs = rawCode.replaceAll(COMMONJS_EXPORT, "");
+  const exports = exportItems.join(", ");
+  const code = `\
+// This code is from
+// ${source}
+//
+// It is automatically modified to be an ES module
+
+${withoutCjs};
+export { ${exports} };
+`;
+  await Deno.writeTextFile(destination, code);
 }
 async function buildSonaLinku(): Promise<void> {
   const response = await fetchOk(LINKU_URL);

@@ -773,7 +773,5 @@ function build_rules(wordList) {
     };
 
     return rules;
-};
-
-
-;export{getCategory,getMessage,rulesByCategory,parseLipuLinku,build_rules}
+};;
+export { getCategory, getMessage, rulesByCategory, parseLipuLinku, build_rules };

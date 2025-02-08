@@ -124,8 +124,5 @@ function ParserWithCallbacks(rules, useLinebreaks) {
      * }; */
 
     return api;
-};
-
-
-
-;export{ParserWithCallbacks}
+};;
+export { ParserWithCallbacks };
