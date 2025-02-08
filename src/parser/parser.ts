@@ -745,7 +745,7 @@ function fullClause(): Parser<FullClause> {
       ),
       optional(optionalComma().with(emphasis())),
     )
-      .map<FullClause>(
+      .map<FullClause & { type: "default" }>(
         ([startingParticle, kinOrTaso, clause, anuSeme, endingParticle]) => ({
           type: "default",
           startingParticle,
@@ -756,7 +756,7 @@ function fullClause(): Parser<FullClause> {
         }),
       )
       .sortBy((clause) => {
-        if ((clause as FullClause & { type: "default" }).anuSeme == null) {
+        if (clause.anuSeme == null) {
           return 1;
         } else {
           return 0;
