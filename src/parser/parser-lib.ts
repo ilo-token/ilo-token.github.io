@@ -56,7 +56,7 @@ export class Parser<T> {
   }
   /** Takes another parser and discards its parsing result. */
   skip<U>(parser: Parser<U>): Parser<T> {
-    return sequence(this, parser).map(([output, _]) => output);
+    return sequence(this, parser).map(([output]) => output);
   }
   parse(src: string): Output<T> {
     return this.parser(src).map(({ value }) => value);

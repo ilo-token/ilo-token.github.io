@@ -202,7 +202,7 @@ function cartouche(): Parser<string> {
     allAtLeastOnce(cartoucheElement()),
     matchString(END_OF_CARTOUCHE, "end of cartouche").skip(spaces()),
   )
-    .map(([_, words, _1]) => {
+    .map(([_, words]) => {
       const word = words.join("");
       return `${word[0].toUpperCase()}${word.slice(1)}`;
     });
@@ -227,7 +227,7 @@ function longContainer<T>(
     inside,
     matchString(right, SPECIAL_UCSUR_DESCRIPTIONS[right]),
   )
-    .map(([_, inside, _1]) => inside);
+    .map(([_, inside]) => inside);
 }
 /** Parses long glyph container containing just spaces. */
 function longSpaceContainer(): Parser<number> {

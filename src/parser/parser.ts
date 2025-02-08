@@ -376,7 +376,7 @@ function modifiers(): Parser<Array<Modifier>> {
         .filter(filter(MODIFIER_RULES)),
     ),
   )
-    .sortBy(([_, nanpaModifiers, _1]) => -nanpaModifiers.length)
+    .sortBy(([_, nanpaModifiers]) => -nanpaModifiers.length)
     .map(([modifiers, nanpaModifiers, piModifiers]) => [
       ...modifiers,
       ...nanpaModifiers,
