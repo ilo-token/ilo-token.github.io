@@ -1359,12 +1359,13 @@ soko:
   lichen-related(adj opinion);
 
 sona:
-  # TODO: be skilled in, be wise about
   knowledge(n);
   information(n);
   data(n plural); # data is not singular, datum sounds unfamaliar
 
   know(v) [object];
+  have(v) skill(n singular) in(prep) [object];
+  # have(v) knowledge(n singular) about(prep) [object];
 
   know how to/knows how to/knew how to(v) [predicate];
 
