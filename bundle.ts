@@ -26,6 +26,13 @@ async function buildIloToken(minify: boolean): Promise<void> {
   });
   console.log("Building done!");
 }
+const buildDebounced = debounce(async () => {
+  try {
+    await buildIloToken(false);
+  } catch (error) {
+    console.error(error);
+  }
+}, 500);
 if (import.meta.main) {
   switch (Deno.args[0]) {
     case "build": {
@@ -34,25 +41,10 @@ if (import.meta.main) {
     }
     case "watch": {
       console.log("Press ctrl+c to exit.");
-      const builder = debounce(async () => {
-        try {
-          await buildIloToken(false);
-        } catch (error) {
-          console.error(error);
-        }
-      }, 500);
       const watcher = Deno.watchFs(WATCH);
-      Deno.addSignalListener("SIGINT", () => {
-        watcher.close();
-        Deno.exit();
-      });
-      try {
-        builder();
-        for await (const _ of watcher) {
-          builder();
-        }
-      } finally {
-        watcher.close();
+      buildDebounced();
+      for await (const _ of watcher) {
+        buildDebounced();
       }
       throw new Error("unreachable");
     }
