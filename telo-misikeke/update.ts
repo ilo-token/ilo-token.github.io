@@ -1,12 +1,10 @@
-/** Build codes for telo misikeke source codes. */
+/** Codes for updating telo misikeke and Linku data. */
 
-import PROJECT_DATA from "../project-data.json" with { type: "json" };
 import { fetchOk } from "../src/misc.ts";
 
 const TELO_MISIKEKE_URL =
-  `https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/-/raw/${PROJECT_DATA.commitId.teloMisikeke}/`;
-const LINKU_URL =
-  `https://raw.githubusercontent.com/lipu-linku/sona/${PROJECT_DATA.commitId.sonaLinku}/api/raw/words.json`;
+  "https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/-/raw/main/";
+const LINKU_URL = "https://api.linku.la/v1/words";
 const LINKU_DESTINATION = new URL("./linku-data.json", import.meta.url);
 const SOURCE = [
   {
@@ -37,14 +35,19 @@ async function buildCode(
   const code = await response.text();
   await Deno.writeTextFile(
     destination,
-    `${code.replaceAll(COMMONJS_EXPORT, "")};export{${exportItems.join(",")}}`,
+    `// This code is from\n// ${source}\n//\n// It is automatically modified to be an ES module\n\n${
+      code.replaceAll(COMMONJS_EXPORT, "")
+    };export{${exportItems.join(",")}}`,
   );
 }
 async function buildSonaLinku(): Promise<void> {
   const response = await fetchOk(LINKU_URL);
   const json = await response.json();
   const processedJson = parseLipuLinku(json);
-  await Deno.writeTextFile(LINKU_DESTINATION, JSON.stringify(processedJson));
+  await Deno.writeTextFile(
+    LINKU_DESTINATION,
+    JSON.stringify(processedJson, undefined, 2),
+  );
 }
 function parseLipuLinku(
   data: { [word: string]: { usage_category: string } },
@@ -53,7 +56,7 @@ function parseLipuLinku(
     .map<[string, string]>((word) => [word, data[word].usage_category])
     .filter(([_, category]) => category !== "sandbox");
 }
-export async function buildTeloMisikeke(): Promise<void> {
+if (import.meta.main) {
   await Promise.all([
     buildSonaLinku(),
     ...SOURCE

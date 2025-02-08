@@ -6,7 +6,8 @@
     "build": "deno run --allow-read --allow-write --allow-env --allow-net --allow-run --no-prompt ./bundle.ts build",
     "run": "deno run --allow-env --no-prompt ./src/main-deno.ts",
     "start": "deno run --allow-net --allow-read --no-prompt jsr:@std/http/file-server ./dist/",
-    "watch": "deno run --allow-read --allow-write --allow-env --allow-net --allow-run --no-prompt ./bundle.ts watch"
+    "watch": "deno run --allow-read --allow-write --allow-env --allow-net --allow-run --no-prompt ./bundle.ts watch",
+    "update": "deno run --allow-read --allow-write --allow-net --no-prompt ./telo-misikeke/update.ts"
   },
   "fmt": {
     "include": [
@@ -20,6 +21,7 @@
     "exclude": [
       "./dictionary/dictionary.ts",
       "./dist/main.js",
+      "./telo-misikeke/linku-data.json",
       "./telo-misikeke/rules.js",
       "./telo-misikeke/Parser.js"
     ]

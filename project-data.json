@@ -1,8 +1,4 @@
 {
-  "commitId": {
-    "teloMisikeke": "c61987ed2ff7b4319b20960c596570f016755fb4",
-    "sonaLinku": "03410a67eb416199562c3aa7f8ba26010efcee56"
-  },
   "version": "0.4.0",
   "onDevelopment": true,
   "releaseDate": "2024-8-15"
