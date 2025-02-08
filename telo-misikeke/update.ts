@@ -73,5 +73,5 @@ if (import.meta.main) {
         buildCode(file.source, file.destination, file.exportItems)
       ),
   ]);
-  console.log("Updated telo misikeke");
+  console.log("Updated telo misikeke.");
 }
