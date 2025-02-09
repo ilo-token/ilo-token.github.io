@@ -1,6 +1,10 @@
 // This code is from
 // https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/-/raw/main/public/Parser.js
 //
+// Repository: https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/
+// Copyright (c) 2023 Nicolas Hurtubise
+// MIT License https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/#licence
+//
 // It is automatically modified to be an ES module
 
 /* Parser.js
