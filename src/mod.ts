@@ -2,21 +2,12 @@ import { errors } from "../telo-misikeke/telo-misikeke.js";
 import { translate as rawTranslate } from "./translator/composer.ts";
 import { shuffle } from "./misc.ts";
 import { OutputError } from "./output.ts";
-import {
-  Settings as RawSettings,
-  settings as globalSettings,
-} from "./settings.ts";
+import { Settings, settings as globalSettings } from "./settings.ts";
 
 export { loadCustomDictionary } from "./dictionary.ts";
 export { OutputError } from "./output.ts";
-export type { RedundancySettings } from "./settings.ts";
-
-/**
- * Interface for configuring translation. See
- * https://github.com/ilo-token/ilo-token.github.io/wiki/Settings-Help for more
- * info.
- */
-export type Settings = Partial<RawSettings>;
+export type { OutputErrorOptions } from "./output.ts";
+export type { RedundancySettings, Settings } from "./settings.ts";
 
 /** Translates Toki Pona text into multiple English translations. */
 export function translate(tokiPona: string): Array<string> {
@@ -40,7 +31,7 @@ export function translate(tokiPona: string): Array<string> {
   }
 }
 /** Changes translation settings. */
-export function setSettings(settings: Settings): void {
+export function setSettings(settings: Partial<Settings>): void {
   globalSettings.setAllUnsaved(settings);
 }
 /** resets settings to default. */

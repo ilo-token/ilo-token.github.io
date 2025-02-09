@@ -9,6 +9,11 @@ import { checkLocalStorage, setIgnoreError } from "./misc.ts";
  * for more info
  */
 export type RedundancySettings = "both" | "condensed" | "default only";
+/**
+ * Interface for configuring translation. See
+ * https://github.com/ilo-token/ilo-token.github.io/wiki/Settings-Help for more
+ * info.
+ */
 export type Settings = {
   "use-telo-misikeke": boolean;
   "randomize": boolean;

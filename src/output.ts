@@ -1,5 +1,6 @@
 /** Module containing the Output data type. */
 
+/** */
 export type OutputErrorOptions = {
   cause?: Error;
   isHtml: boolean;
