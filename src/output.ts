@@ -1,11 +1,20 @@
 /** Module containing the Output data type. */
 
+export type OutputErrorOptions = {
+  cause?: Error;
+  htmlMessage: boolean;
+};
+const defaultOption: OutputErrorOptions = {
+  htmlMessage: false,
+};
 /** Represents Error used by Output. */
 export class OutputError extends Error {
   /** Determines whether the error message contains HTML. */
-  htmlMessage = false;
-  constructor(message: string, options?: ErrorOptions) {
-    super(message, options);
+  htmlMessage: boolean;
+  constructor(message: string, options: Partial<OutputErrorOptions> = {}) {
+    const { cause, htmlMessage } = { ...options, ...defaultOption };
+    super(message, cause ?? { cause });
+    this.htmlMessage = htmlMessage;
     this.name = "OutputError";
   }
 }

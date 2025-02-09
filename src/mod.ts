@@ -30,11 +30,8 @@ export function translate(tokiPona: string): Array<string> {
   } else {
     let error: Array<OutputError> = [];
     if (globalSettings.get("use-telo-misikeke")) {
-      error = errors(tokiPona).map((message) => {
-        const error = new OutputError(message);
-        error.htmlMessage = true;
-        return error;
-      });
+      error = errors(tokiPona)
+        .map((message) => new OutputError(message, { htmlMessage: true }));
     }
     if (error.length == 0) {
       error = output.deduplicateErrors().errors;
