@@ -49,7 +49,7 @@ export class Output<T> {
       this.errors = [];
     }
   }
-  static newErrors<T>(errors: ReadonlyArray<OutputError>): Output<T> {
+  static errors<T>(errors: ReadonlyArray<OutputError>): Output<T> {
     return new Output(undefined, errors);
   }
   /** Returns true when the output array is empty */
@@ -83,7 +83,7 @@ export class Output<T> {
    */
   flatMap<U>(mapper: (value: T) => Output<U>): Output<U> {
     if (this.isError()) {
-      return Output.newErrors(this.errors);
+      return Output.errors(this.errors);
     } else {
       return this.output.reduce(
         (rest, value) => {
@@ -115,7 +115,7 @@ export class Output<T> {
   }
   sort(comparer: (left: T, right: T) => number): Output<T> {
     if (this.isError()) {
-      return Output.newErrors(this.errors);
+      return Output.errors(this.errors);
     } else {
       return new Output(this.output.slice().sort(comparer));
     }
@@ -126,7 +126,7 @@ export class Output<T> {
   deduplicateErrors(): Output<T> {
     if (this.isError()) {
       const messages: Set<string> = new Set();
-      return Output.newErrors(this.errors.filter((error) => {
+      return Output.errors(this.errors.filter((error) => {
         if (messages.has(error.message)) {
           return false;
         } else {
@@ -143,7 +143,7 @@ export class Output<T> {
     return outputs.reduce(
       (left, right) => {
         if (left.isError() && right.isError()) {
-          return Output.newErrors([...left.errors, ...right.errors]);
+          return Output.errors([...left.errors, ...right.errors]);
         } else {
           return new Output([...left.output, ...right.output]);
         }
@@ -164,9 +164,9 @@ export class Output<T> {
         if (left.isError() && right.isError()) {
           return Output.concat(left, right);
         } else if (left.isError()) {
-          return Output.newErrors(left.errors);
+          return Output.errors(left.errors);
         } else if (right.isError()) {
-          return Output.newErrors(right.errors);
+          return Output.errors(right.errors);
         } else {
           return left
             .flatMap((left) => right.map((right) => [...left, right]));

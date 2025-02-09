@@ -496,7 +496,7 @@ export function parseDictionary(sourceText: string): Dictionary {
     const definitions = DEFINITION_EXTRACT.parse(sourceText);
     let errors: Output<never>;
     if (!definitions.isError()) {
-      errors = Output.newErrors(
+      errors = Output.errors(
         definitions.output[0]
           .flatMap((definition) =>
             DEFINITION_ALONE.parse(definition).errors.map((error) =>
@@ -507,7 +507,7 @@ export function parseDictionary(sourceText: string): Dictionary {
           ),
       );
     } else {
-      errors = Output.newErrors(output.errors);
+      errors = Output.errors(output.errors);
     }
     throw new AggregateError(errors.deduplicateErrors().errors);
   }
