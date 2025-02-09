@@ -13,7 +13,7 @@ export class OutputError extends Error {
   isHtml: boolean;
   constructor(message: string, options: Partial<OutputErrorOptions> = {}) {
     const { cause, isHtml } = { ...options, ...defaultOption };
-    super(message, cause ?? { cause });
+    super(message, cause == null ? undefined : { cause });
     this.isHtml = isHtml;
     this.name = "OutputError";
   }
