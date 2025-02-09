@@ -5,18 +5,13 @@ export type OutputErrorOptions = {
   cause: unknown;
   isHtml: boolean;
 };
-const defaultOption: OutputErrorOptions = {
-  cause: undefined,
-  isHtml: false,
-};
 /** Represents Error used by Output. */
 export class OutputError extends Error {
   /** Determines whether the error message contains HTML. */
   isHtml: boolean;
   constructor(message: string, options: Partial<OutputErrorOptions> = {}) {
-    const { cause, isHtml } = { ...options, ...defaultOption };
-    super(message, { cause });
-    this.isHtml = isHtml;
+    super(message, { cause: options.cause });
+    this.isHtml = options.isHtml ?? false;
     this.name = "OutputError";
   }
 }
