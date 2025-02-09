@@ -8,6 +8,8 @@ import { findNumber, fixDeterminer } from "./determiner.ts";
 import { fixAdjective } from "./adjective.ts";
 import { nounForms } from "./noun.ts";
 import { CONJUNCTION } from "./misc.ts";
+import { OutputError } from "../mod.ts";
+import * as Composer from "../parser/composer.ts";
 
 type PhraseTranslation =
   | { type: "noun"; noun: English.NounPhrase }
@@ -24,7 +26,7 @@ function defaultPhrase(
     wordUnit(phrase.headWord, place),
     multipleModifiers(phrase.modifiers),
   )
-    .flatMap(([headWord, modifier]) => {
+    .flatMap<PhraseTranslation>(([headWord, modifier]) => {
       if (headWord.type === "noun" && modifier.type === "adjectival") {
         let count: number;
         switch (phrase.headWord.type) {
@@ -33,7 +35,7 @@ function defaultPhrase(
             count = 1;
             break;
           case "x ala x":
-            return new Output();
+            throw new TodoError("translation for X ala X");
           case "reduplication":
             count = phrase.headWord.count;
             break;
@@ -42,13 +44,7 @@ function defaultPhrase(
           ...headWord.determiner,
           ...modifier.determiner,
         ]);
-        if (determiner == null) {
-          return new Output();
-        }
         const number = findNumber(determiner);
-        if (number == null) {
-          return new Output();
-        }
         const adjective = fixAdjective([
           ...modifier.adjective.slice().reverse(),
           ...headWord.adjective,
@@ -134,7 +130,9 @@ function defaultPhrase(
             ...adjective.adverb,
           ];
           if (adverb.length > 1) {
-            return new Output();
+            throw new OutputError(
+              "chained adverbs are filtered out to avoid ambiguity",
+            );
           }
           return new Output<PhraseTranslation>([{
             type: "adjective",
@@ -159,7 +157,12 @@ function defaultPhrase(
       } else {
         return new Output();
       }
-    });
+    })
+    .addError(() =>
+      new OutputError(
+        `no possible translation found for ${Composer.phrase(phrase)}`,
+      )
+    );
 }
 export function phrase(
   phrase: TokiPona.Phrase,
@@ -177,6 +180,7 @@ export function phrase(
 export function multiplePhrases(
   phrases: TokiPona.MultiplePhrases,
   place: "subject" | "object",
+  particle: string,
 ): Output<PhraseTranslation> {
   switch (phrases.type) {
     case "single":
@@ -186,7 +190,9 @@ export function multiplePhrases(
       const conjunction = CONJUNCTION[phrases.type];
       return Output
         .combine(
-          ...phrases.phrases.map((phrases) => multiplePhrases(phrases, place)),
+          ...phrases.phrases.map((phrases) =>
+            multiplePhrases(phrases, place, particle)
+          ),
         )
         .filterMap<PhraseTranslation | null>((phrase) => {
           if (phrase.every((phrase) => phrase.type === "noun")) {
@@ -254,7 +260,14 @@ export function multiplePhrases(
           } else {
             return null;
           }
-        });
+        })
+        .addError(() =>
+          new OutputError(
+            `no possible translation found for ${
+              Composer.multiplePhrases(phrases, particle)
+            }`,
+          )
+        );
     }
   }
 }

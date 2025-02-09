@@ -138,6 +138,13 @@ export class Output<T> {
       return new Output(this.output);
     }
   }
+  addError(error: () => OutputError): Output<T> {
+    if (this.isError() && this.errors.length === 0) {
+      return new Output(error());
+    } else {
+      return this;
+    }
+  }
   /** Combines all outputs. */
   static concat<U>(...outputs: Array<Output<U>>): Output<U> {
     return outputs.reduce(

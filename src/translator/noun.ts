@@ -68,11 +68,11 @@ export function noun(
   );
   return Output.combine(engDeterminer, engAdjective)
     .flatMap(([determiner, adjective]) => {
-      const number = findNumber(determiner);
-      if (number == null) {
-        return new Output();
-      }
-      return nounForms(definition.singular, definition.plural, number)
+      return nounForms(
+        definition.singular,
+        definition.plural,
+        findNumber(determiner),
+      )
         .map((noun) => ({
           type: "simple",
           determiner,

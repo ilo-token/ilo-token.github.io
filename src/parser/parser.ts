@@ -6,7 +6,6 @@
 import {
   Clause,
   Emphasis,
-  everyWordUnitInFullClause,
   FullClause,
   HeadedWordUnit,
   Modifier,
@@ -58,6 +57,7 @@ import {
   tokiPonaWordSet,
 } from "../dictionary.ts";
 import { nullableAsArray } from "../misc.ts";
+import { everyWordUnitInFullClause } from "./extract.ts";
 
 /** Parses a specific type of token. */
 function specificToken<T extends Token["type"]>(

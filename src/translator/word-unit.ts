@@ -1,6 +1,6 @@
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
-import { Output } from "../output.ts";
+import { Output, OutputError, TodoError } from "../output.ts";
 import { dictionary } from "../dictionary.ts";
 import { determiner } from "./determiner.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";
@@ -36,7 +36,7 @@ export function wordUnit(
     case "number":
       return numberWordUnit(wordUnit.number);
     case "x ala x":
-      return new Output();
+      return new Output(new TodoError("translation of x ala x"));
     case "default":
     case "reduplication": {
       let count: number;
@@ -104,7 +104,9 @@ export function wordUnit(
                     adjective,
                   }));
               } else {
-                return new Output();
+                throw new OutputError(
+                  "cannot translate reduplication into compound adjective",
+                );
               }
             default:
               return new Output();

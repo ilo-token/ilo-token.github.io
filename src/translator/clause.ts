@@ -7,7 +7,7 @@ import { multiplePhrases } from "./phrase.ts";
 export function clause(clause: TokiPona.Clause): Output<English.Clause> {
   switch (clause.type) {
     case "phrases":
-      return multiplePhrases(clause.phrases, "object").map<English.Clause>(
+      return multiplePhrases(clause.phrases, "object", "en").map<English.Clause>(
         (phrase) => {
           switch (phrase.type) {
             case "noun":
@@ -37,13 +37,14 @@ export function clause(clause: TokiPona.Clause): Output<English.Clause> {
         },
       );
     case "o vocative":
-      return multiplePhrases(clause.phrases, "object").filterMap((phrase) => {
-        if (phrase.type === "noun") {
-          return { type: "vocative", call: "hey", addressee: phrase.noun };
-        } else {
-          return null;
-        }
-      });
+      return multiplePhrases(clause.phrases, "object", "en")
+        .filterMap((phrase) => {
+          if (phrase.type === "noun") {
+            return { type: "vocative", call: "hey", addressee: phrase.noun };
+          } else {
+            return null;
+          }
+        });
     case "prepositions":
     case "li clause":
     case "o clause":

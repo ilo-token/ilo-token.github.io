@@ -3,11 +3,6 @@
 import {
   Clause,
   Emphasis,
-  everyObjectInMultiplePredicates,
-  everyPhraseInMultiplePhrases,
-  everyWordUnitInPhrase,
-  everyWordUnitInPreposition,
-  everyWordUnitInSentence,
   FullClause,
   Modifier,
   MultiplePhrases,
@@ -19,6 +14,13 @@ import {
 import { settings } from "../settings.ts";
 import { describe } from "./token.ts";
 import { UnrecognizedError } from "./parser-lib.ts";
+import {
+  everyObjectInMultiplePredicates,
+  everyPhraseInMultiplePhrases,
+  everyWordUnitInPhrase,
+  everyWordUnitInPreposition,
+  everyWordUnitInSentence,
+} from "./extract.ts";
 
 /** Array of filter rules for a word unit. */
 export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [

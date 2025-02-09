@@ -176,9 +176,7 @@ function sentence(
       endingParticle,
     } = sentence.finalClause;
     if (kinOrTaso != null) {
-      return new Output(
-        new TodoError(`translation of "${kinOrTaso.word}" preclause`),
-      );
+      throw new TodoError(`translation of "${kinOrTaso.word}" preclause`);
     }
     const lastEngClause = clause(lastTpClause);
     let right: Array<English.Clause>;
