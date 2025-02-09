@@ -34,7 +34,6 @@ async function buildAll(options: {
   const { minify, buildDictionary } = options;
   try {
     if (buildDictionary) {
-      console.log("Building dictionary...");
       await Dictionary.build();
     }
     console.log("Building main.js...");

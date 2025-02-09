@@ -4,6 +4,7 @@ const SOURCE = new URL("./dictionary", import.meta.url);
 const DESTINATION = new URL("./dictionary.ts", import.meta.url);
 
 export async function build(): Promise<void> {
+  console.log("Building dictionary...");
   const text = await Deno.readTextFile(SOURCE);
   const json = JSON.stringify(parseDictionary(text), undefined, 2);
   const code = `\
@@ -14,4 +15,8 @@ import { Dictionary } from "./type.ts";
 export const dictionary: Dictionary = ${json};
 `;
   await Deno.writeTextFile(DESTINATION, code);
+}
+if (import.meta.main) {
+  await build();
+  console.log("Building done!");
 }

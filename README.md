@@ -17,18 +17,24 @@ You'll need the following in order to run commands:
 
 ## Building
 
-This fetches more dependencies needed, builds the dictionary, and builds
-`./dist/main.js`.
+This builds the distribution code at `./dist/main.js` as minified file ready for
+production use, it also builds the source map so contributors can directly debug
+the production code.
 
 ```
 deno task build
 ```
 
+Before building the distribution code, it builds the dictionary first by
+transforming the dictionary into a code at `./dictionary/dictionary.ts`. This
+enables faster code startup without dealing with file access or network access.
+
 ## Watching
 
-This builds `./dist/main.js`. This command also watches the codes in `./src/`
-and `./dictionary/` including the dictionary and rebuilds `./dist/main.js`
-whenever there are changes. To stop this command, simply press Ctrl + C.
+This is similar to [building](#building) but it doesn't minify the code. This
+command also watches the codes in `./src/` and `./dictionary/` including the
+dictionary and rebuilds `./dist/main.js` whenever there are changes. To stop
+this command, simply press Ctrl + C.
 
 ```
 deno task watch
