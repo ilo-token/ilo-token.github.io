@@ -5,7 +5,7 @@ if (import.meta.main) {
     "Welcome to the ilo Token REPL. Press escape, ctrl+d, ctrl+c to exit.",
   );
   while (true) {
-    const input = prompt("> ");
+    const input = prompt(">");
     if (input == null) {
       break;
     }
