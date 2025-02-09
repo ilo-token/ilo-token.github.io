@@ -280,12 +280,11 @@ export function slice(length: number, description: string): Parser<string> {
 /** Parses a string that exactly matches the given string. */
 export function matchString(
   match: string,
-  description?: null | undefined | string,
+  description: string = `"${match}"`,
 ): Parser<string> {
-  const useDescription = description ?? `"${match}"`;
-  return slice(match.length, useDescription).filter((slice) => {
+  return slice(match.length, description).filter((slice) => {
     if (slice !== match) {
-      throw new UnexpectedError(`"${slice}"`, useDescription);
+      throw new UnexpectedError(`"${slice}"`, description);
     } else {
       return true;
     }

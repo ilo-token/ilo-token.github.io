@@ -1,8 +1,6 @@
 import { escape } from "@std/html/entities";
 
-export function nullableAsArray<T>(
-  value?: T | null | undefined,
-): Array<NonNullable<T>> {
+export function nullableAsArray<T>(value?: T): Array<NonNullable<T>> {
   if (value == null) {
     return [];
   } else {
