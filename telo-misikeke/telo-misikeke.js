@@ -7,7 +7,12 @@ import { escapeHtmlWithNewline, newlineAsHtml } from "../src/misc.ts";
 
 const RULES = build_rules(LINKU);
 
-/** Gets all telo misikeke error messages. */
+/**
+ * Gets all telo misikeke error messages.
+ *
+ * @param text {string}
+ * @returns {Array<string>}
+ */
 export function errors(text) {
   return new ParserWithCallbacks(RULES, false)
     .tokenize(text)
