@@ -28,6 +28,8 @@ export class Output<T> {
   readonly output: ReadonlyArray<T>;
   /** A list of all aggregated errors. */
   readonly errors: ReadonlyArray<OutputError>;
+  constructor(output?: ReadonlyArray<T> | OutputError);
+  constructor(output: undefined, errors: ReadonlyArray<OutputError>);
   constructor(
     output: ReadonlyArray<T> | OutputError = [],
     errors: ReadonlyArray<OutputError> = [],
