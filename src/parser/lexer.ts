@@ -278,20 +278,14 @@ function headlessLongGlyphEnd(): Parser<
 function headlessLongGlyphStart(): Parser<
   Token & { type: "headless long glyph end" }
 > {
-  return matchString(
-    START_OF_REVERSE_LONG_GLYPH,
-    "start of reverse long glyph",
-  )
+  return specificSpecialUcsur(START_OF_REVERSE_LONG_GLYPH)
     .skip(spaces())
     .map(() => ({ type: "headless long glyph end" }));
 }
 function headedLongGlyphEnd(): Parser<
   Token & { type: "headed long glyph start" }
 > {
-  return matchString(
-    END_OF_REVERSE_LONG_GLYPH,
-    "end of reverse long glyph",
-  )
+  return specificSpecialUcsur(END_OF_REVERSE_LONG_GLYPH)
     .with(longGlyphHead())
     .skip(spaces())
     .map((words) => ({ type: "headed long glyph start", words }));
@@ -299,10 +293,7 @@ function headedLongGlyphEnd(): Parser<
 function insideLongGlyph(): Parser<
   Token & { type: "headed long glyph start" }
 > {
-  return matchString(
-    END_OF_REVERSE_LONG_GLYPH,
-    "end of reverse long glyph",
-  )
+  return specificSpecialUcsur(END_OF_REVERSE_LONG_GLYPH)
     .with(longGlyphHead())
     .skip(specificSpecialUcsur(START_OF_LONG_GLYPH))
     .skip(spaces())
