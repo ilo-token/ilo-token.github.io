@@ -4,8 +4,8 @@
 export class OutputError extends Error {
   /** Determines whether the error message contains HTML. */
   htmlMessage = false;
-  constructor(message: string) {
-    super(message);
+  constructor(message: string, options?: ErrorOptions) {
+    super(message, options);
     this.name = "OutputError";
   }
 }

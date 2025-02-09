@@ -500,7 +500,9 @@ export function parseDictionary(sourceText: string): Dictionary {
         definitions.output[0]
           .flatMap((definition) =>
             DEFINITION_ALONE.parse(definition).errors.map((error) =>
-              new OutputError(`${error.message} at ${definition.trim()}`)
+              new OutputError(`${error.message} at ${definition.trim()}`, {
+                cause: error,
+              })
             )
           ),
       );
