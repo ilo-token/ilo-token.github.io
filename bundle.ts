@@ -53,18 +53,15 @@ if (import.meta.main) {
       try {
         await buildAll({ minify: true, buildDictionary: true });
         let dictionaryChanged = false;
-        const buildDebounced = debounce(async () => {
-          await buildAll({
-            minify: true,
-            buildDictionary: dictionaryChanged,
-          });
+        const buildDebounced = debounce(async (buildDictionary: boolean) => {
+          await buildAll({ minify: true, buildDictionary });
           dictionaryChanged = false;
         }, 500);
         for await (const event of watcher) {
           if (event.paths.some((path) => DICTIONARY.test(path))) {
             dictionaryChanged = true;
           }
-          buildDebounced();
+          buildDebounced(dictionaryChanged);
         }
         throw new Error("unreachable");
       } finally {
