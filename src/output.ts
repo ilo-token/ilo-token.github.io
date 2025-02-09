@@ -2,19 +2,19 @@
 
 export type OutputErrorOptions = {
   cause?: Error;
-  htmlMessage: boolean;
+  isHtml: boolean;
 };
 const defaultOption: OutputErrorOptions = {
-  htmlMessage: false,
+  isHtml: false,
 };
 /** Represents Error used by Output. */
 export class OutputError extends Error {
   /** Determines whether the error message contains HTML. */
-  htmlMessage: boolean;
+  isHtml: boolean;
   constructor(message: string, options: Partial<OutputErrorOptions> = {}) {
-    const { cause, htmlMessage } = { ...options, ...defaultOption };
+    const { cause, isHtml } = { ...options, ...defaultOption };
     super(message, cause ?? { cause });
-    this.htmlMessage = htmlMessage;
+    this.isHtml = isHtml;
     this.name = "OutputError";
   }
 }

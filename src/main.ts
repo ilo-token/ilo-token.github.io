@@ -196,7 +196,7 @@ function main(): void {
       errorDisplay.innerHTML = escapeHtmlWithNewline(message);
       for (const item of errors) {
         let property: "innerHTML" | "innerText";
-        if (item instanceof OutputError && item.htmlMessage) {
+        if (item instanceof OutputError && item.isHtml) {
           property = "innerHTML";
         } else {
           property = "innerText";
