@@ -41,26 +41,26 @@ export class Output<T> {
   static newErrors<T>(errors: Array<OutputError>): Output<T> {
     const output = new Output<T>();
     for (const error of errors) {
-      output.pushError(error);
+      output.#pushError(error);
     }
     return output;
   }
-  private pushError(error: OutputError): void {
+  #pushError(error: OutputError): void {
     if (this.isError()) {
       this.errors.push(error);
     }
   }
-  private push(value: T): void {
+  #push(value: T): void {
     this.output.push(value);
     this.errors.length = 0;
   }
-  private append(output: Output<T>): void {
+  #append(output: Output<T>): void {
     for (const item of output.output) {
-      this.push(item);
+      this.#push(item);
     }
     if (this.isError() && output.isError()) {
       for (const item of output.errors) {
-        this.pushError(item);
+        this.#pushError(item);
       }
     }
   }
@@ -79,11 +79,11 @@ export class Output<T> {
     for (const value of this.output) {
       try {
         if (mapper(value)) {
-          wholeOutput.push(value);
+          wholeOutput.#push(value);
         }
       } catch (error) {
         if (error instanceof OutputError) {
-          wholeOutput.pushError(error);
+          wholeOutput.#pushError(error);
         } else {
           throw error;
         }
@@ -102,10 +102,10 @@ export class Output<T> {
     const wholeOutput = new Output<U>();
     for (const value of this.output) {
       try {
-        wholeOutput.push(mapper(value));
+        wholeOutput.#push(mapper(value));
       } catch (error) {
         if (error instanceof OutputError) {
-          wholeOutput.pushError(error);
+          wholeOutput.#pushError(error);
         } else {
           throw error;
         }
@@ -122,7 +122,7 @@ export class Output<T> {
       return Output.newErrors(this.errors);
     }
     const wholeOutput = new Output<U>();
-    for (const value of this.output) wholeOutput.append(mapper(value));
+    for (const value of this.output) wholeOutput.#append(mapper(value));
     return wholeOutput;
   }
   filterMap<U>(mapper: (value: T) => U): Output<NonNullable<U>> {
@@ -134,11 +134,11 @@ export class Output<T> {
       try {
         const newValue = mapper(value);
         if (newValue != null) {
-          wholeOutput.push(newValue);
+          wholeOutput.#push(newValue);
         }
       } catch (error) {
         if (error instanceof OutputError) {
-          wholeOutput.pushError(error);
+          wholeOutput.#pushError(error);
         } else {
           throw error;
         }
@@ -175,7 +175,7 @@ export class Output<T> {
   static concat<U>(...outputs: Array<Output<U>>): Output<U> {
     const wholeOutput = new Output<U>();
     for (const output of outputs) {
-      wholeOutput.append(output);
+      wholeOutput.#append(output);
     }
     return wholeOutput;
   }

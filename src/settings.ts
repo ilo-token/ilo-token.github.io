@@ -45,7 +45,7 @@ type Updater<T> = {
   set: (input: HTMLInputElement | HTMLSelectElement, value: T) => void;
 };
 class Setter<T extends { [name: string]: unknown }> {
-  private settings: { [S in keyof T]: SettingsItem<T[S]> };
+  #settings: { [S in keyof T]: SettingsItem<T[S]> };
   constructor(option: { [S in keyof T]: Option<T[S]> }) {
     const settings: any = {};
     for (const name of Object.keys(option)) {
@@ -56,33 +56,33 @@ class Setter<T extends { [name: string]: unknown }> {
         updater: item.updater,
       };
     }
-    this.settings = settings;
+    this.#settings = settings;
   }
   setUnsaved<S extends keyof T>(name: S, value: T[S]): void {
-    this.settings[name].value = value;
+    this.#settings[name].value = value;
   }
   setAllUnsaved(settings: Partial<Settings>): void {
     for (const name of NAMES) {
       if (settings[name] != null) {
-        this.settings[name].value = settings[name] as any;
+        this.#settings[name].value = settings[name] as any;
       }
     }
   }
   resetUnsaved(): void {
-    for (const name of Object.keys(this.settings)) {
-      this.settings[name].value = this.settings[name].default;
+    for (const name of Object.keys(this.#settings)) {
+      this.#settings[name].value = this.#settings[name].default;
     }
   }
   get<S extends keyof T>(name: S): T[S] {
-    return this.settings[name].value as T[S];
+    return this.#settings[name].value as T[S];
   }
   /** This function is for browser only. */
   loadFromLocalStorage(): void {
     if (!checkLocalStorage()) {
       return;
     }
-    for (const name of Object.keys(this.settings)) {
-      const settings = this.settings[name];
+    for (const name of Object.keys(this.#settings)) {
+      const settings = this.#settings[name];
       const src = localStorage.getItem(name);
       if (src != null) {
         settings.value = settings.updater.parse(src) ?? settings.default;
@@ -97,8 +97,8 @@ class Setter<T extends { [name: string]: unknown }> {
   }
   /** This function is for browser only. */
   loadFromElements(): void {
-    for (const name of Object.keys(this.settings)) {
-      const settings = this.settings[name];
+    for (const name of Object.keys(this.#settings)) {
+      const settings = this.#settings[name];
       settings.value = settings.updater.load(
         document.getElementById(name) as HTMLInputElement | HTMLSelectElement,
       );
@@ -107,8 +107,8 @@ class Setter<T extends { [name: string]: unknown }> {
   }
   /** This function is for browser only. */
   resetElementsToCurrent(): void {
-    for (const name of Object.keys(this.settings)) {
-      const settings = this.settings[name];
+    for (const name of Object.keys(this.#settings)) {
+      const settings = this.#settings[name];
       settings.updater.set(
         document.getElementById(name) as HTMLInputElement | HTMLSelectElement,
         settings.value,
@@ -117,8 +117,8 @@ class Setter<T extends { [name: string]: unknown }> {
   }
   /** This function is for browser only. */
   resetElementsToDefault(): void {
-    for (const name of Object.keys(this.settings)) {
-      const settings = this.settings[name];
+    for (const name of Object.keys(this.#settings)) {
+      const settings = this.#settings[name];
       settings.updater.set(
         document.getElementById(name) as HTMLInputElement | HTMLSelectElement,
         settings.default,
