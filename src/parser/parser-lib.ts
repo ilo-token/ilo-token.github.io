@@ -6,7 +6,7 @@
 import { Output, OutputError } from "../output.ts";
 
 /** A single parsing result. */
-export type ValueRest<T> = { rest: string; value: T };
+export type ValueRest<T> = Readonly<{ rest: string; value: T }>;
 /** A special kind of Output that parsers returns. */
 export type ParserOutput<T> = Output<ValueRest<T>>;
 
