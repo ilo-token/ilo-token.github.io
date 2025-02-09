@@ -33,8 +33,8 @@ enables faster code startup without dealing with file access or network access.
 
 This is similar to [building](#building) but it doesn't minify the code. This
 command also watches the codes in `./src/` and `./dictionary/` including the
-dictionary and rebuilds `./dist/main.js` whenever there are changes. To stop
-this command, simply press Ctrl + C.
+dictionary and rebuilds whenever there are changes. To stop this command, simply
+press Ctrl + C.
 
 ```
 deno task watch
