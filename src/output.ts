@@ -2,10 +2,11 @@
 
 /** */
 export type OutputErrorOptions = {
-  cause?: Error;
+  cause: unknown;
   isHtml: boolean;
 };
 const defaultOption: OutputErrorOptions = {
+  cause: undefined,
   isHtml: false,
 };
 /** Represents Error used by Output. */
