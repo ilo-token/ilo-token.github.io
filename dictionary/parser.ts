@@ -12,6 +12,7 @@ import {
 } from "./type.ts";
 import {
   all,
+  cached,
   character,
   choiceOnlyOne,
   eol,
@@ -308,172 +309,170 @@ function adjective(): Parser<Adjective> {
 function semicolon(): Parser<string> {
   return lex(matchString(";", "semicolon"));
 }
-function definition(): Parser<Definition> {
-  return choiceOnlyOne<Definition>(
-    adjective()
-      .skip(semicolon())
-      .map((adjective) => ({ type: "adjective", ...adjective })),
-    sequence(
-      adjective(),
-      simpleUnit("c").filter((word) => word === "and").with(adjective()),
+const DEFINITION = cached(choiceOnlyOne<Definition>(
+  adjective()
+    .skip(semicolon())
+    .map((adjective) => ({ type: "adjective", ...adjective })),
+  sequence(
+    adjective(),
+    simpleUnit("c").filter((word) => word === "and").with(adjective()),
+  )
+    .filter(([first, second]) =>
+      first.adverb.length === 0 && second.adverb.length === 0
     )
-      .filter(([first, second]) =>
-        first.adverb.length === 0 && second.adverb.length === 0
-      )
-      .skip(semicolon())
-      .map((adjective) => ({ type: "compound adjective", adjective })),
-    noun()
-      .skip(semicolon())
-      .map((noun) => ({ type: "noun", ...noun })),
-    sequence(
-      verbOnly(keyword("v")),
-      optionalAll(template(keyword("object"))),
-      optionalAll(
-        sequence(simpleUnit("prep"), noun())
-          .map(([preposition, object]) => ({ preposition, object })),
-      )
-        .map(nullableAsArray),
+    .skip(semicolon())
+    .map((adjective) => ({ type: "compound adjective", adjective })),
+  noun()
+    .skip(semicolon())
+    .map((noun) => ({ type: "noun", ...noun })),
+  sequence(
+    verbOnly(keyword("v")),
+    optionalAll(template(keyword("object"))),
+    optionalAll(
+      sequence(simpleUnit("prep"), noun())
+        .map(([preposition, object]) => ({ preposition, object })),
     )
-      .skip(semicolon())
-      .map(([verb, forObject, indirectObject]) => ({
-        type: "verb",
-        ...verb,
-        directObject: null,
-        indirectObject,
-        forObject: forObject != null,
-        predicateType: null,
-      })),
-    sequence(
-      verbOnly(keyword("v")),
-      optionalAll(noun()),
-      optionalAll(simpleUnit("prep").skip(template(keyword("object")))),
-    )
-      .skip(semicolon())
-      .map(([verb, directObject, preposition]) => ({
-        type: "verb",
-        ...verb,
-        directObject,
-        indirectObject: [],
-        forObject: preposition ?? false,
-        predicateType: null,
-      })),
-    simpleUnit("i")
-      .skip(semicolon())
-      .map((preposition) => ({
-        type: "interjection",
-        interjection: preposition,
-      })),
-    word().skip(tag(sequence(keyword("particle"), keyword("def"))))
-      .skip(semicolon())
-      .map((definition) => ({ type: "particle definition", definition })),
-    simpleUnit("adv")
-      .skip(semicolon())
-      .map((adverb) => ({ type: "adverb", adverb })),
-    determiner()
-      .skip(semicolon())
-      .map((determiner) => ({ type: "determiner", ...determiner })),
-    simpleUnit("prep")
-      .skip(template(sequence(keyword("indirect"), keyword("object"))))
-      .skip(semicolon())
-      .map((preposition) => ({ type: "preposition", preposition })),
-    simpleUnit("num")
-      .skip(semicolon())
-      .map((unit) => {
-        const numeral = Number.parseInt(unit);
-        if (Number.isNaN(numeral)) {
-          throw new UnrecognizedError(`"${unit}" is not a number`);
-        } else {
-          return { type: "numeral", numeral };
-        }
-      }),
-    verbOnly(keyword("v"))
-      .skip(template(keyword("predicate")))
-      .skip(semicolon())
-      .map((verb) => ({
-        type: "verb",
-        ...verb,
-        directObject: null,
-        indirectObject: [],
-        forObject: false,
-        predicateType: "verb",
-      })),
-    sequence(noun(), simpleUnit("prep"))
-      .skip(template(keyword("headword")))
-      .skip(semicolon())
-      .map(([noun, preposition]) => ({
-        type: "noun preposition",
-        noun,
-        preposition,
-      })),
-    sequence(
-      word().skip(slash()),
-      word().skip(slash()),
-      word().skip(slash()),
-      word(),
-    )
-      .skip(tag(sequence(keyword("personal"), keyword("pronoun"))))
-      .skip(semicolon())
-      .map((
-        [singularSubject, singularObject, pluralSubject, pluralObject],
-      ) => ({
-        type: "personal pronoun",
-        singular: { subject: singularSubject, object: singularObject },
-        plural: { subject: pluralSubject, object: pluralObject },
-      })),
-    sequence(
-      word().skip(slash()),
-      word(),
-      tag(keyword("personal").with(keyword("pronoun")).with(number())),
-    )
-      .skip(semicolon())
-      .map(([subject, object, number]) => ({
-        type: "personal pronoun",
-        singular: null,
-        plural: null,
-        [number]: { subject, object },
-      })),
-    word()
-      .skip(tag(sequence(keyword("v"), keyword("modal"))))
-      .skip(template(keyword("predicate")))
-      .skip(semicolon()).map((verb) => ({
-        type: "modal verb",
-        verb,
-      })),
-    verbOnly(sequence(keyword("v"), keyword("linking")))
-      .skip(template(keyword("predicate")))
-      .skip(semicolon()).map((verb) => ({
-        type: "verb",
-        ...verb,
-        directObject: null,
-        indirectObject: [],
-        forObject: false,
-        predicateType: "noun adjective",
-      })),
-    forms().skip(tag(keyword("f")))
-      .skip(semicolon())
-      .map((unit) => ({
-        type: "filler",
-        ...detectRepetition(unit),
-      })),
-  );
-}
+      .map(nullableAsArray),
+  )
+    .skip(semicolon())
+    .map(([verb, forObject, indirectObject]) => ({
+      type: "verb",
+      ...verb,
+      directObject: null,
+      indirectObject,
+      forObject: forObject != null,
+      predicateType: null,
+    })),
+  sequence(
+    verbOnly(keyword("v")),
+    optionalAll(noun()),
+    optionalAll(simpleUnit("prep").skip(template(keyword("object")))),
+  )
+    .skip(semicolon())
+    .map(([verb, directObject, preposition]) => ({
+      type: "verb",
+      ...verb,
+      directObject,
+      indirectObject: [],
+      forObject: preposition ?? false,
+      predicateType: null,
+    })),
+  simpleUnit("i")
+    .skip(semicolon())
+    .map((preposition) => ({
+      type: "interjection",
+      interjection: preposition,
+    })),
+  word().skip(tag(sequence(keyword("particle"), keyword("def"))))
+    .skip(semicolon())
+    .map((definition) => ({ type: "particle definition", definition })),
+  simpleUnit("adv")
+    .skip(semicolon())
+    .map((adverb) => ({ type: "adverb", adverb })),
+  determiner()
+    .skip(semicolon())
+    .map((determiner) => ({ type: "determiner", ...determiner })),
+  simpleUnit("prep")
+    .skip(template(sequence(keyword("indirect"), keyword("object"))))
+    .skip(semicolon())
+    .map((preposition) => ({ type: "preposition", preposition })),
+  simpleUnit("num")
+    .skip(semicolon())
+    .map((unit) => {
+      const numeral = Number.parseInt(unit);
+      if (Number.isNaN(numeral)) {
+        throw new UnrecognizedError(`"${unit}" is not a number`);
+      } else {
+        return { type: "numeral", numeral };
+      }
+    }),
+  verbOnly(keyword("v"))
+    .skip(template(keyword("predicate")))
+    .skip(semicolon())
+    .map((verb) => ({
+      type: "verb",
+      ...verb,
+      directObject: null,
+      indirectObject: [],
+      forObject: false,
+      predicateType: "verb",
+    })),
+  sequence(noun(), simpleUnit("prep"))
+    .skip(template(keyword("headword")))
+    .skip(semicolon())
+    .map(([noun, preposition]) => ({
+      type: "noun preposition",
+      noun,
+      preposition,
+    })),
+  sequence(
+    word().skip(slash()),
+    word().skip(slash()),
+    word().skip(slash()),
+    word(),
+  )
+    .skip(tag(sequence(keyword("personal"), keyword("pronoun"))))
+    .skip(semicolon())
+    .map((
+      [singularSubject, singularObject, pluralSubject, pluralObject],
+    ) => ({
+      type: "personal pronoun",
+      singular: { subject: singularSubject, object: singularObject },
+      plural: { subject: pluralSubject, object: pluralObject },
+    })),
+  sequence(
+    word().skip(slash()),
+    word(),
+    tag(keyword("personal").with(keyword("pronoun")).with(number())),
+  )
+    .skip(semicolon())
+    .map(([subject, object, number]) => ({
+      type: "personal pronoun",
+      singular: null,
+      plural: null,
+      [number]: { subject, object },
+    })),
+  word()
+    .skip(tag(sequence(keyword("v"), keyword("modal"))))
+    .skip(template(keyword("predicate")))
+    .skip(semicolon()).map((verb) => ({
+      type: "modal verb",
+      verb,
+    })),
+  verbOnly(sequence(keyword("v"), keyword("linking")))
+    .skip(template(keyword("predicate")))
+    .skip(semicolon()).map((verb) => ({
+      type: "verb",
+      ...verb,
+      directObject: null,
+      indirectObject: [],
+      forObject: false,
+      predicateType: "noun adjective",
+    })),
+  forms().skip(tag(keyword("f")))
+    .skip(semicolon())
+    .map((unit) => ({
+      type: "filler",
+      ...detectRepetition(unit),
+    })),
+));
 function singleWord(): Parser<string> {
   return lex(match(/[a-z][a-zA-Z]*/, "word"));
 }
-function head(): Parser<Array<string>> {
-  return sequence(
+const HEAD = cached(
+  sequence(
     all(singleWord().skip(lex(matchString(",", "comma")))),
     singleWord(),
   )
     .skip(lex(matchString(":", "colon")))
-    .map(([init, last]) => [...init, last]);
-}
+    .map(([init, last]) => [...init, last]),
+);
 function entry(): Parser<Entry> {
-  return withSource(all(definition()))
+  return withSource(all(DEFINITION))
     .map(([definitions, src]) => ({ definitions, src }));
 }
 const DICTIONARY = space()
-  .with(all(sequence(head(), entry())))
+  .with(all(sequence(HEAD, entry())))
   .skip(eol())
   .map((entries) => {
     const dictionary: Dictionary = {};
@@ -485,9 +484,9 @@ const DICTIONARY = space()
     return dictionary;
   });
 const DEFINITION_EXTRACT = space()
-  .with(all(optionalAll(head()).with(lex(match(/[^;]*;/, "definition")))))
+  .with(all(optionalAll(HEAD).with(lex(match(/[^;]*;/, "definition")))))
   .skip(eol());
-const DEFINITION = space().with(definition()).skip(eol());
+const DEFINITION_ALONE = space().with(DEFINITION).skip(eol());
 
 export function parseDictionary(sourceText: string): Dictionary {
   const output = DICTIONARY.parse(sourceText);
@@ -500,7 +499,7 @@ export function parseDictionary(sourceText: string): Dictionary {
       errors = Output.newErrors(
         definitions.output[0]
           .flatMap((definition) =>
-            DEFINITION.parse(definition).errors.map((error) =>
+            DEFINITION_ALONE.parse(definition).errors.map((error) =>
               new OutputError(`${error.message} at ${definition.trim()}`)
             )
           ),
