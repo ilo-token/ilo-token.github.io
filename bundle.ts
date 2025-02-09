@@ -53,7 +53,7 @@ if (import.meta.main) {
       console.log("Press ctrl+c to exit.");
       const watcher = Deno.watchFs(WATCH);
       try {
-        await buildAll({ minify: true, buildDictionary: true });
+        await buildAll({ minify: false, buildDictionary: true });
         let dictionaryChanged = false;
         const buildDebounced = debounce(async (buildDictionary: boolean) => {
           await buildAll({ minify: true, buildDictionary });
