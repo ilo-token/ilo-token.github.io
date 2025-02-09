@@ -35,12 +35,13 @@ export class Output<T> {
     if (Array.isArray(output)) {
       this.output = output;
       this.errors = [];
-    } else if (output instanceof OutputError) {
-      this.output = [];
-      this.errors = [output];
     } else {
       this.output = [];
-      this.errors = errors;
+      if (output instanceof OutputError) {
+        this.errors = [output];
+      } else {
+        this.errors = errors;
+      }
     }
   }
   static newErrors<T>(errors: ReadonlyArray<OutputError>): Output<T> {
