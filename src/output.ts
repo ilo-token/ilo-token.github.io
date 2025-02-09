@@ -136,7 +136,7 @@ export class Output<T> {
   static concat<U>(...outputs: Array<Output<U>>): Output<U> {
     return outputs.reduce(
       (left, right) => {
-        if (left.isError() || right.isError()) {
+        if (left.isError() && right.isError()) {
           return Output.newErrors([...left.errors, ...right.errors]);
         } else {
           return new Output([...left.output, ...right.output]);
