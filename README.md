@@ -43,7 +43,7 @@ browser to test ilo Token. If you wish to start a local server, run
 ## Running locally with Deno
 
 This will run a REPL that you can use to test ilo Token. To stop this command,
-simply press Escape or Ctrl + C.
+simply press Escape, Ctrl + D, or Ctrl + C.
 
 ```
 deno task run
