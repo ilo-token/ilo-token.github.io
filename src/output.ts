@@ -29,19 +29,22 @@ export class Output<T> {
   /** A list of all aggregated errors. */
   readonly errors: ReadonlyArray<OutputError>;
   constructor(
-    output?: ReadonlyArray<T> | OutputError,
+    output: ReadonlyArray<T> | OutputError = [],
     errors: ReadonlyArray<OutputError> = [],
   ) {
     if (Array.isArray(output)) {
       this.output = output;
-      this.errors = [];
     } else {
       this.output = [];
+    }
+    if (this.output.length === 0) {
       if (output instanceof OutputError) {
         this.errors = [output];
       } else {
         this.errors = errors;
       }
+    } else {
+      this.errors = [];
     }
   }
   static newErrors<T>(errors: ReadonlyArray<OutputError>): Output<T> {
