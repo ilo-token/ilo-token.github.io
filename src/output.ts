@@ -134,13 +134,16 @@ export class Output<T> {
   }
   /** Combines all outputs. */
   static concat<U>(...outputs: Array<Output<U>>): Output<U> {
-    return outputs.reduce((left, right) => {
-      if (left.isError() || right.isError()) {
-        return Output.newErrors([...left.errors, ...right.errors]);
-      } else {
-        return new Output([...left.output, ...right.output]);
-      }
-    }, new Output<U>());
+    return outputs.reduce(
+      (left, right) => {
+        if (left.isError() || right.isError()) {
+          return Output.newErrors([...left.errors, ...right.errors]);
+        } else {
+          return new Output([...left.output, ...right.output]);
+        }
+      },
+      new Output<U>(),
+    );
   }
   /**
    * Combines all permutations of all Outputs into an Output of a single tuple
@@ -150,17 +153,20 @@ export class Output<T> {
     ...outputs: { [I in keyof T]: Output<T[I]> } & { length: T["length"] }
   ): Output<T> {
     // We resorted to using `any` types here, make sure it works properly
-    return outputs.reduce((left: Output<any>, right) => {
-      if (left.isError() && right.isError()) {
-        return Output.concat(left, right);
-      } else if (left.isError()) {
-        return Output.newErrors(left.errors);
-      } else if (right.isError()) {
-        return Output.newErrors(right.errors);
-      } else {
-        return left
-          .flatMap((left) => right.map((right) => [...left, right]));
-      }
-    }, new Output<any>([[]])) as Output<T>;
+    return outputs.reduce(
+      (left: Output<any>, right) => {
+        if (left.isError() && right.isError()) {
+          return Output.concat(left, right);
+        } else if (left.isError()) {
+          return Output.newErrors(left.errors);
+        } else if (right.isError()) {
+          return Output.newErrors(right.errors);
+        } else {
+          return left
+            .flatMap((left) => right.map((right) => [...left, right]));
+        }
+      },
+      new Output<any>([[]]),
+    ) as Output<T>;
   }
 }

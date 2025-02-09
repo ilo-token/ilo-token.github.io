@@ -141,15 +141,18 @@ export function choice<T>(...choices: Array<Parser<T>>): Parser<T> {
 export function choiceOnlyOne<T>(
   ...choices: Array<Parser<T>>
 ): Parser<T> {
-  return choices.reduceRight((right, left) =>
-    new Parser((src) => {
-      const output = left.parser(src);
-      if (output.isError()) {
-        return Output.concat(output, right.parser(src));
-      } else {
-        return output;
-      }
-    }), empty());
+  return choices.reduceRight(
+    (right, left) =>
+      new Parser((src) => {
+        const output = left.parser(src);
+        if (output.isError()) {
+          return Output.concat(output, right.parser(src));
+        } else {
+          return output;
+        }
+      }),
+    empty(),
+  );
 }
 /** Combines `parser` and the `nothing` parser, and output `null | T`. */
 export function optional<T>(parser: Parser<T>): Parser<null | T> {
