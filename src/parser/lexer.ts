@@ -291,13 +291,13 @@ function headedLongGlyphEnd(): Parser<
     .map((words) => ({ type: "headed long glyph start", words }));
 }
 function insideLongGlyph(): Parser<
-  Token & { type: "headed long glyph start" }
+  Token & { type: "inside long glyph" }
 > {
   return specificSpecialUcsur(END_OF_REVERSE_LONG_GLYPH)
     .with(longGlyphHead())
     .skip(specificSpecialUcsur(START_OF_LONG_GLYPH))
     .skip(spaces())
-    .map((words) => ({ type: "headed long glyph start", words }));
+    .map((words) => ({ type: "inside long glyph", words }));
 }
 /** Parses a token aside from X ala X. */
 const TOKEN_EXCEPT_X_ALA_X = cached(choiceOnlyOne<Token>(
