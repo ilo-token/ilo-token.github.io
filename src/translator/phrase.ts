@@ -45,8 +45,8 @@ function defaultPhrase(
             break;
         }
         const determiner = fixDeterminer([
-          ...headWord.determiner,
           ...modifier.determiner,
+          ...headWord.determiner,
         ]);
         const quantity = findNumber(determiner);
         const adjective = fixAdjective([
