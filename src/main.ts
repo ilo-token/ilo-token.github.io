@@ -11,9 +11,14 @@ import {
   NEWLINE,
   setIgnoreError,
 } from "./misc.ts";
-import { settings } from "./settings.ts";
 import PROJECT_DATA from "../project-data.json" with { type: "json" };
 import { asComment } from "../dictionary/misc.ts";
+import {
+  loadFromElements,
+  loadFromLocalStorage,
+  resetElementsToCurrent,
+  resetElementsToDefault,
+} from "./settings-frontend.ts";
 
 const UNKNOWN_ERROR_MESSAGE =
   "An unknown error has occurred (Errors should be known, please report " +
@@ -121,7 +126,7 @@ function main(): void {
   }
 
   // load settings
-  settings.loadFromLocalStorage();
+  loadFromLocalStorage();
 
   // load custom dictionary
   let customDictionary: string;
@@ -213,15 +218,15 @@ function main(): void {
     settingsDialogBox.showModal();
   });
   confirmButton.addEventListener("click", () => {
-    settings.loadFromElements();
+    loadFromElements();
     settingsDialogBox.close();
   });
   cancelButton.addEventListener("click", () => {
-    settings.resetElementsToCurrent();
+    resetElementsToCurrent();
     settingsDialogBox.close();
   });
   resetButton.addEventListener("click", () => {
-    settings.resetElementsToDefault();
+    resetElementsToDefault();
   });
   customDictionaryButton.addEventListener("click", () => {
     customDictionaryDialogBox.showModal();
