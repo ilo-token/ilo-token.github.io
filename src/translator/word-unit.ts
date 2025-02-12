@@ -1,9 +1,10 @@
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
-import { Output, OutputError, TodoError } from "../output.ts";
+import { Output, OutputError } from "../output.ts";
 import { dictionary } from "../dictionary.ts";
 import { determiner } from "./determiner.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";
+import { TranslationTodoError } from "./error.ts";
 
 type WordUnitTranslation =
   | {
@@ -36,7 +37,7 @@ export function wordUnit(
     case "number":
       return numberWordUnit(wordUnit.number);
     case "x ala x":
-      return new Output(new TodoError("translation of x ala x"));
+      return new Output(new TranslationTodoError("x ala x"));
     case "default":
     case "reduplication": {
       let count: number;

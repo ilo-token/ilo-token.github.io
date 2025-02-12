@@ -1,13 +1,14 @@
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
 import { repeatWithSpace } from "../misc.ts";
-import { Output, OutputError, TodoError } from "../output.ts";
+import { Output, OutputError } from "../output.ts";
 import { dictionary } from "../dictionary.ts";
 import { noun, simpleNounForms } from "./noun.ts";
 import { determiner } from "./determiner.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";
 import { phrase } from "./phrase.ts";
 import * as Composer from "../parser/composer.ts";
+import { ExhaustedError, TranslationTodoError } from "./error.ts";
 
 type ModifierTranslation =
   | { type: "noun"; noun: English.NounPhrase }
@@ -44,7 +45,7 @@ export function defaultModifier(
     case "number":
       return numberModifier(word.number, emphasis);
     case "x ala x":
-      return new Output(new TodoError("translation of X ala X"));
+      return new Output(new TranslationTodoError("x ala x"));
     case "default":
     case "reduplication": {
       let count: number;
@@ -189,7 +190,7 @@ function modifier(
     case "nanpa":
       return nanpaModifier(modifier);
     case "quotation":
-      return new Output(new TodoError(`translation of ${modifier.type}`));
+      return new Output(new TranslationTodoError(modifier.type));
   }
 }
 type MultipleModifierTranslation =
@@ -290,10 +291,6 @@ export function multipleModifiers(
       return Output.concat(adjectival, adverbial);
     })
     .addError(() =>
-      new OutputError(
-        `no possible translation found for "${
-          modifiers.map(Composer.modifier).join(" ")
-        }"`,
-      )
+      new ExhaustedError(modifiers.map(Composer.modifier).join(" "))
     );
 }

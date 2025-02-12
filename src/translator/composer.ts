@@ -7,6 +7,12 @@ import { multipleSentences } from "./sentence.ts";
 const EMPHASIS_STARTING_TAG = "<strong>";
 const EMPHASIS_ENDING_TAG = "</strong>";
 
+class ComposingTodoError extends TodoError {
+  constructor(kind: string) {
+    super(`composing ${kind}`);
+    this.name = "ComposingTodoError";
+  }
+}
 function word(word: English.Word): string {
   if (word.emphasis) {
     return `${EMPHASIS_STARTING_TAG}${word.word}${EMPHASIS_ENDING_TAG}`;
@@ -95,7 +101,7 @@ function clause(ast: English.Clause): string {
     case "dependent":
       return `${word(ast.conjunction)} ${clause(ast.clause)}`;
     default:
-      throw new TodoError(`composing ${ast.type}`);
+      throw new ComposingTodoError(ast.type);
   }
 }
 function sentence(sentence: English.Sentence): string {

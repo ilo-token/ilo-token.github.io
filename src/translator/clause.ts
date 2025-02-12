@@ -1,7 +1,8 @@
 import { nullableAsArray } from "../misc.ts";
-import { Output, TodoError } from "../output.ts";
+import { Output } from "../output.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
+import { TranslationTodoError } from "./error.ts";
 import { multiplePhrases } from "./phrase.ts";
 
 export function clause(clause: TokiPona.Clause): Output<English.Clause> {
@@ -51,6 +52,6 @@ export function clause(clause: TokiPona.Clause): Output<English.Clause> {
     case "li clause":
     case "o clause":
     case "quotation":
-      return new Output(new TodoError(`translation of ${clause.type}`));
+      return new Output(new TranslationTodoError(clause.type));
   }
 }

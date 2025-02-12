@@ -2,9 +2,10 @@ import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
 import { dictionary } from "../dictionary.ts";
 import { nullableAsArray, repeatWithSpace } from "../misc.ts";
-import { Output, TodoError } from "../output.ts";
+import { Output } from "../output.ts";
 import { definitionAsPlainString } from "./as-string.ts";
 import { clause } from "./clause.ts";
+import { TranslationTodoError } from "./error.ts";
 
 function filler(filler: TokiPona.Emphasis): Array<string> {
   switch (filler.type) {
@@ -122,7 +123,7 @@ function sentence(
   // This relies on sentence filter, if some of those filters were disabled,
   // this function might break.
   if (sentence.interrogative === "x ala x") {
-    throw new TodoError('translation of "x ala x"');
+    throw new TranslationTodoError("x ala x");
   }
   if (sentence.finalClause.type === "filler") {
     return new Output(filler(sentence.finalClause.emphasis))
@@ -176,7 +177,7 @@ function sentence(
       endingParticle,
     } = sentence.finalClause;
     if (kinOrTaso != null) {
-      throw new TodoError(`translation of "${kinOrTaso.word}" preclause`);
+      throw new TranslationTodoError(`"${kinOrTaso.word}" preclause`);
     }
     const lastEngClause = clause(lastTpClause);
     let right: Array<English.Clause>;

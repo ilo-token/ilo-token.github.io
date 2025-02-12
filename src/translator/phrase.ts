@@ -1,7 +1,7 @@
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
 import { nullableAsArray, repeatWithSpace } from "../misc.ts";
-import { Output, TodoError } from "../output.ts";
+import { Output } from "../output.ts";
 import { wordUnit } from "./word-unit.ts";
 import { multipleModifiers } from "./modifier.ts";
 import { findNumber, fixDeterminer } from "./determiner.ts";
@@ -10,6 +10,7 @@ import { nounForms } from "./noun.ts";
 import { CONJUNCTION } from "./misc.ts";
 import { OutputError } from "../mod.ts";
 import * as Composer from "../parser/composer.ts";
+import { ExhaustedError, TranslationTodoError } from "./error.ts";
 
 type PhraseTranslation =
   | { type: "noun"; noun: English.NounPhrase }
@@ -35,7 +36,7 @@ function defaultPhrase(
             count = 1;
             break;
           case "x ala x":
-            throw new TodoError("translation for X ala X");
+            throw new TranslationTodoError("x ala x");
           case "reduplication":
             count = phrase.headWord.count;
             break;
@@ -158,11 +159,7 @@ function defaultPhrase(
         return new Output();
       }
     })
-    .addError(() =>
-      new OutputError(
-        `no possible translation found for ${Composer.phrase(phrase)}`,
-      )
-    );
+    .addError(() => new ExhaustedError(Composer.phrase(phrase)));
 }
 export function phrase(
   phrase: TokiPona.Phrase,
@@ -174,7 +171,7 @@ export function phrase(
     case "preverb":
     case "preposition":
     case "quotation":
-      return new Output(new TodoError(`translation of ${phrase.type}`));
+      return new Output(new TranslationTodoError(phrase.type));
   }
 }
 export function multiplePhrases(
@@ -262,11 +259,7 @@ export function multiplePhrases(
           }
         })
         .addError(() =>
-          new OutputError(
-            `no possible translation found for ${
-              Composer.multiplePhrases(phrases, particle)
-            }`,
-          )
+          new ExhaustedError(Composer.multiplePhrases(phrases, particle))
         );
     }
   }
