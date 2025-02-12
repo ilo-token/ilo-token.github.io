@@ -28,7 +28,7 @@ export type NounPhrase =
 export type Determiner = {
   kind: Dictionary.DeterminerType;
   determiner: Word;
-  quantity: Quantity;
+  quantity: Dictionary.Quantity;
 };
 export type AdjectivePhrase =
   | {
