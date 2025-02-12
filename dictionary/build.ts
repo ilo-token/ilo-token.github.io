@@ -1,3 +1,4 @@
+import { extractErrorMessage } from "../src/misc.ts";
 import { parseDictionary } from "./parser.ts";
 
 const SOURCE = new URL("./dictionary", import.meta.url);
@@ -14,7 +15,7 @@ async function importPrevious(): Promise<string> {
     const { original } = await import("./dictionary.ts");
     return original;
   } catch (error) {
-    throw new ImportError(undefined, { cause: error });
+    throw new ImportError(extractErrorMessage(error), { cause: error });
   }
 }
 export async function build(checkFile: boolean): Promise<void> {
