@@ -159,7 +159,7 @@ function defaultPhrase(
         return new Output();
       }
     })
-    .addError(() => new ExhaustedError(Composer.phrase(phrase)));
+    .addErrorWhenNone(() => new ExhaustedError(Composer.phrase(phrase)));
 }
 export function phrase(
   phrase: TokiPona.Phrase,
@@ -258,7 +258,7 @@ export function multiplePhrases(
             return null;
           }
         })
-        .addError(() =>
+        .addErrorWhenNone(() =>
           new ExhaustedError(Composer.multiplePhrases(phrases, particle))
         );
     }

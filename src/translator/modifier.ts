@@ -290,7 +290,7 @@ export function multipleModifiers(
       }
       return Output.concat(adjectival, adverbial);
     })
-    .addError(() =>
+    .addErrorWhenNone(() =>
       new ExhaustedError(modifiers.map(Composer.modifier).join(" "))
     );
 }
