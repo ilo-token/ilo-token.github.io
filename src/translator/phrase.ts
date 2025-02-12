@@ -45,7 +45,7 @@ function defaultPhrase(
             break;
         }
         const determiner = fixDeterminer([
-          ...modifier.determiner,
+          ...modifier.determiner.slice().reverse(),
           ...headWord.determiner,
         ]);
         const quantity = findNumber(determiner);
