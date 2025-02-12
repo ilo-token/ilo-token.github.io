@@ -8,7 +8,6 @@ import { findNumber, fixDeterminer } from "./determiner.ts";
 import { fixAdjective } from "./adjective.ts";
 import { nounForms } from "./noun.ts";
 import { CONJUNCTION } from "./misc.ts";
-import { OutputError } from "../mod.ts";
 import * as Composer from "../parser/composer.ts";
 import {
   ExhaustedError,
