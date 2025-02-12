@@ -7,6 +7,7 @@
     "jsr:@std/encoding@^1.0.5": "1.0.6",
     "jsr:@std/html@^1.0.3": "1.0.3",
     "jsr:@std/path@^1.0.6": "1.0.8",
+    "jsr:@std/random@0.1": "0.1.0",
     "npm:compromise@^14.14.3": "14.14.4",
     "npm:esbuild@0.25": "0.25.0"
   },
@@ -33,6 +34,9 @@
     },
     "@std/path@1.0.8": {
       "integrity": "548fa456bb6a04d3c1a1e7477986b6cffbce95102d0bb447c67c4ee70e0364be"
+    },
+    "@std/random@0.1.0": {
+      "integrity": "70a006be0ffb77d036bab54aa8ae6bd0119ba77ace0f2f56f63273d4262a5667"
     }
   },
   "npm": {
@@ -164,6 +168,7 @@
       "jsr:@luca/esbuild-deno-loader@~0.11.1",
       "jsr:@std/async@^1.0.10",
       "jsr:@std/html@^1.0.3",
+      "jsr:@std/random@0.1",
       "npm:compromise@^14.14.3",
       "npm:esbuild@0.25"
     ]

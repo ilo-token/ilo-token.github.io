@@ -1,8 +1,8 @@
 import { errors } from "../telo-misikeke/telo-misikeke.js";
 import { translate as rawTranslate } from "./translator/composer.ts";
-import { shuffle } from "./misc.ts";
 import { OutputError } from "./output.ts";
 import { Settings, settings as globalSettings } from "./settings.ts";
+import { shuffle } from "@std/random/shuffle";
 
 export { loadCustomDictionary } from "./dictionary.ts";
 export { OutputError } from "./output.ts";
@@ -13,9 +13,9 @@ export type { RedundancySettings, Settings } from "./settings.ts";
 export function translate(tokiPona: string): Array<string> {
   const output = rawTranslate(tokiPona);
   if (!output.isError()) {
-    const values = [...new Set(output.output)];
+    let values = [...new Set(output.output)];
     if (globalSettings.get("randomize")) {
-      shuffle(values);
+      values = shuffle(values);
     }
     return values;
   } else {
