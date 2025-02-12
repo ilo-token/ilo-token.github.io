@@ -14,7 +14,7 @@ export function nounForms(
 ): Output<{ noun: string; number: English.Quantity }> {
   switch (determinerNumber) {
     case "both":
-      switch (settings["number-settings"]) {
+      switch (settings.quantity) {
         case "both":
           return new Output([
             ...nullableAsArray(singular)

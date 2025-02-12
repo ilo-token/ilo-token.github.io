@@ -20,7 +20,7 @@ function nounAsPlainString(definition: Dictionary.Noun): Output<string> {
 function verbAsPlainString(
   verb: { presentPlural: string; past: string },
 ): Output<string> {
-  switch (settings["tense-settings"]) {
+  switch (settings.tense) {
     case "both":
       return new Output([
         verb.past,

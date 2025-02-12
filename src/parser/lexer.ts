@@ -139,7 +139,7 @@ function longWord(): Parser<Token & { type: "long word" }> {
 /** Parses X ala X constructions if allowed by the settings. */
 function xAlaX(): Parser<string> {
   return variable(() => {
-    if (settings["x-ala-x-partial-parsing"]) {
+    if (settings.xAlaXPartialParsing) {
       return empty();
     } else {
       return word()

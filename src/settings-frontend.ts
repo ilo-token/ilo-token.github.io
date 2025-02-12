@@ -7,6 +7,7 @@ import {
   Settings,
   settings,
 } from "./settings.ts";
+import { toKebabCase } from "@std/text/to-kebab-case";
 
 type Updater<T> = {
   readonly parse: (value: string) => T | null;
@@ -52,38 +53,44 @@ const REDUNDANCY_UPDATER: Updater<RedundancySettings> = {
   },
 };
 const UPDATERS: Readonly<{ [K in keyof Settings]: Updater<Settings[K]> }> = {
-  "use-telo-misikeke": BOOL_UPDATER,
-  "randomize": BOOL_UPDATER,
-  "number-settings": REDUNDANCY_UPDATER,
-  "tense-settings": REDUNDANCY_UPDATER,
-  "x-ala-x-partial-parsing": BOOL_UPDATER,
-  "separate-repeated-modifiers": BOOL_UPDATER,
+  teloMisikeke: BOOL_UPDATER,
+  randomize: BOOL_UPDATER,
+  quantity: REDUNDANCY_UPDATER,
+  tense: REDUNDANCY_UPDATER,
+  xAlaXPartialParsing: BOOL_UPDATER,
+  separateRepeatedModifiers: BOOL_UPDATER,
 };
-const NAMES = Object.keys(UPDATERS) as Array<keyof Settings>;
-function loadOneFromLocalStorage<T extends keyof Settings>(name: T): void {
-  const src = localStorage.getItem(name);
+const KEYS = Object.keys(UPDATERS) as Array<keyof Settings>;
+function loadOneFromLocalStorage<T extends keyof Settings>(key: T): void {
+  const src = localStorage.getItem(key);
   if (src != null) {
-    settings[name] = UPDATERS[name].parse(src) ?? defaultSettings[name];
+    settings[key] = UPDATERS[key].parse(src) ?? defaultSettings[key];
   } else {
-    settings[name] = defaultSettings[name];
+    settings[key] = defaultSettings[key];
   }
-  UPDATERS[name].set(
-    document.getElementById(name) as HTMLInputElement | HTMLSelectElement,
-    settings[name],
+  UPDATERS[key].set(
+    document.getElementById(toKebabCase(key)) as
+      | HTMLInputElement
+      | HTMLSelectElement,
+    settings[key],
   );
 }
-function loadOneFromElements<T extends keyof Settings>(name: T): void {
-  settings[name] = UPDATERS[name].load(
-    document.getElementById(name) as HTMLInputElement | HTMLSelectElement,
+function loadOneFromElements<T extends keyof Settings>(key: T): void {
+  settings[key] = UPDATERS[key].load(
+    document.getElementById(toKebabCase(key)) as
+      | HTMLInputElement
+      | HTMLSelectElement,
   );
-  setIgnoreError(name, UPDATERS[name].stringify(settings[name]));
+  setIgnoreError(key, UPDATERS[key].stringify(settings[key]));
 }
 function setElement<T extends keyof Settings>(
-  name: T,
+  key: T,
   value: Settings[T],
 ): void {
-  UPDATERS[name].set(
-    document.getElementById(name) as HTMLInputElement | HTMLSelectElement,
+  UPDATERS[key].set(
+    document.getElementById(toKebabCase(key)) as
+      | HTMLInputElement
+      | HTMLSelectElement,
     value,
   );
 }
@@ -91,22 +98,22 @@ export function loadFromLocalStorage(): void {
   if (!checkLocalStorage()) {
     return;
   }
-  for (const name of NAMES) {
-    loadOneFromLocalStorage(name);
+  for (const key of KEYS) {
+    loadOneFromLocalStorage(key);
   }
 }
 export function loadFromElements(): void {
-  for (const name of NAMES) {
-    loadOneFromElements(name);
+  for (const key of KEYS) {
+    loadOneFromElements(key);
   }
 }
 export function resetElementsToCurrent(): void {
-  for (const name of NAMES) {
-    setElement(name, settings[name]);
+  for (const key of KEYS) {
+    setElement(key, settings[key]);
   }
 }
 export function resetElementsToDefault(): void {
-  for (const name of NAMES) {
-    setElement(name, defaultSettings[name]);
+  for (const key of KEYS) {
+    setElement(key, defaultSettings[key]);
   }
 }

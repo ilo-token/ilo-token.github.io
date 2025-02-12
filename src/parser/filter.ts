@@ -210,7 +210,7 @@ export const MULTIPLE_MODIFIERS_RULES: Array<
   },
   // avoid duplicate modifiers when disabled by settings
   (modifiers) => {
-    if (settings["separate-repeated-modifiers"]) {
+    if (settings.separateRepeatedModifiers) {
       return true;
     }
     const set = new Set<string>();

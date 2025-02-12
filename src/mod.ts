@@ -20,7 +20,7 @@ export function translate(tokiPona: string): Array<string> {
     return values;
   } else {
     let error: ReadonlyArray<OutputError> = [];
-    if (settings["use-telo-misikeke"]) {
+    if (settings.teloMisikeke) {
       error = errors(tokiPona)
         .map((message) => new OutputError(message, { isHtml: true }));
     }

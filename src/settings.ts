@@ -11,19 +11,19 @@ export type RedundancySettings = "both" | "condensed" | "default only";
  * info.
  */
 export type Settings = {
-  "use-telo-misikeke": boolean;
-  "randomize": boolean;
-  "number-settings": RedundancySettings;
-  "tense-settings": RedundancySettings;
-  "x-ala-x-partial-parsing": boolean;
-  "separate-repeated-modifiers": boolean;
+  teloMisikeke: boolean;
+  randomize: boolean;
+  quantity: RedundancySettings;
+  tense: RedundancySettings;
+  xAlaXPartialParsing: boolean;
+  separateRepeatedModifiers: boolean;
 };
 export const defaultSettings: Readonly<Settings> = {
-  "use-telo-misikeke": true,
-  "randomize": false,
-  "number-settings": "both",
-  "tense-settings": "both",
-  "x-ala-x-partial-parsing": false,
-  "separate-repeated-modifiers": false,
+  teloMisikeke: true,
+  randomize: false,
+  quantity: "both",
+  tense: "both",
+  xAlaXPartialParsing: false,
+  separateRepeatedModifiers: false,
 };
 export const settings: Settings = { ...defaultSettings };
