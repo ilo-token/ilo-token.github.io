@@ -3,21 +3,27 @@ import { parseDictionary } from "./parser.ts";
 const SOURCE = new URL("./dictionary", import.meta.url);
 const DESTINATION = new URL("./dictionary.ts", import.meta.url);
 
+async function getPrevious(): Promise<null | string> {
+  try {
+    const { original } = await import("./dictionary.ts");
+    return original;
+  } catch (_) {
+    return null;
+  }
+}
 export async function build(checkFile: boolean): Promise<void> {
-  const text = await Deno.readTextFile(SOURCE);
+  const currentPromise = Deno.readTextFile(SOURCE);
   if (checkFile) {
-    let current: undefined | string;
-    try {
-      const { original } = await import("./dictionary.ts");
-      current = original;
-    } catch (_) {
-      // pass
-    }
-    if (text === current) {
+    const [current, previous] = await Promise.all([
+      currentPromise,
+      getPrevious(),
+    ]);
+    if (current === previous) {
       return;
     }
   }
   console.log("Building dictionary...");
+  const text = await currentPromise;
   const json = JSON.stringify(parseDictionary(text), undefined, 2);
   const original = JSON.stringify(text);
   const code = `\
