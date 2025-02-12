@@ -3,23 +3,35 @@ import { parseDictionary } from "./parser.ts";
 const SOURCE = new URL("./dictionary", import.meta.url);
 const DESTINATION = new URL("./dictionary.ts", import.meta.url);
 
-async function getPrevious(): Promise<null | string> {
+class ImportError extends Error {
+  constructor(message?: string, options?: { cause: unknown }) {
+    super(message, options);
+    this.name = "ImportError";
+  }
+}
+async function importPrevious(): Promise<string> {
   try {
     const { original } = await import("./dictionary.ts");
     return original;
-  } catch (_) {
-    return null;
+  } catch (error) {
+    throw new ImportError(undefined, { cause: error });
   }
 }
 export async function build(checkFile: boolean): Promise<void> {
   const currentPromise = Deno.readTextFile(SOURCE);
   if (checkFile) {
-    const [current, previous] = await Promise.all([
-      currentPromise,
-      getPrevious(),
-    ]);
-    if (current === previous) {
-      return;
+    try {
+      const [current, previous] = await Promise.all([
+        currentPromise,
+        importPrevious(),
+      ]);
+      if (current === previous) {
+        return;
+      }
+    } catch (error) {
+      if (!(error instanceof ImportError)) {
+        throw error;
+      }
     }
   }
   console.log("Building dictionary...");
