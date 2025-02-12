@@ -12,3 +12,9 @@ export class ExhaustedError extends OutputError {
     this.name = "ExhaustedError";
   }
 }
+export class FilteredOutError extends OutputError {
+  constructor(element: string) {
+    super(`${element} is filtered out`);
+    this.name = "FilteredOutError";
+  }
+}

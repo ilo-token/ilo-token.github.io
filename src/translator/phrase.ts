@@ -10,7 +10,11 @@ import { nounForms } from "./noun.ts";
 import { CONJUNCTION } from "./misc.ts";
 import { OutputError } from "../mod.ts";
 import * as Composer from "../parser/composer.ts";
-import { ExhaustedError, TranslationTodoError } from "./error.ts";
+import {
+  ExhaustedError,
+  FilteredOutError,
+  TranslationTodoError,
+} from "./error.ts";
 
 type PhraseTranslation =
   | { type: "noun"; noun: English.NounPhrase }
@@ -131,9 +135,7 @@ function defaultPhrase(
             ...adjective.adverb,
           ];
           if (adverb.length > 1) {
-            throw new OutputError(
-              "chained adverbs are filtered out to avoid ambiguity",
-            );
+            throw new FilteredOutError("multiple adverbs");
           }
           return new Output<PhraseTranslation>([{
             type: "adjective",
