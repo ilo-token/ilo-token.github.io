@@ -14,25 +14,27 @@ function getWord(
     .determiner
     .word;
 }
+function check(
+  quantities: Array<Dictionary.Quantity>,
+  some: Dictionary.Quantity,
+  not: Dictionary.Quantity,
+): boolean {
+  return quantities.some((quantity) => quantity === some) &&
+    quantities.every((quantity) => quantity !== not);
+}
 export function findNumber(
-  determiner: Array<English.Determiner>,
+  determiners: Array<English.Determiner>,
 ): Dictionary.Quantity {
-  const quantity = determiner.map((determiner) => determiner.quantity);
-  if (quantity.every((quantity) => quantity === "both")) {
+  const quantities = determiners.map((determiner) => determiner.quantity);
+  if (quantities.every((quantity) => quantity === "both")) {
     return "both";
-  } else if (
-    quantity.every((quantity) => quantity !== "plural") &&
-    quantity.some((quantity) => quantity === "singular")
-  ) {
+  } else if (check(quantities, "singular", "plural")) {
     return "singular";
-  } else if (
-    quantity.every((quantity) => quantity !== "singular") &&
-    quantity.some((quantity) => quantity === "plural")
-  ) {
+  } else if (check(quantities, "plural", "singular")) {
     return "plural";
   } else {
-    const singular = getWord(determiner, "singular");
-    const plural = getWord(determiner, "singular");
+    const singular = getWord(determiners, "singular");
+    const plural = getWord(determiners, "singular");
     throw new OutputError(
       `conflicting set of determiners, ${singular} is for singular nouns but ${plural} is for plural`,
     );
