@@ -8,8 +8,8 @@ const EMPHASIS_STARTING_TAG = "<strong>";
 const EMPHASIS_ENDING_TAG = "</strong>";
 
 class ComposingTodoError extends TodoError {
-  constructor(kind: string) {
-    super(`composing ${kind}`);
+  constructor(type: string) {
+    super(`composing ${type}`);
     this.name = "ComposingTodoError";
   }
 }

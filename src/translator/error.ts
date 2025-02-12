@@ -1,8 +1,8 @@
 import { OutputError, TodoError } from "../output.ts";
 
 export class TranslationTodoError extends TodoError {
-  constructor(kind: string) {
-    super(`translation of ${kind}`);
+  constructor(type: string) {
+    super(`translation of ${type}`);
     this.name = "TranslationTodoError";
   }
 }

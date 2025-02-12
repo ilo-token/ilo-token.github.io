@@ -17,8 +17,8 @@ export class OutputError extends Error {
 }
 /** Represents Error due to things not implemented yet. */
 export class TodoError extends OutputError {
-  constructor(token: string) {
-    super(`${token} is not yet implemented`);
+  constructor(functionality: string) {
+    super(`${functionality} is not yet implemented`);
     this.name = "TodoError";
   }
 }

@@ -71,8 +71,8 @@ export class UnexpectedError extends OutputError {
 }
 /** Represents Error caused by unrecognized elements. */
 export class UnrecognizedError extends OutputError {
-  constructor(token: string) {
-    super(`${token} is unrecognized`);
+  constructor(element: string) {
+    super(`${element} is unrecognized`);
     this.name = "UnrecognizedError";
   }
 }
