@@ -1,6 +1,7 @@
 /** Module containing the Output data type. */
 
-/** */
+import { flattenError } from "./misc.ts";
+
 export type OutputErrorOptions = {
   cause: unknown;
   isHtml: boolean;
@@ -91,11 +92,7 @@ export class Output<T> {
           try {
             output = mapper(value);
           } catch (error) {
-            if (error instanceof OutputError) {
-              output = new Output(error);
-            } else {
-              throw error;
-            }
+            output = Output.errors(extractOutputError(error));
           }
           return Output.concat(rest, output);
         },
@@ -181,5 +178,45 @@ export class Output<T> {
       },
       new Output<any>([[]]),
     ) as Output<T>;
+  }
+}
+type Errors =
+  | { type: "output"; errors: Array<OutputError> }
+  | { type: "outside"; errors: Array<unknown> };
+function extractOutputError(error: unknown): Array<OutputError> {
+  const errors = flattenError(error).reduce<Errors>(
+    (errors, error) => {
+      switch (errors.type) {
+        case "output":
+          if (error instanceof OutputError) {
+            return { type: "output", errors: [...errors.errors, error] };
+          } else {
+            return { type: "outside", errors: [error] };
+          }
+        case "outside": {
+          let moreError: Array<unknown>;
+          if (error instanceof OutputError) {
+            moreError = [];
+          } else {
+            moreError = [error];
+          }
+          return { type: "outside", errors: [...errors.errors, ...moreError] };
+        }
+      }
+    },
+    {
+      type: "output",
+      errors: [],
+    },
+  );
+  switch (errors.type) {
+    case "output":
+      return errors.errors;
+    case "outside":
+      if (errors.errors.length === 1) {
+        throw errors.errors[0];
+      } else {
+        throw new AggregateError(errors.errors);
+      }
   }
 }

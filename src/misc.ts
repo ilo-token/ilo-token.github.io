@@ -76,3 +76,10 @@ export function filterSet<T>(
 ): Array<T> {
   return set.filter(([condition]) => condition).map(([_, value]) => value);
 }
+export function flattenError(error: unknown): Array<unknown> {
+  if (error instanceof AggregateError) {
+    return error.errors.flatMap(flattenError);
+  } else {
+    return [error];
+  }
+}
