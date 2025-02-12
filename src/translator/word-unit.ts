@@ -6,7 +6,7 @@ import { determiner } from "./determiner.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";
 import { TranslationTodoError } from "./error.ts";
 
-type WordUnitTranslation =
+export type WordUnitTranslation =
   | {
     type: "noun";
     determiner: Array<English.Determiner>;

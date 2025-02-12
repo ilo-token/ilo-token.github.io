@@ -10,7 +10,7 @@ import { phrase } from "./phrase.ts";
 import * as Composer from "../parser/composer.ts";
 import { ExhaustedError, TranslationTodoError } from "./error.ts";
 
-type ModifierTranslation =
+export type ModifierTranslation =
   | { type: "noun"; noun: English.NounPhrase }
   | { type: "noun preposition"; noun: English.NounPhrase; preposition: string }
   | { type: "adjective"; adjective: English.AdjectivePhrase }
@@ -193,7 +193,7 @@ function modifier(
       return new Output(new TranslationTodoError(modifier.type));
   }
 }
-type MultipleModifierTranslation =
+export type MultipleModifierTranslation =
   | {
     type: "adjectival";
     nounPreposition: null | { noun: English.NounPhrase; preposition: string };
