@@ -11,40 +11,40 @@ export function nounForms(
   singular: undefined | null | string,
   plural: undefined | null | string,
   determinerNumber: Dictionary.Quantity,
-): Output<{ noun: string; number: English.Quantity }> {
+): Output<{ noun: string; quantity: English.Quantity }> {
   switch (determinerNumber) {
     case "both":
       switch (settings.quantity) {
         case "both":
           return new Output([
             ...nullableAsArray(singular)
-              .map((noun) => ({ noun, number: "singular" as const })),
+              .map((noun) => ({ noun, quantity: "singular" as const })),
             ...nullableAsArray(plural)
-              .map((noun) => ({ noun, number: "plural" as const })),
+              .map((noun) => ({ noun, quantity: "plural" as const })),
           ]);
         case "condensed":
           if (singular != null && plural != null) {
             return new Output([{
               noun: condense(singular, plural),
-              number: "condensed",
+              quantity: "condensed",
             }]);
           }
           // fallthrough
         case "default only":
           if (singular != null) {
-            return new Output([{ noun: singular, number: "singular" }]);
+            return new Output([{ noun: singular, quantity: "singular" }]);
           } else {
-            return new Output([{ noun: plural!, number: "plural" }]);
+            return new Output([{ noun: plural!, quantity: "plural" }]);
           }
       }
       // unreachable
       // fallthrough
     case "singular":
       return new Output(nullableAsArray(singular))
-        .map((noun) => ({ noun, number: "singular" as const }));
+        .map((noun) => ({ noun, quantity: "singular" as const }));
     case "plural":
       return new Output(nullableAsArray(plural))
-        .map((noun) => ({ noun, number: "plural" as const }));
+        .map((noun) => ({ noun, quantity: "plural" as const }));
   }
 }
 export function simpleNounForms(
@@ -78,7 +78,7 @@ export function noun(
           determiner,
           adjective,
           noun: { word: repeatWithSpace(noun.noun, count), emphasis },
-          number: noun.number,
+          quantity: noun.quantity,
           postCompound: null,
           postAdjective: definition.postAdjective,
           preposition: [],

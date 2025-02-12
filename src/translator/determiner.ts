@@ -10,14 +10,14 @@ function getWord(
   quantity: Dictionary.Quantity,
 ): string {
   return determiner
-    .filter((determiner) => determiner.number === quantity)[0]
+    .filter((determiner) => determiner.quantity === quantity)[0]
     .determiner
     .word;
 }
 export function findNumber(
   determiner: Array<English.Determiner>,
 ): Dictionary.Quantity {
-  const quantity = determiner.map((determiner) => determiner.number);
+  const quantity = determiner.map((determiner) => determiner.quantity);
   if (quantity.every((quantity) => quantity === "both")) {
     return "both";
   } else if (
@@ -50,7 +50,7 @@ export function determiner(
         word: repeatWithSpace(determiner, count),
         emphasis,
       },
-      number: definition.number,
+      quantity: definition.quantity,
     }));
 }
 function filterDeterminer(

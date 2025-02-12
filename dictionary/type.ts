@@ -23,7 +23,7 @@ export type Determiner = {
   determiner: string;
   plural: null | string;
   kind: DeterminerType;
-  number: Quantity;
+  quantity: Quantity;
 };
 export type AdjectiveType =
   | "opinion"

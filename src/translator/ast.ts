@@ -13,7 +13,7 @@ export type NounPhrase =
     determiner: Array<Determiner>;
     adjective: Array<AdjectivePhrase>;
     noun: Word;
-    number: Quantity;
+    quantity: Quantity;
     postCompound: null | NounPhrase;
     postAdjective: null | { adjective: string; name: string };
     preposition: Array<Preposition>;
@@ -23,12 +23,12 @@ export type NounPhrase =
     type: "compound";
     conjunction: string;
     nouns: Array<NounPhrase>;
-    number: Quantity;
+    quantity: Quantity;
   };
 export type Determiner = {
   kind: Dictionary.DeterminerType;
   determiner: Word;
-  number: Quantity;
+  quantity: Quantity;
 };
 export type AdjectivePhrase =
   | {

@@ -44,7 +44,7 @@ function defaultPhrase(
           ...headWord.determiner,
           ...modifier.determiner,
         ]);
-        const number = findNumber(determiner);
+        const quantity = findNumber(determiner);
         const adjective = fixAdjective([
           ...modifier.adjective.slice().reverse(),
           ...headWord.adjective,
@@ -80,7 +80,7 @@ function defaultPhrase(
         ) {
           return new Output();
         }
-        const headNoun = nounForms(headWord.singular, headWord.plural, number)
+        const headNoun = nounForms(headWord.singular, headWord.plural, quantity)
           .map((noun) => ({
             type: "simple" as const,
             determiner,
@@ -89,7 +89,7 @@ function defaultPhrase(
               word: repeatWithSpace(noun.noun, count),
               emphasis: phrase.headWord.emphasis != null,
             },
-            number,
+            quantity,
             postCompound: null,
             postAdjective,
             preposition,
@@ -208,13 +208,13 @@ export function multiplePhrases(
                   return [noun];
                 }
               });
-            let number: English.Quantity;
+            let quantity: English.Quantity;
             switch (conjunction) {
               case "and":
-                number = "plural";
+                quantity = "plural";
                 break;
               case "or":
-                number = nouns[nouns.length - 1].number;
+                quantity = nouns[nouns.length - 1].quantity;
                 break;
             }
             return {
@@ -224,7 +224,7 @@ export function multiplePhrases(
                 conjunction,
                 nouns,
                 preposition: [],
-                number,
+                quantity,
               },
             };
           } else if (

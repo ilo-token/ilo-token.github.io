@@ -291,11 +291,11 @@ function determiner(): Parser<Determiner> {
     optionalAll(slash().with(word())),
     tag(keyword("d").with(sequence(determinerType(), optionalNumber()))),
   )
-    .map(([determiner, plural, [kind, number]]) => ({
+    .map(([determiner, plural, [kind, quantity]]) => ({
       determiner,
       plural,
       kind,
-      number: number ?? "both",
+      quantity: quantity ?? "both",
     }));
 }
 function adjective(): Parser<Adjective> {

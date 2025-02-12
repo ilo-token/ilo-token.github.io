@@ -21,18 +21,18 @@ function numberModifier(
   word: number,
   emphasis: boolean,
 ): Output<ModifierTranslation> {
-  let number: English.Quantity;
+  let quantity: English.Quantity;
   if (word === 1) {
-    number = "singular";
+    quantity = "singular";
   } else {
-    number = "plural";
+    quantity = "plural";
   }
   return new Output([{
     type: "determiner",
     determiner: {
       determiner: { word: `${word}`, emphasis },
       kind: "numeral",
-      number,
+      quantity,
     },
   }]);
 }
@@ -87,7 +87,7 @@ export function defaultModifier(
                       word: repeatWithSpace(pronoun, count),
                       emphasis,
                     },
-                    number: "both",
+                    quantity: "both",
                     postCompound: null,
                     postAdjective: null,
                     preposition: [],
@@ -164,7 +164,7 @@ function nanpaModifier(
             word: "position",
             emphasis: nanpa.nanpa.emphasis != null,
           },
-          number: "singular",
+          quantity: "singular",
           postCompound: phrase.noun,
           postAdjective: null,
           preposition: [],
@@ -270,7 +270,7 @@ export function multipleModifiers(
             determiner: [],
             adjective,
             noun: { word: "way", emphasis: false },
-            number: "singular",
+            quantity: "singular",
             postCompound: null,
             postAdjective: null,
             preposition: [],
