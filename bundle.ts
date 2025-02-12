@@ -1,7 +1,7 @@
 import * as Dictionary from "./dictionary/build.ts";
-import { debounce } from "./src/misc.ts";
 import * as ESBuild from "esbuild";
 import { denoPlugins } from "@luca/esbuild-deno-loader";
+import { debounce } from "@std/async/debounce";
 
 const WATCH = [
   "./dictionary/dictionary",
@@ -52,12 +52,15 @@ if (import.meta.main) {
     case "watch": {
       console.log("Press ctrl+c to exit.");
       const watcher = Deno.watchFs(WATCH);
+      let task = Promise.resolve();
       try {
         await buildAll({ minify: false, buildDictionary: true });
         let dictionaryChanged = false;
-        const buildDebounced = debounce(async (buildDictionary: boolean) => {
-          await buildAll({ minify: true, buildDictionary });
-          dictionaryChanged = false;
+        const buildDebounced = debounce((buildDictionary: boolean) => {
+          task = task.then(async () => {
+            await buildAll({ minify: true, buildDictionary });
+            dictionaryChanged = false;
+          });
         }, 500);
         for await (const event of watcher) {
           if (event.paths.some((path) => DICTIONARY.test(path))) {
@@ -68,6 +71,7 @@ if (import.meta.main) {
         throw new Error("unreachable");
       } finally {
         watcher.close();
+        await task;
       }
     }
     default:

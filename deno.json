@@ -35,6 +35,7 @@
   },
   "imports": {
     "@luca/esbuild-deno-loader": "jsr:@luca/esbuild-deno-loader@^0.11.1",
+    "@std/async": "jsr:@std/async@^1.0.10",
     "@std/html": "jsr:@std/html@^1.0.3",
     "compromise": "npm:compromise@^14.14.3",
     "esbuild": "npm:esbuild@^0.25.0"
