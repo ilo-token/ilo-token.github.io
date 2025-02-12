@@ -1,18 +1,28 @@
 import * as English from "./ast.ts";
-import { repeatWithSpace } from "../misc.ts";
+import { filterSet, repeatWithSpace } from "../misc.ts";
 import { Output } from "../output.ts";
 import * as Dictionary from "../../dictionary/type.ts";
 import { simpleNounForms } from "./noun.ts";
-import { OutputError } from "../output.ts";
+import { FilteredOutError } from "./error.ts";
 
-function getWord(
-  determiner: Array<English.Determiner>,
-  quantity: Dictionary.Quantity,
+function prettyPrintDeterminers(
+  determiners: Array<English.Determiner>,
 ): string {
-  return determiner
-    .filter((determiner) => determiner.quantity === quantity)[0]
-    .determiner
-    .word;
+  return `(${
+    determiners.map((determiner) => determiner.determiner).join(` `)
+  })`;
+}
+function filterKind(
+  determiners: Array<English.Determiner>,
+  kinds: Array<Dictionary.DeterminerType>,
+): Array<English.Determiner> {
+  return determiners.filter((determiner) => kinds.includes(determiner.kind));
+}
+function filterQuantity(
+  determiners: Array<English.Determiner>,
+  quantity: Dictionary.Quantity,
+): Array<English.Determiner> {
+  return determiners.filter((determiner) => determiner.quantity === quantity);
 }
 function check(
   quantities: Array<Dictionary.Quantity>,
@@ -26,17 +36,21 @@ export function findNumber(
   determiners: Array<English.Determiner>,
 ): Dictionary.Quantity {
   const quantities = determiners.map((determiner) => determiner.quantity);
-  if (quantities.every((quantity) => quantity === "both")) {
+  if (quantities.every((quantity) => quantity === `both`)) {
     return "both";
   } else if (check(quantities, "singular", "plural")) {
     return "singular";
   } else if (check(quantities, "plural", "singular")) {
     return "plural";
   } else {
-    const singular = getWord(determiners, "singular");
-    const plural = getWord(determiners, "singular");
-    throw new OutputError(
-      `conflicting set of determiners, ${singular} is for singular nouns but ${plural} is for plural`,
+    const singular = prettyPrintDeterminers(
+      filterQuantity(determiners, "singular"),
+    );
+    const plural = prettyPrintDeterminers(
+      filterQuantity(determiners, "plural"),
+    );
+    throw new FilteredOutError(
+      `determiner for singular nouns ${singular} with determiner for plural nouns ${plural}`,
     );
   }
 }
@@ -55,38 +69,87 @@ export function determiner(
       quantity: definition.quantity,
     }));
 }
-function filterDeterminer(
-  determiners: Array<English.Determiner>,
-  kinds: Array<Dictionary.DeterminerType>,
-): Array<English.Determiner> {
-  return determiners.filter((determiner) => kinds.includes(determiner.kind));
-}
 export function fixDeterminer(
   determiner: Array<English.Determiner>,
 ): Array<English.Determiner> {
-  const negative = filterDeterminer(determiner, ["negative"]);
-  const first = filterDeterminer(determiner, [
-    "article",
-    "demonstrative",
-    "possessive",
+  const negative = filterKind(determiner, [`negative`]);
+  const first = filterKind(determiner, [
+    `article`,
+    `demonstrative`,
+    `possessive`,
   ]);
-  const distributive = filterDeterminer(determiner, ["distributive"]);
-  const interrogative = filterDeterminer(determiner, ["interrogative"]);
-  const numerical = filterDeterminer(determiner, ["numeral", "quantifier"]);
-  if (
-    negative.length > 1 || first.length > 1 || distributive.length > 1 ||
-    interrogative.length > 1 || numerical.length > 1 ||
-    (negative.length > 0 && interrogative.length > 0)
-  ) {
-    // TODO: encode why
-    throw new OutputError("conflicting set of determiners");
-  } else {
+  const article = filterKind(determiner, [`article`]);
+  const demonstrative = filterKind(determiner, [`demonstrative`]);
+  const possessive = filterKind(determiner, [`possessive`]);
+  const distributive = filterKind(determiner, [`distributive`]);
+  const interrogative = filterKind(determiner, [`interrogative`]);
+  const quantitative = filterKind(determiner, [`numeral`, `quantifier`]);
+  const errors = filterSet([
+    [
+      negative.length > 1,
+      encodeDeterminer`multiple negative determiners ${negative}`,
+    ],
+    [article.length > 1, encodeDeterminer`multiple articles ${article}`],
+    [
+      demonstrative.length > 1,
+
+      encodeDeterminer`multiple demonstrative determiners ${demonstrative}`,
+    ],
+    [
+      possessive.length > 1,
+      encodeDeterminer`multiple possessive determiners ${possessive}`,
+    ],
+    [
+      distributive.length > 1,
+      encodeDeterminer`multiple distributive determiners ${distributive}`,
+    ],
+    [
+      interrogative.length > 1,
+      encodeDeterminer`multiple interrogative determiners ${interrogative}`,
+    ],
+    [
+      quantitative.length > 1,
+      encodeDeterminer`multiple quantitative determiners ${quantitative}`,
+    ],
+    [
+      article.length > 0 && demonstrative.length > 0,
+      encodeDeterminer`article ${article} with demonstrative determiner ${demonstrative}`,
+    ],
+    [
+      article.length > 0 && possessive.length > 0,
+      encodeDeterminer`article ${article} with possessive determiner ${possessive}`,
+    ],
+    [
+      demonstrative.length > 0 && possessive.length > 0,
+      encodeDeterminer`demonstrative determiner ${demonstrative} with possessive determiner ${possessive}`,
+    ],
+    [
+      negative.length > 0 && interrogative.length > 0,
+      encodeDeterminer`negative determiner ${negative} with interrogative determiner ${interrogative}`,
+    ],
+  ]);
+  if (errors.length === 0) {
     return [
       ...negative,
       ...first,
       ...distributive,
       ...interrogative,
-      ...numerical,
+      ...quantitative,
     ];
+  } else {
+    throw new AggregateError(
+      errors.map((element) => new FilteredOutError(element())),
+    );
   }
+}
+function encodeDeterminer(
+  strings: TemplateStringsArray,
+  ...determiners: Array<Array<English.Determiner>>
+): () => string {
+  return () => {
+    const determinerStrings = determiners.map(prettyPrintDeterminers);
+    return strings
+      .map((string, i) => `${string}${determinerStrings[i] ?? ""}`)
+      .join("");
+  };
 }
