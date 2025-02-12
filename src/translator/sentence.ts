@@ -7,24 +7,33 @@ import { definitionAsPlainString } from "./as-string.ts";
 import { clause } from "./clause.ts";
 import { TranslationTodoError } from "./error.ts";
 
-function filler(filler: TokiPona.Emphasis): Array<string> {
+function filler(filler: TokiPona.Emphasis): Output<string> {
   switch (filler.type) {
     case "word":
-      return dictionary[filler.word].definitions
-        .filter((definition) => definition.type === "filler")
-        .map((definition) =>
-          `${definition.before}${definition.repeat}${definition.after}`
-        );
-    case "long word":
-      return dictionary[filler.word].definitions
-        .filter((definition) => definition.type === "filler")
-        .map((definition) =>
-          `${definition.before}${
-            definition.repeat.repeat(filler.length)
-          }${definition.after}`
-        );
+    case "long word": {
+      const definitions = dictionary[filler.word]
+        .definitions
+        .filter((definition) => definition.type === "filler");
+      let length: number;
+      switch (filler.type) {
+        case "word":
+          length = 1;
+          break;
+        case "long word":
+          length = filler.length;
+          break;
+      }
+      return new Output(
+        definitions
+          .map((definition) =>
+            `${definition.before}${
+              definition.repeat.repeat(length)
+            }${definition.after}`
+          ),
+      );
+    }
     case "multiple a":
-      return ["ha".repeat(filler.count)];
+      return new Output(["ha".repeat(filler.count)]);
   }
 }
 function emphasisAsPunctuation(
@@ -126,7 +135,7 @@ function sentence(
     throw new TranslationTodoError("x ala x");
   }
   if (sentence.finalClause.type === "filler") {
-    return new Output(filler(sentence.finalClause.emphasis))
+    return filler(sentence.finalClause.emphasis)
       .map<English.Sentence>((interjection) => ({
         clauses: [{
           type: "interjection",
@@ -146,7 +155,7 @@ function sentence(
     if (startingParticle == null) {
       startingFiller = new Output([null]);
     } else {
-      startingFiller = new Output(filler(startingParticle))
+      startingFiller = filler(startingParticle)
         .map((interjection) => ({
           type: "interjection",
           interjection: {
@@ -209,7 +218,7 @@ function sentence(
     if (endingParticle == null) {
       endingFiller = new Output([null]);
     } else {
-      endingFiller = new Output(filler(endingParticle))
+      endingFiller = filler(endingParticle)
         .map((interjection) => ({
           type: "interjection",
           interjection: {
