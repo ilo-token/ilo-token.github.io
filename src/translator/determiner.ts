@@ -3,7 +3,7 @@ import { repeatWithSpace } from "../misc.ts";
 import { Output } from "../output.ts";
 import * as Dictionary from "../../dictionary/type.ts";
 import { simpleNounForms } from "./noun.ts";
-import { OutputError } from "../mod.ts";
+import { OutputError } from "../output.ts";
 
 function getWord(
   determiner: Array<English.Determiner>,
