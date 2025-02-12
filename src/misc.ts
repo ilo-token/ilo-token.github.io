@@ -71,3 +71,8 @@ export function extractErrorMessage(error: unknown): string {
     return `${error}`;
   }
 }
+export function filterSet<T>(
+  set: Array<[condition: boolean, value: T]>,
+): Array<T> {
+  return set.filter(([condition]) => condition).map(([_, value]) => value);
+}

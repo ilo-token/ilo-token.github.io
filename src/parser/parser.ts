@@ -56,7 +56,7 @@ import {
   preverbSet,
   tokiPonaWordSet,
 } from "../dictionary.ts";
-import { nullableAsArray } from "../misc.ts";
+import { filterSet, nullableAsArray } from "../misc.ts";
 import { everyWordUnitInFullClause } from "./extract.ts";
 
 /** Parses a specific type of token. */
@@ -821,23 +821,15 @@ const FULL_PARSER = spaces()
   ));
 /** Turns string into Toki Pona AST. */
 export function parse(src: string): Output<MultipleSentences> {
-  let error = false;
-  let multilineError: Output<never>;
-  if (/[\n\r]/.test(src.trim())) {
-    error = true;
-    multilineError = new Output(new UnrecognizedError("multiline text"));
+  const errors = filterSet([
+    [/[\n\r]/.test(src.trim()), "multiline text"],
+    [src.trim().length > 500, "long text"],
+  ]);
+  if (errors.length > 0) {
+    return Output.errors(
+      errors.map((element) => new UnrecognizedError(element)),
+    );
   } else {
-    multilineError = new Output();
+    return FULL_PARSER.parse(src);
   }
-  let rangeError: Output<never>;
-  if (src.trim().length > 500) {
-    error = true;
-    rangeError = new Output(new UnrecognizedError("long text"));
-  } else {
-    rangeError = new Output();
-  }
-  if (error) {
-    return Output.concat(multilineError, rangeError);
-  }
-  return FULL_PARSER.parse(src);
 }
