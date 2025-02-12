@@ -8,6 +8,7 @@ import {
   checkLocalStorage,
   escapeHtmlWithNewline,
   extractErrorMessage,
+  NEWLINE,
   setIgnoreError,
 } from "./misc.ts";
 import { settings } from "./settings.ts";
@@ -290,7 +291,9 @@ function main(): void {
       }
       customDictionaryTextBox.value += `\n${asComment(message)}\n`;
       for (const message of errors) {
-        customDictionaryTextBox.value += `# - ${message}\n`;
+        customDictionaryTextBox.value += `${
+          asComment(`- ${message}`.replaceAll(NEWLINE, "$&  "))
+        }\n`;
       }
       console.error(error);
     }

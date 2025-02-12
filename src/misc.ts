@@ -1,5 +1,7 @@
 import { escape } from "@std/html/entities";
 
+export const NEWLINE = /\r\n|\n|\r/g;
+
 export function nullableAsArray<T>(value?: T): Array<NonNullable<T>> {
   if (value == null) {
     return [];
@@ -34,7 +36,7 @@ export function checkLocalStorage(): boolean {
   return localStorageAvailable;
 }
 export function newlineAsHtml(text: string): string {
-  return text.replaceAll(/\r\n|\n|\r/g, "<br/>");
+  return text.replaceAll(NEWLINE, "<br/>");
 }
 export function escapeHtmlWithNewline(text: string): string {
   return newlineAsHtml(escape(text));
