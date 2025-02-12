@@ -22,7 +22,7 @@ function so(emphasis: null | TokiPona.Emphasis): null | string {
 export function adjective(
   definition: Dictionary.Adjective,
   emphasis: null | TokiPona.Emphasis,
-  count: number,
+  reduplicationCount: number,
 ): Output<English.AdjectivePhrase & { type: "simple" }> {
   return new Output([
     ...nullableAsArray(so(emphasis)).map((so) => ({ emphasis: false, so })),
@@ -33,7 +33,7 @@ export function adjective(
       kind: definition.kind,
       adverb: [...definition.adverb, ...nullableAsArray(so)].map(unemphasized),
       adjective: {
-        word: repeatWithSpace(definition.adjective, count),
+        word: repeatWithSpace(definition.adjective, reduplicationCount),
         emphasis,
       },
       emphasis: false,

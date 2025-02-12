@@ -48,26 +48,26 @@ export function defaultModifier(
       return new Output(new TranslationTodoError("x ala x"));
     case "default":
     case "reduplication": {
-      let count: number;
+      let reduplicationCount: number;
       switch (word.type) {
         case "default":
-          count = 1;
+          reduplicationCount = 1;
           break;
         case "reduplication":
-          count = word.count;
+          reduplicationCount = word.count;
           break;
       }
       return new Output(dictionary[word.word].definitions)
         .flatMap((definition) => {
           switch (definition.type) {
             case "noun":
-              return noun(definition, emphasis, count)
+              return noun(definition, emphasis, reduplicationCount)
                 .map<ModifierTranslation>((noun) => ({
                   type: "noun",
                   noun,
                 }));
             case "noun preposition":
-              return noun(definition.noun, emphasis, count)
+              return noun(definition.noun, emphasis, reduplicationCount)
                 .map<ModifierTranslation>((noun) => ({
                   type: "noun preposition",
                   noun,
@@ -85,7 +85,7 @@ export function defaultModifier(
                     determiner: [],
                     adjective: [],
                     noun: {
-                      word: repeatWithSpace(pronoun, count),
+                      word: repeatWithSpace(pronoun, reduplicationCount),
                       emphasis,
                     },
                     quantity: "both",
@@ -96,19 +96,23 @@ export function defaultModifier(
                   },
                 }));
             case "determiner":
-              return determiner(definition, word.emphasis != null, count)
+              return determiner(
+                definition,
+                word.emphasis != null,
+                reduplicationCount,
+              )
                 .map<ModifierTranslation>((determiner) => ({
                   type: "determiner",
                   determiner,
                 }));
             case "adjective":
-              return adjective(definition, word.emphasis, count)
+              return adjective(definition, word.emphasis, reduplicationCount)
                 .map<ModifierTranslation>((adjective) => ({
                   type: "adjective",
                   adjective,
                 }));
             case "compound adjective":
-              if (word.type === "default") {
+              if (reduplicationCount === 1) {
                 return compoundAdjective(definition, word.emphasis)
                   .map<ModifierTranslation>((adjective) => ({
                     type: "adjective",
@@ -123,7 +127,7 @@ export function defaultModifier(
               return new Output<ModifierTranslation>([{
                 type: "adverb",
                 adverb: {
-                  word: repeatWithSpace(definition.adverb, count),
+                  word: repeatWithSpace(definition.adverb, reduplicationCount),
                   emphasis,
                 },
               }]);

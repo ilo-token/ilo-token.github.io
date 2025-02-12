@@ -13,19 +13,26 @@ export type WordUnitTranslation =
     adjective: Array<English.AdjectivePhrase>;
     singular: null | string;
     plural: null | string;
+    emphasis: boolean;
+    reduplicationCount: number;
     postAdjective: null | { adjective: string; name: string };
   }
   | {
     type: "adjective";
     adjective: English.AdjectivePhrase;
   };
-function numberWordUnit(word: number): Output<WordUnitTranslation> {
+function numberWordUnit(
+  word: number,
+  emphasis: boolean,
+): Output<WordUnitTranslation> {
   return new Output<WordUnitTranslation>([{
     type: "noun",
     determiner: [],
     adjective: [],
     singular: `${word}`,
     plural: null,
+    emphasis,
+    reduplicationCount: 1,
     postAdjective: null,
   }]);
 }
@@ -33,20 +40,21 @@ export function wordUnit(
   wordUnit: TokiPona.WordUnit,
   place: "subject" | "object",
 ): Output<WordUnitTranslation> {
+  const emphasis = wordUnit.emphasis != null;
   switch (wordUnit.type) {
     case "number":
-      return numberWordUnit(wordUnit.number);
+      return numberWordUnit(wordUnit.number, emphasis);
     case "x ala x":
       return new Output(new TranslationTodoError("x ala x"));
     case "default":
     case "reduplication": {
-      let count: number;
+      let reduplicationCount: number;
       switch (wordUnit.type) {
         case "default":
-          count = 1;
+          reduplicationCount = 1;
           break;
         case "reduplication":
-          count = wordUnit.count;
+          reduplicationCount = wordUnit.count;
           break;
       }
       return new Output(dictionary[wordUnit.word].definitions)
@@ -66,7 +74,9 @@ export function wordUnit(
                   adjective,
                   singular: definition.singular,
                   plural: definition.plural,
+                  reduplicationCount,
                   postAdjective: definition.postAdjective,
+                  emphasis,
                 }));
             }
             case "personal pronoun": {
@@ -88,17 +98,23 @@ export function wordUnit(
                 adjective: [],
                 singular,
                 plural,
+                reduplicationCount,
                 postAdjective: null,
+                emphasis,
               }]);
             }
             case "adjective":
-              return adjective(definition, wordUnit.emphasis, count)
+              return adjective(
+                definition,
+                wordUnit.emphasis,
+                reduplicationCount,
+              )
                 .map<WordUnitTranslation>((adjective) => ({
                   type: "adjective",
                   adjective,
                 }));
             case "compound adjective":
-              if (wordUnit.type === "default") {
+              if (reduplicationCount === 1) {
                 return compoundAdjective(definition, wordUnit.emphasis)
                   .map<WordUnitTranslation>((adjective) => ({
                     type: "adjective",

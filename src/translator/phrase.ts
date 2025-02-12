@@ -23,22 +23,10 @@ type PhraseTranslation =
     inWayPhrase: null | English.NounPhrase;
   };
 function nounPhrase(
-  phrase: TokiPona.Phrase & { type: "default" },
+  emphasis: boolean,
   headWord: WordUnitTranslation & { type: "noun" },
   modifier: MultipleModifierTranslation & { type: "adjectival" },
 ): Output<PhraseTranslation & { type: "noun" }> {
-  let count: number;
-  switch (phrase.headWord.type) {
-    case "number":
-    case "default":
-      count = 1;
-      break;
-    case "x ala x":
-      throw new TranslationTodoError("x ala x");
-    case "reduplication":
-      count = phrase.headWord.count;
-      break;
-  }
   const determiner = fixDeterminer([
     ...modifier.determiner.slice().reverse(),
     ...headWord.determiner,
@@ -85,14 +73,14 @@ function nounPhrase(
       determiner,
       adjective,
       noun: {
-        word: repeatWithSpace(noun.noun, count),
-        emphasis: phrase.headWord.emphasis != null,
+        word: repeatWithSpace(noun.noun, headWord.reduplicationCount),
+        emphasis: headWord.emphasis,
       },
       quantity,
       postCompound: null,
       postAdjective,
       preposition,
-      emphasis: phrase.emphasis != null &&
+      emphasis: emphasis &&
         modifier.nounPreposition == null,
     }));
   let noun: Output<English.NounPhrase>;
@@ -112,7 +100,7 @@ function nounPhrase(
         },
         object: noun,
       }],
-      emphasis: phrase.emphasis != null,
+      emphasis,
     }));
   } else {
     noun = new Output();
@@ -169,7 +157,7 @@ function defaultPhrase(
   )
     .flatMap<PhraseTranslation>(([headWord, modifier]) => {
       if (headWord.type === "noun" && modifier.type === "adjectival") {
-        return nounPhrase(phrase, headWord, modifier);
+        return nounPhrase(phrase.emphasis != null, headWord, modifier);
       } else if (
         headWord.type === "adjective" && modifier.type === "adverbial"
       ) {

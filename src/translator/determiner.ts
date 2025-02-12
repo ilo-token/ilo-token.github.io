@@ -57,13 +57,13 @@ export function findNumber(
 export function determiner(
   definition: Dictionary.Determiner,
   emphasis: boolean,
-  count: number,
+  reduplicationCount: number,
 ): Output<English.Determiner> {
   return simpleNounForms(definition.determiner, definition.plural)
     .map((determiner) => ({
       kind: definition.kind,
       determiner: {
-        word: repeatWithSpace(determiner, count),
+        word: repeatWithSpace(determiner, reduplicationCount),
         emphasis,
       },
       quantity: definition.quantity,

@@ -56,7 +56,7 @@ export function simpleNounForms(
 export function noun(
   definition: Dictionary.Noun,
   emphasis: boolean,
-  count: number,
+  reduplicationCount: number,
 ): Output<English.NounPhrase> {
   const engDeterminer = Output.combine(
     ...definition.determiner
@@ -77,7 +77,10 @@ export function noun(
           type: "simple",
           determiner,
           adjective,
-          noun: { word: repeatWithSpace(noun.noun, count), emphasis },
+          noun: {
+            word: repeatWithSpace(noun.noun, reduplicationCount),
+            emphasis,
+          },
           quantity: noun.quantity,
           postCompound: null,
           postAdjective: definition.postAdjective,
