@@ -1,5 +1,3 @@
-/** Module for translation settings stored as a global state */
-
 import { checkLocalStorage, setIgnoreError } from "./misc.ts";
 import {
   defaultSettings,

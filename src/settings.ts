@@ -1,3 +1,5 @@
+/** Module for translation settings stored as a global state */
+
 /**
  * Options for determining how to show different forms or conjugations of nouns
  * or verbs. See
