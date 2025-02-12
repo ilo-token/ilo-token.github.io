@@ -292,7 +292,7 @@ function main(): void {
       customDictionaryTextBox.value += `\n${asComment(message)}\n`;
       for (const message of errors) {
         customDictionaryTextBox.value += `${
-          asComment(`- ${message}`.replaceAll(NEWLINE, "$&  "))
+          asComment(`- ${message.replaceAll(NEWLINE, "$&  ")}`)
         }\n`;
       }
       console.error(error);
