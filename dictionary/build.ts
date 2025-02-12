@@ -3,17 +3,19 @@ import { parseDictionary } from "./parser.ts";
 const SOURCE = new URL("./dictionary", import.meta.url);
 const DESTINATION = new URL("./dictionary.ts", import.meta.url);
 
-export async function build(): Promise<void> {
+export async function build(checkFile: boolean): Promise<void> {
   const text = await Deno.readTextFile(SOURCE);
-  let current: undefined | string;
-  try {
-    const { original } = await import("./dictionary.ts");
-    current = original;
-  } catch (_) {
-    // pass
-  }
-  if (text === current) {
-    return;
+  if (checkFile) {
+    let current: undefined | string;
+    try {
+      const { original } = await import("./dictionary.ts");
+      current = original;
+    } catch (_) {
+      // pass
+    }
+    if (text === current) {
+      return;
+    }
   }
   console.log("Building dictionary...");
   const json = JSON.stringify(parseDictionary(text), undefined, 2);
@@ -30,5 +32,5 @@ export const original = ${original};
   await Deno.writeTextFile(DESTINATION, code);
 }
 if (import.meta.main) {
-  await build();
+  await build(true);
 }

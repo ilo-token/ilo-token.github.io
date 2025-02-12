@@ -30,11 +30,12 @@ function buildOptions(minify: boolean): ESBuild.BuildOptions {
 async function buildAll(options: {
   minify: boolean;
   buildDictionary: boolean;
+  checkDictionary?: boolean;
 }): Promise<void> {
-  const { minify, buildDictionary } = options;
+  const { minify, buildDictionary, checkDictionary } = options;
   try {
     if (buildDictionary) {
-      await Dictionary.build();
+      await Dictionary.build(checkDictionary ?? true);
     }
     console.log("Building main.js...");
     await ESBuild.build(buildOptions(minify));
@@ -58,7 +59,11 @@ if (import.meta.main) {
         let dictionaryChanged = false;
         const buildDebounced = debounce((buildDictionary: boolean) => {
           task = task.then(async () => {
-            await buildAll({ minify: true, buildDictionary });
+            await buildAll({
+              minify: true,
+              buildDictionary,
+              checkDictionary: false,
+            });
             dictionaryChanged = false;
           });
         }, 500);
