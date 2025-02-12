@@ -5,40 +5,44 @@ import * as English from "./ast.ts";
 import { TranslationTodoError } from "./error.ts";
 import { multiplePhrases } from "./phrase.ts";
 
+function phraseClause(
+  phrases: TokiPona.MultiplePhrases,
+): Output<English.Clause> {
+  return multiplePhrases(phrases, "object", "en")
+    .map<English.Clause>(
+      (phrase) => {
+        switch (phrase.type) {
+          case "noun":
+            return {
+              type: "subject phrase",
+              subject: phrase.noun,
+            };
+          case "adjective":
+            return {
+              type: "implied it's",
+              verb: {
+                type: "linking adjective",
+                linkingVerb: {
+                  word: "is",
+                  emphasis: false,
+                },
+                adjective: phrase.adjective,
+                preposition: nullableAsArray(phrase.inWayPhrase)
+                  .map((object) => ({
+                    preposition: { word: "in", emphasis: false },
+                    object,
+                  })),
+              },
+              preposition: [],
+            };
+        }
+      },
+    );
+}
 export function clause(clause: TokiPona.Clause): Output<English.Clause> {
   switch (clause.type) {
     case "phrases":
-      return multiplePhrases(clause.phrases, "object", "en").map<
-        English.Clause
-      >(
-        (phrase) => {
-          switch (phrase.type) {
-            case "noun":
-              return {
-                type: "subject phrase",
-                subject: phrase.noun,
-              };
-            case "adjective":
-              return {
-                type: "implied it's",
-                verb: {
-                  type: "linking adjective",
-                  linkingVerb: {
-                    word: "is",
-                    emphasis: false,
-                  },
-                  adjective: phrase.adjective,
-                  preposition: nullableAsArray(phrase.inWayPhrase)
-                    .map((object) => ({
-                      preposition: { word: "in", emphasis: false },
-                      object,
-                    })),
-                },
-                preposition: [],
-              };
-          }
-        },
-      );
+      return phraseClause(clause.phrases);
     case "o vocative":
       return multiplePhrases(clause.phrases, "object", "en")
         .filterMap((phrase) => {
