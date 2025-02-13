@@ -39,8 +39,8 @@ import { empty } from "./parser-lib.ts";
 import { choice } from "./parser-lib.ts";
 
 /** parses space. */
-export function spaces(): Parser<string> {
-  return match(/\s*/, "space");
+function spaces(): Parser<string> {
+  return match(/[^\S\n\r]*/, "spaces");
 }
 /** Parses lowercase latin word. */
 function latinWord(): Parser<string> {

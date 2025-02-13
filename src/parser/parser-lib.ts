@@ -236,7 +236,11 @@ function describeSrc(src: string, expected: string): OutputError {
     const [token] = src.match(/\S*/)!;
     let tokenDescription: string;
     if (token === "") {
-      tokenDescription = "space";
+      if (["\n", "\r"].includes(src[0])) {
+        tokenDescription = "newline";
+      } else {
+        tokenDescription = "space";
+      }
     } else {
       tokenDescription = `"${token}"`;
     }

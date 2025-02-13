@@ -40,6 +40,7 @@ import {
   lazy,
   many,
   manyAtLeastOnce,
+  match,
   optional,
   Parser,
   sequence,
@@ -47,7 +48,7 @@ import {
   UnrecognizedError,
 } from "./parser-lib.ts";
 import { describe, Token } from "./token.ts";
-import { spaces, TOKEN } from "./lexer.ts";
+import { TOKEN } from "./lexer.ts";
 import {
   contentWordSet,
   dictionary,
@@ -56,7 +57,7 @@ import {
   preverbSet,
   tokiPonaWordSet,
 } from "../dictionary.ts";
-import { filterSet, nullableAsArray } from "../misc.ts";
+import { nullableAsArray } from "../misc.ts";
 import { everyWordUnitInFullClause } from "./extract.ts";
 
 /** Parses a specific type of token. */
@@ -827,27 +828,26 @@ function sentence(): Parser<Sentence> {
     })
     .filter(filter(SENTENCE_RULE));
 }
+function spaces(): Parser<string> {
+  return match(/\s*/, "spaces");
+}
 /** A multiple sentence parser for final parser. */
 const FULL_PARSER = spaces()
   .with(choiceOnlyOne<MultipleSentences>(
     wordFrom(tokiPonaWordSet, "Toki Pona word")
+      .skip(spaces())
       .skip(end())
       .map((word) => ({ type: "single word", word })),
     allAtLeastOnce(sentence())
+      .skip(spaces())
       .skip(end())
       .filter(filter(MULTIPLE_SENTENCES_RULE))
       .map((sentences) => ({ type: "sentences", sentences })),
   ));
 /** Turns string into Toki Pona AST. */
 export function parse(src: string): Output<MultipleSentences> {
-  const errors = filterSet([
-    [/[\n\r]/.test(src.trim()), "multiline text"],
-    [src.trim().length > 500, "long text"],
-  ]);
-  if (errors.length > 0) {
-    return Output.errors(
-      errors.map((element) => new UnrecognizedError(element)),
-    );
+  if (src.trim().length > 500) {
+    throw new UnrecognizedError("long text");
   } else {
     return FULL_PARSER.parse(src);
   }
