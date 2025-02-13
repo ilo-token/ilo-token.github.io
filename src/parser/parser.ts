@@ -835,11 +835,9 @@ function spaces(): Parser<string> {
 const FULL_PARSER = spaces()
   .with(choiceOnlyOne<MultipleSentences>(
     wordFrom(tokiPonaWordSet, "Toki Pona word")
-      .skip(spaces())
       .skip(end())
       .map((word) => ({ type: "single word", word })),
     allAtLeastOnce(sentence())
-      .skip(spaces())
       .skip(end())
       .filter(filter(MULTIPLE_SENTENCES_RULE))
       .map((sentences) => ({ type: "sentences", sentences })),
