@@ -54,15 +54,7 @@ function spaces(): Parser<string> {
 }
 /** Parses lowercase latin word. */
 function latinWord(): Parser<string> {
-  return match(/[a-z][a-zA-Z]*/, "word")
-    .map((word) => {
-      if (/[A-Z]/.test(word)) {
-        throw new UnrecognizedError(`"${word}"`);
-      } else {
-        return word;
-      }
-    })
-    .skip(spaces());
+  return match(/[a-z][a-zA-Z]*/, "word").skip(spaces());
 }
 /** Parses variation selector. */
 function variationSelector(): Parser<string> {
