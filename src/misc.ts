@@ -9,8 +9,11 @@ export function nullableAsArray<T>(value?: T): Array<NonNullable<T>> {
     return [value];
   }
 }
+export function repeatArray<T>(element: T, count: number): Array<T> {
+  return new Array(count).fill(element);
+}
 export function repeatWithSpace(text: string, count: number): string {
-  return new Array(count).fill(text).join(" ");
+  return repeatArray(text, count).join(" ");
 }
 let localStorageAvailable: undefined | boolean;
 export function checkLocalStorage(): boolean {
