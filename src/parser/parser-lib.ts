@@ -322,6 +322,11 @@ export function withSource<T>(
     }))
   );
 }
+export function sourceOnly<T>(
+  parser: Parser<T>,
+): Parser<string> {
+  return withSource(parser).map(([_, source]) => source);
+}
 /**
  * Enables memoization, for it to be effective:
  *

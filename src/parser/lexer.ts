@@ -16,9 +16,11 @@ import {
   empty,
   match,
   matchString,
+  nothing,
   optionalAll,
   Parser,
   sequence,
+  sourceOnly,
   UnexpectedError,
   UnrecognizedError,
   variable,
@@ -38,9 +40,17 @@ import {
   UCSUR_TO_LATIN,
 } from "./ucsur.ts";
 
+function spacesWithoutNewline(): Parser<string> {
+  return match(/[^\S\n\r]*/, "spaces");
+}
+function newline(): Parser<string> {
+  return match(/[\n\r]\s*/, "newline");
+}
 /** parses space. */
 function spaces(): Parser<string> {
-  return match(/[^\S\n\r]*/, "spaces");
+  return sourceOnly(
+    sequence(spacesWithoutNewline(), choice(nothing(), newline())),
+  );
 }
 /** Parses lowercase latin word. */
 function latinWord(): Parser<string> {
@@ -119,7 +129,7 @@ function multipleA(): Parser<number> {
 }
 /** Parses lengthened words. */
 function longWord(): Parser<Token & { type: "long word" }> {
-  return choice(matchString("a"), matchString("n"))
+  return choiceOnlyOne(matchString("a"), matchString("n"))
     .then((word) =>
       count(allAtLeastOnce(matchString(word)))
         .map<Token & { type: "long word" }>((count) => ({
@@ -147,14 +157,17 @@ function xAlaX(): Parser<string> {
 function punctuation(): Parser<string> {
   // This includes UCSUR middle dot and colon
   // https://www.kreativekorp.com/ucsur/charts/sitelen.html
-  return match(/[.,:;?!…·。｡︒\u{F199C}\u{F199D}]+/u, "punctuation")
-    .map((punctuation) =>
-      punctuation
-        .replaceAll(/[·。｡︒\u{F199C}]/gu, ".")
-        .replaceAll("\u{F199D}", ":")
-        .replaceAll("...", "…")
-    )
-    .skip(spaces());
+  return choiceOnlyOne(
+    match(/[.,:;?!…·。｡︒\u{F199C}\u{F199D}]+/u, "punctuation")
+      .map((punctuation) =>
+        punctuation
+          .replaceAll(/[·。｡︒\u{F199C}]/gu, ".")
+          .replaceAll("\u{F199D}", ":")
+          .replaceAll("...", "…")
+      )
+      .skip(spaces()),
+    newline().map(() => "."),
+  );
 }
 /**
  * Parses cartouche element and returns the phonemes or letters it represents.
@@ -229,7 +242,7 @@ function longSpaceContainer(): Parser<number> {
   return longContainer(
     START_OF_LONG_GLYPH,
     END_OF_LONG_GLYPH,
-    spaces().map((space) => space.length),
+    spacesWithoutNewline().map((space) => space.length),
   )
     .skip(spaces());
 }
