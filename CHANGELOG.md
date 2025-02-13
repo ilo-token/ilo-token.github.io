@@ -15,6 +15,11 @@ NOTE: Before publishing:
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
 
+ilo Token now has custom dictionary editor! This allows users to customize the
+dictionary to their liking. Users can customize existing words and also extend
+ilo Token with more non-pu words. It comes with limitations however.
+[Read the guidelines for using custom dictionary editor](https://github.com/ilo-token/ilo-token.github.io/wiki/Guidelines-for-editing-dictionary).
+
 Some of the settings may reset. Please reconfigure it again to your liking.
 Sorry for the inconvenience. We've decided to reset some of the settings after
 refactoring to make the code easier to work with.
@@ -51,8 +56,8 @@ settings, UCSUR support, and expanded vocabulary!
   - Long glyphs
   - (Deprecated characters and combiners are not supported)
 - Implement [nasin nanpa pona](https://sona.pona.la/wiki/nasin_nanpa_pona).
-- Implement settings dialog.
-  [More info](https://github.com/ilo-token/ilo-token.github.io/wiki/Settings-Help).
+- Implement
+  [settings dialog](https://github.com/ilo-token/ilo-token.github.io/wiki/Settings-Help).
 - Changes in error messages:
   - All possible errors will now be listed.
   - ilo Token now uses telo misikeke for error messages. This can be disabled
