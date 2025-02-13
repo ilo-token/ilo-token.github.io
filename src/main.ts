@@ -8,6 +8,7 @@ import {
   checkLocalStorage,
   escapeHtmlWithNewline,
   extractErrorMessage,
+  flattenError,
   NEWLINE,
   setIgnoreError,
 } from "./misc.ts";
@@ -142,11 +143,7 @@ function main(): void {
       loadCustomDictionary(customDictionary);
     } catch (error) {
       let message: string;
-      if (
-        error instanceof OutputError ||
-        (error instanceof AggregateError && error.errors.length > 0 &&
-          error.errors.every((error) => error instanceof OutputError))
-      ) {
+      if (errorsFixable(flattenError(error))) {
         message = DICTIONARY_LOADING_FAILED_FIXABLE_MESSAGE;
       } else {
         message = DICTIONARY_LOADING_FAILED_UNFIXABLE_MESSAGE;
@@ -193,12 +190,7 @@ function main(): void {
         outputDisplay.appendChild(list);
       }
     } catch (error) {
-      let errors: Array<unknown>;
-      if (error instanceof AggregateError) {
-        errors = error.errors;
-      } else {
-        errors = [error];
-      }
+      const errors = flattenError(error);
       let message: string;
       switch (errors.length) {
         case 0:
@@ -279,35 +271,15 @@ function main(): void {
       setIgnoreError(DICTIONARY_KEY, dictionary);
       customDictionaryDialogBox.close();
     } catch (error) {
-      let fixable: boolean;
-      let errors: Array<string>;
-      if (error instanceof OutputError) {
-        fixable = true;
-        errors = [error.message];
-      } else if (error instanceof AggregateError) {
-        const rawErrors = error.errors;
-        if (
-          rawErrors.length > 0 &&
-          rawErrors.every((error) => error instanceof OutputError)
-        ) {
-          fixable = true;
-          errors = rawErrors.map((error) => error.message);
-        } else {
-          fixable = false;
-          errors = rawErrors.map(extractErrorMessage);
-        }
-      } else {
-        fixable = false;
-        errors = [extractErrorMessage(error)];
-      }
+      const errors = flattenError(error);
       let message: string;
-      if (fixable) {
+      if (errorsFixable(errors)) {
         message = DICTIONARY_ERROR_FIXABLE_MESSAGE;
       } else {
         message = DICTIONARY_ERROR_UNFIXABLE_MESSAGE;
       }
       customDictionaryTextBox.value += `\n${asComment(message)}\n`;
-      for (const message of errors) {
+      for (const message of errors.map(extractErrorMessage)) {
         customDictionaryTextBox.value += `${
           asComment(`- ${message.replaceAll(NEWLINE, "$&  ")}`)
         }\n`;
@@ -320,6 +292,10 @@ function main(): void {
       event.preventDefault();
     }
   });
+}
+function errorsFixable(errors: Array<unknown>): boolean {
+  return errors.length > 0 &&
+    errors.every((error) => error instanceof OutputError);
 }
 if (typeof document !== "undefined") {
   if (document.readyState === "loading") {
