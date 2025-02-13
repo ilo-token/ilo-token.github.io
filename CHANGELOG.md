@@ -31,6 +31,8 @@ refactoring to make the code easier to work with.
   recognized.
 - Interpunct or middle dot (·) and ideographic period (。) are now recognized as
   sentence separator.
+- Recognize multiline text. Newlines are either ignored or treated as sentence
+  terminator.
 - Fixed UCSUR rendering.
 - Fixed ordering issue in Firefox. Thanks akesi Ale!
 - Implement advanced parsing settings.
