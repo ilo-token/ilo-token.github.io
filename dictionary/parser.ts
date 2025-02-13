@@ -138,7 +138,8 @@ function nounOnly(): Parser<
               .text();
             if (singular === "" || plural === "") {
               throw new OutputError(
-                `no singular or plural form found for "${first}"`,
+                `no singular or plural form found for "${first}". consider ` +
+                  "providing both singular and plural forms instead",
               );
             }
             if (first !== singular) {
