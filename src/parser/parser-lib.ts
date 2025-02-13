@@ -294,7 +294,7 @@ export function matchString(
   description: string = `"${match}"`,
 ): Parser<string> {
   return new Parser((src) => {
-    if (src.length >= length && src.slice(0, match.length) === match) {
+    if (src.length >= match.length && src.slice(0, match.length) === match) {
       return new Output([{ rest: src.slice(match.length), value: match }]);
     }
     throwWithSourceDescription(src, description);
