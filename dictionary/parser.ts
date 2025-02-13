@@ -33,11 +33,11 @@ import {
 function comment(): Parser<string> {
   return match(/#[^\n\r]*/, "comment");
 }
-function space(): Parser<string> {
+function spaces(): Parser<string> {
   return sourceOnly(all(choiceOnlyOne(match(/\s/, "space"), comment())));
 }
 function lex<T>(parser: Parser<T>): Parser<T> {
-  return parser.skip(space());
+  return parser.skip(spaces());
 }
 function backtick(): Parser<string> {
   return matchString("`", "backtick");
@@ -487,7 +487,7 @@ function entry(): Parser<Entry> {
   return withSource(all(DEFINITION))
     .map(([definitions, src]) => ({ definitions, src }));
 }
-const DICTIONARY = space()
+const DICTIONARY = spaces()
   .with(all(sequence(HEAD, entry())))
   .skip(end())
   .map((entries) => {
@@ -499,10 +499,10 @@ const DICTIONARY = space()
     }
     return dictionary;
   });
-const DEFINITION_EXTRACT = space()
+const DEFINITION_EXTRACT = spaces()
   .with(all(optionalAll(HEAD).with(lex(match(/[^;]*;/, "definition")))))
   .skip(end());
-const DEFINITION_ALONE = space().with(DEFINITION).skip(end());
+const DEFINITION_ALONE = spaces().with(DEFINITION).skip(end());
 
 export function parseDictionary(sourceText: string): Dictionary {
   const output = DICTIONARY.parse(sourceText);
