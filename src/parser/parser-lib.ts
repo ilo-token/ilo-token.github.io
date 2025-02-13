@@ -13,7 +13,13 @@ export type ParserOutput<T> = Output<ValueRest<T>>;
 
 /** Wrapper of parser function with added methods for convenience. */
 export class Parser<T> {
-  constructor(public readonly parser: (src: string) => ParserOutput<T>) {}
+  readonly #parser: (src: string) => ParserOutput<T>;
+  constructor(parser: (src: string) => ParserOutput<T>) {
+    this.#parser = parser;
+  }
+  parser(src: string): ParserOutput<T> {
+    return Output.from(() => this.#parser(src));
+  }
   /**
    * Maps the parsing result. For convenience, the mapper function can throw
    * an OutputError; Other kinds of error are ignored.
@@ -79,7 +85,9 @@ export class UnrecognizedError extends OutputError {
 }
 /** Parser that always outputs an error. */
 export function error(error: OutputError): Parser<never> {
-  return new Parser(() => new Output(error));
+  return new Parser(() => {
+    throw error;
+  });
 }
 /** Parser that always outputs an empty output. */
 export function empty(): Parser<never> {
@@ -230,12 +238,12 @@ export function allAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
 export function count<T>(parser: Parser<Array<T>>): Parser<number> {
   return parser.map((array) => array.length);
 }
-function describeSrc(src: string, expected: string): OutputError {
+function throwWithSourceDescription(src: string, expected: string): never {
+  let tokenDescription: string;
   if (src === "") {
-    return new UnexpectedError("end of text", expected);
+    tokenDescription = "end of text";
   } else {
     const [token] = src.match(/\S*/)!;
-    let tokenDescription: string;
     if (token === "") {
       if (NEWLINE_LIST.includes(src[0])) {
         tokenDescription = "newline";
@@ -245,8 +253,8 @@ function describeSrc(src: string, expected: string): OutputError {
     } else {
       tokenDescription = `"${token}"`;
     }
-    return new UnexpectedError(tokenDescription, expected);
   }
+  throw new UnexpectedError(tokenDescription, expected);
 }
 /**
  * Uses Regular Expression to create parser. The parser outputs
@@ -261,9 +269,8 @@ export function matchCapture(
     const match = src.match(newRegex);
     if (match != null) {
       return new Output([{ value: match, rest: src.slice(match[0].length) }]);
-    } else {
-      return new Output(describeSrc(src, description));
     }
+    throwWithSourceDescription(src, description);
   });
 }
 export function match(regex: RegExp, description: string): Parser<string> {
@@ -272,14 +279,13 @@ export function match(regex: RegExp, description: string): Parser<string> {
 /** parses a string of consistent length. */
 export function slice(length: number, description: string): Parser<string> {
   return new Parser((src) => {
-    if (src.length < length) {
-      return new Output(describeSrc(src, description));
-    } else {
+    if (src.length >= length) {
       return new Output([{
         rest: src.slice(length),
         value: src.slice(0, length),
       }]);
     }
+    throwWithSourceDescription(src, description);
   });
 }
 /** Parses a string that exactly matches the given string. */
@@ -290,9 +296,8 @@ export function matchString(
   return new Parser((src) => {
     if (src.length >= length && src.slice(0, match.length) === match) {
       return new Output([{ rest: src.slice(match.length), value: match }]);
-    } else {
-      return new Output(describeSrc(src, description));
     }
+    throwWithSourceDescription(src, description);
   });
 }
 export function character(): Parser<string> {
@@ -303,9 +308,8 @@ export function end(): Parser<null> {
   return new Parser((src) => {
     if (src === "") {
       return new Output([{ value: null, rest: "" }]);
-    } else {
-      return new Output(describeSrc(src, "end of text"));
     }
+    throwWithSourceDescription(src, "end of text");
   });
 }
 export function withSource<T>(
