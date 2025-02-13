@@ -27,7 +27,7 @@ refactoring to make the code easier to work with.
 - Interpunct or middle dot (·) and ideographic period (。) are now recognized as
   sentence separator.
 - Fixed UCSUR rendering.
-- Fixed ordering issue in Firefox.
+- Fixed ordering issue in Firefox. Thanks akesi Ale!
 - Implement advanced parsing settings.
 - Long texts (>500) are no longer recognized.
 
