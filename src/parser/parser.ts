@@ -262,7 +262,7 @@ function wordToNumber(word: string): number {
     .filter((definition) => definition.type === "numeral")[0]
     ?.numeral;
   if (num == null) {
-    throw new MissingEntryError("numeral definition", word);
+    throw new MissingEntryError("numeral", word);
   }
   return num;
 }

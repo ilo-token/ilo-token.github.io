@@ -1,6 +1,6 @@
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
-import { dictionary } from "../dictionary.ts";
+import { dictionary, MissingEntryError } from "../dictionary.ts";
 import { nullableAsArray, repeatWithSpace } from "../misc.ts";
 import { Output } from "../output.ts";
 import { definitionAsPlainString } from "./as-string.ts";
@@ -11,9 +11,6 @@ function filler(filler: TokiPona.Emphasis): Output<string> {
   switch (filler.type) {
     case "word":
     case "long word": {
-      const definitions = dictionary[filler.word]
-        .definitions
-        .filter((definition) => definition.type === "filler");
       let length: number;
       switch (filler.type) {
         case "word":
@@ -23,14 +20,17 @@ function filler(filler: TokiPona.Emphasis): Output<string> {
           length = filler.length;
           break;
       }
-      return new Output(
-        definitions
-          .map((definition) =>
-            `${definition.before}${
-              definition.repeat.repeat(length)
-            }${definition.after}`
-          ),
-      );
+      return new Output(nullableAsArray(dictionary[filler.word]))
+        .flatMap((entry) => new Output(entry.definitions))
+        .filterMap((definition) => {
+          if (definition.type === "filler") {
+            const { before, repeat, after } = definition;
+            return `${before}${repeat.repeat(length)}${after}`;
+          } else {
+            return null;
+          }
+        })
+        .addErrorWhenNone(() => new MissingEntryError("filler", filler.word));
     }
     case "multiple a":
       return new Output(["ha".repeat(filler.count)]);

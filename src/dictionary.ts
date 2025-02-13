@@ -15,8 +15,8 @@ update();
 
 /** Represents Error due to missing dictionary entry */
 export class MissingEntryError extends OutputError {
-  constructor(definition: string, word: string) {
-    super(`${definition} for the word "${word}" is missing`);
+  constructor(kind: string, word: string) {
+    super(`${kind} definition for the word "${word}" is missing`);
     this.name = "MissingEntryError";
   }
 }
