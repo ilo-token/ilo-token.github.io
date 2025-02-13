@@ -31,6 +31,8 @@ refactoring to make the code easier to work with.
 - Implement advanced parsing settings.
 - Long texts (>500) are no longer recognized.
 
+Huge thanks to akesi Ale for helping me debug ordering issue: #44.
+
 </details>
 
 ## 0.3.0
