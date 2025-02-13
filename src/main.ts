@@ -188,7 +188,7 @@ function main(): void {
   inputTextBox.addEventListener("input", resizeTextarea);
   inputTextBox.addEventListener("keydown", (event) => {
     if (
-      event.code === "Enter" && event.ctrlKey === settings.multiline &&
+      event.code === "Enter" && (event.ctrlKey || !settings.multiline) &&
       !event.altKey && !event.shiftKey
     ) {
       event.preventDefault();
