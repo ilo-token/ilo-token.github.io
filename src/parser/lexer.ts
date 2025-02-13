@@ -9,7 +9,6 @@
 import {
   allAtLeastOnce,
   cached,
-  character,
   choiceOnlyOne,
   count,
   match,
@@ -63,14 +62,13 @@ function variationSelector(): Parser<string> {
  * needed
  */
 function ucsur(): Parser<string> {
-  return character().map((word) => {
-    const latin = UCSUR_TO_LATIN[word];
-    if (latin == null) {
-      throw new UnexpectedError(`"${word}"`, "UCSUR glyph");
-    } else {
-      return latin;
-    }
-  });
+  return choiceOnlyOne(
+    ...Object.entries(UCSUR_TO_LATIN)
+      .map(([ucsur, latin]) =>
+        matchString(ucsur, "UCSUR glyph")
+          .map(() => latin)
+      ),
+  );
 }
 /**
  * Parses special UCSUR character, this doesn't parse space and so must be
