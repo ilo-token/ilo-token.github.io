@@ -5,7 +5,7 @@ import { nullableAsArray, repeatWithSpace } from "../misc.ts";
 import { Output } from "../output.ts";
 import { definitionAsPlainString } from "./as-string.ts";
 import { clause } from "./clause.ts";
-import { TranslationTodoError } from "./error.ts";
+import { TranslationTodoError, UntranslatableError } from "./error.ts";
 
 function filler(filler: TokiPona.Emphasis): Output<string> {
   switch (filler.type) {
@@ -37,9 +37,18 @@ function filler(filler: TokiPona.Emphasis): Output<string> {
   }
 }
 function emphasisAsPunctuation(
-  emphasis: undefined | null | TokiPona.Emphasis,
+  emphasis: null | TokiPona.Emphasis,
   interrogative: boolean,
-): null | string {
+): string {
+  if (emphasis == null) {
+    throw new UntranslatableError("missing emphasis", "punctuation");
+  }
+  if (
+    (emphasis.type === "word" || emphasis.type === "long word") &&
+    emphasis.word === "n"
+  ) {
+    throw new UntranslatableError('"n"', "punctuation");
+  }
   let questionMark: string;
   if (interrogative) {
     questionMark = "?";
@@ -47,32 +56,20 @@ function emphasisAsPunctuation(
     questionMark = "";
   }
   let exclamationMark: string;
-  if (emphasis == null) {
-    return null;
-  } else {
-    switch (emphasis.type) {
-      case "word":
-        switch (emphasis.word as "a" | "n") {
-          case "a":
-            exclamationMark = "!";
-            break;
-          case "n":
-            return null;
-        }
-        break;
-      case "long word":
-        switch (emphasis.word as "a" | "n") {
-          case "a":
-            exclamationMark = "!".repeat(emphasis.length);
-            break;
-          case "n":
-            return null;
-        }
-        break;
-      case "multiple a":
-        return null;
-    }
+  switch (emphasis.type) {
+    case "word":
+      exclamationMark = "!";
+      break;
+    case "long word":
+      exclamationMark = "!".repeat(emphasis.length);
+      break;
+    case "multiple a":
+      throw new UntranslatableError(
+        `"${repeatWithSpace("a", emphasis.count)}"`,
+        "punctuation",
+      );
   }
+
   return `${questionMark}${exclamationMark}`;
 }
 function interjection(clause: TokiPona.Clause): Output<English.Clause> {
@@ -236,13 +233,11 @@ function sentence(
     return Output.concat(
       Output.combine(
         engClauses,
-        new Output(
-          nullableAsArray(
-            emphasisAsPunctuation(
-              endingParticle,
-              sentence.interrogative != null,
-            ),
-          ),
+        Output.from(() =>
+          new Output([emphasisAsPunctuation(
+            endingParticle,
+            sentence.interrogative != null,
+          )])
         ),
       )
         .map(([clauses, punctuation]) => ({ clauses, punctuation })),

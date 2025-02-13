@@ -18,3 +18,9 @@ export class FilteredOutError extends OutputError {
     this.name = "FilteredOutError";
   }
 }
+export class UntranslatableError extends OutputError {
+  constructor(source: string, target: string) {
+    super(`cannot translate ${source} into ${target}`);
+    this.name = "UntranslatableError";
+  }
+}

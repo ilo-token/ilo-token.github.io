@@ -87,15 +87,7 @@ export class Output<T> {
       return Output.errors(this.errors);
     } else {
       return this.output.reduce(
-        (rest, value) => {
-          let output: Output<U>;
-          try {
-            output = mapper(value);
-          } catch (error) {
-            output = Output.errors(extractOutputError(error));
-          }
-          return Output.concat(rest, output);
-        },
+        (rest, value) => Output.concat(rest, Output.from(() => mapper(value))),
         new Output<U>(),
       );
     }
@@ -132,7 +124,7 @@ export class Output<T> {
         }
       }));
     } else {
-      return new Output(this.output);
+      return this;
     }
   }
   addErrorWhenNone(error: () => OutputError): Output<T> {
@@ -143,7 +135,7 @@ export class Output<T> {
     }
   }
   /** Combines all outputs. */
-  static concat<U>(...outputs: Array<Output<U>>): Output<U> {
+  static concat<T>(...outputs: Array<Output<T>>): Output<T> {
     return outputs.reduce(
       (left, right) => {
         if (left.isError() && right.isError()) {
@@ -152,7 +144,7 @@ export class Output<T> {
           return new Output([...left.output, ...right.output]);
         }
       },
-      new Output<U>(),
+      new Output<T>(),
     );
   }
   /**
@@ -178,6 +170,13 @@ export class Output<T> {
       },
       new Output<any>([[]]),
     ) as Output<T>;
+  }
+  static from<T>(output: () => Output<T>): Output<T> {
+    try {
+      return output();
+    } catch (error) {
+      return Output.errors(extractOutputError(error));
+    }
   }
 }
 type Errors =

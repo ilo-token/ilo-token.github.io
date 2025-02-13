@@ -1,14 +1,18 @@
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
 import { repeatWithSpace } from "../misc.ts";
-import { Output, OutputError } from "../output.ts";
+import { Output } from "../output.ts";
 import { dictionary } from "../dictionary.ts";
 import { noun, simpleNounForms } from "./noun.ts";
 import { determiner } from "./determiner.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";
 import { phrase } from "./phrase.ts";
 import * as Composer from "../parser/composer.ts";
-import { ExhaustedError, TranslationTodoError } from "./error.ts";
+import {
+  ExhaustedError,
+  TranslationTodoError,
+  UntranslatableError,
+} from "./error.ts";
 
 export type ModifierTranslation =
   | { type: "noun"; noun: English.NounPhrase }
@@ -119,8 +123,9 @@ export function defaultModifier(
                     adjective,
                   }));
               } else {
-                throw new OutputError(
-                  "cannot translate reduplication into compound adjective",
+                throw new UntranslatableError(
+                  "reduplication",
+                  "compound adjective",
                 );
               }
             case "adverb":
