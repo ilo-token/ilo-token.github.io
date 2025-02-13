@@ -177,7 +177,5 @@ export const UCSUR_TO_LATIN: { [ucsur: string]: string } = {
   "\u{F19A2}": "majuna",
   "\u{F19A3}": "powe",
 };
-export const UCSUR_CHARACTER_REGEX = new RegExp(
-  Object.keys(UCSUR_TO_LATIN).join("|"),
-  "u",
-);
+export const UCSUR_CHARACTER_REGEX =
+  /[\u{F1900}-\u{F1988}\u{F19A0}-\u{F19A3}]/u;
