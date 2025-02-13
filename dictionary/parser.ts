@@ -22,13 +22,12 @@ import {
   optionalAll,
   Parser,
   sequence,
-  UnrecognizedError,
+  UnexpectedError,
   withSource,
 } from "../src/parser/parser-lib.ts";
 import { Output, OutputError } from "../src/output.ts";
 import { nullableAsArray } from "../src/misc.ts";
 import { escape } from "@std/html/entities";
-import { UnexpectedError } from "../src/parser/parser-lib.ts";
 
 function comment(): Parser<string> {
   return match(/#[^\r\n]*/, "comment");
@@ -57,7 +56,7 @@ function word(): Parser<string> {
     .map((word) => word.join("").replaceAll(/\s+/g, " ").trim())
     .filter((word) => {
       if (word.length === 0) {
-        throw new UnexpectedError("missing word", "word");
+        throw new OutputError("missing word");
       } else {
         return true;
       }
@@ -258,7 +257,7 @@ function verbOnly(tagInside: Parser<unknown>): Parser<VerbOnly> {
             particle !== singularParticles[i] || particle !== pastParticles[i]
           )
         ) {
-          throw new UnrecognizedError(
+          throw new OutputError(
             "mismatched verb particles " +
               `"${presentPlural}/${presentSingular}/${past}"`,
           );
@@ -336,7 +335,7 @@ const DEFINITION = cached(choiceOnlyOne<Definition>(
       if (first.adverb.length === 0 && second.adverb.length === 0) {
         return true;
       } else {
-        throw new UnrecognizedError("compound adjective with adverb");
+        throw new OutputError("compound adjective cannot have adverb");
       }
     })
     .skip(semicolon())
@@ -400,7 +399,7 @@ const DEFINITION = cached(choiceOnlyOne<Definition>(
     .map((unit) => {
       const numeral = Number.parseInt(unit);
       if (Number.isNaN(numeral)) {
-        throw new UnrecognizedError(`"${unit}" is not a number`);
+        throw new OutputError(`"${unit}" is not a number`);
       } else {
         return { type: "numeral", numeral };
       }
