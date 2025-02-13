@@ -174,7 +174,10 @@ function main(): void {
   translateButton.addEventListener("click", updateOutput);
   inputTextBox.addEventListener("input", resizeTextarea);
   inputTextBox.addEventListener("keydown", (event) => {
-    if (event.code === "Enter") {
+    if (
+      event.code === "Enter" && event.ctrlKey && !event.altKey &&
+      !event.shiftKey
+    ) {
       event.preventDefault();
       updateOutput();
     }
@@ -241,7 +244,10 @@ function main(): void {
   });
   addWordButton.addEventListener("click", addWord);
   addWordTextBox.addEventListener("keydown", (event) => {
-    if (event.code === "Enter") {
+    if (
+      event.code === "Enter" && !event.ctrlKey && !event.altKey &&
+      !event.shiftKey
+    ) {
       event.preventDefault();
       addWord();
     }
