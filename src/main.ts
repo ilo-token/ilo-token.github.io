@@ -19,6 +19,7 @@ import {
   resetElementsToCurrent,
   resetElementsToDefault,
 } from "./settings-frontend.ts";
+import { settings } from "./settings.ts";
 
 const UNKNOWN_ERROR_MESSAGE =
   "An unknown error has occurred (Errors should be known, please report " +
@@ -152,6 +153,16 @@ function main(): void {
       }
       errorDisplay.innerText = escapeHtmlWithNewline(message);
       console.error(error);
+    }
+  }
+
+  // remove unused local storage data
+  const used = [DICTIONARY_KEY, ...Object.keys(settings)];
+  const allKeys = [...new Array(localStorage.length).keys()]
+    .map((i) => localStorage.key(i)!);
+  for (const key of allKeys) {
+    if (!used.includes(key)) {
+      localStorage.removeItem(key);
     }
   }
 
