@@ -43,7 +43,6 @@ import {
 } from "./filter.ts";
 import { TOKEN } from "./lexer.ts";
 import {
-  allAtLeastOnce,
   choice,
   choiceOnlyOne,
   count,
@@ -837,7 +836,7 @@ const FULL_PARSER = spaces()
     wordFrom(tokiPonaWordSet, "Toki Pona word")
       .skip(end())
       .map((word) => ({ type: "single word", word })),
-    allAtLeastOnce(sentence())
+    manyAtLeastOnce(sentence())
       .skip(end())
       .filter(filter(MULTIPLE_SENTENCES_RULE))
       .map((sentences) => ({ type: "sentences", sentences })),
