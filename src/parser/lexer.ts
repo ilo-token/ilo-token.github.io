@@ -9,7 +9,6 @@
 import {
   allAtLeastOnce,
   cached,
-  character,
   choiceOnlyOne,
   count,
   match,
@@ -38,7 +37,6 @@ import { variable } from "./parser-lib.ts";
 import { settings } from "../settings.ts";
 import { empty } from "./parser-lib.ts";
 import { choice } from "./parser-lib.ts";
-import { NEWLINE_LIST } from "../misc.ts";
 
 /** parses space. */
 function spaces(): Parser<string> {
