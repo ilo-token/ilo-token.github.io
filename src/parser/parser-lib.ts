@@ -286,11 +286,11 @@ export function matchString(
   match: string,
   description: string = `"${match}"`,
 ): Parser<string> {
-  return slice(match.length, description).filter((slice) => {
-    if (slice !== match) {
-      throw new UnexpectedError(`"${slice}"`, description);
+  return new Parser((src) => {
+    if (src.length >= length && src.slice(0, match.length) === match) {
+      return new Output([{ rest: src.slice(match.length), value: match }]);
     } else {
-      return true;
+      return new Output(describeSrc(src, description));
     }
   });
 }
