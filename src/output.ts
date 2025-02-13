@@ -50,7 +50,7 @@ export class Output<T> {
       this.errors = [];
     }
   }
-  static errors<T>(errors: ReadonlyArray<OutputError>): Output<T> {
+  static errors(errors: ReadonlyArray<OutputError>): Output<never> {
     return new Output(undefined, errors);
   }
   /** Returns true when the output array is empty */
