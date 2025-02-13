@@ -116,13 +116,10 @@ export function variable<T>(parser: () => Parser<T>): Parser<T> {
 export function lazy<T>(parser: () => Parser<T>): Parser<T> {
   let cached: null | Parser<T> = null;
   return new Parser((src) => {
-    let cachedParser: Parser<T>;
-    if (cached != null) {
-      cachedParser = cached;
-    } else {
-      cachedParser = cached = parser();
+    if (cached == null) {
+      cached = parser();
     }
-    return cachedParser.parser(src);
+    return cached.parser(src);
   });
 }
 /**
