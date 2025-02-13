@@ -1,6 +1,6 @@
+import { dictionary as globalDictionary } from "../dictionary/dictionary.ts";
 import { parseDictionary } from "../dictionary/parser.ts";
 import { Definition, Dictionary } from "../dictionary/type.ts";
-import { dictionary as globalDictionary } from "../dictionary/dictionary.ts";
 import { OutputError } from "./output.ts";
 
 const customDictionary: Dictionary = {};

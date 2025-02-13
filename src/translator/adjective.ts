@@ -1,10 +1,10 @@
-import * as TokiPona from "../parser/ast.ts";
-import * as English from "./ast.ts";
+import * as Dictionary from "../../dictionary/type.ts";
 import { nullableAsArray, repeatWithSpace } from "../misc.ts";
 import { Output } from "../output.ts";
-import * as Dictionary from "../../dictionary/type.ts";
-import { unemphasized } from "./word.ts";
+import * as TokiPona from "../parser/ast.ts";
+import * as English from "./ast.ts";
 import { UntranslatableError } from "./error.ts";
+import { unemphasized } from "./word.ts";
 
 function so(emphasis: null | TokiPona.Emphasis): string {
   if (emphasis == null) {

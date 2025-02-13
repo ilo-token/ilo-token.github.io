@@ -1,13 +1,13 @@
+import { shuffle } from "@std/random/shuffle";
 import { errors } from "../telo-misikeke/telo-misikeke.js";
-import { translate as rawTranslate } from "./translator/composer.ts";
 import { OutputError } from "./output.ts";
 import { settings } from "./settings.ts";
-import { shuffle } from "@std/random/shuffle";
+import { translate as rawTranslate } from "./translator/composer.ts";
 
 export { loadCustomDictionary } from "./dictionary.ts";
 export { OutputError } from "./output.ts";
-export { defaultSettings, settings } from "./settings.ts";
 export type { OutputErrorOptions } from "./output.ts";
+export { defaultSettings, settings } from "./settings.ts";
 export type { RedundancySettings, Settings } from "./settings.ts";
 
 /** Translates Toki Pona text into multiple English translations. */

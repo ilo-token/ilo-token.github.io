@@ -1,8 +1,8 @@
 /** Module for main execution in the browser. */
 
-import { translate } from "./mod.ts";
-import { OutputError } from "./output.ts";
 import { dictionary } from "../dictionary/dictionary.ts";
+import { asComment } from "../dictionary/misc.ts";
+import PROJECT_DATA from "../project-data.json" with { type: "json" };
 import { loadCustomDictionary } from "./dictionary.ts";
 import {
   checkLocalStorage,
@@ -12,8 +12,8 @@ import {
   NEWLINES,
   setIgnoreError,
 } from "./misc.ts";
-import PROJECT_DATA from "../project-data.json" with { type: "json" };
-import { asComment } from "../dictionary/misc.ts";
+import { translate } from "./mod.ts";
+import { OutputError } from "./output.ts";
 import {
   loadFromElements,
   loadFromLocalStorage,

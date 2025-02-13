@@ -1,9 +1,9 @@
-import * as TokiPona from "../parser/ast.ts";
-import * as English from "./ast.ts";
 import { dictionary, MissingEntryError } from "../dictionary.ts";
 import { nullableAsArray, repeatWithSpace } from "../misc.ts";
 import { Output } from "../output.ts";
+import * as TokiPona from "../parser/ast.ts";
 import { definitionAsPlainString } from "./as-string.ts";
+import * as English from "./ast.ts";
 import { clause } from "./clause.ts";
 import { TranslationTodoError, UntranslatableError } from "./error.ts";
 

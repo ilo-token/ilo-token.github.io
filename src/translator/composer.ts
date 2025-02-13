@@ -1,7 +1,7 @@
-import * as English from "./ast.ts";
 import { nullableAsArray } from "../misc.ts";
 import { Output, TodoError } from "../output.ts";
 import { parse } from "../parser/parser.ts";
+import * as English from "./ast.ts";
 import { multipleSentences } from "./sentence.ts";
 
 const EMPHASIS_STARTING_TAG = "<strong>";

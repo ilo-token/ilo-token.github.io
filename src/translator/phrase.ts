@@ -1,19 +1,19 @@
-import * as TokiPona from "../parser/ast.ts";
-import * as English from "./ast.ts";
 import { nullableAsArray, repeatWithSpace } from "../misc.ts";
 import { Output } from "../output.ts";
-import { wordUnit, WordUnitTranslation } from "./word-unit.ts";
-import { multipleModifiers, MultipleModifierTranslation } from "./modifier.ts";
-import { findNumber, fixDeterminer } from "./determiner.ts";
-import { fixAdjective } from "./adjective.ts";
-import { nounForms } from "./noun.ts";
-import { CONJUNCTION } from "./misc.ts";
+import * as TokiPona from "../parser/ast.ts";
 import * as Composer from "../parser/composer.ts";
+import { fixAdjective } from "./adjective.ts";
+import * as English from "./ast.ts";
+import { findNumber, fixDeterminer } from "./determiner.ts";
 import {
   ExhaustedError,
   FilteredOutError,
   TranslationTodoError,
 } from "./error.ts";
+import { CONJUNCTION } from "./misc.ts";
+import { multipleModifiers, MultipleModifierTranslation } from "./modifier.ts";
+import { nounForms } from "./noun.ts";
+import { wordUnit, WordUnitTranslation } from "./word-unit.ts";
 
 type PhraseTranslation =
   | { type: "noun"; noun: English.NounPhrase }

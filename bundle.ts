@@ -1,7 +1,7 @@
-import * as Dictionary from "./dictionary/build.ts";
-import * as ESBuild from "esbuild";
 import { denoPlugins } from "@luca/esbuild-deno-loader";
 import { debounce } from "@std/async/debounce";
+import * as ESBuild from "esbuild";
+import * as Dictionary from "./dictionary/build.ts";
 
 const WATCH = [
   "./dictionary/dictionary",

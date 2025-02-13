@@ -1,3 +1,4 @@
+import { toKebabCase } from "@std/text/to-kebab-case";
 import { checkLocalStorage, setIgnoreError } from "./misc.ts";
 import {
   defaultSettings,
@@ -5,7 +6,6 @@ import {
   Settings,
   settings,
 } from "./settings.ts";
-import { toKebabCase } from "@std/text/to-kebab-case";
 
 type Updater<T> = {
   readonly parse: (value: string) => T | null;

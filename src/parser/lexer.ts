@@ -6,11 +6,14 @@
  * have the same capabilities.
  */
 
+import { settings } from "../settings.ts";
 import {
   allAtLeastOnce,
   cached,
+  choice,
   choiceOnlyOne,
   count,
+  empty,
   match,
   matchString,
   optionalAll,
@@ -18,6 +21,7 @@ import {
   sequence,
   UnexpectedError,
   UnrecognizedError,
+  variable,
 } from "./parser-lib.ts";
 import { Token } from "./token.ts";
 import {
@@ -33,10 +37,6 @@ import {
   UCSUR_CHARACTER_REGEX,
   UCSUR_TO_LATIN,
 } from "./ucsur.ts";
-import { variable } from "./parser-lib.ts";
-import { settings } from "../settings.ts";
-import { empty } from "./parser-lib.ts";
-import { choice } from "./parser-lib.ts";
 
 /** parses space. */
 function spaces(): Parser<string> {

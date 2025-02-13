@@ -1,11 +1,11 @@
-import * as English from "./ast.ts";
+import * as Dictionary from "../../dictionary/type.ts";
 import { nullableAsArray, repeatWithSpace } from "../misc.ts";
 import { Output } from "../output.ts";
 import { settings } from "../settings.ts";
-import * as Dictionary from "../../dictionary/type.ts";
-import { condense } from "./misc.ts";
-import { determiner, findNumber } from "./determiner.ts";
 import { adjective } from "./adjective.ts";
+import * as English from "./ast.ts";
+import { determiner, findNumber } from "./determiner.ts";
+import { condense } from "./misc.ts";
 
 export function nounForms(
   singular: undefined | null | string,

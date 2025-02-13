@@ -1,15 +1,7 @@
+import { escape } from "@std/html/entities";
 import nlp from "compromise/three";
-import {
-  Adjective,
-  AdjectiveType,
-  Definition,
-  Determiner,
-  DeterminerType,
-  Dictionary,
-  Entry,
-  Noun,
-  VerbOnly,
-} from "./type.ts";
+import { nullableAsArray } from "../src/misc.ts";
+import { Output, OutputError } from "../src/output.ts";
 import {
   all,
   allAtLeastOnce,
@@ -25,9 +17,17 @@ import {
   UnexpectedError,
   withSource,
 } from "../src/parser/parser-lib.ts";
-import { Output, OutputError } from "../src/output.ts";
-import { nullableAsArray } from "../src/misc.ts";
-import { escape } from "@std/html/entities";
+import {
+  Adjective,
+  AdjectiveType,
+  Definition,
+  Determiner,
+  DeterminerType,
+  Dictionary,
+  Entry,
+  Noun,
+  VerbOnly,
+} from "./type.ts";
 
 function comment(): Parser<string> {
   return match(/#[^\r\n]*/, "comment");

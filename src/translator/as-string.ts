@@ -1,7 +1,7 @@
+import * as Dictionary from "../../dictionary/type.ts";
 import { nullableAsArray } from "../misc.ts";
 import { Output } from "../output.ts";
 import { settings } from "../settings.ts";
-import * as Dictionary from "../../dictionary/type.ts";
 import { simpleNounForms } from "./noun.ts";
 import { condenseVerb } from "./verb.ts";
 

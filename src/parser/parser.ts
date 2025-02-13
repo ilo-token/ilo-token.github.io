@@ -4,6 +4,16 @@
  */
 
 import {
+  contentWordSet,
+  dictionary,
+  MissingEntryError,
+  prepositionSet,
+  preverbSet,
+  tokiPonaWordSet,
+} from "../dictionary.ts";
+import { nullableAsArray } from "../misc.ts";
+import { Output } from "../output.ts";
+import {
   Clause,
   Emphasis,
   FullClause,
@@ -18,7 +28,7 @@ import {
   SimpleHeadedWordUnit,
   SimpleWordUnit,
 } from "./ast.ts";
-import { Output } from "../output.ts";
+import { everyWordUnitInFullClause } from "./extract.ts";
 import {
   CLAUSE_RULE,
   filter,
@@ -31,6 +41,7 @@ import {
   SENTENCE_RULE,
   WORD_UNIT_RULES,
 } from "./filter.ts";
+import { TOKEN } from "./lexer.ts";
 import {
   allAtLeastOnce,
   choice,
@@ -48,17 +59,6 @@ import {
   UnrecognizedError,
 } from "./parser-lib.ts";
 import { describe, Token } from "./token.ts";
-import { TOKEN } from "./lexer.ts";
-import {
-  contentWordSet,
-  dictionary,
-  MissingEntryError,
-  prepositionSet,
-  preverbSet,
-  tokiPonaWordSet,
-} from "../dictionary.ts";
-import { nullableAsArray } from "../misc.ts";
-import { everyWordUnitInFullClause } from "./extract.ts";
 
 /** Parses a specific type of token. */
 function specificToken<T extends Token["type"]>(

@@ -1,5 +1,6 @@
 /** Module describing filter rules integrated within AST Parser. */
 
+import { settings } from "../settings.ts";
 import {
   Clause,
   Emphasis,
@@ -11,9 +12,6 @@ import {
   Sentence,
   WordUnit,
 } from "./ast.ts";
-import { settings } from "../settings.ts";
-import { describe } from "./token.ts";
-import { UnrecognizedError } from "./parser-lib.ts";
 import {
   everyObjectInMultiplePredicates,
   everyPhraseInMultiplePhrases,
@@ -21,6 +19,8 @@ import {
   everyWordUnitInPreposition,
   everyWordUnitInSentence,
 } from "./extract.ts";
+import { UnrecognizedError } from "./parser-lib.ts";
+import { describe } from "./token.ts";
 
 /** Array of filter rules for a word unit. */
 export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [

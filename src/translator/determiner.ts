@@ -1,9 +1,9 @@
-import * as English from "./ast.ts";
+import * as Dictionary from "../../dictionary/type.ts";
 import { filterSet, repeatWithSpace } from "../misc.ts";
 import { Output } from "../output.ts";
-import * as Dictionary from "../../dictionary/type.ts";
-import { simpleNounForms } from "./noun.ts";
+import * as English from "./ast.ts";
 import { FilteredOutError } from "./error.ts";
+import { simpleNounForms } from "./noun.ts";
 
 function prettyPrintDeterminers(
   determiners: Array<English.Determiner>,

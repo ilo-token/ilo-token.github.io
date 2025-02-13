@@ -2,10 +2,10 @@
 
 // @ts-self-types="./telo-misikeke.d.ts"
 
+import { escapeHtmlWithNewline, newlineAsHtml } from "../src/misc.ts";
+import LINKU from "./linku-data.json" with { type: "json" };
 import { ParserWithCallbacks } from "./Parser.js";
 import { build_rules, getMessage } from "./rules.js";
-import LINKU from "./linku-data.json" with { type: "json" };
-import { escapeHtmlWithNewline, newlineAsHtml } from "../src/misc.ts";
 
 const RULES = build_rules(LINKU);
 
