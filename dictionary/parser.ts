@@ -12,6 +12,7 @@ import {
 } from "./type.ts";
 import {
   all,
+  allAtLeastOnce,
   cached,
   character,
   choiceOnlyOne,
@@ -27,6 +28,7 @@ import {
 import { Output, OutputError } from "../src/output.ts";
 import { nullableAsArray } from "../src/misc.ts";
 import { escape } from "@std/html/entities";
+import { UnexpectedError } from "../src/parser/parser-lib.ts";
 
 function comment(): Parser<string> {
   return match(/#[^\r\n]*/, "comment");
@@ -44,7 +46,7 @@ function backtick(): Parser<string> {
   return matchString("`", "backtick");
 }
 function word(): Parser<string> {
-  return all(
+  return allAtLeastOnce(
     choiceOnlyOne(
       match(/[^():;#/`]/, "word"),
       sequence(backtick(), character(), backtick())
@@ -53,7 +55,13 @@ function word(): Parser<string> {
     ),
   )
     .map((word) => word.join("").replaceAll(/\s+/g, " ").trim())
-    .filter((word) => word.length > 0)
+    .filter((word) => {
+      if (word.length === 0) {
+        throw new UnexpectedError("missing word", "word");
+      } else {
+        return true;
+      }
+    })
     .map(escape);
 }
 function slash(): Parser<string> {
@@ -65,7 +73,13 @@ function forms(): Parser<Array<string>> {
 }
 function keyword<T extends string>(keyword: T): Parser<T> {
   return lex(match(/[a-z]+/, keyword))
-    .filter((that) => that === keyword) as Parser<T>;
+    .filter((that) => {
+      if (keyword === that) {
+        return true;
+      } else {
+        throw new UnexpectedError(`"${that}"`, `"${keyword}"`);
+      }
+    }) as Parser<T>;
 }
 function number(): Parser<"singular" | "plural"> {
   return choiceOnlyOne(keyword("singular"), keyword("plural"));
@@ -315,12 +329,16 @@ const DEFINITION = cached(choiceOnlyOne<Definition>(
     .skip(semicolon())
     .map((adjective) => ({ type: "adjective", ...adjective })),
   sequence(
+    adjective().skip(keyword("and")).skip(tag(keyword("c"))),
     adjective(),
-    simpleUnit("c").filter((word) => word === "and").with(adjective()),
   )
-    .filter(([first, second]) =>
-      first.adverb.length === 0 && second.adverb.length === 0
-    )
+    .filter(([first, second]) => {
+      if (first.adverb.length === 0 && second.adverb.length === 0) {
+        return true;
+      } else {
+        throw new UnrecognizedError("compound adjective with adverb");
+      }
+    })
     .skip(semicolon())
     .map((adjective) => ({ type: "compound adjective", adjective })),
   noun()

@@ -281,6 +281,17 @@ function subAleNumber(): Parser<number> {
       array.reduce((number, word) => number + wordToNumber(word), 0)
     );
 }
+function properSubAleNumber(): Parser<number> {
+  return subAleNumber().filter((number) => {
+    if (number > 100) {
+      throw new UnrecognizedError(
+        'numbers after "ale" exceeding 100 in nasin nanpa pona',
+      );
+    } else {
+      return true;
+    }
+  });
+}
 /** Parses "ale" or "ali". */
 function ale(): Parser<string> {
   return choice(specificWord("ale"), specificWord("ali"));
@@ -292,16 +303,17 @@ function number(): Parser<number> {
     sequence(
       manyAtLeastOnce(
         sequence(
-          subAleNumber().filter((number) => 0 < number && number < 100),
+          properSubAleNumber()
+            .filter((number) => number !== 0),
           count(manyAtLeastOnce(ale())),
         ),
       ),
-      subAleNumber().filter((number) => number < 100),
+      properSubAleNumber(),
     )
       .map<Array<[number, number]>>(([rest, last]) => [...rest, [last, 0]])
       // Ensure the ale is in decreasing order
-      .filter((numbers) =>
-        numbers.every((number, i) => {
+      .filter((numbers) => {
+        const sorted = numbers.every((number, i) => {
           if (i === numbers.length - 1) {
             return true;
           } else {
@@ -309,8 +321,15 @@ function number(): Parser<number> {
             const [_1, secondAle] = numbers[i + 1];
             return firstAle > secondAle;
           }
-        })
-      )
+        });
+        if (sorted) {
+          return true;
+        } else {
+          throw new UnrecognizedError(
+            'unordered "ale" places in nasin nanpa pona',
+          );
+        }
+      })
       .map((numbers) =>
         numbers.reduce((result, [sub, ale]) => result + sub * 100 ** ale, 0)
       ),
