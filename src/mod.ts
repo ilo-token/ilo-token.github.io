@@ -6,7 +6,7 @@ import { shuffle } from "@std/random/shuffle";
 
 export { loadCustomDictionary } from "./dictionary.ts";
 export { OutputError } from "./output.ts";
-export { settings } from "./settings.ts";
+export { defaultSettings, settings } from "./settings.ts";
 export type { OutputErrorOptions } from "./output.ts";
 export type { RedundancySettings, Settings } from "./settings.ts";
 
@@ -14,11 +14,12 @@ export type { RedundancySettings, Settings } from "./settings.ts";
 export function translate(tokiPona: string): Array<string> {
   const output = rawTranslate(tokiPona);
   if (!output.isError()) {
-    let values = [...new Set(output.output)];
+    const values = [...new Set(output.output)];
     if (settings.randomize) {
-      values = shuffle(values);
+      return shuffle(values);
+    } else {
+      return values;
     }
-    return values;
   } else {
     let error: ReadonlyArray<OutputError> = [];
     if (settings.teloMisikeke) {

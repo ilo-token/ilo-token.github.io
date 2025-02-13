@@ -54,7 +54,7 @@ const DICTIONARY_ERROR_FIXABLE_MESSAGE =
 const DICTIONARY_ERROR_UNFIXABLE_MESSAGE =
   "Unable to save dictionary due to error. Please report this.";
 
-const DICTIONARY_KEY = "custom-dictionary";
+const DICTIONARY_KEY = "dictionary";
 
 function main(): void {
   // load elements

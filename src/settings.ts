@@ -20,12 +20,12 @@ export type Settings = {
   xAlaXPartialParsing: boolean;
   separateRepeatedModifiers: boolean;
 };
-export const defaultSettings: Readonly<Settings> = {
+export const defaultSettings: Readonly<Settings> = Object.freeze({
   teloMisikeke: true,
   randomize: false,
   quantity: "both",
   tense: "both",
   xAlaXPartialParsing: false,
   separateRepeatedModifiers: false,
-};
-export const settings: Settings = { ...defaultSettings };
+});
+export const settings: Settings = Object.seal({ ...defaultSettings });
