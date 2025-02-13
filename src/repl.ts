@@ -15,7 +15,7 @@ if (import.meta.main) {
       for (const translation of output) {
         const count = translation.match(/<strong>/g)?.length ?? 0;
         console.log(
-          `  - ${translation}`.replaceAll(/<\/?strong>/g, "%c"),
+          `  - ${translation.replaceAll(/<\/?strong>/g, "%c")}`,
           ...repeatArray(["font-weight: bold", ""], count).flat(),
         );
       }
