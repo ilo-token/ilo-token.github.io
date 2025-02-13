@@ -36,7 +36,7 @@ import {
   choice,
   choiceOnlyOne,
   count,
-  eol,
+  end,
   lazy,
   many,
   manyAtLeastOnce,
@@ -800,7 +800,7 @@ function sentence(): Parser<Sentence> {
     many(fullClause().skip(la())),
     fullClause(),
     choice(
-      eol().map(() => ""),
+      end().map(() => ""),
       punctuation(),
     ),
   )
@@ -831,10 +831,10 @@ function sentence(): Parser<Sentence> {
 const FULL_PARSER = spaces()
   .with(choiceOnlyOne<MultipleSentences>(
     wordFrom(tokiPonaWordSet, "Toki Pona word")
-      .skip(eol())
+      .skip(end())
       .map((word) => ({ type: "single word", word })),
     allAtLeastOnce(sentence())
-      .skip(eol())
+      .skip(end())
       .filter(filter(MULTIPLE_SENTENCES_RULE))
       .map((sentences) => ({ type: "sentences", sentences })),
   ));

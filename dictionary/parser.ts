@@ -16,7 +16,7 @@ import {
   cached,
   character,
   choiceOnlyOne,
-  eol,
+  end,
   match,
   matchString,
   optionalAll,
@@ -492,7 +492,7 @@ function entry(): Parser<Entry> {
 }
 const DICTIONARY = space()
   .with(all(sequence(HEAD, entry())))
-  .skip(eol())
+  .skip(end())
   .map((entries) => {
     const dictionary: Dictionary = {};
     for (const [words, definitions] of entries) {
@@ -504,8 +504,8 @@ const DICTIONARY = space()
   });
 const DEFINITION_EXTRACT = space()
   .with(all(optionalAll(HEAD).with(lex(match(/[^;]*;/, "definition")))))
-  .skip(eol());
-const DEFINITION_ALONE = space().with(DEFINITION).skip(eol());
+  .skip(end());
+const DEFINITION_ALONE = space().with(DEFINITION).skip(end());
 
 export function parseDictionary(sourceText: string): Dictionary {
   const output = DICTIONARY.parse(sourceText);
