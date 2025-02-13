@@ -34,6 +34,9 @@ async function buildCode(
   const response = await fetchOk(source);
   const rawCode = await response.text();
   const withoutCjs = rawCode.replaceAll(COMMONJS_EXPORT, "");
+  if (withoutCjs.includes("module.exports")) {
+    throw new Error(`unable to remove CommonJS exports on ${destination}`);
+  }
   const exports = exportItems.join(", ");
   const code = `\
 // This code is from
@@ -49,9 +52,6 @@ ${withoutCjs};
 export { ${exports} };
 `;
   await Deno.writeTextFile(destination, code);
-  if (withoutCjs.includes("module.exports")) {
-    throw new Error(`unable to remove CommonJS exports on ${destination}`);
-  }
 }
 async function buildSonaLinku(): Promise<void> {
   const response = await fetchOk(LINKU_URL);
