@@ -3,6 +3,7 @@
  * and AST parser.
  */
 
+import { NEWLINE_LIST } from "../misc.ts";
 import { Output, OutputError } from "../output.ts";
 
 /** A single parsing result. */
@@ -236,7 +237,7 @@ function describeSrc(src: string, expected: string): OutputError {
     const [token] = src.match(/\S*/)!;
     let tokenDescription: string;
     if (token === "") {
-      if (["\n", "\r"].includes(src[0])) {
+      if (NEWLINE_LIST.includes(src[0])) {
         tokenDescription = "newline";
       } else {
         tokenDescription = "space";

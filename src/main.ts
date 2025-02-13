@@ -9,7 +9,7 @@ import {
   escapeHtmlWithNewline,
   extractErrorMessage,
   flattenError,
-  NEWLINE,
+  NEWLINES,
   setIgnoreError,
 } from "./misc.ts";
 import PROJECT_DATA from "../project-data.json" with { type: "json" };
@@ -281,7 +281,7 @@ function main(): void {
       customDictionaryTextBox.value += `\n${asComment(message)}\n`;
       for (const message of errors.map(extractErrorMessage)) {
         customDictionaryTextBox.value += `${
-          asComment(`- ${message.replaceAll(NEWLINE, "$&  ")}`)
+          asComment(`- ${message.replaceAll(NEWLINES, "$&  ")}`)
         }\n`;
       }
       console.error(error);

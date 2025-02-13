@@ -37,6 +37,7 @@ import { variable } from "./parser-lib.ts";
 import { settings } from "../settings.ts";
 import { empty } from "./parser-lib.ts";
 import { choice } from "./parser-lib.ts";
+import { NEWLINE_LIST } from "../misc.ts";
 
 /** parses space. */
 function spaces(): Parser<string> {
@@ -67,7 +68,7 @@ function ucsur(): Parser<string> {
     const latin = UCSUR_TO_LATIN[ucsur];
     if (latin == null) {
       let description: string;
-      if (["\n", "\n"].includes(ucsur)) {
+      if (NEWLINE_LIST.includes(ucsur)) {
         description = "newline";
       } else if (/\s/.test(ucsur)) {
         description = "space";
