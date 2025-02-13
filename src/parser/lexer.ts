@@ -31,6 +31,7 @@ import {
   START_OF_CARTOUCHE,
   START_OF_LONG_GLYPH,
   START_OF_REVERSE_LONG_GLYPH,
+  UCSUR_CHARACTER_REGEX,
   UCSUR_TO_LATIN,
 } from "./ucsur.ts";
 import { variable } from "./parser-lib.ts";
@@ -64,22 +65,8 @@ function variationSelector(): Parser<string> {
  * needed
  */
 function ucsur(): Parser<string> {
-  return character().map((ucsur) => {
-    const latin = UCSUR_TO_LATIN[ucsur];
-    if (latin == null) {
-      let description: string;
-      if (NEWLINE_LIST.includes(ucsur)) {
-        description = "newline";
-      } else if (/\s/.test(ucsur)) {
-        description = "space";
-      } else {
-        description = `"${ucsur}"`;
-      }
-      throw new UnexpectedError(description, "UCSUR glyph");
-    } else {
-      return latin;
-    }
-  });
+  return match(UCSUR_CHARACTER_REGEX, "UCSUR glyph")
+    .map((ucsur) => UCSUR_TO_LATIN[ucsur]);
 }
 /**
  * Parses special UCSUR character, this doesn't parse space and so must be
