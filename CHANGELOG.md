@@ -15,6 +15,10 @@ NOTE: Before publishing:
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
 
+Some of the settings may reset. Please reconfigure it again to your liking.
+Sorry for the inconvenience. We've decided to reset some of the settings after
+refactoring to make the code easier to work with.
+
 - Implement custom dictionary editor.
 - Fixed "la" translation.
 - Consecutive adverbs are now not shown to avoid ambiguity.
