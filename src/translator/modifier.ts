@@ -10,6 +10,7 @@ import { phrase } from "./phrase.ts";
 import * as Composer from "../parser/composer.ts";
 import {
   ExhaustedError,
+  FilteredOutError,
   TranslationTodoError,
   UntranslatableError,
 } from "./error.ts";
@@ -158,12 +159,15 @@ export function piModifier(
 function nanpaModifier(
   nanpa: TokiPona.Modifier & { type: "nanpa" },
 ): Output<ModifierTranslation> {
-  return phrase(nanpa.phrase, "object").filterMap((phrase) => {
-    if (
-      phrase.type === "noun" &&
+  return phrase(nanpa.phrase, "object").map((phrase) => {
+    if (phrase.type !== "noun") {
+      throw new FilteredOutError(`${phrase.type} within "in position" phrase`);
+    } else if (
       (phrase.noun as English.NounPhrase & { type: "simple" })
-          .preposition.length === 0
+        .preposition.length > 0
     ) {
+      throw new FilteredOutError('preposition within "in position" phrase');
+    } else {
       return {
         type: "in position phrase",
         noun: {
@@ -181,8 +185,6 @@ function nanpaModifier(
           emphasis: false,
         },
       };
-    } else {
-      return null;
     }
   });
 }
