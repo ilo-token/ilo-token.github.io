@@ -259,10 +259,7 @@ function main(): void {
   });
   addWordButton.addEventListener("click", addWord);
   addWordTextBox.addEventListener("keydown", (event) => {
-    if (
-      event.code === "Enter" && !event.ctrlKey && !event.altKey &&
-      !event.shiftKey
-    ) {
+    if (event.code === "Enter" && !event.altKey && !event.shiftKey) {
       event.preventDefault();
       addWord();
     }
