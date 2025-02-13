@@ -14,6 +14,7 @@ import {
   optionalAll,
   Parser,
   sequence,
+  sourceOnly,
   UnexpectedError,
   withSource,
 } from "../src/parser/parser-lib.ts";
@@ -30,13 +31,10 @@ import {
 } from "./type.ts";
 
 function comment(): Parser<string> {
-  return match(/#[^\r\n]*/, "comment");
+  return match(/#[^\n\r]*/, "comment");
 }
-function space(): Parser<null> {
-  return all(
-    choiceOnlyOne(match(/\s/, "space"), comment()),
-  )
-    .map(() => null);
+function space(): Parser<string> {
+  return sourceOnly(all(choiceOnlyOne(match(/\s/, "space"), comment())));
 }
 function lex<T>(parser: Parser<T>): Parser<T> {
   return parser.skip(space());
