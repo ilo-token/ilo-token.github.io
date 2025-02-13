@@ -1,5 +1,3 @@
-import * as English from "./ast.ts";
-
 export const CONJUNCTION = { "and conjunction": "and", "anu": "or" } as const;
 
 export function condense(first: string, second: string): string {
@@ -12,7 +10,4 @@ export function condense(first: string, second: string): string {
   } else {
     return `${first}/${second}`;
   }
-}
-export function unemphasized(word: string): English.Word {
-  return { word, emphasis: false };
 }

@@ -3,11 +3,12 @@ import * as English from "./ast.ts";
 import { nullableAsArray, repeatWithSpace } from "../misc.ts";
 import { Output } from "../output.ts";
 import * as Dictionary from "../../dictionary/type.ts";
-import { unemphasized } from "./misc.ts";
+import { unemphasized } from "./word.ts";
+import { UntranslatableError } from "./error.ts";
 
-function so(emphasis: null | TokiPona.Emphasis): null | string {
+function so(emphasis: null | TokiPona.Emphasis): string {
   if (emphasis == null) {
-    return null;
+    throw new UntranslatableError("missing emphasis", "adverb");
   } else {
     switch (emphasis.type) {
       case "word":
@@ -15,7 +16,10 @@ function so(emphasis: null | TokiPona.Emphasis): null | string {
       case "long word":
         return `s${"o".repeat(emphasis.length)}`;
       case "multiple a":
-        return null;
+        throw new UntranslatableError(
+          `"${repeatWithSpace("a", emphasis.count)}"`,
+          "adverb",
+        );
     }
   }
 }
@@ -24,10 +28,11 @@ export function adjective(
   emphasis: null | TokiPona.Emphasis,
   reduplicationCount: number,
 ): Output<English.AdjectivePhrase & { type: "simple" }> {
-  return new Output([
-    ...nullableAsArray(so(emphasis)).map((so) => ({ emphasis: false, so })),
-    { emphasis: emphasis != null, so: null },
-  ])
+  return Output.concat<{ emphasis: boolean; so: null | string }>(
+    Output.from(() => new Output([so(emphasis)]))
+      .map((so) => ({ emphasis: false, so })),
+    new Output([{ emphasis: emphasis != null, so: null }]),
+  )
     .map(({ emphasis, so }) => ({
       type: "simple",
       kind: definition.kind,
