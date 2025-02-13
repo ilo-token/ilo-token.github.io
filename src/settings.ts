@@ -12,6 +12,7 @@ export type RedundancySettings = "both" | "condensed" | "default only";
  * https://github.com/ilo-token/ilo-token.github.io/wiki/Settings-Help for more
  * info.
  */
+// may be extended but never change nor remove existing properties
 export type Settings = {
   teloMisikeke: boolean;
   randomize: boolean;
