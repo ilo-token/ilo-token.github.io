@@ -22,6 +22,9 @@ import {
 } from "./settings-frontend.ts";
 import { settings } from "./settings.ts";
 
+const TRANSLATE_LABEL = "Translate";
+const TRANSLATE_LABEL_MULTILINE = "Translate (Ctrl + Enter)";
+
 const UNKNOWN_ERROR_MESSAGE =
   "An unknown error has occurred (Errors should be known, please report " +
   "this).";
@@ -170,13 +173,23 @@ function main(): void {
     inputTextBox.style.height = `${`${inputTextBox.scrollHeight + 14}`}px`;
   }
 
+  // initialize button label
+  updateLabel();
+  function updateLabel(): void {
+    if (settings.multiline) {
+      translateButton.innerText = TRANSLATE_LABEL_MULTILINE;
+    } else {
+      translateButton.innerText = TRANSLATE_LABEL;
+    }
+  }
+
   // add all event listener
   translateButton.addEventListener("click", updateOutput);
   inputTextBox.addEventListener("input", resizeTextarea);
   inputTextBox.addEventListener("keydown", (event) => {
     if (
-      event.code === "Enter" && event.ctrlKey && !event.altKey &&
-      !event.shiftKey
+      event.code === "Enter" && event.ctrlKey === settings.multiline &&
+      !event.altKey && !event.shiftKey
     ) {
       event.preventDefault();
       updateOutput();
@@ -226,10 +239,12 @@ function main(): void {
   });
   confirmButton.addEventListener("click", () => {
     loadFromElements();
+    updateLabel();
     settingsDialogBox.close();
   });
   cancelButton.addEventListener("click", () => {
     resetElementsToCurrent();
+    updateLabel();
     settingsDialogBox.close();
   });
   resetButton.addEventListener("click", () => {

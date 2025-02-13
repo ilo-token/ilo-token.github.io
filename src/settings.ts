@@ -16,6 +16,7 @@ export type RedundancySettings = "both" | "condensed" | "default only";
 export type Settings = {
   teloMisikeke: boolean;
   randomize: boolean;
+  multiline: boolean;
   quantity: RedundancySettings;
   tense: RedundancySettings;
   xAlaXPartialParsing: boolean;
@@ -24,6 +25,7 @@ export type Settings = {
 export const defaultSettings: Readonly<Settings> = Object.freeze({
   teloMisikeke: true,
   randomize: false,
+  multiline: false,
   quantity: "both",
   tense: "both",
   xAlaXPartialParsing: false,
