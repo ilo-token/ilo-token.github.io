@@ -52,17 +52,13 @@ export function partialVerb(
   );
   return Output.combine(object, preposition)
     .map(([object, preposition]) => ({
+      ...definition,
       adverb: [],
-      presentPlural: definition.presentPlural,
-      presentSingular: definition.presentSingular,
-      past: definition.past,
       reduplicationCount,
       wordEmphasis: emphasis,
       subjectComplement: null,
       object,
       preposition,
-      forObject: definition.forObject,
-      predicateType: definition.predicateType,
       phraseEmphasis: false,
     }));
 }
