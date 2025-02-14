@@ -45,7 +45,8 @@ function noun(phrases: English.NounPhrase, depth: number): string {
         ...nullableAsArray(phrases.postAdjective)
           .map((adjective) => `${adjective.adjective} ${adjective.name}`),
         ...phrases.preposition.map(preposition),
-      ].join(" ");
+      ]
+        .join(" ");
       return word({ word: text, emphasis: phrases.emphasis });
     }
     case "compound":

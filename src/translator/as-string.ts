@@ -14,7 +14,8 @@ function nounAsPlainString(definition: Dictionary.Noun): Output<string> {
         noun,
         ...nullableAsArray(definition.postAdjective)
           .map((adjective) => `${adjective.adjective} ${adjective.name}`),
-      ].join(" ")
+      ]
+        .join(" ")
     );
 }
 function verbAsPlainString(
@@ -96,7 +97,8 @@ export function definitionAsPlainString(
             verb,
             ...directObject,
             ...indirectObject,
-          ].join(" ")
+          ]
+            .join(" ")
         );
     }
     case "filler":
