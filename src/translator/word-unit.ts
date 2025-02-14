@@ -17,10 +17,8 @@ export type WordUnitTranslation =
     reduplicationCount: number;
     postAdjective: null | { adjective: string; name: string };
   }
-  | {
-    type: "adjective";
-    adjective: English.AdjectivePhrase;
-  };
+  | { type: "adjective"; adjective: English.AdjectivePhrase }
+  | { type: "verb"; verb: English.VerbPhrase };
 function numberWordUnit(
   word: number,
   emphasis: boolean,
@@ -39,6 +37,7 @@ function numberWordUnit(
 export function wordUnit(
   wordUnit: TokiPona.WordUnit,
   place: "subject" | "object",
+  subjectQuantity: null | English.Quantity,
 ): Output<WordUnitTranslation> {
   const emphasis = wordUnit.emphasis != null;
   switch (wordUnit.type) {

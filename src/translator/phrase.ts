@@ -153,7 +153,7 @@ function defaultPhrase(
 ): Output<PhraseTranslation> {
   const emphasis = phrase.emphasis != null;
   return Output.combine(
-    wordUnit(phrase.headWord, place),
+    wordUnit(phrase.headWord, place, subjectQuantity),
     multipleModifiers(phrase.modifiers),
   )
     .flatMap<PhraseTranslation>(([headWord, modifier]) => {
