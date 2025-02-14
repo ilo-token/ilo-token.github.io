@@ -12,12 +12,16 @@ export type PartialVerb = {
   past: string;
   wordEmphasis: boolean;
   reduplicationCount: number;
+  subjectComplement: null | English.SubjectComplement;
   object: null | English.NounPhrase;
   preposition: Array<English.Preposition>;
   forObject: boolean | string;
   predicateType: null | "verb" | "noun adjective";
   phraseEmphasis: boolean;
 };
+export type PartialCompoundVerb =
+  | ({ type: "simple" } & PartialVerb)
+  | { type: "compound"; verb: Array<PartialVerb> };
 export function condenseVerb(present: string, past: string): string {
   const [first, ...rest] = present.split(" ");
   const second = past.split(" ")[0];
@@ -54,6 +58,7 @@ export function partialVerb(
       past: definition.past,
       reduplicationCount,
       wordEmphasis: emphasis,
+      subjectComplement: null,
       object,
       preposition,
       forObject: definition.forObject,

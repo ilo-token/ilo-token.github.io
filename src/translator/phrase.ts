@@ -18,7 +18,7 @@ import {
   multipleModifiers,
 } from "./modifier.ts";
 import { nounForms, PartialNoun } from "./noun.ts";
-import { PartialVerb } from "./verb.ts";
+import { PartialCompoundVerb, PartialVerb } from "./verb.ts";
 import { wordUnit } from "./word-unit.ts";
 import { unemphasized } from "./word.ts";
 
@@ -26,6 +26,10 @@ type PhraseTranslation =
   | { type: "noun"; noun: English.NounPhrase }
   | ({ type: "adjective" } & AdjectiveWithInWay)
   | ({ type: "verb" } & PartialVerb);
+type MultiplePhraseTranslation =
+  | { type: "noun"; noun: English.NounPhrase }
+  | ({ type: "adjective" } & AdjectiveWithInWay)
+  | ({ type: "verb"; verb: PartialCompoundVerb });
 function nounPhrase(
   emphasis: boolean,
   partialNoun: PartialNoun,
@@ -214,10 +218,17 @@ export function multiplePhrases(
   phrases: TokiPona.MultiplePhrases,
   place: "subject" | "object",
   andParticle: string,
-): Output<PhraseTranslation> {
+): Output<MultiplePhraseTranslation> {
   switch (phrases.type) {
     case "single":
-      return phrase(phrases.phrase, place);
+      return phrase(phrases.phrase, place)
+        .map<MultiplePhraseTranslation>((phrase) => {
+          if (phrase.type === "verb") {
+            return { type: "verb", verb: { ...phrase, type: "simple" } };
+          } else {
+            return phrase;
+          }
+        });
     case "and conjunction":
     case "anu": {
       const conjunction = CONJUNCTION[phrases.type];
@@ -226,7 +237,7 @@ export function multiplePhrases(
           multiplePhrases(phrases, place, andParticle)
         ),
       )
-        .filterMap<PhraseTranslation | null>((phrase) => {
+        .filterMap<MultiplePhraseTranslation | null>((phrase) => {
           if (phrase.every((phrase) => phrase.type === "noun")) {
             const nouns = phrase
               .map((noun) => noun.noun)
@@ -260,7 +271,6 @@ export function multiplePhrases(
               },
             };
           } else if (
-            phrases.type === "anu" &&
             phrase.every((phrase) =>
               phrase.type === "adjective" && phrase.inWayPhrase == null
             )

@@ -70,7 +70,7 @@ export function clause(clause: TokiPona.Clause): Output<English.Clause> {
           if (phrase.type === "noun") {
             return { type: "vocative", call: "hey", addressee: phrase.noun };
           } else {
-            throw new FilteredOutError("adjective within o vocative");
+            throw new FilteredOutError(`${phrase.type} within o vocative`);
           }
         });
     case "prepositions":
