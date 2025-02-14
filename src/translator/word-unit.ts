@@ -5,7 +5,7 @@ import { adjective, compoundAdjective } from "./adjective.ts";
 import * as English from "./ast.ts";
 import { TranslationTodoError } from "./error.ts";
 import { PartialNoun, partialNoun } from "./noun.ts";
-import { pronoun } from "./pronoun.ts";
+import { pronounAsPartialNoun } from "./pronoun.ts";
 import { PartialVerb, partialVerb } from "./verb.ts";
 
 export type WordUnitTranslation =
@@ -15,8 +15,8 @@ export type WordUnitTranslation =
 function numberWordUnit(
   word: number,
   emphasis: boolean,
-): Output<WordUnitTranslation> {
-  return new Output([{
+): WordUnitTranslation {
+  return {
     type: "noun",
     determiner: [],
     adjective: [],
@@ -25,7 +25,7 @@ function numberWordUnit(
     emphasis,
     reduplicationCount: 1,
     postAdjective: null,
-  }]);
+  };
 }
 function defaultWordUnit(
   word: string,
@@ -42,7 +42,7 @@ function defaultWordUnit(
         case "personal pronoun":
           return new Output<WordUnitTranslation>([{
             type: "noun",
-            ...pronoun(
+            ...pronounAsPartialNoun(
               definition,
               reduplicationCount,
               emphasis != null,
@@ -83,7 +83,9 @@ export function wordUnit(
 ): Output<WordUnitTranslation> {
   switch (wordUnit.type) {
     case "number":
-      return numberWordUnit(wordUnit.number, wordUnit.emphasis != null);
+      return new Output([
+        numberWordUnit(wordUnit.number, wordUnit.emphasis != null),
+      ]);
     case "x ala x":
       return new Output(new TranslationTodoError("x ala x"));
     case "default":

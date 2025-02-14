@@ -8,7 +8,8 @@ import * as English from "./ast.ts";
 import { findNumber, fixDeterminer } from "./determiner.ts";
 import {
   ExhaustedError,
-  TranslationTodoError
+  FilteredOutError,
+  TranslationTodoError,
 } from "./error.ts";
 import { CONJUNCTION } from "./misc.ts";
 import {
@@ -117,34 +118,32 @@ function adjectivePhrase(
   emphasis: boolean,
   adjective: English.AdjectivePhrase,
   modifier: AdverbialModifier,
-): Output<AdjectiveWithInWay> {
-  return Output.from(() => {
-    switch (adjective.type) {
-      case "simple": {
-        const adverb = fixAdverb([
-          ...modifier.adverb.slice().reverse(),
-          ...adjective.adverb,
-        ]);
-        return new Output([{
-          adjective: {
-            ...adjective,
-            adverb,
-            emphasis,
-          },
-          inWayPhrase: modifier.inWayPhrase,
-        }]);
-      }
-      case "compound":
-        if (modifier.adverb.length === 0) {
-          return new Output([{
-            adjective,
-            inWayPhrase: modifier.inWayPhrase,
-          }]);
-        } else {
-          return new Output();
-        }
+): AdjectiveWithInWay {
+  switch (adjective.type) {
+    case "simple": {
+      const adverb = fixAdverb([
+        ...modifier.adverb.slice().reverse(),
+        ...adjective.adverb,
+      ]);
+      return {
+        adjective: {
+          ...adjective,
+          adverb,
+          emphasis,
+        },
+        inWayPhrase: modifier.inWayPhrase,
+      };
     }
-  });
+    case "compound":
+      if (modifier.adverb.length === 0) {
+        return {
+          adjective,
+          inWayPhrase: modifier.inWayPhrase,
+        };
+      } else {
+        throw new FilteredOutError("adverb with compound adjective");
+      }
+  }
 }
 function verbPhrase(
   emphasis: boolean,
@@ -183,8 +182,10 @@ function defaultPhrase(
       } else if (
         headWord.type === "adjective" && modifier.type === "adverbial"
       ) {
-        return adjectivePhrase(emphasis, headWord.adjective, modifier)
-          .map((adjective) => ({ type: "adjective", ...adjective }));
+        return new Output([{
+          type: "adjective",
+          ...adjectivePhrase(emphasis, headWord.adjective, modifier),
+        }]);
       } else if (headWord.type === "verb" && modifier.type === "adverbial") {
         return new Output([{
           type: "verb",

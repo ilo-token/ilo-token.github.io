@@ -11,8 +11,9 @@ import {
   FilteredOutError,
   TranslationTodoError,
 } from "./error.ts";
-import { noun, nounForms } from "./noun.ts";
+import { noun } from "./noun.ts";
 import { phrase } from "./phrase.ts";
+import { pronounAsObject } from "./pronoun.ts";
 import { unemphasized } from "./word.ts";
 
 export type ModifierTranslation =
@@ -41,21 +42,21 @@ export type MultipleModifierTranslation =
 function numberModifier(
   word: number,
   emphasis: boolean,
-): Output<ModifierTranslation> {
+): ModifierTranslation {
   let quantity: English.Quantity;
   if (word === 1) {
     quantity = "singular";
   } else {
     quantity = "plural";
   }
-  return new Output([{
+  return {
     type: "determiner",
     determiner: {
       determiner: { word: `${word}`, emphasis },
       kind: "numeral",
       quantity,
     },
-  }]);
+  };
 }
 export function defaultModifier(
   word: TokiPona.WordUnit,
@@ -63,7 +64,7 @@ export function defaultModifier(
   const emphasis = word.emphasis != null;
   switch (word.type) {
     case "number":
-      return numberModifier(word.number, emphasis);
+      return new Output([numberModifier(word.number, emphasis)]);
     case "x ala x":
       return new Output(new TranslationTodoError("x ala x"));
     case "default":
@@ -94,28 +95,8 @@ export function defaultModifier(
                   preposition: definition.preposition,
                 }));
             case "personal pronoun":
-              return nounForms(
-                definition.singular?.object,
-                definition.plural?.object,
-                "both",
-              )
-                .map<ModifierTranslation>(({ noun, quantity }) => ({
-                  type: "noun",
-                  noun: {
-                    type: "simple",
-                    determiner: [],
-                    adjective: [],
-                    noun: {
-                      word: repeatWithSpace(noun, reduplicationCount),
-                      emphasis,
-                    },
-                    quantity,
-                    postCompound: null,
-                    postAdjective: null,
-                    preposition: [],
-                    emphasis: false,
-                  },
-                }));
+              return pronounAsObject(definition, reduplicationCount, emphasis)
+                .map((noun) => ({ type: "noun", noun }));
             case "determiner":
               return determiner(
                 definition,
