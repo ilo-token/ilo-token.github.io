@@ -149,6 +149,31 @@ function adjectivePhrase(
     }
   });
 }
+function verbPhrase(
+  emphasis: boolean,
+  verb: PartialVerb,
+  modifier: AdverbialModifier,
+): PartialVerb {
+  // TODO: this is copy pasted, avoid it
+  const adverb = [
+    ...modifier.adverb.slice().reverse(),
+    ...verb.adverb,
+  ];
+  if (adverb.length > 1) {
+    throw new FilteredOutError("multiple adverbs");
+  }
+  const preposition = [
+    ...verb.preposition,
+    ...nullableAsArray(modifier.inWayPhrase)
+      .map((object) => ({ preposition: unemphasized("in"), object })),
+  ];
+  return {
+    ...verb,
+    adverb,
+    phraseEmphasis: emphasis,
+    preposition,
+  };
+}
 function defaultPhrase(
   phrase: TokiPona.Phrase & { type: "default" },
   place: "subject" | "object",
@@ -165,9 +190,13 @@ function defaultPhrase(
       } else if (
         headWord.type === "adjective" && modifier.type === "adverbial"
       ) {
-        return adjectivePhrase(emphasis, headWord.adjective, modifier).map(
-          (adjective) => ({ type: "adjective", ...adjective }),
-        );
+        return adjectivePhrase(emphasis, headWord.adjective, modifier)
+          .map((adjective) => ({ type: "adjective", ...adjective }));
+      } else if (headWord.type === "verb" && modifier.type === "adverbial") {
+        return new Output([{
+          type: "verb",
+          ...verbPhrase(emphasis, headWord, modifier),
+        }]);
       } else {
         return new Output();
       }

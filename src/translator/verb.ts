@@ -6,15 +6,17 @@ import { noun } from "./noun.ts";
 import { unemphasized } from "./word.ts";
 
 export type PartialVerb = {
+  adverb: Array<English.Word>;
   presentPlural: string;
   presentSingular: string;
   past: string;
-  emphasis: boolean;
+  wordEmphasis: boolean;
   reduplicationCount: number;
   object: null | English.NounPhrase;
   preposition: Array<English.Preposition>;
   forObject: boolean | string;
   predicateType: null | "verb" | "noun adjective";
+  phraseEmphasis: boolean;
 };
 export function condenseVerb(present: string, past: string): string {
   const [first, ...rest] = present.split(" ");
@@ -46,14 +48,16 @@ export function partialVerb(
   );
   return Output.combine(object, preposition)
     .map(([object, preposition]) => ({
+      adverb: [],
       presentPlural: definition.presentPlural,
       presentSingular: definition.presentSingular,
       past: definition.past,
       reduplicationCount,
-      emphasis,
+      wordEmphasis: emphasis,
       object,
       preposition,
       forObject: definition.forObject,
       predicateType: definition.predicateType,
+      phraseEmphasis: false,
     }));
 }
