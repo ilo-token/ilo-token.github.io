@@ -8,7 +8,7 @@ import {
 } from "./settings.ts";
 
 type Updater<T> = {
-  readonly parse: (value: string) => T | null;
+  readonly parse: (value: string) => null | T;
   readonly stringify: (value: T) => string;
   readonly load: (input: HTMLInputElement | HTMLSelectElement) => T;
   readonly set: (input: HTMLInputElement | HTMLSelectElement, value: T) => void;

@@ -41,8 +41,8 @@ export function partialNoun(
     }));
 }
 export function nounForms(
-  singular: undefined | null | string,
-  plural: undefined | null | string,
+  singular: null | string,
+  plural: null | string,
   determinerNumber: Dictionary.Quantity,
 ): Output<{ noun: string; quantity: English.Quantity }> {
   switch (determinerNumber) {
@@ -81,8 +81,8 @@ export function nounForms(
   }
 }
 export function simpleNounForms(
-  singular: undefined | null | string,
-  plural: undefined | null | string,
+  singular: null | string,
+  plural: null | string,
 ): Output<string> {
   return nounForms(singular, plural, "both").map((noun) => noun.noun);
 }

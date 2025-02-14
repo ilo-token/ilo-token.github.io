@@ -10,7 +10,7 @@ function phraseClause(
   phrases: TokiPona.MultiplePhrases,
 ): Output<English.Clause> {
   return multiplePhrases(phrases, "object", "en")
-    .filterMap<English.Clause | null>(
+    .filterMap<null | English.Clause>(
       (phrase) => {
         switch (phrase.type) {
           case "noun":
