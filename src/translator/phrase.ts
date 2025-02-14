@@ -68,12 +68,12 @@ function nounPhrase(
     return new Output();
   }
   const headNoun = nounForms(headWord.singular, headWord.plural, quantity)
-    .map((noun) => ({
+    .map(({ noun, quantity }) => ({
       type: "simple" as const,
       determiner,
       adjective,
       noun: {
-        word: repeatWithSpace(noun.noun, headWord.reduplicationCount),
+        word: repeatWithSpace(noun, headWord.reduplicationCount),
         emphasis: headWord.emphasis,
       },
       quantity,

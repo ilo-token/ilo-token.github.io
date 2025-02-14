@@ -12,7 +12,7 @@ import {
   TranslationTodoError,
   UntranslatableError,
 } from "./error.ts";
-import { noun, simpleNounForms } from "./noun.ts";
+import { noun, nounForms } from "./noun.ts";
 import { phrase } from "./phrase.ts";
 
 export type ModifierTranslation =
@@ -79,21 +79,22 @@ export function defaultModifier(
                   preposition: definition.preposition,
                 }));
             case "personal pronoun":
-              return simpleNounForms(
+              return nounForms(
                 definition.singular?.object,
                 definition.plural?.object,
+                "both",
               )
-                .map<ModifierTranslation>((pronoun) => ({
+                .map<ModifierTranslation>(({ noun, quantity }) => ({
                   type: "noun",
                   noun: {
                     type: "simple",
                     determiner: [],
                     adjective: [],
                     noun: {
-                      word: repeatWithSpace(pronoun, reduplicationCount),
+                      word: repeatWithSpace(noun, reduplicationCount),
                       emphasis,
                     },
-                    quantity: "both",
+                    quantity,
                     postCompound: null,
                     postAdjective: null,
                     preposition: [],

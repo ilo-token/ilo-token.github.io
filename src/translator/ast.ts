@@ -6,7 +6,7 @@ export type Word = {
   word: string;
   emphasis: boolean;
 };
-export type Quantity = "singular" | "plural" | "both" | "condensed";
+export type Quantity = "singular" | "plural" | "condensed";
 export type NounPhrase =
   | {
     type: "simple";
