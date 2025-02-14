@@ -80,12 +80,6 @@ export type Clause =
   | { type: "subject phrase"; subject: NounPhrase }
   | { type: "interjection"; interjection: Word }
   | { type: "vocative"; call: string; addressee: NounPhrase }
-  | {
-    type: "compound";
-    conjunction: string;
-    clauses: Array<Clause>;
-    preposition: Array<Preposition>;
-  }
   | { type: "dependent"; conjunction: Word; clause: Clause };
 export type Preposition = {
   preposition: Word;

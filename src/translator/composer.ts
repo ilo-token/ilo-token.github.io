@@ -89,8 +89,6 @@ function clause(ast: English.Clause): string {
       return `${ast.call} ${noun(ast.addressee, 0)}`;
     case "dependent":
       return `${word(ast.conjunction)} ${clause(ast.clause)}`;
-    default:
-      throw new ComposingTodoError(ast.type);
   }
 }
 function sentence(sentence: English.Sentence): string {
