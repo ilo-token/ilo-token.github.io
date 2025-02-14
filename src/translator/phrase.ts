@@ -114,37 +114,39 @@ function adjectivePhrase(
   headWord: WordUnitTranslation & { type: "adjective" },
   modifier: MultipleModifierTranslation & { type: "adverbial" },
 ): Output<PhraseTranslation & { type: "adjective" }> {
-  const adjective = headWord.adjective;
-  switch (adjective.type) {
-    case "simple": {
-      const adverb = [
-        ...modifier.adverb.slice().reverse(),
-        ...adjective.adverb,
-      ];
-      if (adverb.length > 1) {
-        throw new FilteredOutError("multiple adverbs");
-      }
-      return new Output<PhraseTranslation & { type: "adjective" }>([{
-        type: "adjective",
-        adjective: {
-          ...adjective,
-          adverb,
-          emphasis,
-        },
-        inWayPhrase: modifier.inWayPhrase,
-      }]);
-    }
-    case "compound":
-      if (modifier.adverb.length === 0) {
+  return Output.from(() => {
+    const adjective = headWord.adjective;
+    switch (adjective.type) {
+      case "simple": {
+        const adverb = [
+          ...modifier.adverb.slice().reverse(),
+          ...adjective.adverb,
+        ];
+        if (adverb.length > 1) {
+          throw new FilteredOutError("multiple adverbs");
+        }
         return new Output<PhraseTranslation & { type: "adjective" }>([{
           type: "adjective",
-          adjective,
+          adjective: {
+            ...adjective,
+            adverb,
+            emphasis,
+          },
           inWayPhrase: modifier.inWayPhrase,
         }]);
-      } else {
-        return new Output();
       }
-  }
+      case "compound":
+        if (modifier.adverb.length === 0) {
+          return new Output<PhraseTranslation & { type: "adjective" }>([{
+            type: "adjective",
+            adjective,
+            inWayPhrase: modifier.inWayPhrase,
+          }]);
+        } else {
+          return new Output();
+        }
+    }
+  });
 }
 function defaultPhrase(
   phrase: TokiPona.Phrase & { type: "default" },

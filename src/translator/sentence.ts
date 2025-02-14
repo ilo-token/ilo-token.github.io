@@ -130,7 +130,7 @@ function sentence(
   // This relies on sentence filter, if some of those filters were disabled,
   // this function might break.
   if (sentence.interrogative === "x ala x") {
-    throw new TranslationTodoError("x ala x");
+    return new Output(new TranslationTodoError("x ala x"));
   }
   if (sentence.finalClause.type === "filler") {
     return filler(sentence.finalClause.emphasis)
@@ -180,7 +180,9 @@ function sentence(
       endingParticle,
     } = sentence.finalClause;
     if (kinOrTaso != null) {
-      throw new TranslationTodoError(`"${kinOrTaso.word}" preclause`);
+      return new Output(
+        new TranslationTodoError(`"${kinOrTaso.word}" preclause`),
+      );
     }
     const lastEngClause = clause(lastTpClause);
     let right: Array<English.Clause>;
@@ -191,7 +193,8 @@ function sentence(
     }
     let interjectionClause: Output<English.Clause>;
     if (
-      sentence.laClauses.length === 0 && kinOrTaso == null && tpAnuSeme == null
+      sentence.laClauses.length === 0 && kinOrTaso == null &&
+      tpAnuSeme == null
     ) {
       interjectionClause = interjection(lastTpClause);
     } else {
