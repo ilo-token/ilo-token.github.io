@@ -149,7 +149,7 @@ export function defaultModifier(
 export function piModifier(
   insidePhrase: TokiPona.Phrase,
 ): Output<ModifierTranslation> {
-  return phrase(insidePhrase, "object", null)
+  return phrase(insidePhrase, "object")
     .filter((modifier) =>
       modifier.type !== "noun" || modifier.noun.type !== "simple" ||
       modifier.noun.preposition.length === 0
@@ -164,7 +164,7 @@ export function piModifier(
 function nanpaModifier(
   nanpa: TokiPona.Modifier & { type: "nanpa" },
 ): Output<ModifierTranslation> {
-  return phrase(nanpa.phrase, "object", null).map((phrase) => {
+  return phrase(nanpa.phrase, "object").map((phrase) => {
     if (phrase.type !== "noun") {
       throw new FilteredOutError(`${phrase.type} within "in position" phrase`);
     } else if (
