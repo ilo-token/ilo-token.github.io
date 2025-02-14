@@ -46,20 +46,29 @@ export function adjective(
 }
 export function compoundAdjective(
   definition: Dictionary.Definition & { type: "compound adjective" },
+  reduplicationCount: number,
   emphasis: null | TokiPona.Emphasis,
 ): Output<English.AdjectivePhrase & { type: "compound" }> {
-  return Output.combine(
-    ...definition.adjective
-      .map((definition) => adjective(definition, emphasis, 1)),
-  )
-    .map((adjective) => ({
-      type: "compound",
-      conjunction: "and",
-      adjective,
-      emphasis: false,
-    }));
+  return Output.from(() => {
+    if (reduplicationCount === 1) {
+      return Output.combine(
+        ...definition.adjective
+          .map((definition) => adjective(definition, emphasis, 1)),
+      )
+        .map((adjective) => ({
+          type: "compound",
+          conjunction: "and",
+          adjective,
+          emphasis: false,
+        }));
+    } else {
+      throw new UntranslatableError(
+        "reduplication",
+        "compound adjective",
+      );
+    }
+  });
 }
-
 export function rankAdjective(kind: Dictionary.AdjectiveType): number {
   return [
     "opinion",

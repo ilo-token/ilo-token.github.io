@@ -7,6 +7,39 @@ import * as English from "./ast.ts";
 import { determiner, findNumber } from "./determiner.ts";
 import { condense } from "./misc.ts";
 
+export type PartialNoun = {
+  determiner: Array<English.Determiner>;
+  adjective: Array<English.AdjectivePhrase>;
+  singular: null | string;
+  plural: null | string;
+  emphasis: boolean;
+  reduplicationCount: number;
+  postAdjective: null | { adjective: string; name: string };
+};
+export function partialNoun(
+  definition: Dictionary.Noun,
+  reduplicationCount: number,
+  emphasis: boolean,
+): Output<PartialNoun> {
+  const engDeterminer = Output.combine(
+    ...definition.determiner
+      .map((definition) => determiner(definition, false, 1)),
+  );
+  const engAdjective = Output.combine(
+    ...definition.adjective
+      .map((definition) => adjective(definition, null, 1)),
+  );
+  return Output.combine(engDeterminer, engAdjective)
+    .map(([determiner, adjective]) => ({
+      determiner,
+      adjective,
+      singular: definition.singular,
+      plural: definition.plural,
+      reduplicationCount,
+      postAdjective: definition.postAdjective,
+      emphasis: emphasis != null,
+    }));
+}
 export function nounForms(
   singular: undefined | null | string,
   plural: undefined | null | string,

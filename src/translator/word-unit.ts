@@ -3,38 +3,20 @@ import { Output } from "../output.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";
 import * as English from "./ast.ts";
-import { determiner } from "./determiner.ts";
-import { TranslationTodoError, UntranslatableError } from "./error.ts";
-import { noun } from "./noun.ts";
-import { unemphasized } from "./word.ts";
+import { TranslationTodoError } from "./error.ts";
+import { PartialNoun, partialNoun } from "./noun.ts";
+import { pronoun } from "./pronoun.ts";
+import { PartialVerb, partialVerb } from "./verb.ts";
 
 export type WordUnitTranslation =
-  | {
-    type: "noun";
-    determiner: Array<English.Determiner>;
-    adjective: Array<English.AdjectivePhrase>;
-    singular: null | string;
-    plural: null | string;
-    emphasis: boolean;
-    reduplicationCount: number;
-    postAdjective: null | { adjective: string; name: string };
-  }
+  | ({ type: "noun" } & PartialNoun)
   | { type: "adjective"; adjective: English.AdjectivePhrase }
-  | {
-    type: "verb";
-    presentPlural: string;
-    presentSingular: string;
-    past: string;
-    object: null | English.NounPhrase;
-    preposition: Array<English.Preposition>;
-    forObject: boolean | string;
-    predicateType: null | "verb" | "noun adjective";
-  };
+  | ({ type: "verb" } & PartialVerb);
 function numberWordUnit(
   word: number,
   emphasis: boolean,
 ): Output<WordUnitTranslation> {
-  return new Output<WordUnitTranslation>([{
+  return new Output([{
     type: "noun",
     determiner: [],
     adjective: [],
@@ -54,51 +36,19 @@ function defaultWordUnit(
   return new Output(dictionary[word].definitions)
     .flatMap((definition) => {
       switch (definition.type) {
-        case "noun": {
-          const engDeterminer = Output.combine(
-            ...definition.determiner
-              .map((definition) => determiner(definition, false, 1)),
-          );
-          const engAdjective = Output.combine(
-            ...definition.adjective
-              .map((definition) => adjective(definition, null, 1)),
-          );
-          return Output.combine(engDeterminer, engAdjective)
-            .map<WordUnitTranslation>(([determiner, adjective]) => ({
-              type: "noun",
-              determiner,
-              adjective,
-              singular: definition.singular,
-              plural: definition.plural,
-              reduplicationCount,
-              postAdjective: definition.postAdjective,
-              emphasis: emphasis != null,
-            }));
-        }
-        case "personal pronoun": {
-          let singular: null | string;
-          let plural: null | string;
-          switch (place) {
-            case "subject":
-              singular = definition.singular?.subject ?? null;
-              plural = definition.plural?.subject ?? null;
-              break;
-            case "object":
-              singular = definition.singular?.object ?? null;
-              plural = definition.plural?.object ?? null;
-              break;
-          }
+        case "noun":
+          return partialNoun(definition, reduplicationCount, emphasis != null)
+            .map<WordUnitTranslation>((noun) => ({ type: "noun", ...noun }));
+        case "personal pronoun":
           return new Output<WordUnitTranslation>([{
             type: "noun",
-            determiner: [],
-            adjective: [],
-            singular,
-            plural,
-            reduplicationCount,
-            postAdjective: null,
-            emphasis: emphasis != null,
+            ...pronoun(
+              definition,
+              reduplicationCount,
+              emphasis != null,
+              place,
+            ),
           }]);
-        }
         case "adjective":
           return adjective(
             definition,
@@ -110,49 +60,14 @@ function defaultWordUnit(
               adjective,
             }));
         case "compound adjective":
-          if (reduplicationCount === 1) {
-            return compoundAdjective(definition, emphasis)
-              .map<WordUnitTranslation>((adjective) => ({
-                type: "adjective",
-                adjective,
-              }));
-          } else {
-            throw new UntranslatableError(
-              "reduplication",
-              "compound adjective",
-            );
-          }
-        case "verb": {
-          const object = new Output([definition.directObject])
-            .flatMap((object) => {
-              if (object != null) {
-                return noun(object, false, 1);
-              } else {
-                return new Output([null]);
-              }
-            });
-          const preposition = Output.combine(
-            ...definition.indirectObject
-              .flatMap((indirectObject) =>
-                noun(indirectObject.object, false, 1)
-                  .map((object) => ({
-                    preposition: unemphasized(indirectObject.preposition),
-                    object,
-                  }))
-              ),
-          );
-          return Output.combine(object, preposition)
-            .map<WordUnitTranslation>(([object, preposition]) => ({
-              type: "verb",
-              presentPlural: definition.presentPlural,
-              presentSingular: definition.presentSingular,
-              past: definition.past,
-              object,
-              preposition,
-              forObject: definition.forObject,
-              predicateType: definition.predicateType,
+          return compoundAdjective(definition, reduplicationCount, emphasis)
+            .map<WordUnitTranslation>((adjective) => ({
+              type: "adjective",
+              adjective,
             }));
-        }
+        case "verb":
+          return partialVerb(definition, reduplicationCount, emphasis != null)
+            .map<WordUnitTranslation>((verb) => ({ type: "verb", ...verb }));
         default:
           return new Output();
       }

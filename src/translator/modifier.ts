@@ -10,7 +10,6 @@ import {
   ExhaustedError,
   FilteredOutError,
   TranslationTodoError,
-  UntranslatableError,
 } from "./error.ts";
 import { noun, nounForms } from "./noun.ts";
 import { phrase } from "./phrase.ts";
@@ -119,18 +118,15 @@ export function defaultModifier(
                   adjective,
                 }));
             case "compound adjective":
-              if (reduplicationCount === 1) {
-                return compoundAdjective(definition, word.emphasis)
-                  .map<ModifierTranslation>((adjective) => ({
-                    type: "adjective",
-                    adjective,
-                  }));
-              } else {
-                throw new UntranslatableError(
-                  "reduplication",
-                  "compound adjective",
-                );
-              }
+              return compoundAdjective(
+                definition,
+                reduplicationCount,
+                word.emphasis,
+              )
+                .map<ModifierTranslation>((adjective) => ({
+                  type: "adjective",
+                  adjective,
+                }));
             case "adverb":
               return new Output<ModifierTranslation>([{
                 type: "adverb",

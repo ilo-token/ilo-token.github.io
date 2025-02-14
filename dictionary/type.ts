@@ -9,6 +9,10 @@ export type Noun = {
     name: string;
   };
 };
+export type Pronoun = {
+  singular: null | { subject: string; object: string };
+  plural: null | { subject: string; object: string };
+};
 export type DeterminerType =
   | "article"
   | "demonstrative"
@@ -62,11 +66,7 @@ export type Definition =
     noun: Noun;
     preposition: string;
   }
-  | {
-    type: "personal pronoun";
-    singular: null | { subject: string; object: string };
-    plural: null | { subject: string; object: string };
-  }
+  | ({ type: "personal pronoun" } & Pronoun)
   | ({ type: "determiner" } & Determiner)
   | { type: "numeral"; numeral: number }
   | ({ type: "adjective" } & Adjective)
