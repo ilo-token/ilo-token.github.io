@@ -12,7 +12,7 @@ export type RedundancySettings = "both" | "condensed" | "default only";
  * https://github.com/ilo-token/ilo-token.github.io/wiki/Settings-Help for more
  * info.
  */
-// may be extended but never change nor remove existing properties
+// may be extended but existing properties must stay unchanged
 export type Settings = {
   teloMisikeke: boolean;
   randomize: boolean;
@@ -22,6 +22,7 @@ export type Settings = {
   xAlaXPartialParsing: boolean;
   separateRepeatedModifiers: boolean;
 };
+// the default value may change
 export const defaultSettings: Readonly<Settings> = Object.freeze({
   teloMisikeke: true,
   randomize: false,
