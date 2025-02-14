@@ -21,7 +21,7 @@ export type PartialVerb = {
 };
 export type PartialCompoundVerb =
   | ({ type: "simple" } & PartialVerb)
-  | { type: "compound"; verb: Array<PartialVerb> };
+  | { type: "compound"; conjunction: string; verb: Array<PartialCompoundVerb> };
 export function condenseVerb(present: string, past: string): string {
   const [first, ...rest] = present.split(" ");
   const second = past.split(" ")[0];

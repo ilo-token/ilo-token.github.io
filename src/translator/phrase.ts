@@ -216,6 +216,106 @@ export function phrase(
       return new Output(new TranslationTodoError(phrase.type));
   }
 }
+function compoundNoun(
+  conjunction: "and" | "or",
+  phrase: Array<English.NounPhrase>,
+): English.NounPhrase {
+  const nouns = phrase
+    .flatMap((noun) => {
+      if (
+        noun.type === "compound" &&
+        noun.conjunction === conjunction
+      ) {
+        return noun.nouns;
+      } else {
+        return [noun];
+      }
+    });
+  let quantity: English.Quantity;
+  switch (conjunction) {
+    case "and":
+      quantity = "plural";
+      break;
+    case "or":
+      quantity = nouns[nouns.length - 1].quantity;
+      break;
+  }
+  return {
+    type: "compound",
+    conjunction,
+    nouns,
+    quantity,
+  };
+}
+function compoundAdjective(
+  conjunction: "and" | "or",
+  phrase: Array<English.AdjectivePhrase>,
+): English.AdjectivePhrase {
+  return {
+    type: "compound",
+    conjunction,
+    adjective: phrase
+      .flatMap((adjective) => {
+        if (
+          adjective.type === "compound" &&
+          adjective.conjunction === conjunction
+        ) {
+          return adjective.adjective;
+        } else {
+          return [adjective];
+        }
+      }),
+    emphasis: false,
+  };
+}
+function compoundVerb(
+  conjunction: "and" | "or",
+  phrase: Array<MultiplePhraseTranslation>,
+): PartialCompoundVerb {
+  return {
+    type: "compound",
+    conjunction,
+    verb: phrase.map<PartialCompoundVerb>((phrase) => {
+      switch (phrase.type) {
+        case "noun":
+        case "adjective": {
+          let subjectComplement: English.SubjectComplement;
+          switch (phrase.type) {
+            case "noun":
+              subjectComplement = {
+                type: "noun",
+                noun: phrase.noun,
+              };
+              break;
+            case "adjective":
+              subjectComplement = {
+                type: "adjective",
+                adjective: phrase.adjective,
+              };
+              break;
+          }
+          return {
+            type: "simple",
+            adverb: [],
+            presentPlural: "is",
+            presentSingular: "are",
+            past: "was",
+            wordEmphasis: false,
+            reduplicationCount: 1,
+            subjectComplement,
+            object: null,
+            preposition: [],
+            forObject: false,
+            predicateType: null,
+            phraseEmphasis: false,
+          };
+        }
+        case "verb":
+          return phrase.verb;
+      }
+    }),
+  };
+}
 export function multiplePhrases(
   phrases: TokiPona.MultiplePhrases,
   place: "subject" | "object",
@@ -235,72 +335,39 @@ export function multiplePhrases(
     case "anu": {
       const conjunction = CONJUNCTION[phrases.type];
       return Output.combine(
-        ...phrases.phrases.map((phrases) =>
-          multiplePhrases(phrases, place, andParticle)
-        ),
+        ...phrases.phrases
+          .map((phrases) => multiplePhrases(phrases, place, andParticle)),
       )
-        .filterMap<MultiplePhraseTranslation | null>((phrase) => {
+        .filterMap<null | MultiplePhraseTranslation>((phrase) => {
+          if (
+            phrase.some((phrase) =>
+              phrase.type === "adjective" && phrase.inWayPhrase != null
+            )
+          ) {
+            throw new FilteredOutError("in way phrase within compound");
+          }
           if (phrase.every((phrase) => phrase.type === "noun")) {
-            const nouns = phrase
-              .map((noun) => noun.noun)
-              .flatMap((noun) => {
-                if (
-                  noun.type === "compound" &&
-                  noun.conjunction === conjunction
-                ) {
-                  return noun.nouns;
-                } else {
-                  return [noun];
-                }
-              });
-            let quantity: English.Quantity;
-            switch (conjunction) {
-              case "and":
-                quantity = "plural";
-                break;
-              case "or":
-                quantity = nouns[nouns.length - 1].quantity;
-                break;
-            }
             return {
               type: "noun",
-              noun: {
-                type: "compound",
+              noun: compoundNoun(
                 conjunction,
-                nouns,
-                preposition: [],
-                quantity,
-              },
+                phrase.map((phrase) => phrase.noun),
+              ),
             };
           } else if (
-            phrase.every((phrase) =>
-              phrase.type === "adjective" && phrase.inWayPhrase == null
-            )
+            andParticle !== "en" &&
+            phrase.every((phrase) => phrase.type === "adjective")
           ) {
             return {
               type: "adjective",
-              adjective: {
-                type: "compound",
+              adjective: compoundAdjective(
                 conjunction,
-                adjective: phrase
-                  .map((adjective) =>
-                    (adjective as PhraseTranslation & { type: "adjective" })
-                      .adjective
-                  )
-                  .flatMap((adjective) => {
-                    if (
-                      adjective.type === "compound" &&
-                      adjective.conjunction === conjunction
-                    ) {
-                      return adjective.adjective;
-                    } else {
-                      return [adjective];
-                    }
-                  }),
-                emphasis: false,
-              },
+                phrase.map((phrase) => phrase.adjective),
+              ),
               inWayPhrase: null,
             };
+          } else if (andParticle !== "en") {
+            return { type: "verb", verb: compoundVerb(conjunction, phrase) };
           } else {
             return null;
           }
