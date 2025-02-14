@@ -1,8 +1,8 @@
 import * as Dictionary from "../../dictionary/type.ts";
 import { repeatWithSpace } from "../misc.ts";
-import { nounForms, PartialNoun } from "./noun.ts";
-import * as English from "./ast.ts";
 import { Output } from "../output.ts";
+import * as English from "./ast.ts";
+import { nounForms, PartialNoun } from "./noun.ts";
 
 function pronounForms(
   pronoun: Dictionary.Pronoun,
