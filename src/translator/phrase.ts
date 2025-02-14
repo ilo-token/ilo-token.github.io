@@ -3,12 +3,12 @@ import { Output } from "../output.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as Composer from "../parser/composer.ts";
 import { AdjectiveWithInWay, fixAdjective } from "./adjective.ts";
+import { fixAdverb } from "./adverb.ts";
 import * as English from "./ast.ts";
 import { findNumber, fixDeterminer } from "./determiner.ts";
 import {
   ExhaustedError,
-  FilteredOutError,
-  TranslationTodoError,
+  TranslationTodoError
 } from "./error.ts";
 import { CONJUNCTION } from "./misc.ts";
 import {
@@ -121,13 +121,10 @@ function adjectivePhrase(
   return Output.from(() => {
     switch (adjective.type) {
       case "simple": {
-        const adverb = [
+        const adverb = fixAdverb([
           ...modifier.adverb.slice().reverse(),
           ...adjective.adverb,
-        ];
-        if (adverb.length > 1) {
-          throw new FilteredOutError("multiple adverbs");
-        }
+        ]);
         return new Output([{
           adjective: {
             ...adjective,
@@ -154,14 +151,10 @@ function verbPhrase(
   verb: PartialVerb,
   modifier: AdverbialModifier,
 ): PartialVerb {
-  // TODO: this is copy pasted, avoid it
-  const adverb = [
+  const adverb = fixAdverb([
     ...modifier.adverb.slice().reverse(),
     ...verb.adverb,
-  ];
-  if (adverb.length > 1) {
-    throw new FilteredOutError("multiple adverbs");
-  }
+  ]);
   const preposition = [
     ...verb.preposition,
     ...nullableAsArray(modifier.inWayPhrase)
