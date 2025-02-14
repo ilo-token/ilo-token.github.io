@@ -184,7 +184,7 @@ export function phrase(
 export function multiplePhrases(
   phrases: TokiPona.MultiplePhrases,
   place: "subject" | "object",
-  particle: string,
+  andParticle: string,
 ): Output<PhraseTranslation> {
   switch (phrases.type) {
     case "single":
@@ -194,7 +194,7 @@ export function multiplePhrases(
       const conjunction = CONJUNCTION[phrases.type];
       return Output.combine(
         ...phrases.phrases.map((phrases) =>
-          multiplePhrases(phrases, place, particle)
+          multiplePhrases(phrases, place, andParticle)
         ),
       )
         .filterMap<PhraseTranslation | null>((phrase) => {
@@ -265,7 +265,7 @@ export function multiplePhrases(
           }
         })
         .addErrorWhenNone(() =>
-          new ExhaustedError(Composer.multiplePhrases(phrases, particle))
+          new ExhaustedError(Composer.multiplePhrases(phrases, andParticle))
         );
     }
   }
