@@ -51,13 +51,8 @@ export type VerbPhrase =
     type: "default";
     adverb: Array<Word>;
     verb: Word;
-    object: null | NounPhrase;
-    preposition: Array<Preposition>;
-  }
-  | {
-    type: "linking";
-    linkingVerb: Word;
     subjectComplement: SubjectComplement;
+    object: null | NounPhrase;
     preposition: Array<Preposition>;
     hideVerb: boolean;
   }
@@ -65,6 +60,7 @@ export type VerbPhrase =
     type: "compound";
     conjunction: string;
     verbs: Array<VerbPhrase>;
+    object: null | NounPhrase;
     preposition: Array<Preposition>;
   };
 export type Clause =

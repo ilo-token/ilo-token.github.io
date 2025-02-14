@@ -88,24 +88,17 @@ function subjectComplement(
 function verb(phrase: English.VerbPhrase, depth: number): string {
   let text: string;
   switch (phrase.type) {
-    case "default":
-      text = [
-        ...phrase.adverb.map(word),
-        word(phrase.verb),
-        ...nullableAsArray(phrase.object).map(noun, 0),
-      ]
-        .join(" ");
-      break;
-    case "linking": {
-      let linkingVerb: Array<string>;
+    case "default": {
+      let verbText: Array<string>;
       if (phrase.hideVerb) {
-        linkingVerb = [];
+        verbText = [];
       } else {
-        linkingVerb = [word(phrase.linkingVerb)];
+        verbText = [word(phrase.verb)];
       }
       text = [
-        ...linkingVerb,
-        subjectComplement(phrase.subjectComplement),
+        ...phrase.adverb.map(word),
+        ...verbText,
+        ...nullableAsArray(phrase.subjectComplement).map(subjectComplement),
       ]
         .join(" ");
       break;
@@ -117,7 +110,12 @@ function verb(phrase: English.VerbPhrase, depth: number): string {
         depth,
       );
   }
-  return [text, ...phrase.preposition.map(preposition)].join(" ");
+  return [
+    text,
+    ...nullableAsArray(phrase.object).map(noun, 0),
+    ...phrase.preposition.map(preposition),
+  ]
+    .join(" ");
 }
 function defaultClause(clause: English.Clause & { type: "default" }): string {
   let subject: Array<string>;

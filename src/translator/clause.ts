@@ -35,15 +35,14 @@ function phraseClause(
                 emphasis: false,
               },
               verb: {
-                type: "linking",
-                linkingVerb: {
-                  word: "is",
-                  emphasis: false,
-                },
+                type: "default",
+                adverb: [],
+                verb: unemphasized("is"),
                 subjectComplement: {
                   type: "adjective",
                   adjective: phrase.adjective,
                 },
+                object: null,
                 preposition: nullableAsArray(phrase.inWayPhrase)
                   .map((object) => ({
                     preposition: unemphasized("in"),
