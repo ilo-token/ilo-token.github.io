@@ -11,7 +11,11 @@ import {
   TranslationTodoError,
 } from "./error.ts";
 import { CONJUNCTION } from "./misc.ts";
-import { AdjectivalModifier, AdverbialModifier, multipleModifiers } from "./modifier.ts";
+import {
+  AdjectivalModifier,
+  AdverbialModifier,
+  multipleModifiers,
+} from "./modifier.ts";
 import { nounForms, PartialNoun } from "./noun.ts";
 import { PartialVerb } from "./verb.ts";
 import { wordUnit } from "./word-unit.ts";
@@ -26,82 +30,88 @@ function nounPhrase(
   partialNoun: PartialNoun,
   modifier: AdjectivalModifier,
 ): Output<English.NounPhrase> {
-  const determiner = fixDeterminer([
-    ...modifier.determiner.slice().reverse(),
-    ...partialNoun.determiner,
-  ]);
-  const quantity = findNumber(determiner);
-  const adjective = fixAdjective([
-    ...modifier.adjective.slice().reverse(),
-    ...partialNoun.adjective,
-  ]);
-  let postAdjective: null | {
-    adjective: string;
-    name: string;
-  };
-  if (partialNoun.postAdjective != null && modifier.name != null) {
-    return new Output();
-  } else if (partialNoun.postAdjective != null) {
-    postAdjective = partialNoun.postAdjective;
-  } else if (modifier.name != null) {
-    postAdjective = { adjective: "named", name: modifier.name };
-  } else {
-    postAdjective = null;
-  }
-  const preposition = [
-    ...nullableAsArray(modifier.inPositionPhrase)
-      .map((object) => ({
-        preposition: unemphasized("in"),
-        object,
-      })),
-    ...nullableAsArray(modifier.ofPhrase)
-      .map((object) => ({
-        preposition: unemphasized("of"),
-        object,
-      })),
-  ];
-  if (
-    preposition.length > 1 ||
-    (preposition.length > 0 && postAdjective != null)
-  ) {
-    return new Output();
-  }
-  const headNoun = nounForms(partialNoun.singular, partialNoun.plural, quantity)
-    .map(({ noun, quantity }) => ({
-      type: "simple" as const,
-      determiner,
-      adjective,
-      noun: {
-        word: repeatWithSpace(noun, partialNoun.reduplicationCount),
-        emphasis: partialNoun.emphasis,
-      },
+  return Output.from(() => {
+    const determiner = fixDeterminer([
+      ...modifier.determiner.slice().reverse(),
+      ...partialNoun.determiner,
+    ]);
+    const quantity = findNumber(determiner);
+    const adjective = fixAdjective([
+      ...modifier.adjective.slice().reverse(),
+      ...partialNoun.adjective,
+    ]);
+    let postAdjective: null | {
+      adjective: string;
+      name: string;
+    };
+    if (partialNoun.postAdjective != null && modifier.name != null) {
+      return new Output();
+    } else if (partialNoun.postAdjective != null) {
+      postAdjective = partialNoun.postAdjective;
+    } else if (modifier.name != null) {
+      postAdjective = { adjective: "named", name: modifier.name };
+    } else {
+      postAdjective = null;
+    }
+    const preposition = [
+      ...nullableAsArray(modifier.inPositionPhrase)
+        .map((object) => ({
+          preposition: unemphasized("in"),
+          object,
+        })),
+      ...nullableAsArray(modifier.ofPhrase)
+        .map((object) => ({
+          preposition: unemphasized("of"),
+          object,
+        })),
+    ];
+    if (
+      preposition.length > 1 ||
+      (preposition.length > 0 && postAdjective != null)
+    ) {
+      return new Output();
+    }
+    const headNoun = nounForms(
+      partialNoun.singular,
+      partialNoun.plural,
       quantity,
-      postCompound: null,
-      postAdjective,
-      preposition,
-      emphasis: emphasis &&
-        modifier.nounPreposition == null,
-    }));
-  let noun: Output<English.NounPhrase>;
-  if (modifier.nounPreposition == null) {
-    noun = headNoun;
-  } else if (
-    modifier.ofPhrase == null && modifier.inPositionPhrase == null
-  ) {
-    noun = headNoun.map((noun) => ({
-      ...modifier.nounPreposition!.noun as English.NounPhrase & {
-        type: "simple";
-      },
-      preposition: [{
-        preposition: unemphasized(modifier.nounPreposition!.preposition),
-        object: noun,
-      }],
-      emphasis,
-    }));
-  } else {
-    noun = new Output();
-  }
-  return noun;
+    )
+      .map(({ noun, quantity }) => ({
+        type: "simple" as const,
+        determiner,
+        adjective,
+        noun: {
+          word: repeatWithSpace(noun, partialNoun.reduplicationCount),
+          emphasis: partialNoun.emphasis,
+        },
+        quantity,
+        postCompound: null,
+        postAdjective,
+        preposition,
+        emphasis: emphasis &&
+          modifier.nounPreposition == null,
+      }));
+    let noun: Output<English.NounPhrase>;
+    if (modifier.nounPreposition == null) {
+      noun = headNoun;
+    } else if (
+      modifier.ofPhrase == null && modifier.inPositionPhrase == null
+    ) {
+      noun = headNoun.map((noun) => ({
+        ...modifier.nounPreposition!.noun as English.NounPhrase & {
+          type: "simple";
+        },
+        preposition: [{
+          preposition: unemphasized(modifier.nounPreposition!.preposition),
+          object: noun,
+        }],
+        emphasis,
+      }));
+    } else {
+      noun = new Output();
+    }
+    return noun;
+  });
 }
 function adjectivePhrase(
   emphasis: boolean,
