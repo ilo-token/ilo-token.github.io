@@ -53,7 +53,6 @@ export type VerbPhrase =
     verb: Word;
     object: null | NounPhrase;
     preposition: Array<Preposition>;
-    hideVerb: boolean;
   }
   | {
     type: "linking";
@@ -64,8 +63,8 @@ export type VerbPhrase =
   }
   | {
     type: "compound";
-    conjunction: Word;
-    verbs: VerbPhrase;
+    conjunction: string;
+    verbs: Array<VerbPhrase>;
     preposition: Array<Preposition>;
   };
 export type Clause =

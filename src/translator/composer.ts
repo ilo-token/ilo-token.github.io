@@ -1,5 +1,5 @@
 import { nullableAsArray } from "../misc.ts";
-import { Output, TodoError } from "../output.ts";
+import { Output } from "../output.ts";
 import { parse } from "../parser/parser.ts";
 import * as English from "./ast.ts";
 import { multipleSentences } from "./sentence.ts";
@@ -7,12 +7,12 @@ import { multipleSentences } from "./sentence.ts";
 const EMPHASIS_STARTING_TAG = "<strong>";
 const EMPHASIS_ENDING_TAG = "</strong>";
 
-class ComposingTodoError extends TodoError {
-  constructor(type: string) {
-    super(`composing ${type}`);
-    this.name = "ComposingTodoError";
-  }
-}
+// class ComposingTodoError extends TodoError {
+//   constructor(type: string) {
+//     super(`composing ${type}`);
+//     this.name = "ComposingTodoError";
+//   }
+// }
 function word(word: English.Word): string {
   if (word.emphasis) {
     return `${EMPHASIS_STARTING_TAG}${word.word}${EMPHASIS_ENDING_TAG}`;
@@ -75,12 +75,70 @@ function adjective(phrases: English.AdjectivePhrase, depth: number): string {
 function preposition(preposition: English.Preposition): string {
   return `${word(preposition.preposition)} ${noun(preposition.object, 0)}`;
 }
+function subjectComplement(
+  subjectComplement: English.SubjectComplement,
+): string {
+  switch (subjectComplement.type) {
+    case "noun":
+      return noun(subjectComplement.noun, 0);
+    case "adjective":
+      return adjective(subjectComplement.adjective, 0);
+  }
+}
+function verb(phrase: English.VerbPhrase, depth: number): string {
+  let text: string;
+  switch (phrase.type) {
+    case "default":
+      text = [
+        ...phrase.adverb.map(word),
+        word(phrase.verb),
+        ...nullableAsArray(phrase.object).map(noun, 0),
+      ]
+        .join(" ");
+      break;
+    case "linking": {
+      let linkingVerb: Array<string>;
+      if (phrase.hideVerb) {
+        linkingVerb = [];
+      } else {
+        linkingVerb = [word(phrase.linkingVerb)];
+      }
+      text = [
+        ...linkingVerb,
+        subjectComplement(phrase.subjectComplement),
+      ]
+        .join(" ");
+      break;
+    }
+    case "compound":
+      text = compound(
+        phrase.verbs.map((item) => verb(item, depth + 1)),
+        phrase.conjunction,
+        depth,
+      );
+  }
+  return [text, ...phrase.preposition.map(preposition)].join(" ");
+}
+function defaultClause(clause: English.Clause & { type: "default" }): string {
+  let subject: Array<string>;
+  if (clause.hideSubject) {
+    subject = [];
+  } else {
+    subject = [noun(clause.subject, 0)];
+  }
+  return [
+    ...subject,
+    verb(clause.verb, 0),
+    ...clause.preposition.map(preposition),
+  ]
+    .join(" ");
+}
 function clause(ast: English.Clause): string {
   switch (ast.type) {
     case "free form":
       return ast.text;
     case "default":
-      throw new ComposingTodoError(ast.type);
+      return defaultClause(ast);
     case "interjection":
       return word(ast.interjection);
     case "subject phrase":
