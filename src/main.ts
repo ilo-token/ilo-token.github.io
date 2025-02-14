@@ -264,7 +264,12 @@ function main(): void {
       addWord();
     }
   });
+  function resetTrailingSpace(): void {
+    customDictionaryTextBox.value =
+      `${customDictionaryTextBox.value.trimEnd()}\n\n`;
+  }
   function addWord(): void {
+    resetTrailingSpace();
     const word = addWordTextBox.value.trim();
     if (/^[a-z][a-zA-Z]*$/.test(word)) {
       let definitions: string;
@@ -274,9 +279,9 @@ function main(): void {
         definitions = asComment(EMPTY_DEFINITION_PLACEHOLDER)
           .replaceAll(/^/gm, "  ");
       }
-      customDictionaryTextBox.value += `\n${word}:${definitions}\n`;
+      customDictionaryTextBox.value += `${word}:${definitions}\n`;
     } else {
-      customDictionaryTextBox.value += `\n${asComment(INVALID_WORD_ERROR)}\n`;
+      customDictionaryTextBox.value += `${asComment(INVALID_WORD_ERROR)}\n`;
     }
   }
   discardButton.addEventListener("click", () => {
@@ -296,7 +301,8 @@ function main(): void {
       } else {
         message = DICTIONARY_ERROR_UNFIXABLE_MESSAGE;
       }
-      customDictionaryTextBox.value += `\n${asComment(message)}\n`;
+      resetTrailingSpace();
+      customDictionaryTextBox.value += `${asComment(message)}\n`;
       for (const message of errors.map(extractErrorMessage)) {
         customDictionaryTextBox.value += `${
           asComment(`- ${message.replaceAll(NEWLINES, "$&  ")}`)
