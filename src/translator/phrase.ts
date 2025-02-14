@@ -189,13 +189,13 @@ function defaultPhrase(
         headWord.type === "adjective" && modifier.type === "adverbial"
       ) {
         return new Output([{
-          type: "adjective",
           ...adjectivePhrase(emphasis, headWord.adjective, modifier),
+          type: "adjective",
         }]);
       } else if (headWord.type === "verb" && modifier.type === "adverbial") {
         return new Output([{
-          type: "verb",
           ...verbPhrase(emphasis, headWord, modifier),
+          type: "verb",
         }]);
       } else {
         return new Output();

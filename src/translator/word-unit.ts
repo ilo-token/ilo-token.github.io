@@ -38,16 +38,16 @@ function defaultWordUnit(
       switch (definition.type) {
         case "noun":
           return partialNoun(definition, reduplicationCount, emphasis != null)
-            .map<WordUnitTranslation>((noun) => ({ type: "noun", ...noun }));
+            .map<WordUnitTranslation>((noun) => ({ ...noun, type: "noun" }));
         case "personal pronoun":
           return new Output<WordUnitTranslation>([{
-            type: "noun",
             ...partialPronoun(
               definition,
               reduplicationCount,
               emphasis != null,
               place,
             ),
+            type: "noun",
           }]);
         case "adjective":
           return adjective(
@@ -71,7 +71,7 @@ function defaultWordUnit(
             }));
         case "verb":
           return partialVerb(definition, reduplicationCount, emphasis != null)
-            .map<WordUnitTranslation>((verb) => ({ type: "verb", ...verb }));
+            .map<WordUnitTranslation>((verb) => ({ ...verb, type: "verb" }));
         default:
           return new Output();
       }

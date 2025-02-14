@@ -205,9 +205,9 @@ function noun(): Parser<Noun> {
         postAdjective = { adjective, name };
       }
       return {
+        ...noun,
         determiner,
         adjective,
-        ...noun,
         postAdjective,
       };
     });
@@ -324,7 +324,7 @@ function semicolon(): Parser<string> {
 const DEFINITION = cached(choiceOnlyOne<Definition>(
   adjective()
     .skip(semicolon())
-    .map((adjective) => ({ type: "adjective", ...adjective })),
+    .map((adjective) => ({ ...adjective, type: "adjective" })),
   sequence(
     adjective().skip(keyword("and")).skip(tag(keyword("c"))),
     adjective(),
@@ -340,7 +340,7 @@ const DEFINITION = cached(choiceOnlyOne<Definition>(
     .map((adjective) => ({ type: "compound adjective", adjective })),
   noun()
     .skip(semicolon())
-    .map((noun) => ({ type: "noun", ...noun })),
+    .map((noun) => ({ ...noun, type: "noun" })),
   sequence(
     verbOnly(keyword("v")),
     optionalAll(template(keyword("object"))),
@@ -352,8 +352,8 @@ const DEFINITION = cached(choiceOnlyOne<Definition>(
   )
     .skip(semicolon())
     .map(([verb, forObject, indirectObject]) => ({
-      type: "verb",
       ...verb,
+      type: "verb",
       directObject: null,
       indirectObject,
       forObject: forObject != null,
@@ -366,8 +366,8 @@ const DEFINITION = cached(choiceOnlyOne<Definition>(
   )
     .skip(semicolon())
     .map(([verb, directObject, preposition]) => ({
-      type: "verb",
       ...verb,
+      type: "verb",
       directObject,
       indirectObject: [],
       forObject: preposition ?? false,
@@ -387,7 +387,7 @@ const DEFINITION = cached(choiceOnlyOne<Definition>(
     .map((adverb) => ({ type: "adverb", adverb })),
   determiner()
     .skip(semicolon())
-    .map((determiner) => ({ type: "determiner", ...determiner })),
+    .map((determiner) => ({ ...determiner, type: "determiner" })),
   simpleUnit("prep")
     .skip(template(sequence(keyword("indirect"), keyword("object"))))
     .skip(semicolon())
@@ -406,8 +406,8 @@ const DEFINITION = cached(choiceOnlyOne<Definition>(
     .skip(template(keyword("predicate")))
     .skip(semicolon())
     .map((verb) => ({
-      type: "verb",
       ...verb,
+      type: "verb",
       directObject: null,
       indirectObject: [],
       forObject: false,
@@ -458,8 +458,8 @@ const DEFINITION = cached(choiceOnlyOne<Definition>(
   verbOnly(sequence(keyword("v"), keyword("linking")))
     .skip(template(keyword("predicate")))
     .skip(semicolon()).map((verb) => ({
-      type: "verb",
       ...verb,
+      type: "verb",
       directObject: null,
       indirectObject: [],
       forObject: false,
@@ -468,8 +468,8 @@ const DEFINITION = cached(choiceOnlyOne<Definition>(
   forms().skip(tag(keyword("f")))
     .skip(semicolon())
     .map((unit) => ({
-      type: "filler",
       ...detectRepetition(unit),
+      type: "filler",
     })),
 ));
 function singleWord(): Parser<string> {

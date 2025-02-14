@@ -28,9 +28,9 @@ export function partialPronoun(
   place: "subject" | "object",
 ): PartialNoun {
   return {
+    ...pronounForms(pronoun, place),
     determiner: [],
     adjective: [],
-    ...pronounForms(pronoun, place),
     reduplicationCount,
     postAdjective: null,
     emphasis,
