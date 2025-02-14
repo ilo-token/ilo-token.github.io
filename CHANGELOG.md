@@ -33,6 +33,8 @@ refactoring to make the code easier to work with.
   sentence separator.
 - Recognize multiline text. Newlines are either ignored or treated as sentence
   terminator.
+- New setting called multiline input mode. This enables users to insert newline
+  on the text box. Ctrl + Enter is used to start translation.
 - Fixed UCSUR rendering.
 - Fixed ordering issue in Firefox. Thanks akesi Ale!
 - Implement advanced parsing settings.
