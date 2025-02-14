@@ -108,7 +108,7 @@ function sentence(sentence: English.Sentence): string {
   return `${sentence.clauses.map(clause).join(", ")}${sentence.punctuation}`;
 }
 export function translate(src: string): Output<string> {
-  return Output.from(() => parse(src))
+  return parse(src)
     .flatMap(multipleSentences)
     .map((sentences) => sentences.map(sentence).join(" "));
 }

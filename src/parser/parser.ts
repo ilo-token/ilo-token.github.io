@@ -843,9 +843,11 @@ const FULL_PARSER = spaces()
   ));
 /** Turns string into Toki Pona AST. */
 export function parse(src: string): Output<MultipleSentences> {
-  if (src.trim().length > 500) {
-    throw new UnrecognizedError("long text");
-  } else {
-    return FULL_PARSER.parse(src);
-  }
+  return Output.from(() => {
+    if (src.trim().length > 500) {
+      throw new UnrecognizedError("long text");
+    } else {
+      return FULL_PARSER.parse(src);
+    }
+  });
 }
