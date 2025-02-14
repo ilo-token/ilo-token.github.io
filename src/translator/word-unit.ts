@@ -39,7 +39,6 @@ function defaultWordUnit(
   reduplicationCount: number,
   emphasis: null | TokiPona.Emphasis,
   place: "subject" | "object",
-  subjectQuantity: null | English.Quantity,
 ): Output<WordUnitTranslation> {
   return new Output(dictionary[word].definitions)
     .flatMap((definition) => {
@@ -118,7 +117,6 @@ function defaultWordUnit(
 export function wordUnit(
   wordUnit: TokiPona.WordUnit,
   place: "subject" | "object",
-  subjectQuantity: null | English.Quantity,
 ): Output<WordUnitTranslation> {
   switch (wordUnit.type) {
     case "number":
@@ -141,7 +139,6 @@ export function wordUnit(
         reduplicationCount,
         wordUnit.emphasis,
         place,
-        subjectQuantity,
       );
     }
   }
