@@ -162,8 +162,7 @@ function sentence(
     const laClauses =
       (sentence.laClauses as Array<TokiPona.FullClause & { type: "default" }>)
         .map(({ clause }) => clause);
-    const givenClauses = Output
-      .combine(...laClauses.map(clause))
+    const givenClauses = Output.combine(...laClauses.map(clause))
       .map((clauses) =>
         clauses.map<English.Clause>((clause) => ({
           type: "dependent",

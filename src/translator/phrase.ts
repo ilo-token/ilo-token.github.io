@@ -192,12 +192,11 @@ export function multiplePhrases(
     case "and conjunction":
     case "anu": {
       const conjunction = CONJUNCTION[phrases.type];
-      return Output
-        .combine(
-          ...phrases.phrases.map((phrases) =>
-            multiplePhrases(phrases, place, particle)
-          ),
-        )
+      return Output.combine(
+        ...phrases.phrases.map((phrases) =>
+          multiplePhrases(phrases, place, particle)
+        ),
+      )
         .filterMap<PhraseTranslation | null>((phrase) => {
           if (phrase.every((phrase) => phrase.type === "noun")) {
             const nouns = phrase

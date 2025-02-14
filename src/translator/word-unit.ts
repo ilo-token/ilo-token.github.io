@@ -44,12 +44,14 @@ function defaultWordUnit(
     .flatMap((definition) => {
       switch (definition.type) {
         case "noun": {
-          const engDeterminer = Output
-            .combine(...definition.determiner
-              .map((definition) => determiner(definition, false, 1)));
-          const engAdjective = Output
-            .combine(...definition.adjective
-              .map((definition) => adjective(definition, null, 1)));
+          const engDeterminer = Output.combine(
+            ...definition.determiner
+              .map((definition) => determiner(definition, false, 1)),
+          );
+          const engAdjective = Output.combine(
+            ...definition.adjective
+              .map((definition) => adjective(definition, null, 1)),
+          );
           return Output.combine(engDeterminer, engAdjective)
             .map<WordUnitTranslation>(([determiner, adjective]) => ({
               type: "noun",

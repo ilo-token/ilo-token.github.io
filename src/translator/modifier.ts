@@ -227,8 +227,7 @@ export type MultipleModifierTranslation =
 export function multipleModifiers(
   modifiers: Array<TokiPona.Modifier>,
 ): Output<MultipleModifierTranslation> {
-  return Output
-    .combine(...modifiers.map(modifier))
+  return Output.combine(...modifiers.map(modifier))
     .flatMap((modifiers) => {
       const noun = modifiers
         .filter((modifier) => modifier.type === "noun")
