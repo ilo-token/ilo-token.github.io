@@ -60,7 +60,11 @@ function defaultWordUnit(
               adjective,
             }));
         case "compound adjective":
-          return compoundAdjective(definition, reduplicationCount, emphasis)
+          return compoundAdjective(
+            definition.adjective,
+            reduplicationCount,
+            emphasis,
+          )
             .map<WordUnitTranslation>((adjective) => ({
               type: "adjective",
               adjective,

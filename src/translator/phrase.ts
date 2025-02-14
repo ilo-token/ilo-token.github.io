@@ -2,7 +2,7 @@ import { nullableAsArray, repeatWithSpace } from "../misc.ts";
 import { Output } from "../output.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as Composer from "../parser/composer.ts";
-import { fixAdjective } from "./adjective.ts";
+import { AdjectiveWithInWay, fixAdjective } from "./adjective.ts";
 import * as English from "./ast.ts";
 import { findNumber, fixDeterminer } from "./determiner.ts";
 import {
@@ -11,41 +11,38 @@ import {
   TranslationTodoError,
 } from "./error.ts";
 import { CONJUNCTION } from "./misc.ts";
-import { multipleModifiers, MultipleModifierTranslation } from "./modifier.ts";
-import { nounForms } from "./noun.ts";
-import { wordUnit, WordUnitTranslation } from "./word-unit.ts";
+import { AdjectivalModifier, AdverbialModifier, multipleModifiers } from "./modifier.ts";
+import { nounForms, PartialNoun } from "./noun.ts";
+import { PartialVerb } from "./verb.ts";
+import { wordUnit } from "./word-unit.ts";
 import { unemphasized } from "./word.ts";
 
 type PhraseTranslation =
   | { type: "noun"; noun: English.NounPhrase }
-  | {
-    type: "adjective";
-    adjective: English.AdjectivePhrase;
-    inWayPhrase: null | English.NounPhrase;
-  }
-  | { type: "verb"; verb: English.VerbPhrase };
+  | ({ type: "adjective" } & AdjectiveWithInWay)
+  | ({ type: "verb" } & PartialVerb);
 function nounPhrase(
   emphasis: boolean,
-  headWord: WordUnitTranslation & { type: "noun" },
-  modifier: MultipleModifierTranslation & { type: "adjectival" },
-): Output<PhraseTranslation & { type: "noun" }> {
+  partialNoun: PartialNoun,
+  modifier: AdjectivalModifier,
+): Output<English.NounPhrase> {
   const determiner = fixDeterminer([
     ...modifier.determiner.slice().reverse(),
-    ...headWord.determiner,
+    ...partialNoun.determiner,
   ]);
   const quantity = findNumber(determiner);
   const adjective = fixAdjective([
     ...modifier.adjective.slice().reverse(),
-    ...headWord.adjective,
+    ...partialNoun.adjective,
   ]);
   let postAdjective: null | {
     adjective: string;
     name: string;
   };
-  if (headWord.postAdjective != null && modifier.name != null) {
+  if (partialNoun.postAdjective != null && modifier.name != null) {
     return new Output();
-  } else if (headWord.postAdjective != null) {
-    postAdjective = headWord.postAdjective;
+  } else if (partialNoun.postAdjective != null) {
+    postAdjective = partialNoun.postAdjective;
   } else if (modifier.name != null) {
     postAdjective = { adjective: "named", name: modifier.name };
   } else {
@@ -69,14 +66,14 @@ function nounPhrase(
   ) {
     return new Output();
   }
-  const headNoun = nounForms(headWord.singular, headWord.plural, quantity)
+  const headNoun = nounForms(partialNoun.singular, partialNoun.plural, quantity)
     .map(({ noun, quantity }) => ({
       type: "simple" as const,
       determiner,
       adjective,
       noun: {
-        word: repeatWithSpace(noun, headWord.reduplicationCount),
-        emphasis: headWord.emphasis,
+        word: repeatWithSpace(noun, partialNoun.reduplicationCount),
+        emphasis: partialNoun.emphasis,
       },
       quantity,
       postCompound: null,
@@ -104,18 +101,14 @@ function nounPhrase(
   } else {
     noun = new Output();
   }
-  return noun
-    .map<PhraseTranslation & { type: "noun" }>(
-      (noun) => ({ type: "noun", noun }),
-    );
+  return noun;
 }
 function adjectivePhrase(
   emphasis: boolean,
-  headWord: WordUnitTranslation & { type: "adjective" },
-  modifier: MultipleModifierTranslation & { type: "adverbial" },
-): Output<PhraseTranslation & { type: "adjective" }> {
+  adjective: English.AdjectivePhrase,
+  modifier: AdverbialModifier,
+): Output<AdjectiveWithInWay> {
   return Output.from(() => {
-    const adjective = headWord.adjective;
     switch (adjective.type) {
       case "simple": {
         const adverb = [
@@ -125,8 +118,7 @@ function adjectivePhrase(
         if (adverb.length > 1) {
           throw new FilteredOutError("multiple adverbs");
         }
-        return new Output<PhraseTranslation & { type: "adjective" }>([{
-          type: "adjective",
+        return new Output([{
           adjective: {
             ...adjective,
             adverb,
@@ -137,8 +129,7 @@ function adjectivePhrase(
       }
       case "compound":
         if (modifier.adverb.length === 0) {
-          return new Output<PhraseTranslation & { type: "adjective" }>([{
-            type: "adjective",
+          return new Output([{
             adjective,
             inWayPhrase: modifier.inWayPhrase,
           }]);
@@ -159,11 +150,14 @@ function defaultPhrase(
   )
     .flatMap<PhraseTranslation>(([headWord, modifier]) => {
       if (headWord.type === "noun" && modifier.type === "adjectival") {
-        return nounPhrase(emphasis, headWord, modifier);
+        return nounPhrase(emphasis, headWord, modifier)
+          .map((noun) => ({ type: "noun", noun }));
       } else if (
         headWord.type === "adjective" && modifier.type === "adverbial"
       ) {
-        return adjectivePhrase(emphasis, headWord, modifier);
+        return adjectivePhrase(emphasis, headWord.adjective, modifier).map(
+          (adjective) => ({ type: "adjective", ...adjective }),
+        );
       } else {
         return new Output();
       }

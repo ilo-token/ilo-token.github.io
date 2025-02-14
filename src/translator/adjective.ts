@@ -6,6 +6,10 @@ import * as English from "./ast.ts";
 import { UntranslatableError } from "./error.ts";
 import { unemphasized } from "./word.ts";
 
+export type AdjectiveWithInWay = {
+  adjective: English.AdjectivePhrase;
+  inWayPhrase: null | English.NounPhrase;
+};
 function so(emphasis: null | TokiPona.Emphasis): string {
   if (emphasis == null) {
     throw new UntranslatableError("missing emphasis", "adverb");
@@ -45,14 +49,14 @@ export function adjective(
     }));
 }
 export function compoundAdjective(
-  definition: Dictionary.Definition & { type: "compound adjective" },
+  adjectives: Array<Dictionary.Adjective>,
   reduplicationCount: number,
   emphasis: null | TokiPona.Emphasis,
 ): Output<English.AdjectivePhrase & { type: "compound" }> {
   return Output.from(() => {
     if (reduplicationCount === 1) {
       return Output.combine(
-        ...definition.adjective
+        ...adjectives
           .map((definition) => adjective(definition, emphasis, 1)),
       )
         .map((adjective) => ({

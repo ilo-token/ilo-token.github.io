@@ -23,6 +23,21 @@ export type ModifierTranslation =
   | { type: "adverb"; adverb: English.Word }
   | { type: "name"; name: string }
   | { type: "in position phrase"; noun: English.NounPhrase };
+export type AdjectivalModifier = {
+  nounPreposition: null | { noun: English.NounPhrase; preposition: string };
+  determiner: Array<English.Determiner>;
+  adjective: Array<English.AdjectivePhrase>;
+  name: null | string;
+  ofPhrase: null | English.NounPhrase;
+  inPositionPhrase: null | English.NounPhrase;
+};
+export type AdverbialModifier = {
+  adverb: Array<English.Word>;
+  inWayPhrase: null | English.NounPhrase;
+};
+export type MultipleModifierTranslation =
+  | ({ type: "adjectival" } & AdjectivalModifier)
+  | ({ type: "adverbial" } & AdverbialModifier);
 function numberModifier(
   word: number,
   emphasis: boolean,
@@ -119,7 +134,7 @@ export function defaultModifier(
                 }));
             case "compound adjective":
               return compoundAdjective(
-                definition,
+                definition.adjective,
                 reduplicationCount,
                 word.emphasis,
               )
@@ -205,21 +220,6 @@ function modifier(
       return new Output(new TranslationTodoError(modifier.type));
   }
 }
-export type MultipleModifierTranslation =
-  | {
-    type: "adjectival";
-    nounPreposition: null | { noun: English.NounPhrase; preposition: string };
-    determiner: Array<English.Determiner>;
-    adjective: Array<English.AdjectivePhrase>;
-    name: null | string;
-    ofPhrase: null | English.NounPhrase;
-    inPositionPhrase: null | English.NounPhrase;
-  }
-  | {
-    type: "adverbial";
-    adverb: Array<English.Word>;
-    inWayPhrase: null | English.NounPhrase;
-  };
 export function multipleModifiers(
   modifiers: Array<TokiPona.Modifier>,
 ): Output<MultipleModifierTranslation> {
