@@ -9,8 +9,8 @@ import { unemphasized } from "./word.ts";
 function phraseClause(
   phrases: TokiPona.MultiplePhrases,
 ): Output<English.Clause> {
-  return multiplePhrases(phrases, "object", "en")
-    .map<English.Clause>(
+  return multiplePhrases(phrases, "object", null, "en")
+    .filterMap<English.Clause | null>(
       (phrase) => {
         switch (phrase.type) {
           case "noun":
@@ -54,6 +54,8 @@ function phraseClause(
               preposition: [],
               hideSubject: true,
             };
+          case "verb":
+            return null;
         }
       },
     );
@@ -63,7 +65,7 @@ export function clause(clause: TokiPona.Clause): Output<English.Clause> {
     case "phrases":
       return phraseClause(clause.phrases);
     case "o vocative":
-      return multiplePhrases(clause.phrases, "object", "en")
+      return multiplePhrases(clause.phrases, "object", null, "en")
         .map((phrase) => {
           if (phrase.type === "noun") {
             return { type: "vocative", call: "hey", addressee: phrase.noun };

@@ -22,7 +22,8 @@ type PhraseTranslation =
     type: "adjective";
     adjective: English.AdjectivePhrase;
     inWayPhrase: null | English.NounPhrase;
-  };
+  }
+  | { type: "verb"; verb: English.VerbPhrase };
 function nounPhrase(
   emphasis: boolean,
   headWord: WordUnitTranslation & { type: "noun" },
@@ -148,6 +149,7 @@ function adjectivePhrase(
 function defaultPhrase(
   phrase: TokiPona.Phrase & { type: "default" },
   place: "subject" | "object",
+  subjectQuantity: null | English.Quantity,
 ): Output<PhraseTranslation> {
   return Output.combine(
     wordUnit(phrase.headWord, place),
@@ -169,10 +171,11 @@ function defaultPhrase(
 export function phrase(
   phrase: TokiPona.Phrase,
   place: "subject" | "object",
+  subjectQuantity: null | English.Quantity,
 ): Output<PhraseTranslation> {
   switch (phrase.type) {
     case "default":
-      return defaultPhrase(phrase, place);
+      return defaultPhrase(phrase, place, subjectQuantity);
     case "preverb":
     case "preposition":
     case "quotation":
@@ -182,18 +185,19 @@ export function phrase(
 export function multiplePhrases(
   phrases: TokiPona.MultiplePhrases,
   place: "subject" | "object",
+  subjectQuantity: null | English.Quantity,
   particle: string,
 ): Output<PhraseTranslation> {
   switch (phrases.type) {
     case "single":
-      return phrase(phrases.phrase, place);
+      return phrase(phrases.phrase, place, subjectQuantity);
     case "and conjunction":
     case "anu": {
       const conjunction = CONJUNCTION[phrases.type];
       return Output
         .combine(
           ...phrases.phrases.map((phrases) =>
-            multiplePhrases(phrases, place, particle)
+            multiplePhrases(phrases, place, subjectQuantity, particle)
           ),
         )
         .filterMap<PhraseTranslation | null>((phrase) => {
