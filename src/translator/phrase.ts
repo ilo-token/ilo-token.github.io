@@ -34,7 +34,6 @@ function nounPhrase(
   emphasis: boolean,
   partialNoun: PartialNoun,
   modifier: AdjectivalModifier,
-  source: () => string,
 ): Output<English.NounPhrase> {
   return Output.from(() => {
     const determiner = fixDeterminer([
@@ -113,7 +112,8 @@ function nounPhrase(
         emphasis,
       }));
     } else {
-      throw new ExhaustedError(source());
+      // will be filled by ExhaustedError on `defaultPhrase`
+      return new Output();
     }
   });
 }
@@ -173,9 +173,6 @@ function defaultPhrase(
   phrase: TokiPona.Phrase & { type: "default" },
   place: "subject" | "object",
 ): Output<PhraseTranslation> {
-  function source(): string {
-    return Composer.phrase(phrase);
-  }
   const emphasis = phrase.emphasis != null;
   return Output.combine(
     wordUnit(phrase.headWord, place),
@@ -183,7 +180,7 @@ function defaultPhrase(
   )
     .flatMap<PhraseTranslation>(([headWord, modifier]) => {
       if (headWord.type === "noun" && modifier.type === "adjectival") {
-        return nounPhrase(emphasis, headWord, modifier, source)
+        return nounPhrase(emphasis, headWord, modifier)
           .map((noun) => ({ type: "noun", noun }));
       } else if (
         headWord.type === "adjective" && modifier.type === "adverbial"
@@ -201,7 +198,7 @@ function defaultPhrase(
         return new Output();
       }
     })
-    .addErrorWhenNone(() => new ExhaustedError(source()));
+    .addErrorWhenNone(() => new ExhaustedError(Composer.phrase(phrase)));
 }
 export function phrase(
   phrase: TokiPona.Phrase,
