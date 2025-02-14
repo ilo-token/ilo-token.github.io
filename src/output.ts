@@ -84,7 +84,7 @@ export class Output<T> {
    */
   flatMap<U>(mapper: (value: T) => Output<U>): Output<U> {
     if (this.isError()) {
-      return Output.errors(this.errors);
+      return this as unknown as Output<U>;
     } else {
       return this.output.reduce(
         (rest, value) => Output.concat(rest, Output.from(() => mapper(value))),
@@ -104,7 +104,7 @@ export class Output<T> {
   }
   sort(comparer: (left: T, right: T) => number): Output<T> {
     if (this.isError()) {
-      return Output.errors(this.errors);
+      return this;
     } else {
       return new Output(this.output.slice().sort(comparer));
     }
