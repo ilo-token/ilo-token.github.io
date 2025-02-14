@@ -44,6 +44,15 @@ export type VerbOnly = {
   presentSingular: string;
   past: string;
 };
+export type Verb = VerbOnly & {
+  directObject: null | Noun;
+  indirectObject: Array<{
+    preposition: string;
+    object: Noun;
+  }>;
+  forObject: boolean | string;
+  predicateType: null | "verb" | "noun adjective";
+};
 export type Definition =
   | { type: "filler"; before: string; repeat: string; after: string }
   | { type: "particle definition"; definition: string }
@@ -63,19 +72,7 @@ export type Definition =
   | ({ type: "adjective" } & Adjective)
   | { type: "compound adjective"; adjective: Array<Adjective> }
   | { type: "adverb"; adverb: string }
-  | (
-    & {
-      type: "verb";
-      directObject: null | Noun;
-      indirectObject: Array<{
-        preposition: string;
-        object: Noun;
-      }>;
-      forObject: boolean | string;
-      predicateType: null | "verb" | "noun adjective";
-    }
-    & VerbOnly
-  )
+  | ({ type: "verb" } & Verb)
   | { type: "modal verb"; verb: string }
   | { type: "preposition"; preposition: string }
   | { type: "interjection"; interjection: string };

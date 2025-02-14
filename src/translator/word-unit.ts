@@ -5,6 +5,8 @@ import { adjective, compoundAdjective } from "./adjective.ts";
 import * as English from "./ast.ts";
 import { determiner } from "./determiner.ts";
 import { TranslationTodoError, UntranslatableError } from "./error.ts";
+import { noun } from "./noun.ts";
+import { unemphasized } from "./word.ts";
 
 export type WordUnitTranslation =
   | {
@@ -18,7 +20,16 @@ export type WordUnitTranslation =
     postAdjective: null | { adjective: string; name: string };
   }
   | { type: "adjective"; adjective: English.AdjectivePhrase }
-  | { type: "verb"; verb: English.VerbPhrase };
+  | {
+    type: "verb";
+    presentPlural: string;
+    presentSingular: string;
+    past: string;
+    object: null | English.NounPhrase;
+    preposition: Array<English.Preposition>;
+    forObject: boolean | string;
+    predicateType: null | "verb" | "noun adjective";
+  };
 function numberWordUnit(
   word: number,
   emphasis: boolean,
@@ -111,6 +122,37 @@ function defaultWordUnit(
               "compound adjective",
             );
           }
+        case "verb": {
+          const object = new Output([definition.directObject])
+            .flatMap((object) => {
+              if (object != null) {
+                return noun(object, false, 1);
+              } else {
+                return new Output([null]);
+              }
+            });
+          const preposition = Output.combine(
+            ...definition.indirectObject
+              .flatMap((indirectObject) =>
+                noun(indirectObject.object, false, 1)
+                  .map((object) => ({
+                    preposition: unemphasized(indirectObject.preposition),
+                    object,
+                  }))
+              ),
+          );
+          return Output.combine(object, preposition)
+            .map<WordUnitTranslation>(([object, preposition]) => ({
+              type: "verb",
+              presentPlural: definition.presentPlural,
+              presentSingular: definition.presentSingular,
+              past: definition.past,
+              object,
+              preposition,
+              forObject: definition.forObject,
+              predicateType: definition.predicateType,
+            }));
+        }
         default:
           return new Output();
       }
