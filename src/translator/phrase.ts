@@ -151,17 +151,18 @@ function defaultPhrase(
   place: "subject" | "object",
   subjectQuantity: null | English.Quantity,
 ): Output<PhraseTranslation> {
+  const emphasis = phrase.emphasis != null;
   return Output.combine(
     wordUnit(phrase.headWord, place),
     multipleModifiers(phrase.modifiers),
   )
     .flatMap<PhraseTranslation>(([headWord, modifier]) => {
       if (headWord.type === "noun" && modifier.type === "adjectival") {
-        return nounPhrase(phrase.emphasis != null, headWord, modifier);
+        return nounPhrase(emphasis, headWord, modifier);
       } else if (
         headWord.type === "adjective" && modifier.type === "adverbial"
       ) {
-        return adjectivePhrase(phrase.emphasis != null, headWord, modifier);
+        return adjectivePhrase(emphasis, headWord, modifier);
       } else {
         return new Output();
       }
