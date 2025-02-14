@@ -5,7 +5,7 @@ import { adjective, compoundAdjective } from "./adjective.ts";
 import * as English from "./ast.ts";
 import { TranslationTodoError } from "./error.ts";
 import { PartialNoun, partialNoun } from "./noun.ts";
-import { pronounAsPartialNoun } from "./pronoun.ts";
+import { partialPronoun } from "./pronoun.ts";
 import { PartialVerb, partialVerb } from "./verb.ts";
 
 export type WordUnitTranslation =
@@ -42,7 +42,7 @@ function defaultWordUnit(
         case "personal pronoun":
           return new Output<WordUnitTranslation>([{
             type: "noun",
-            ...pronounAsPartialNoun(
+            ...partialPronoun(
               definition,
               reduplicationCount,
               emphasis != null,

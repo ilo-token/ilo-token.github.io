@@ -13,7 +13,7 @@ import {
 } from "./error.ts";
 import { noun } from "./noun.ts";
 import { phrase } from "./phrase.ts";
-import { pronounAsObject } from "./pronoun.ts";
+import { pronoun } from "./pronoun.ts";
 import { unemphasized } from "./word.ts";
 
 export type ModifierTranslation =
@@ -95,7 +95,7 @@ export function defaultModifier(
                   preposition: definition.preposition,
                 }));
             case "personal pronoun":
-              return pronounAsObject(definition, reduplicationCount, emphasis)
+              return pronoun(definition, reduplicationCount, emphasis, "object")
                 .map((noun) => ({ type: "noun", noun }));
             case "determiner":
               return determiner(

@@ -4,44 +4,46 @@ import { nounForms, PartialNoun } from "./noun.ts";
 import * as English from "./ast.ts";
 import { Output } from "../output.ts";
 
-export function pronounAsPartialNoun(
+function pronounForms(
+  pronoun: Dictionary.Pronoun,
+  place: "subject" | "object",
+): { singular: null | string; plural: null | string } {
+  switch (place) {
+    case "subject":
+      return {
+        singular: pronoun.singular?.subject ?? null,
+        plural: pronoun.plural?.subject ?? null,
+      };
+    case "object":
+      return {
+        singular: pronoun.singular?.object ?? null,
+        plural: pronoun.plural?.object ?? null,
+      };
+  }
+}
+export function partialPronoun(
   pronoun: Dictionary.Pronoun,
   reduplicationCount: number,
   emphasis: boolean,
   place: "subject" | "object",
 ): PartialNoun {
-  let singular: null | string;
-  let plural: null | string;
-  switch (place) {
-    case "subject":
-      singular = pronoun.singular?.subject ?? null;
-      plural = pronoun.plural?.subject ?? null;
-      break;
-    case "object":
-      singular = pronoun.singular?.object ?? null;
-      plural = pronoun.plural?.object ?? null;
-      break;
-  }
   return {
     determiner: [],
     adjective: [],
-    singular,
-    plural,
+    ...pronounForms(pronoun, place),
     reduplicationCount,
     postAdjective: null,
     emphasis,
   };
 }
-export function pronounAsObject(
+export function pronoun(
   definition: Dictionary.Pronoun,
   reduplicationCount: number,
   emphasis: boolean,
+  place: "subject" | "object",
 ): Output<English.NounPhrase> {
-  return nounForms(
-    definition.singular?.object,
-    definition.plural?.object,
-    "both",
-  )
+  const { singular, plural } = pronounForms(definition, place);
+  return nounForms(singular, plural, "both")
     .map(({ noun, quantity }) => ({
       type: "simple",
       determiner: [],
