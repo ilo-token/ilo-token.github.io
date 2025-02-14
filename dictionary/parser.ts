@@ -480,12 +480,12 @@ const HEAD = cached(
     all(singleWord().skip(lex(matchString(",", "comma")))),
     singleWord(),
   )
-    .skip(lex(matchString(":", "colon")))
+    .skip(matchString(":", "colon"))
     .map(([init, last]) => [...init, last]),
 );
 function entry(): Parser<Entry> {
-  return withSource(all(DEFINITION))
-    .map(([definitions, src]) => ({ definitions, src }));
+  return withSource(spaces().with(all(DEFINITION)))
+    .map(([definitions, src]) => ({ definitions, src: src.trimEnd() }));
 }
 const DICTIONARY = spaces()
   .with(all(sequence(HEAD, entry())))

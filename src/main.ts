@@ -274,7 +274,7 @@ function main(): void {
         definitions = asComment(EMPTY_DEFINITION_PLACEHOLDER)
           .replaceAll(/^/gm, "  ");
       }
-      customDictionaryTextBox.value += `\n${word}:\n${definitions}\n`;
+      customDictionaryTextBox.value += `\n${word}:${definitions}\n`;
     } else {
       customDictionaryTextBox.value += `\n${asComment(INVALID_WORD_ERROR)}\n`;
     }
