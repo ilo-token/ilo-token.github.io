@@ -19,21 +19,39 @@ function phraseClause(
             };
           case "adjective":
             return {
-              type: "implied it's",
+              type: "default",
+              subject: {
+                type: "simple",
+                determiner: [],
+                adjective: [],
+                noun: {
+                  word: "it",
+                  emphasis: false,
+                },
+                quantity: "singular",
+                postAdjective: null,
+                preposition: [],
+                emphasis: false,
+              },
               verb: {
-                type: "linking adjective",
+                type: "linking",
                 linkingVerb: {
                   word: "is",
                   emphasis: false,
                 },
-                adjective: phrase.adjective,
+                subjectComplement: {
+                  type: "adjective",
+                  adjective: phrase.adjective,
+                },
                 preposition: nullableAsArray(phrase.inWayPhrase)
                   .map((object) => ({
                     preposition: { word: "in", emphasis: false },
                     object,
                   })),
+                hideVerb: true,
               },
               preposition: [],
+              hideSubject: true,
             };
         }
       },

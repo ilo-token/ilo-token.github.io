@@ -284,7 +284,6 @@ export function multipleModifiers(
             adjective,
             noun: { word: "way", emphasis: false },
             quantity: "singular",
-            postCompound: null,
             postAdjective: null,
             preposition: [],
             emphasis: false,

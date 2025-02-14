@@ -14,7 +14,6 @@ export type NounPhrase =
     adjective: Array<AdjectivePhrase>;
     noun: Word;
     quantity: Quantity;
-    postCompound: null | NounPhrase;
     postAdjective: null | { adjective: string; name: string };
     preposition: Array<Preposition>;
     emphasis: boolean;
@@ -44,24 +43,24 @@ export type AdjectivePhrase =
     adjective: Array<AdjectivePhrase>;
     emphasis: boolean;
   };
+export type SubjectComplement =
+  | { type: "noun"; noun: NounPhrase }
+  | { type: "adjective"; adjective: AdjectivePhrase };
 export type VerbPhrase =
   | {
     type: "default";
     adverb: Array<Word>;
     verb: Word;
+    object: null | NounPhrase;
     preposition: Array<Preposition>;
+    hideVerb: boolean;
   }
   | {
-    type: "linking noun";
+    type: "linking";
     linkingVerb: Word;
-    noun: NounPhrase;
+    subjectComplement: SubjectComplement;
     preposition: Array<Preposition>;
-  }
-  | {
-    type: "linking adjective";
-    linkingVerb: Word;
-    adjective: AdjectivePhrase;
-    preposition: Array<Preposition>;
+    hideVerb: boolean;
   }
   | {
     type: "compound";
@@ -75,14 +74,10 @@ export type Clause =
     type: "default";
     subject: NounPhrase;
     verb: VerbPhrase;
-    object: null | NounPhrase;
     preposition: Array<Preposition>;
+    hideSubject: boolean;
   }
   | { type: "subject phrase"; subject: NounPhrase }
-  | {
-    type: "implied it's";
-    verb: VerbPhrase;
-  }
   | { type: "interjection"; interjection: Word }
   | { type: "vocative"; call: string; addressee: NounPhrase }
   | {

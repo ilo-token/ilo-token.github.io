@@ -41,7 +41,6 @@ function noun(phrases: English.NounPhrase, depth: number): string {
         ...phrases.determiner.map((determiner) => word(determiner.determiner)),
         ...phrases.adjective.map(adjective),
         word(phrases.noun),
-        ...nullableAsArray(phrases.postCompound).map(noun),
         ...nullableAsArray(phrases.postAdjective)
           .map((adjective) => `${adjective.adjective} ${adjective.name}`),
         ...phrases.preposition.map(preposition),
@@ -80,21 +79,10 @@ function clause(ast: English.Clause): string {
   switch (ast.type) {
     case "free form":
       return ast.text;
+    case "default":
+      throw new ComposingTodoError(ast.type);
     case "interjection":
       return word(ast.interjection);
-    case "implied it's": {
-      const verb = ast.verb;
-      let text: string;
-      switch (verb.type) {
-        case "linking noun":
-          text = noun(verb.noun, 0);
-          break;
-        case "linking adjective":
-          text = adjective(verb.adjective, 0);
-          break;
-      }
-      return [text!, ...verb.preposition.map(preposition)].join(" ");
-    }
     case "subject phrase":
       return noun(ast.subject, 0);
     case "vocative":
