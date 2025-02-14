@@ -93,7 +93,12 @@ function verb(phrase: English.VerbPhrase, depth: number): string {
       if (phrase.hideVerb) {
         verbText = [];
       } else {
-        verbText = [word(phrase.verb)];
+        const { modal, finite, infinite } = phrase.verb;
+        verbText = [
+          ...nullableAsArray(modal).map(word),
+          ...finite.map(word),
+          word(infinite),
+        ];
       }
       text = [
         ...phrase.adverb.map(word),

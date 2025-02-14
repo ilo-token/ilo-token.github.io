@@ -46,11 +46,16 @@ export type AdjectivePhrase =
 export type SubjectComplement =
   | { type: "noun"; noun: NounPhrase }
   | { type: "adjective"; adjective: AdjectivePhrase };
+export type Verb = {
+  modal: null | Word;
+  finite: Array<Word>;
+  infinite: Word;
+};
 export type VerbPhrase =
   | {
     type: "default";
     adverb: Array<Word>;
-    verb: Word;
+    verb: Verb;
     subjectComplement: SubjectComplement;
     object: null | NounPhrase;
     preposition: Array<Preposition>;
