@@ -14,6 +14,7 @@ import { CONJUNCTION } from "./misc.ts";
 import { multipleModifiers, MultipleModifierTranslation } from "./modifier.ts";
 import { nounForms } from "./noun.ts";
 import { wordUnit, WordUnitTranslation } from "./word-unit.ts";
+import { unemphasized } from "./word.ts";
 
 type PhraseTranslation =
   | { type: "noun"; noun: English.NounPhrase }
@@ -52,12 +53,12 @@ function nounPhrase(
   const preposition = [
     ...nullableAsArray(modifier.inPositionPhrase)
       .map((object) => ({
-        preposition: { word: "in", emphasis: false },
+        preposition: unemphasized("in"),
         object,
       })),
     ...nullableAsArray(modifier.ofPhrase)
       .map((object) => ({
-        preposition: { word: "of", emphasis: false },
+        preposition: unemphasized("of"),
         object,
       })),
   ];
@@ -94,10 +95,7 @@ function nounPhrase(
         type: "simple";
       },
       preposition: [{
-        preposition: {
-          word: modifier.nounPreposition!.preposition,
-          emphasis: false,
-        },
+        preposition: unemphasized(modifier.nounPreposition!.preposition),
         object: noun,
       }],
       emphasis,

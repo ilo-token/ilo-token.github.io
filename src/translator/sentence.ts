@@ -6,6 +6,7 @@ import { definitionAsPlainString } from "./as-string.ts";
 import * as English from "./ast.ts";
 import { clause } from "./clause.ts";
 import { TranslationTodoError, UntranslatableError } from "./error.ts";
+import { unemphasized } from "./word.ts";
 
 function filler(filler: TokiPona.Emphasis): Output<string> {
   switch (filler.type) {
@@ -136,10 +137,7 @@ function sentence(
       .map<English.Sentence>((interjection) => ({
         clauses: [{
           type: "interjection",
-          interjection: {
-            word: interjection,
-            emphasis: false,
-          },
+          interjection: unemphasized(interjection),
         }],
         punctuation: sentence.punctuation,
       }));

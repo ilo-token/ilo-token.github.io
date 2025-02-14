@@ -14,6 +14,7 @@ import {
 } from "./error.ts";
 import { noun, nounForms } from "./noun.ts";
 import { phrase } from "./phrase.ts";
+import { unemphasized } from "./word.ts";
 
 export type ModifierTranslation =
   | { type: "noun"; noun: English.NounPhrase }
@@ -282,7 +283,7 @@ export function multipleModifiers(
             type: "simple",
             determiner: [],
             adjective,
-            noun: { word: "way", emphasis: false },
+            noun: unemphasized("way"),
             quantity: "singular",
             postAdjective: null,
             preposition: [],
