@@ -25,13 +25,13 @@ function compound(
   conjunction: string,
   depth: number,
 ): string {
-  if (depth !== 0 || elements.length === 2) {
+  if (depth !== 0 || elements.length <= 2) {
     return elements.join(` ${conjunction} `);
   } else {
     const lastIndex = elements.length - 1;
     const init = elements.slice(0, lastIndex);
     const last = elements[lastIndex];
-    return `${init.join(", ")} ${conjunction} ${last}`;
+    return `${init.map((item) => `${item}, `).join("")} ${conjunction} ${last}`;
   }
 }
 function noun(phrases: English.NounPhrase, depth: number): string {
