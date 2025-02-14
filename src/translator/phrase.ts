@@ -34,6 +34,7 @@ function nounPhrase(
   emphasis: boolean,
   partialNoun: PartialNoun,
   modifier: AdjectivalModifier,
+  source: () => string,
 ): Output<English.NounPhrase> {
   return Output.from(() => {
     const determiner = fixDeterminer([
@@ -50,7 +51,7 @@ function nounPhrase(
       name: string;
     };
     if (partialNoun.postAdjective != null && modifier.name != null) {
-      return new Output();
+      throw new FilteredOutError("double name");
     } else if (partialNoun.postAdjective != null) {
       postAdjective = partialNoun.postAdjective;
     } else if (modifier.name != null) {
@@ -74,7 +75,7 @@ function nounPhrase(
       preposition.length > 1 ||
       (preposition.length > 0 && postAdjective != null)
     ) {
-      return new Output();
+      throw new FilteredOutError("multiple preposition within noun phrase");
     }
     const headNoun = nounForms(
       partialNoun.singular,
@@ -96,13 +97,12 @@ function nounPhrase(
         emphasis: emphasis &&
           modifier.nounPreposition == null,
       }));
-    let noun: Output<English.NounPhrase>;
     if (modifier.nounPreposition == null) {
-      noun = headNoun;
+      return headNoun;
     } else if (
       modifier.ofPhrase == null && modifier.inPositionPhrase == null
     ) {
-      noun = headNoun.map((noun) => ({
+      return headNoun.map<English.NounPhrase>((noun) => ({
         ...modifier.nounPreposition!.noun as English.NounPhrase & {
           type: "simple";
         },
@@ -113,9 +113,8 @@ function nounPhrase(
         emphasis,
       }));
     } else {
-      noun = new Output();
+      throw new ExhaustedError(source());
     }
-    return noun;
   });
 }
 function adjectivePhrase(
@@ -174,6 +173,9 @@ function defaultPhrase(
   phrase: TokiPona.Phrase & { type: "default" },
   place: "subject" | "object",
 ): Output<PhraseTranslation> {
+  function source(): string {
+    return Composer.phrase(phrase);
+  }
   const emphasis = phrase.emphasis != null;
   return Output.combine(
     wordUnit(phrase.headWord, place),
@@ -181,7 +183,7 @@ function defaultPhrase(
   )
     .flatMap<PhraseTranslation>(([headWord, modifier]) => {
       if (headWord.type === "noun" && modifier.type === "adjectival") {
-        return nounPhrase(emphasis, headWord, modifier)
+        return nounPhrase(emphasis, headWord, modifier, source)
           .map((noun) => ({ type: "noun", noun }));
       } else if (
         headWord.type === "adjective" && modifier.type === "adverbial"
@@ -199,7 +201,7 @@ function defaultPhrase(
         return new Output();
       }
     })
-    .addErrorWhenNone(() => new ExhaustedError(Composer.phrase(phrase)));
+    .addErrorWhenNone(() => new ExhaustedError(source()));
 }
 export function phrase(
   phrase: TokiPona.Phrase,
