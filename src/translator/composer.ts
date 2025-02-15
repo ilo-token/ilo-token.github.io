@@ -160,7 +160,10 @@ function sentence(sentence: English.Sentence): string {
   return `${
     sentence.clauses.map(clause)
       .join(", ")
-      .replace(/(?<=^|>|\()[a-zA-Z]/, (character) => character.toUpperCase())
+      .replace(
+        /(?<![<&a-zA-Z0-9])[a-zA-Z]/,
+        (character) => character.toUpperCase(),
+      )
   }${sentence.punctuation}`;
 }
 export function translate(src: string): Output<string> {
