@@ -1,33 +1,12 @@
 import * as Dictionary from "../../dictionary/type.ts";
-import { nullableAsArray } from "../misc.ts";
 import { Output } from "../output.ts";
-import { settings } from "../settings.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";
-import * as Composer from "./composer.ts";
-import { noun, simpleNounForms } from "./noun.ts";
+import * as English from "./ast.ts";
+import * as EnglishComposer from "./composer.ts";
+import { nounAsPlainString, simpleNounForms } from "./noun.ts";
 import { pronoun } from "./pronoun.ts";
-import { condenseVerb } from "./verb.ts";
+import { fromVerbForms, partialVerb } from "./verb.ts";
 
-function nounAsPlainString(definition: Dictionary.Noun): Output<string> {
-  return noun(definition, 1, false).map((noun) => Composer.noun(noun, 0));
-}
-// TODO: use verb composer instead
-function verbAsPlainString(verb: Dictionary.VerbForms): Output<string> {
-  switch (settings.tense) {
-    case "both":
-      return new Output([
-        verb.past,
-        verb.presentPlural,
-        `will ${verb.presentPlural}`,
-      ]);
-    case "condensed":
-      return new Output([
-        `(will) ${condenseVerb(verb.presentPlural, verb.past)}`,
-      ]);
-    case "default only":
-      return new Output([verb.presentPlural]);
-  }
-}
 export function definitionAsPlainString(
   definition: Dictionary.Definition,
 ): Output<string> {
@@ -39,13 +18,13 @@ export function definitionAsPlainString(
         pronoun(definition, 1, false, "subject"),
         pronoun(definition, 1, false, "object"),
       )
-        .map((noun) => Composer.noun(noun, 0));
+        .map((noun) => EnglishComposer.noun(noun, 0));
     case "adjective":
       return adjective(definition, null, 1)
-        .map((adjective) => Composer.adjective(adjective, 0));
+        .map((adjective) => EnglishComposer.adjective(adjective, 0));
     case "compound adjective": {
       return compoundAdjective(definition.adjective, 1, null)
-        .map((adjective) => Composer.adjective(adjective, 0));
+        .map((adjective) => EnglishComposer.adjective(adjective, 0));
     }
     case "determiner":
       return simpleNounForms({
@@ -57,27 +36,18 @@ export function definitionAsPlainString(
     case "interjection":
       return new Output([definition.interjection]);
     case "verb": {
-      const verbs = verbAsPlainString(definition);
-      const directObject = Output.combine(
-        ...nullableAsArray(definition.directObject)
-          .map(nounAsPlainString),
-      );
-      const indirectObject = Output.combine(
-        ...definition.indirectObject
-          .map((object) =>
-            nounAsPlainString(object.object)
-              .map((noun) => `${object.preposition} ${noun}`)
-          ),
-      );
-      return Output.combine(verbs, directObject, indirectObject)
-        .map(([verb, directObject, indirectObject]) =>
-          [
-            verb,
-            ...directObject,
-            ...indirectObject,
-          ]
-            .join(" ")
-        );
+      return Output.combine(
+        fromVerbForms(definition, "third", "plural", false),
+        partialVerb(definition, 1, false),
+      )
+        .map<English.VerbPhrase>(([verb, partialVerb]) => ({
+          ...partialVerb,
+          type: "default",
+          verb,
+          objectComplement: null,
+          hideVerb: false,
+        }))
+        .map((verb) => EnglishComposer.verb(verb, 0));
     }
     case "filler":
       return new Output([

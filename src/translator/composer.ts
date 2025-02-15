@@ -88,7 +88,7 @@ function complement(
       return adjective(complement.adjective, 0);
   }
 }
-function verb(phrase: English.VerbPhrase, depth: number): string {
+export function verb(phrase: English.VerbPhrase, depth: number): string {
   let text: string;
   switch (phrase.type) {
     case "default": {

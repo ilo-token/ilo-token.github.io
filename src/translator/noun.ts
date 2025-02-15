@@ -4,6 +4,7 @@ import { Output } from "../output.ts";
 import { settings } from "../settings.ts";
 import { adjective } from "./adjective.ts";
 import * as English from "./ast.ts";
+import * as EnglishComposer from "./composer.ts";
 import { determiner } from "./determiner.ts";
 import { condense } from "./misc.ts";
 
@@ -105,4 +106,9 @@ export function noun(
       preposition: [],
       emphasis: false,
     }));
+}
+export function nounAsPlainString(definition: Dictionary.Noun): Output<string> {
+  return noun(definition, 1, false).map((noun) =>
+    EnglishComposer.noun(noun, 0)
+  );
 }
