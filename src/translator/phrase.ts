@@ -265,53 +265,46 @@ function compoundAdjective(
     emphasis: false,
   };
 }
-function compoundVerb(
-  conjunction: "and" | "or",
-  phrase: Array<MultiplePhraseTranslation>,
+function multiplePhraseAsVerb(
+  phrase: MultiplePhraseTranslation,
 ): PartialCompoundVerb {
-  return {
-    type: "compound",
-    conjunction,
-    verb: phrase.map<PartialCompoundVerb>((phrase) => {
+  switch (phrase.type) {
+    case "noun":
+    case "adjective": {
+      let subjectComplement: English.Complement;
       switch (phrase.type) {
         case "noun":
-        case "adjective": {
-          let subjectComplement: English.Complement;
-          switch (phrase.type) {
-            case "noun":
-              subjectComplement = {
-                type: "noun",
-                noun: phrase.noun,
-              };
-              break;
-            case "adjective":
-              subjectComplement = {
-                type: "adjective",
-                adjective: phrase.adjective,
-              };
-              break;
-          }
-          return {
-            type: "simple",
-            adverb: [],
-            presentPlural: "are",
-            presentSingular: "is",
-            past: "was",
-            wordEmphasis: false,
-            reduplicationCount: 1,
-            subjectComplement,
-            object: null,
-            preposition: [],
-            forObject: false,
-            predicateType: null,
-            phraseEmphasis: false,
+          subjectComplement = {
+            type: "noun",
+            noun: phrase.noun,
           };
-        }
-        case "verb":
-          return phrase.verb;
+          break;
+        case "adjective":
+          subjectComplement = {
+            type: "adjective",
+            adjective: phrase.adjective,
+          };
+          break;
       }
-    }),
-  };
+      return {
+        type: "simple",
+        adverb: [],
+        presentPlural: "are",
+        presentSingular: "is",
+        past: "was",
+        wordEmphasis: false,
+        reduplicationCount: 1,
+        subjectComplement,
+        object: null,
+        preposition: [],
+        forObject: false,
+        predicateType: null,
+        phraseEmphasis: false,
+      };
+    }
+    case "verb":
+      return phrase.verb;
+  }
 }
 export function multiplePhrases(
   phrases: TokiPona.MultiplePhrases,
@@ -367,7 +360,14 @@ export function multiplePhrases(
               inWayPhrase: null,
             };
           } else if (andParticle !== "en") {
-            return { type: "verb", verb: compoundVerb(conjunction, phrase) };
+            return {
+              type: "verb",
+              verb: {
+                type: "compound",
+                conjunction,
+                verb: phrase.map(multiplePhraseAsVerb),
+              },
+            };
           } else {
             return null;
           }
