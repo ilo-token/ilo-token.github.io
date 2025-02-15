@@ -67,11 +67,11 @@ function nounPhrase(
           object,
         })),
     ];
-    if (
-      preposition.length > 1 ||
-      (preposition.length > 0 && postAdjective != null)
-    ) {
+    if (preposition.length > 1) {
       throw new FilteredOutError("multiple preposition within noun phrase");
+    }
+    if (preposition.length > 0 && postAdjective != null) {
+      throw new FilteredOutError("named noun with preposition");
     }
     const headNoun = fromNounForms(partialNoun, quantity)
       .map(({ noun, quantity }) => ({
