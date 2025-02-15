@@ -34,7 +34,7 @@ function compound(
     return `${init.map((item) => `${item},`).join(" ")} ${conjunction} ${last}`;
   }
 }
-function noun(phrases: English.NounPhrase, depth: number): string {
+export function noun(phrases: English.NounPhrase, depth: number): string {
   switch (phrases.type) {
     case "simple": {
       const text = [
@@ -56,7 +56,10 @@ function noun(phrases: English.NounPhrase, depth: number): string {
       );
   }
 }
-function adjective(phrases: English.AdjectivePhrase, depth: number): string {
+export function adjective(
+  phrases: English.AdjectivePhrase,
+  depth: number,
+): string {
   let text: string;
   switch (phrases.type) {
     case "simple":

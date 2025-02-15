@@ -2,22 +2,16 @@ import * as Dictionary from "../../dictionary/type.ts";
 import { nullableAsArray } from "../misc.ts";
 import { Output } from "../output.ts";
 import { settings } from "../settings.ts";
-import { simpleNounForms } from "./noun.ts";
+import { adjective, compoundAdjective } from "./adjective.ts";
+import * as Composer from "./composer.ts";
+import { noun, simpleNounForms } from "./noun.ts";
+import { pronoun } from "./pronoun.ts";
 import { condenseVerb } from "./verb.ts";
 
 function nounAsPlainString(definition: Dictionary.Noun): Output<string> {
-  return simpleNounForms(definition.singular, definition.plural)
-    .map((noun) =>
-      [
-        ...definition.determiner.map((determiner) => determiner.determiner),
-        ...definition.adjective.map((adjective) => adjective.adjective),
-        noun,
-        ...nullableAsArray(definition.postAdjective)
-          .map((adjective) => `${adjective.adjective} ${adjective.name}`),
-      ]
-        .join(" ")
-    );
+  return noun(definition, false, 1).map((noun) => Composer.noun(noun, 0));
 }
+// TODO: use verb composer instead
 function verbAsPlainString(
   verb: { presentPlural: string; past: string },
 ): Output<string> {
@@ -43,34 +37,17 @@ export function definitionAsPlainString(
     case "noun":
       return nounAsPlainString(definition);
     case "personal pronoun":
-      return new Output([
-        ...nullableAsArray(definition.singular?.subject),
-        ...nullableAsArray(definition.singular?.object),
-        ...nullableAsArray(definition.plural?.subject),
-        ...nullableAsArray(definition.plural?.object),
-      ]);
+      return Output.concat(
+        pronoun(definition, 1, false, "subject"),
+        pronoun(definition, 1, false, "object"),
+      )
+        .map((noun) => Composer.noun(noun, 0));
     case "adjective":
-      return new Output([
-        [...definition.adverb, definition.adjective].join(" "),
-      ]);
+      return adjective(definition, null, 1)
+        .map((adjective) => Composer.adjective(adjective, 0));
     case "compound adjective": {
-      const { adjective } = definition;
-      if (adjective.length === 2) {
-        return new Output([
-          adjective
-            .map((adjective) => adjective.adjective)
-            .join(" and "),
-        ]);
-      } else {
-        const lastIndex = adjective.length - 1;
-        const init = adjective.slice(0, lastIndex);
-        const last = adjective[lastIndex];
-        return new Output([
-          `${
-            init.map((adjective) => adjective.adjective).join(", ")
-          }, and ${last.adjective}`,
-        ]);
-      }
+      return compoundAdjective(definition.adjective, 1, null)
+        .map((adjective) => Composer.adjective(adjective, 0));
     }
     case "determiner":
       return simpleNounForms(definition.determiner, definition.plural);
