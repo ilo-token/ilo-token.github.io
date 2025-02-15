@@ -157,14 +157,11 @@ function clause(ast: English.Clause): string {
   }
 }
 function sentence(sentence: English.Sentence): string {
-  return `${
-    sentence.clauses.map(clause)
-      .join(", ")
-      .replace(
-        /(?<![<&a-zA-Z0-9])[a-zA-Z]/,
-        (character) => character.toUpperCase(),
-      )
-  }${sentence.punctuation}`;
+  return `${sentence.clauses.map(clause).join(", ")}${sentence.punctuation}`
+    .replace(
+      /(?<![<&a-zA-Z0-9])[a-zA-Z]/,
+      (character) => character.toUpperCase(),
+    );
 }
 export function translate(src: string): Output<string> {
   return parse(src)
