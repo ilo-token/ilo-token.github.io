@@ -297,6 +297,7 @@ function compoundVerb(
             presentPlural: "is",
             presentSingular: "are",
             past: "was",
+            forWill: "be",
             wordEmphasis: false,
             reduplicationCount: 1,
             subjectComplement,

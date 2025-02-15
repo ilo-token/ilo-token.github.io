@@ -9,6 +9,7 @@ import { unemphasized } from "./word.ts";
 
 export type PartialVerb = Dictionary.VerbForms & {
   adverb: Array<English.Word>;
+  forWill: null | string;
   reduplicationCount: number;
   wordEmphasis: boolean;
   subjectComplement: null | English.Complement;
@@ -53,6 +54,7 @@ export function partialVerb(
     .map(([object, preposition]) => ({
       ...definition,
       adverb: [],
+      forWill: null,
       reduplicationCount,
       wordEmphasis: emphasis,
       subjectComplement: null,
