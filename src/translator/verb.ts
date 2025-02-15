@@ -104,28 +104,23 @@ export function fromVerbForms(
         }]);
       }
       break;
-    case "both":
-    case "default only": {
-      switch (settings.tense) {
-        case "both": {
-          let future: string;
-          if (is) {
-            future = "be";
-          } else {
-            future = verbForms.presentPlural;
-          }
-          verb = new Output([
-            { modal: null, infinite: present },
-            { modal: null, infinite: verbForms.past },
-            { modal: "will", infinite: future },
-          ]);
-          break;
-        }
-        case "default only":
-          verb = new Output([{ modal: null, infinite: present }]);
-          break;
+    case "both": {
+      let future: string;
+      if (is) {
+        future = "be";
+      } else {
+        future = verbForms.presentPlural;
       }
+      verb = new Output([
+        { modal: null, infinite: present },
+        { modal: null, infinite: verbForms.past },
+        { modal: "will", infinite: future },
+      ]);
+      break;
     }
+    case "default only":
+      verb = new Output([{ modal: null, infinite: present }]);
+      break;
   }
   return verb.map((verb) => {
     let modal: null | Word = null;
