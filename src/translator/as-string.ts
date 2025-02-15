@@ -51,7 +51,7 @@ export function definitionAsPlainString(
       ]);
     case "adjective":
       return new Output([
-        `${definition.adverb.join(" ")} ${definition.adjective}`,
+        [...definition.adverb, definition.adjective].join(" "),
       ]);
     case "compound adjective": {
       const { adjective } = definition;
