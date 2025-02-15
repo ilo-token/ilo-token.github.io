@@ -67,30 +67,59 @@ export function fromVerbForms(
   quantity: English.Quantity,
   emphasis: boolean,
 ): Output<English.Verb> {
+  const is = verbForms.presentSingular === "is";
+  let presentSingular: string;
+  if (is && perspective === "first") {
+    presentSingular = "am";
+  } else {
+    presentSingular = verbForms.presentSingular;
+  }
+  let present: string;
+  if (quantity === "singular") {
+    present = presentSingular;
+  } else {
+    present = verbForms.presentPlural;
+  }
   let verb: Output<{ modal: null | string; infinite: string }>;
   switch (settings.tense) {
     case "condensed":
-      verb = new Output([{
-        modal: "(will)",
-        infinite: condenseVerb(verbForms.presentPlural, verbForms.past),
-      }]);
+      if (is) {
+        if (quantity === "condensed") {
+          verb = new Output([{
+            modal: null,
+            infinite:
+              `${presentSingular}/${verbForms.presentPlural}/${verbForms.past}/will be`,
+          }]);
+        } else {
+          verb = new Output([{
+            modal: null,
+            infinite: `${present}/${verbForms.past}/will be`,
+          }]);
+        }
+      } else {
+        verb = new Output([{
+          modal: "(will)",
+          infinite: condenseVerb(present, verbForms.past),
+        }]);
+      }
       break;
     case "both":
     case "default only": {
-      let present: string;
-      if (perspective === "third" && quantity === "singular") {
-        present = verbForms.presentSingular;
-      } else {
-        present = verbForms.presentPlural;
-      }
       switch (settings.tense) {
-        case "both":
+        case "both": {
+          let future: string;
+          if (is) {
+            future = "be";
+          } else {
+            future = verbForms.presentPlural;
+          }
           verb = new Output([
             { modal: null, infinite: present },
             { modal: null, infinite: verbForms.past },
-            { modal: "will", infinite: verbForms.presentPlural },
+            { modal: "will", infinite: future },
           ]);
           break;
+        }
         case "default only":
           verb = new Output([{ modal: null, infinite: present }]);
           break;

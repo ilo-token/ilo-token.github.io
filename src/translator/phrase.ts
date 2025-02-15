@@ -294,8 +294,8 @@ function compoundVerb(
           return {
             type: "simple",
             adverb: [],
-            presentPlural: "is",
-            presentSingular: "are",
+            presentPlural: "are",
+            presentSingular: "is",
             past: "was",
             wordEmphasis: false,
             reduplicationCount: 1,
