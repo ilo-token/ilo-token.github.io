@@ -184,7 +184,7 @@ function defaultPhrase(
       } else if (headWord.type === "verb" && modifier.type === "adverbial") {
         return new Output<PhraseTranslation>([{
           type: "verb",
-          verb: { type: "simple", ...verbPhrase(emphasis, headWord, modifier) },
+          verb: { ...verbPhrase(emphasis, headWord, modifier), type: "simple" },
         }]);
       } else {
         return new Output();
