@@ -5,7 +5,7 @@ import * as English from "./ast.ts";
 import { Word } from "./ast.ts";
 import { condense } from "./misc.ts";
 import { noun } from "./noun.ts";
-import { unemphasized } from "./word.ts";
+import { unemphasized, word } from "./word.ts";
 
 export type PartialVerb = Dictionary.VerbForms & {
   adverb: Array<English.Word>;
@@ -65,6 +65,7 @@ export function fromVerbForms(
   verbForms: Dictionary.VerbForms,
   perspective: Dictionary.Perspective,
   quantity: English.Quantity,
+  reduplicationCount: number,
   emphasis: boolean,
 ): Output<English.Verb> {
   const is = verbForms.presentSingular === "is";
@@ -134,7 +135,7 @@ export function fromVerbForms(
     return {
       modal,
       finite: [],
-      infinite: { word: verb.infinite, emphasis },
+      infinite: word(verb.infinite, reduplicationCount, emphasis),
     };
   });
 }

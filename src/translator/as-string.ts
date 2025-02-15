@@ -37,7 +37,7 @@ export function definitionAsPlainString(
       return new Output([definition.interjection]);
     case "verb": {
       return Output.combine(
-        fromVerbForms(definition, "third", "plural", false),
+        fromVerbForms(definition, "third", "plural", 1, false),
         partialVerb(definition, 1, false),
       )
         .map<English.VerbPhrase>(([verb, partialVerb]) => ({
