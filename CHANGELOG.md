@@ -20,9 +20,9 @@ dictionary to their liking. Users can customize existing words and also extend
 ilo Token with more non-pu words. It comes with limitations however.
 [Read the guidelines for using custom dictionary editor](https://github.com/ilo-token/ilo-token.github.io/wiki/Guidelines-for-editing-dictionary).
 
-Some of the settings may reset. Please reconfigure it again to your liking.
-Sorry for the inconvenience. We've decided to reset some of the settings after
-refactoring to make the code easier to work with.
+Some of the settings may reset. Please reconfigure it again to your preferred
+settings. Sorry for the inconvenience. We've decided to reset some of the
+settings after refactoring to make the code easier to work with.
 
 - Implement custom dictionary editor.
 - Fixed "la" translation.
