@@ -1,6 +1,8 @@
 import * as Dictionary from "../../dictionary/type.ts";
 import { Output } from "../output.ts";
+import { settings } from "../settings.ts";
 import * as English from "./ast.ts";
+import { Word } from "./ast.ts";
 import { condense } from "./misc.ts";
 import { noun } from "./noun.ts";
 import { unemphasized } from "./word.ts";
@@ -58,4 +60,52 @@ export function partialVerb(
       preposition,
       phraseEmphasis: false,
     }));
+}
+export function fromVerbForms(
+  verbForms: Dictionary.VerbForms,
+  perspective: Dictionary.Perspective,
+  quantity: English.Quantity,
+  emphasis: boolean,
+): Output<English.Verb> {
+  let verb: Output<{ modal: null | string; infinite: string }>;
+  switch (settings.tense) {
+    case "condensed":
+      verb = new Output([{
+        modal: "(will)",
+        infinite: condenseVerb(verbForms.presentPlural, verbForms.past),
+      }]);
+      break;
+    case "both":
+    case "default only": {
+      let present: string;
+      if (perspective === "third" && quantity === "singular") {
+        present = verbForms.presentSingular;
+      } else {
+        present = verbForms.presentPlural;
+      }
+      switch (settings.tense) {
+        case "both":
+          verb = new Output([
+            { modal: null, infinite: present },
+            { modal: null, infinite: verbForms.past },
+            { modal: "will", infinite: verbForms.presentPlural },
+          ]);
+          break;
+        case "default only":
+          verb = new Output([{ modal: null, infinite: present }]);
+          break;
+      }
+    }
+  }
+  return verb.map((verb) => {
+    let modal: null | Word = null;
+    if (verb.modal != null) {
+      modal = unemphasized(verb.modal);
+    }
+    return {
+      modal,
+      finite: [],
+      infinite: { word: verb.infinite, emphasis },
+    };
+  });
 }
