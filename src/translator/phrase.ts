@@ -258,7 +258,7 @@ function compoundAdjective(
     emphasis: false,
   };
 }
-function multiplePhraseAsVerb(
+function phraseAsVerb(
   phrase: PhraseTranslation,
 ): PartialCompoundVerb {
   switch (phrase.type) {
@@ -351,7 +351,7 @@ export function multiplePhrases(
               verb: {
                 type: "compound",
                 conjunction,
-                verb: phrase.map(multiplePhraseAsVerb),
+                verb: phrase.map(phraseAsVerb),
               },
             };
           } else {
