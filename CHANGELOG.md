@@ -26,6 +26,7 @@ refactoring to make the code easier to work with.
 
 - Implement custom dictionary editor.
 - Fixed "la" translation.
+- Output translations are now capitalized.
 - "X lili" can be translated into "piece of X" or "part of X".
 - Consecutive adverbs are now not shown to avoid ambiguity.
 - Sentences ending with long string of punctuation such as "…" and "!?" are now
