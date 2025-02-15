@@ -4,7 +4,7 @@ import { Output } from "../output.ts";
 import { settings } from "../settings.ts";
 import { adjective } from "./adjective.ts";
 import * as English from "./ast.ts";
-import { determiner, findNumber } from "./determiner.ts";
+import { determiner } from "./determiner.ts";
 import { condense } from "./misc.ts";
 
 export type PartialNoun = Dictionary.NounForms & {
@@ -88,30 +88,19 @@ export function noun(
   reduplicationCount: number,
   emphasis: boolean,
 ): Output<English.NounPhrase> {
-  const engDeterminer = Output.combine(
-    ...definition.determiner
-      .map((definition) => determiner(definition, 1, false)),
-  );
-  const engAdjective = Output.combine(
-    ...definition.adjective
-      .map((definition) => adjective(definition, null, 1)),
-  );
-  return Output.combine(engDeterminer, engAdjective)
-    .flatMap(([determiner, adjective]) => {
-      return fromNounForms(definition, findNumber(determiner))
-        .map((noun) => ({
-          type: "simple",
-          determiner,
-          adjective,
-          noun: {
-            word: repeatWithSpace(noun.noun, reduplicationCount),
-            emphasis,
-          },
-          quantity: noun.quantity,
-          postCompound: null,
-          postAdjective: definition.postAdjective,
-          preposition: [],
-          emphasis: false,
-        }));
-    });
+  return Output.combine(
+    fromNounForms(definition, "both"),
+    partialNoun(definition, reduplicationCount, emphasis),
+  )
+    .map<English.NounPhrase>(([{ noun, quantity }, partialNoun]) => ({
+      ...partialNoun,
+      type: "simple",
+      noun: {
+        word: repeatWithSpace(noun, reduplicationCount),
+        emphasis,
+      },
+      quantity,
+      preposition: [],
+      emphasis: false,
+    }));
 }
