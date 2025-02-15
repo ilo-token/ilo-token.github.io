@@ -274,10 +274,12 @@ function main(): void {
     if (/^[a-z][a-zA-Z]*$/.test(word)) {
       let definitions: string;
       if (Object.hasOwn(dictionary, word)) {
-        definitions = `  ${dictionary[word].src.trim()}`;
+        definitions = dictionary[word].src;
       } else {
-        definitions = asComment(EMPTY_DEFINITION_PLACEHOLDER)
-          .replaceAll(/^/gm, "  ");
+        definitions = `\n${
+          asComment(EMPTY_DEFINITION_PLACEHOLDER)
+            .replaceAll(/^/gm, "  ")
+        }`;
       }
       displayToCustomDictionary(`${word}:${definitions}`);
     } else {
