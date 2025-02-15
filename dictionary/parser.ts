@@ -518,7 +518,7 @@ const DICTIONARY = spaces()
     return dictionary;
   });
 const DEFINITION_EXTRACT = spaces()
-  .with(all(optionalAll(HEAD).with(lex(match(/[^;]*;/, "definition")))))
+  .with(all(optionalAll(lex(HEAD)).with(lex(match(/[^;]*;/, "definition")))))
   .skip(end());
 const DEFINITION_ALONE = spaces().with(DEFINITION).skip(end());
 
