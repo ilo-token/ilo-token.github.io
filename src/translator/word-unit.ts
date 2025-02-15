@@ -5,7 +5,7 @@ import { adjective, compoundAdjective } from "./adjective.ts";
 import * as English from "./ast.ts";
 import { TranslationTodoError } from "./error.ts";
 import { PartialNoun, partialNoun } from "./noun.ts";
-import { partialPronoun } from "./pronoun.ts";
+import { partialPronoun, Place } from "./pronoun.ts";
 import { PartialVerb, partialVerb } from "./verb.ts";
 
 export type WordUnitTranslation =
@@ -31,7 +31,7 @@ function defaultWordUnit(
   word: string,
   reduplicationCount: number,
   emphasis: null | TokiPona.Emphasis,
-  place: "subject" | "object",
+  place: Place,
   includeGerund: boolean,
 ): Output<WordUnitTranslation> {
   return new Output(dictionary[word].definitions)
@@ -84,7 +84,7 @@ function defaultWordUnit(
 }
 export function wordUnit(
   wordUnit: TokiPona.WordUnit,
-  place: "subject" | "object",
+  place: Place,
   includeGerund: boolean,
 ): Output<WordUnitTranslation> {
   switch (wordUnit.type) {

@@ -2,12 +2,14 @@ import * as Dictionary from "../../dictionary/type.ts";
 import { repeatWithSpace } from "../misc.ts";
 import { Output } from "../output.ts";
 import * as English from "./ast.ts";
-import { nounForms, PartialNoun } from "./noun.ts";
+import { fromNounForms, PartialNoun } from "./noun.ts";
+
+export type Place = "subject" | "object";
 
 function pronounForms(
   pronoun: Dictionary.Pronoun,
-  place: "subject" | "object",
-): { singular: null | string; plural: null | string } {
+  place: Place,
+): Dictionary.NounForms {
   switch (place) {
     case "subject":
       return {
@@ -25,7 +27,7 @@ export function partialPronoun(
   pronoun: Dictionary.Pronoun,
   reduplicationCount: number,
   emphasis: boolean,
-  place: "subject" | "object",
+  place: Place,
 ): PartialNoun {
   return {
     ...pronounForms(pronoun, place),
@@ -40,10 +42,9 @@ export function pronoun(
   definition: Dictionary.Pronoun,
   reduplicationCount: number,
   emphasis: boolean,
-  place: "subject" | "object",
+  place: Place,
 ): Output<English.NounPhrase> {
-  const { singular, plural } = pronounForms(definition, place);
-  return nounForms(singular, plural, "both")
+  return fromNounForms(pronounForms(definition, place), "both")
     .map(({ noun, quantity }) => ({
       type: "simple",
       determiner: [],

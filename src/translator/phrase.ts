@@ -17,7 +17,8 @@ import {
   AdverbialModifier,
   multipleModifiers,
 } from "./modifier.ts";
-import { nounForms, PartialNoun } from "./noun.ts";
+import { fromNounForms, PartialNoun } from "./noun.ts";
+import { Place } from "./pronoun.ts";
 import { PartialCompoundVerb, PartialVerb } from "./verb.ts";
 import { wordUnit } from "./word-unit.ts";
 import { unemphasized } from "./word.ts";
@@ -76,11 +77,7 @@ function nounPhrase(
     ) {
       throw new FilteredOutError("multiple preposition within noun phrase");
     }
-    const headNoun = nounForms(
-      partialNoun.singular,
-      partialNoun.plural,
-      quantity,
-    )
+    const headNoun = fromNounForms(partialNoun, quantity)
       .map(({ noun, quantity }) => ({
         type: "simple" as const,
         determiner,
@@ -171,7 +168,7 @@ function verbPhrase(
 }
 function defaultPhrase(
   phrase: TokiPona.Phrase & { type: "default" },
-  place: "subject" | "object",
+  place: Place,
   includeGerund: boolean,
 ): Output<PhraseTranslation> {
   const emphasis = phrase.emphasis != null;
@@ -203,7 +200,7 @@ function defaultPhrase(
 }
 export function phrase(
   phrase: TokiPona.Phrase,
-  place: "subject" | "object",
+  place: Place,
   includeGerund: boolean,
 ): Output<PhraseTranslation> {
   switch (phrase.type) {
@@ -317,7 +314,7 @@ function compoundVerb(
 }
 export function multiplePhrases(
   phrases: TokiPona.MultiplePhrases,
-  place: "subject" | "object",
+  place: Place,
   includeGerund: boolean,
   andParticle: string,
 ): Output<MultiplePhraseTranslation> {

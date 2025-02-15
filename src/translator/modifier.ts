@@ -82,13 +82,13 @@ export function defaultModifier(
         .flatMap((definition) => {
           switch (definition.type) {
             case "noun":
-              return noun(definition, emphasis, reduplicationCount)
+              return noun(definition, reduplicationCount, emphasis)
                 .map<ModifierTranslation>((noun) => ({
                   type: "noun",
                   noun,
                 }));
             case "noun preposition":
-              return noun(definition.noun, emphasis, reduplicationCount)
+              return noun(definition.noun, reduplicationCount, emphasis)
                 .map<ModifierTranslation>((noun) => ({
                   type: "noun preposition",
                   noun,
@@ -100,8 +100,8 @@ export function defaultModifier(
             case "determiner":
               return determiner(
                 definition,
-                word.emphasis != null,
                 reduplicationCount,
+                word.emphasis != null,
               )
                 .map<ModifierTranslation>((determiner) => ({
                   type: "determiner",

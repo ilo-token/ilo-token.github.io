@@ -9,12 +9,10 @@ import { pronoun } from "./pronoun.ts";
 import { condenseVerb } from "./verb.ts";
 
 function nounAsPlainString(definition: Dictionary.Noun): Output<string> {
-  return noun(definition, false, 1).map((noun) => Composer.noun(noun, 0));
+  return noun(definition, 1, false).map((noun) => Composer.noun(noun, 0));
 }
 // TODO: use verb composer instead
-function verbAsPlainString(
-  verb: { presentPlural: string; past: string },
-): Output<string> {
+function verbAsPlainString(verb: Dictionary.VerbForms): Output<string> {
   switch (settings.tense) {
     case "both":
       return new Output([
@@ -50,7 +48,10 @@ export function definitionAsPlainString(
         .map((adjective) => Composer.adjective(adjective, 0));
     }
     case "determiner":
-      return simpleNounForms(definition.determiner, definition.plural);
+      return simpleNounForms({
+        singular: definition.determiner,
+        plural: definition.plural,
+      });
     case "adverb":
       return new Output([definition.adverb]);
     case "interjection":

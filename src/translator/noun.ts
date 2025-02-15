@@ -7,13 +7,11 @@ import * as English from "./ast.ts";
 import { determiner, findNumber } from "./determiner.ts";
 import { condense } from "./misc.ts";
 
-export type PartialNoun = {
+export type PartialNoun = Dictionary.NounForms & {
   determiner: Array<English.Determiner>;
   adjective: Array<English.AdjectivePhrase>;
-  singular: null | string;
-  plural: null | string;
-  emphasis: boolean;
   reduplicationCount: number;
+  emphasis: boolean;
   postAdjective: null | { adjective: string; name: string };
 };
 export function partialNoun(
@@ -23,7 +21,7 @@ export function partialNoun(
 ): Output<PartialNoun> {
   const engDeterminer = Output.combine(
     ...definition.determiner
-      .map((definition) => determiner(definition, false, 1)),
+      .map((definition) => determiner(definition, 1, false)),
   );
   const engAdjective = Output.combine(
     ...definition.adjective
@@ -40,11 +38,11 @@ export function partialNoun(
       emphasis,
     }));
 }
-export function nounForms(
-  singular: null | string,
-  plural: null | string,
+export function fromNounForms(
+  nounForms: Dictionary.NounForms,
   determinerNumber: Dictionary.Quantity,
 ): Output<{ noun: string; quantity: English.Quantity }> {
+  const { singular, plural } = nounForms;
   switch (determinerNumber) {
     case "both":
       switch (settings.quantity) {
@@ -81,19 +79,18 @@ export function nounForms(
   }
 }
 export function simpleNounForms(
-  singular: null | string,
-  plural: null | string,
+  nounForms: Dictionary.NounForms,
 ): Output<string> {
-  return nounForms(singular, plural, "both").map((noun) => noun.noun);
+  return fromNounForms(nounForms, "both").map((noun) => noun.noun);
 }
 export function noun(
   definition: Dictionary.Noun,
-  emphasis: boolean,
   reduplicationCount: number,
+  emphasis: boolean,
 ): Output<English.NounPhrase> {
   const engDeterminer = Output.combine(
     ...definition.determiner
-      .map((definition) => determiner(definition, false, 1)),
+      .map((definition) => determiner(definition, 1, false)),
   );
   const engAdjective = Output.combine(
     ...definition.adjective
@@ -101,11 +98,7 @@ export function noun(
   );
   return Output.combine(engDeterminer, engAdjective)
     .flatMap(([determiner, adjective]) => {
-      return nounForms(
-        definition.singular,
-        definition.plural,
-        findNumber(determiner),
-      )
+      return fromNounForms(definition, findNumber(determiner))
         .map((noun) => ({
           type: "simple",
           determiner,

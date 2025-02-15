@@ -5,13 +5,10 @@ import { condense } from "./misc.ts";
 import { noun } from "./noun.ts";
 import { unemphasized } from "./word.ts";
 
-export type PartialVerb = {
+export type PartialVerb = Dictionary.VerbForms & {
   adverb: Array<English.Word>;
-  presentPlural: string;
-  presentSingular: string;
-  past: string;
-  wordEmphasis: boolean;
   reduplicationCount: number;
+  wordEmphasis: boolean;
   subjectComplement: null | English.Complement;
   object: null | English.NounPhrase;
   preposition: Array<English.Preposition>;
@@ -35,7 +32,7 @@ export function partialVerb(
   const object = new Output([definition.directObject])
     .flatMap((object) => {
       if (object != null) {
-        return noun(object, false, 1);
+        return noun(object, 1, false);
       } else {
         return new Output([null]);
       }
@@ -43,7 +40,7 @@ export function partialVerb(
   const preposition = Output.combine(
     ...definition.indirectObject
       .flatMap((indirectObject) =>
-        noun(indirectObject.object, false, 1)
+        noun(indirectObject.object, 1, false)
           .map((object) => ({
             preposition: unemphasized(indirectObject.preposition),
             object,

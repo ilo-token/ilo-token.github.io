@@ -27,7 +27,8 @@ import {
   Dictionary,
   Entry,
   Noun,
-  VerbOnly,
+  NounForms,
+  VerbForms,
 } from "./type.ts";
 
 function comment(): Parser<string> {
@@ -120,9 +121,7 @@ function detectRepetition(
     `"${source.join("/")}" has no repetition pattern found`,
   );
 }
-function nounOnly(): Parser<
-  { singular: null | string; plural: null | string; gerund: boolean }
-> {
+function nounOnly(): Parser<NounForms & { gerund: boolean }> {
   return sequence(
     word(),
     optionalAll(slash().with(word())),
@@ -237,7 +236,7 @@ function adjectiveKind(): Parser<AdjectiveType> {
     keyword("qualifier"),
   );
 }
-function verbOnly(tagInside: Parser<unknown>): Parser<VerbOnly> {
+function verbOnly(tagInside: Parser<unknown>): Parser<VerbForms> {
   return choiceOnlyOne(
     sequence(
       word().skip(slash()),

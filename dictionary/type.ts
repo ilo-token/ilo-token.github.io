@@ -1,8 +1,10 @@
-export type Noun = {
-  determiner: Array<Determiner>;
-  adjective: Array<Adjective>;
+export type NounForms = {
   singular: null | string;
   plural: null | string;
+};
+export type Noun = NounForms & {
+  determiner: Array<Determiner>;
+  adjective: Array<Adjective>;
   gerund: boolean;
   postAdjective: null | {
     adjective: string;
@@ -43,12 +45,12 @@ export type Adjective = {
   adjective: string;
   kind: AdjectiveType;
 };
-export type VerbOnly = {
+export type VerbForms = {
   presentPlural: string;
   presentSingular: string;
   past: string;
 };
-export type Verb = VerbOnly & {
+export type Verb = VerbForms & {
   directObject: null | Noun;
   indirectObject: Array<{
     preposition: string;

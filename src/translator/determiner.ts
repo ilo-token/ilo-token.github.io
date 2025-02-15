@@ -56,10 +56,13 @@ export function findNumber(
 }
 export function determiner(
   definition: Dictionary.Determiner,
-  emphasis: boolean,
   reduplicationCount: number,
+  emphasis: boolean,
 ): Output<English.Determiner> {
-  return simpleNounForms(definition.determiner, definition.plural)
+  return simpleNounForms({
+    singular: definition.determiner,
+    plural: definition.plural,
+  })
     .map((determiner) => ({
       kind: definition.kind,
       determiner: {
