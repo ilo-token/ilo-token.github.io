@@ -1,9 +1,10 @@
 import * as Dictionary from "../../dictionary/type.ts";
-import { filterSet, repeatWithSpace } from "../misc.ts";
+import { filterSet } from "../misc.ts";
 import { Output } from "../output.ts";
 import * as English from "./ast.ts";
 import { FilteredOutError } from "./error.ts";
 import { simpleNounForms } from "./noun.ts";
+import { word } from "./word.ts";
 
 function prettyPrintDeterminers(
   determiners: Array<English.Determiner>,
@@ -65,10 +66,7 @@ export function determiner(
   })
     .map((determiner) => ({
       kind: definition.kind,
-      determiner: {
-        word: repeatWithSpace(determiner, reduplicationCount),
-        emphasis,
-      },
+      determiner: word(determiner, reduplicationCount, emphasis),
       quantity: definition.quantity,
     }));
 }

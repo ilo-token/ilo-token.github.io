@@ -1,5 +1,5 @@
 import * as Dictionary from "../../dictionary/type.ts";
-import { nullableAsArray, repeatWithSpace } from "../misc.ts";
+import { nullableAsArray } from "../misc.ts";
 import { Output } from "../output.ts";
 import { settings } from "../settings.ts";
 import { adjective } from "./adjective.ts";
@@ -7,6 +7,7 @@ import * as English from "./ast.ts";
 import * as EnglishComposer from "./composer.ts";
 import { determiner } from "./determiner.ts";
 import { condense } from "./misc.ts";
+import { word } from "./word.ts";
 
 export type PartialNoun = Dictionary.NounForms & {
   determiner: Array<English.Determiner>;
@@ -98,10 +99,7 @@ export function noun(
     .map(([{ noun, quantity }, partialNoun]) => ({
       ...partialNoun,
       type: "simple",
-      noun: {
-        word: repeatWithSpace(noun, reduplicationCount),
-        emphasis,
-      },
+      noun: word(noun, reduplicationCount, emphasis),
       quantity,
       preposition: [],
       emphasis: false,

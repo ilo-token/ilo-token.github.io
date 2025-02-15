@@ -4,7 +4,7 @@ import { Output } from "../output.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
 import { UntranslatableError } from "./error.ts";
-import { unemphasized } from "./word.ts";
+import { unemphasized, word } from "./word.ts";
 
 export type AdjectiveWithInWay = {
   adjective: English.AdjectivePhrase;
@@ -41,10 +41,7 @@ export function adjective(
       type: "simple",
       kind: definition.kind,
       adverb: [...definition.adverb, ...nullableAsArray(so)].map(unemphasized),
-      adjective: {
-        word: repeatWithSpace(definition.adjective, reduplicationCount),
-        emphasis,
-      },
+      adjective: word(definition.adjective, reduplicationCount, emphasis),
       emphasis: false,
     }));
 }

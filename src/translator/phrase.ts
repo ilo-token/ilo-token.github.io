@@ -1,4 +1,4 @@
-import { nullableAsArray, repeatWithSpace } from "../misc.ts";
+import { nullableAsArray } from "../misc.ts";
 import { Output } from "../output.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as Composer from "../parser/composer.ts";
@@ -21,7 +21,7 @@ import { fromNounForms, PartialNoun } from "./noun.ts";
 import { Place } from "./pronoun.ts";
 import { PartialCompoundVerb, PartialVerb } from "./verb.ts";
 import { wordUnit } from "./word-unit.ts";
-import { unemphasized } from "./word.ts";
+import { unemphasized, word } from "./word.ts";
 
 type PhraseTranslation =
   | { type: "noun"; noun: English.NounPhrase }
@@ -82,10 +82,7 @@ function nounPhrase(
         type: "simple" as const,
         determiner,
         adjective,
-        noun: {
-          word: repeatWithSpace(noun, partialNoun.reduplicationCount),
-          emphasis: partialNoun.emphasis,
-        },
+        noun: word(noun, partialNoun.reduplicationCount, partialNoun.emphasis),
         quantity,
         perspective: partialNoun.perspective,
         postCompound: null,

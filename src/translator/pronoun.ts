@@ -1,8 +1,8 @@
 import * as Dictionary from "../../dictionary/type.ts";
-import { repeatWithSpace } from "../misc.ts";
 import { Output } from "../output.ts";
 import * as English from "./ast.ts";
 import { fromNounForms, PartialNoun } from "./noun.ts";
+import { word } from "./word.ts";
 
 export type Place = "subject" | "object";
 
@@ -50,10 +50,7 @@ export function pronoun(
       type: "simple",
       determiner: [],
       adjective: [],
-      noun: {
-        word: repeatWithSpace(noun, reduplicationCount),
-        emphasis,
-      },
+      noun: word(noun, reduplicationCount, emphasis),
       quantity,
       perspective: definition.perspective,
       postCompound: null,

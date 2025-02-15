@@ -1,5 +1,4 @@
 import { dictionary } from "../dictionary.ts";
-import { repeatWithSpace } from "../misc.ts";
 import { Output } from "../output.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as Composer from "../parser/composer.ts";
@@ -14,7 +13,7 @@ import {
 import { noun } from "./noun.ts";
 import { phrase } from "./phrase.ts";
 import { pronoun } from "./pronoun.ts";
-import { unemphasized } from "./word.ts";
+import { unemphasized, word } from "./word.ts";
 
 export type ModifierTranslation =
   | { type: "noun"; noun: English.NounPhrase }
@@ -59,26 +58,26 @@ function numberModifier(
   };
 }
 export function defaultModifier(
-  word: TokiPona.WordUnit,
+  wordUnit: TokiPona.WordUnit,
 ): Output<ModifierTranslation> {
-  const emphasis = word.emphasis != null;
-  switch (word.type) {
+  const emphasis = wordUnit.emphasis != null;
+  switch (wordUnit.type) {
     case "number":
-      return new Output([numberModifier(word.number, emphasis)]);
+      return new Output([numberModifier(wordUnit.number, emphasis)]);
     case "x ala x":
       return new Output(new TranslationTodoError("x ala x"));
     case "default":
     case "reduplication": {
       let reduplicationCount: number;
-      switch (word.type) {
+      switch (wordUnit.type) {
         case "default":
           reduplicationCount = 1;
           break;
         case "reduplication":
-          reduplicationCount = word.count;
+          reduplicationCount = wordUnit.count;
           break;
       }
-      return new Output(dictionary[word.word].definitions)
+      return new Output(dictionary[wordUnit.word].definitions)
         .flatMap((definition) => {
           switch (definition.type) {
             case "noun":
@@ -101,14 +100,18 @@ export function defaultModifier(
               return determiner(
                 definition,
                 reduplicationCount,
-                word.emphasis != null,
+                wordUnit.emphasis != null,
               )
                 .map<ModifierTranslation>((determiner) => ({
                   type: "determiner",
                   determiner,
                 }));
             case "adjective":
-              return adjective(definition, word.emphasis, reduplicationCount)
+              return adjective(
+                definition,
+                wordUnit.emphasis,
+                reduplicationCount,
+              )
                 .map<ModifierTranslation>((adjective) => ({
                   type: "adjective",
                   adjective,
@@ -117,7 +120,7 @@ export function defaultModifier(
               return compoundAdjective(
                 definition.adjective,
                 reduplicationCount,
-                word.emphasis,
+                wordUnit.emphasis,
               )
                 .map<ModifierTranslation>((adjective) => ({
                   type: "adjective",
@@ -126,10 +129,7 @@ export function defaultModifier(
             case "adverb":
               return new Output<ModifierTranslation>([{
                 type: "adverb",
-                adverb: {
-                  word: repeatWithSpace(definition.adverb, reduplicationCount),
-                  emphasis,
-                },
+                adverb: word(definition.adverb, reduplicationCount, emphasis),
               }]);
             default:
               return new Output();
