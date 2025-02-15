@@ -29,8 +29,8 @@ function so(emphasis: null | TokiPona.Emphasis): string {
 }
 export function adjective(
   definition: Dictionary.Adjective,
-  emphasis: null | TokiPona.Emphasis,
   reduplicationCount: number,
+  emphasis: null | TokiPona.Emphasis,
 ): Output<English.AdjectivePhrase & { type: "simple" }> {
   return Output.concat<{ emphasis: boolean; so: null | string }>(
     Output.from(() => new Output([so(emphasis)]))
@@ -54,7 +54,7 @@ export function compoundAdjective(
     if (reduplicationCount === 1) {
       return Output.combine(
         ...adjectives
-          .map((definition) => adjective(definition, emphasis, 1)),
+          .map((definition) => adjective(definition, 1, emphasis)),
       )
         .map((adjective) => ({
           type: "compound",

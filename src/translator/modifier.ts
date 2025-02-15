@@ -109,8 +109,8 @@ export function defaultModifier(
             case "adjective":
               return adjective(
                 definition,
-                wordUnit.emphasis,
                 reduplicationCount,
+                wordUnit.emphasis,
               )
                 .map<ModifierTranslation>((adjective) => ({
                   type: "adjective",
