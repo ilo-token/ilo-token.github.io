@@ -37,7 +37,7 @@ export function partialNoun(
       plural: definition.plural,
       reduplicationCount,
       postAdjective: definition.postAdjective,
-      emphasis: emphasis != null,
+      emphasis,
     }));
 }
 export function nounForms(
