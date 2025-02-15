@@ -334,7 +334,7 @@ export function multiplePhrases(
               ),
             };
           } else if (
-            andParticle !== "en" &&
+            (andParticle !== "en" || conjunction !== "and") &&
             phrase.every((phrase) => phrase.type === "adjective")
           ) {
             return {
