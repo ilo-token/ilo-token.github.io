@@ -14,6 +14,7 @@ export type NounPhrase =
     adjective: Array<AdjectivePhrase>;
     noun: Word;
     quantity: Quantity;
+    perspective: Dictionary.Perspective;
     postAdjective: null | { adjective: string; name: string };
     preposition: Array<Preposition>;
     emphasis: boolean;

@@ -24,6 +24,7 @@ function numberWordUnit(
     plural: null,
     emphasis,
     reduplicationCount: 1,
+    perspective: "third",
     postAdjective: null,
   };
 }

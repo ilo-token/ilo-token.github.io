@@ -12,6 +12,7 @@ export type PartialNoun = Dictionary.NounForms & {
   adjective: Array<English.AdjectivePhrase>;
   reduplicationCount: number;
   emphasis: boolean;
+  perspective: Dictionary.Perspective;
   postAdjective: null | { adjective: string; name: string };
 };
 export function partialNoun(
@@ -33,6 +34,7 @@ export function partialNoun(
       adjective,
       singular: definition.singular,
       plural: definition.plural,
+      perspective: "third",
       reduplicationCount,
       postAdjective: definition.postAdjective,
       emphasis,
@@ -92,7 +94,7 @@ export function noun(
     fromNounForms(definition, "both"),
     partialNoun(definition, reduplicationCount, emphasis),
   )
-    .map<English.NounPhrase>(([{ noun, quantity }, partialNoun]) => ({
+    .map(([{ noun, quantity }, partialNoun]) => ({
       ...partialNoun,
       type: "simple",
       noun: {

@@ -85,6 +85,9 @@ function number(): Parser<"singular" | "plural"> {
 function optionalNumber(): Parser<null | "singular" | "plural"> {
   return optionalAll(number());
 }
+function perspective(): Parser<"first" | "second" | "third"> {
+  return choiceOnlyOne(keyword("first"), keyword("second"), keyword("third"));
+}
 function tag<T>(parser: Parser<T>): Parser<T> {
   return lex(matchString("(", "open parenthesis"))
     .with(parser)
@@ -425,27 +428,43 @@ const DEFINITION = cached(choiceOnlyOne<Definition>(
     word().skip(slash()),
     word().skip(slash()),
     word(),
+    tag(
+      keyword("personal")
+        .with(keyword("pronoun"))
+        .with(perspective()),
+    ),
   )
-    .skip(tag(sequence(keyword("personal"), keyword("pronoun"))))
     .skip(semicolon())
     .map((
-      [singularSubject, singularObject, pluralSubject, pluralObject],
+      [
+        singularSubject,
+        singularObject,
+        pluralSubject,
+        pluralObject,
+        perspective,
+      ],
     ) => ({
       type: "personal pronoun",
       singular: { subject: singularSubject, object: singularObject },
       plural: { subject: pluralSubject, object: pluralObject },
+      perspective,
     })),
   sequence(
     word().skip(slash()),
     word(),
-    tag(keyword("personal").with(keyword("pronoun")).with(number())),
+    tag(
+      keyword("personal").with(keyword("pronoun")).with(
+        sequence(perspective(), number()),
+      ),
+    ),
   )
     .skip(semicolon())
-    .map(([subject, object, number]) => ({
+    .map(([subject, object, [perspective, number]]) => ({
       type: "personal pronoun",
       singular: null,
       plural: null,
       [number]: { subject, object },
+      perspective,
     })),
   word()
     .skip(tag(sequence(keyword("v"), keyword("modal"))))

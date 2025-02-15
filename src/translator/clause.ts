@@ -30,6 +30,7 @@ function phraseClause(
                   emphasis: false,
                 },
                 quantity: "singular",
+                perspective: "third",
                 postAdjective: null,
                 preposition: [],
                 emphasis: false,

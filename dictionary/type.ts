@@ -11,10 +11,12 @@ export type Noun = NounForms & {
     name: string;
   };
 };
-export type Pronoun = {
+export type PronounForms = {
   singular: null | { subject: string; object: string };
   plural: null | { subject: string; object: string };
 };
+export type Perspective = "first" | "second" | "third";
+export type Pronoun = PronounForms & { perspective: Perspective };
 export type DeterminerType =
   | "article"
   | "demonstrative"

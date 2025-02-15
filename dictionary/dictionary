@@ -758,7 +758,7 @@ meso:
   mediocre(adj opinion);
 
 mi:
-  I/me/we/us(personal pronoun);
+  I/me/we/us(personal pronoun first);
   my/our(d possessive);
 
 mije:
@@ -1025,8 +1025,8 @@ olin:
   familial(adj qualifier);
 
 ona:
-  they/them(personal pronoun plural);
-  it/it(personal pronoun singular);
+  they/them(personal pronoun third plural);
+  it/it(personal pronoun third singular);
   their(d possessive);
   its(d possessive);
 
@@ -1314,7 +1314,7 @@ sin:
   newly(adv);
 
 sina:
-  you/you(personal pronoun plural);
+  you/you(personal pronoun second plural);
   your(d possessive);
 
 sinpin:

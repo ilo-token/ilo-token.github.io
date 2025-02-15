@@ -7,7 +7,7 @@ import { fromNounForms, PartialNoun } from "./noun.ts";
 export type Place = "subject" | "object";
 
 function pronounForms(
-  pronoun: Dictionary.Pronoun,
+  pronoun: Dictionary.PronounForms,
   place: Place,
 ): Dictionary.NounForms {
   switch (place) {
@@ -34,6 +34,7 @@ export function partialPronoun(
     determiner: [],
     adjective: [],
     reduplicationCount,
+    perspective: pronoun.perspective,
     postAdjective: null,
     emphasis,
   };
@@ -54,6 +55,7 @@ export function pronoun(
         emphasis,
       },
       quantity,
+      perspective: definition.perspective,
       postCompound: null,
       postAdjective: null,
       preposition: [],

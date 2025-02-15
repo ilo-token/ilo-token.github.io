@@ -87,6 +87,7 @@ function nounPhrase(
           emphasis: partialNoun.emphasis,
         },
         quantity,
+        perspective: partialNoun.perspective,
         postCompound: null,
         postAdjective,
         preposition,
@@ -98,7 +99,7 @@ function nounPhrase(
     } else if (
       modifier.ofPhrase == null && modifier.inPositionPhrase == null
     ) {
-      return headNoun.map<English.NounPhrase>((noun) => ({
+      return headNoun.map((noun) => ({
         ...modifier.nounPreposition!.noun as English.NounPhrase & {
           type: "simple";
         },
