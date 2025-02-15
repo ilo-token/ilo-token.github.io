@@ -43,7 +43,7 @@ export type AdjectivePhrase =
     adjective: Array<AdjectivePhrase>;
     emphasis: boolean;
   };
-export type SubjectComplement =
+export type Complement =
   | { type: "noun"; noun: NounPhrase }
   | { type: "adjective"; adjective: AdjectivePhrase };
 export type Verb = {
@@ -56,8 +56,9 @@ export type VerbPhrase =
     type: "default";
     adverb: Array<Word>;
     verb: Verb;
-    subjectComplement: SubjectComplement;
+    subjectComplement: null | Complement;
     object: null | NounPhrase;
+    objectComplement: null | Complement;
     preposition: Array<Preposition>;
     hideVerb: boolean;
   }
@@ -66,6 +67,7 @@ export type VerbPhrase =
     conjunction: string;
     verbs: Array<VerbPhrase>;
     object: null | NounPhrase;
+    objectComplement: null | Complement;
     preposition: Array<Preposition>;
   };
 export type Clause =

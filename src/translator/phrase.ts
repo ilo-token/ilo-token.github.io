@@ -276,7 +276,7 @@ function compoundVerb(
       switch (phrase.type) {
         case "noun":
         case "adjective": {
-          let subjectComplement: English.SubjectComplement;
+          let subjectComplement: English.Complement;
           switch (phrase.type) {
             case "noun":
               subjectComplement = {

@@ -12,7 +12,7 @@ export type PartialVerb = {
   past: string;
   wordEmphasis: boolean;
   reduplicationCount: number;
-  subjectComplement: null | English.SubjectComplement;
+  subjectComplement: null | English.Complement;
   object: null | English.NounPhrase;
   preposition: Array<English.Preposition>;
   forObject: boolean | string;

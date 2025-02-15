@@ -75,14 +75,14 @@ function adjective(phrases: English.AdjectivePhrase, depth: number): string {
 function preposition(preposition: English.Preposition): string {
   return `${word(preposition.preposition)} ${noun(preposition.object, 0)}`;
 }
-function subjectComplement(
-  subjectComplement: English.SubjectComplement,
+function complement(
+  complement: English.Complement,
 ): string {
-  switch (subjectComplement.type) {
+  switch (complement.type) {
     case "noun":
-      return noun(subjectComplement.noun, 0);
+      return noun(complement.noun, 0);
     case "adjective":
-      return adjective(subjectComplement.adjective, 0);
+      return adjective(complement.adjective, 0);
   }
 }
 function verb(phrase: English.VerbPhrase, depth: number): string {
@@ -103,7 +103,7 @@ function verb(phrase: English.VerbPhrase, depth: number): string {
       text = [
         ...phrase.adverb.map(word),
         ...verbText,
-        ...nullableAsArray(phrase.subjectComplement).map(subjectComplement),
+        ...nullableAsArray(phrase.subjectComplement).map(complement),
       ]
         .join(" ");
       break;
@@ -118,6 +118,7 @@ function verb(phrase: English.VerbPhrase, depth: number): string {
   return [
     text,
     ...nullableAsArray(phrase.object).map(noun, 0),
+    ...nullableAsArray(phrase.objectComplement).map(complement),
     ...phrase.preposition.map(preposition),
   ]
     .join(" ");

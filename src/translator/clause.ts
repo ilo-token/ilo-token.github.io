@@ -47,6 +47,7 @@ function phraseClause(
                   adjective: phrase.adjective,
                 },
                 object: null,
+                objectComplement: null,
                 preposition: nullableAsArray(phrase.inWayPhrase)
                   .map((object) => ({
                     preposition: unemphasized("in"),
