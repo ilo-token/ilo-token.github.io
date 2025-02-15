@@ -172,10 +172,11 @@ function verbPhrase(
 function defaultPhrase(
   phrase: TokiPona.Phrase & { type: "default" },
   place: "subject" | "object",
+  includeGerund: boolean,
 ): Output<PhraseTranslation> {
   const emphasis = phrase.emphasis != null;
   return Output.combine(
-    wordUnit(phrase.headWord, place),
+    wordUnit(phrase.headWord, place, includeGerund),
     multipleModifiers(phrase.modifiers),
   )
     .flatMap<PhraseTranslation>(([headWord, modifier]) => {
@@ -203,10 +204,11 @@ function defaultPhrase(
 export function phrase(
   phrase: TokiPona.Phrase,
   place: "subject" | "object",
+  includeGerund: boolean,
 ): Output<PhraseTranslation> {
   switch (phrase.type) {
     case "default":
-      return defaultPhrase(phrase, place);
+      return defaultPhrase(phrase, place, includeGerund);
     case "preverb":
     case "preposition":
     case "quotation":
@@ -316,11 +318,12 @@ function compoundVerb(
 export function multiplePhrases(
   phrases: TokiPona.MultiplePhrases,
   place: "subject" | "object",
+  includeGerund: boolean,
   andParticle: string,
 ): Output<MultiplePhraseTranslation> {
   switch (phrases.type) {
     case "single":
-      return phrase(phrases.phrase, place)
+      return phrase(phrases.phrase, place, includeGerund)
         .map<MultiplePhraseTranslation>((phrase) => {
           if (phrase.type === "verb") {
             return { type: "verb", verb: { ...phrase, type: "simple" } };
@@ -333,7 +336,9 @@ export function multiplePhrases(
       const conjunction = CONJUNCTION[phrases.type];
       return Output.combine(
         ...phrases.phrases
-          .map((phrases) => multiplePhrases(phrases, place, andParticle)),
+          .map((phrases) =>
+            multiplePhrases(phrases, place, includeGerund, andParticle)
+          ),
       )
         .filterMap<null | MultiplePhraseTranslation>((phrase) => {
           if (

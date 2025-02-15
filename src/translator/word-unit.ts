@@ -32,13 +32,18 @@ function defaultWordUnit(
   reduplicationCount: number,
   emphasis: null | TokiPona.Emphasis,
   place: "subject" | "object",
+  includeGerund: boolean,
 ): Output<WordUnitTranslation> {
   return new Output(dictionary[word].definitions)
     .flatMap((definition) => {
       switch (definition.type) {
         case "noun":
-          return partialNoun(definition, reduplicationCount, emphasis != null)
-            .map<WordUnitTranslation>((noun) => ({ ...noun, type: "noun" }));
+          if (!includeGerund && definition.gerund) {
+            return new Output();
+          } else {
+            return partialNoun(definition, reduplicationCount, emphasis != null)
+              .map<WordUnitTranslation>((noun) => ({ ...noun, type: "noun" }));
+          }
         case "personal pronoun":
           return new Output<WordUnitTranslation>([{
             ...partialPronoun(
@@ -80,6 +85,7 @@ function defaultWordUnit(
 export function wordUnit(
   wordUnit: TokiPona.WordUnit,
   place: "subject" | "object",
+  includeGerund: boolean,
 ): Output<WordUnitTranslation> {
   switch (wordUnit.type) {
     case "number":
@@ -104,6 +110,7 @@ export function wordUnit(
         reduplicationCount,
         wordUnit.emphasis,
         place,
+        includeGerund,
       );
     }
   }
