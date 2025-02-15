@@ -1,6 +1,5 @@
 import { nullableAsArray } from "../misc.ts";
 import { Output } from "../output.ts";
-import { character } from "../parser/parser-lib.ts";
 import { parse } from "../parser/parser.ts";
 import * as English from "./ast.ts";
 import { multipleSentences } from "./sentence.ts";
