@@ -26,11 +26,7 @@ import { unemphasized, word } from "./word.ts";
 type PhraseTranslation =
   | { type: "noun"; noun: English.NounPhrase }
   | ({ type: "adjective" } & AdjectiveWithInWay)
-  | ({ type: "verb" } & PartialVerb);
-type MultiplePhraseTranslation =
-  | { type: "noun"; noun: English.NounPhrase }
-  | ({ type: "adjective" } & AdjectiveWithInWay)
-  | ({ type: "verb"; verb: PartialCompoundVerb });
+  | { type: "verb"; verb: PartialCompoundVerb };
 function nounPhrase(
   emphasis: boolean,
   partialNoun: PartialNoun,
@@ -186,9 +182,9 @@ function defaultPhrase(
           type: "adjective",
         }]);
       } else if (headWord.type === "verb" && modifier.type === "adverbial") {
-        return new Output([{
-          ...verbPhrase(emphasis, headWord, modifier),
+        return new Output<PhraseTranslation>([{
           type: "verb",
+          verb: { type: "simple", ...verbPhrase(emphasis, headWord, modifier) },
         }]);
       } else {
         return new Output();
@@ -263,7 +259,7 @@ function compoundAdjective(
   };
 }
 function multiplePhraseAsVerb(
-  phrase: MultiplePhraseTranslation,
+  phrase: PhraseTranslation,
 ): PartialCompoundVerb {
   switch (phrase.type) {
     case "noun":
@@ -308,17 +304,10 @@ export function multiplePhrases(
   place: Place,
   includeGerund: boolean,
   andParticle: string,
-): Output<MultiplePhraseTranslation> {
+): Output<PhraseTranslation> {
   switch (phrases.type) {
     case "single":
-      return phrase(phrases.phrase, place, includeGerund)
-        .map<MultiplePhraseTranslation>((phrase) => {
-          if (phrase.type === "verb") {
-            return { type: "verb", verb: { ...phrase, type: "simple" } };
-          } else {
-            return phrase;
-          }
-        });
+      return phrase(phrases.phrase, place, includeGerund);
     case "and conjunction":
     case "anu": {
       const conjunction = CONJUNCTION[phrases.type];
@@ -328,7 +317,7 @@ export function multiplePhrases(
             multiplePhrases(phrases, place, includeGerund, andParticle)
           ),
       )
-        .filterMap<null | MultiplePhraseTranslation>((phrase) => {
+        .filterMap<null | PhraseTranslation>((phrase) => {
           if (
             phrase.some((phrase) =>
               phrase.type === "adjective" && phrase.inWayPhrase != null
