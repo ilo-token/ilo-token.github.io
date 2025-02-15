@@ -58,8 +58,8 @@ function defaultWordUnit(
         case "adjective":
           return adjective(
             definition,
-            emphasis,
             reduplicationCount,
+            emphasis,
           )
             .map<WordUnitTranslation>((adjective) => ({
               type: "adjective",

@@ -28,7 +28,7 @@ export function partialNoun(
   );
   const engAdjective = Output.combine(
     ...definition.adjective
-      .map((definition) => adjective(definition, null, 1)),
+      .map((definition) => adjective(definition, 1, null)),
   );
   return Output.combine(engDeterminer, engAdjective)
     .map(([determiner, adjective]) => ({

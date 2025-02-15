@@ -20,7 +20,7 @@ export function definitionAsPlainString(
       )
         .map((noun) => EnglishComposer.noun(noun, 0));
     case "adjective":
-      return adjective(definition, null, 1)
+      return adjective(definition, 1, null)
         .map((adjective) => EnglishComposer.adjective(adjective, 0));
     case "compound adjective": {
       return compoundAdjective(definition.adjective, 1, null)
