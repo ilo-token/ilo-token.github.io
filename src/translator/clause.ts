@@ -10,7 +10,7 @@ function phraseClause(
   phrases: TokiPona.MultiplePhrases,
 ): Output<English.Clause> {
   return multiplePhrases(phrases, "object", "en")
-    .filterMap<null | English.Clause>(
+    .map<English.Clause>(
       (phrase) => {
         switch (phrase.type) {
           case "noun":
@@ -58,7 +58,7 @@ function phraseClause(
               hideSubject: true,
             };
           case "verb":
-            return null;
+            throw new FilteredOutError("verb as interjection");
         }
       },
     );
