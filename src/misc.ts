@@ -1,7 +1,6 @@
 import { escape } from "@std/html/entities";
 
 export const NEWLINES = /\r\n|\n|\r/g;
-export const NEWLINE_LIST = ["\r\n", "\n", "\r"];
 
 export function nullableAsArray<T>(value?: T): Array<NonNullable<T>> {
   if (value == null) {
