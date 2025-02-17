@@ -333,19 +333,20 @@ export function multiplePhrases(
                 phrase.map((phrase) => phrase.noun),
               ),
             };
-          } else if (
-            (andParticle !== "en" || conjunction !== "and") &&
-            phrase.every((phrase) => phrase.type === "adjective")
-          ) {
-            return {
-              type: "adjective",
-              adjective: compoundAdjective(
-                conjunction,
-                phrase.map((phrase) => phrase.adjective),
-              ),
-              inWayPhrase: null,
-            };
-          } else if (andParticle !== "en") {
+          } else if (phrase.every((phrase) => phrase.type === "adjective")) {
+            if (andParticle === "en" && conjunction === "and") {
+              return null;
+            } else {
+              return {
+                type: "adjective",
+                adjective: compoundAdjective(
+                  conjunction,
+                  phrase.map((phrase) => phrase.adjective),
+                ),
+                inWayPhrase: null,
+              };
+            }
+          } else {
             return {
               type: "verb",
               verb: {
@@ -354,8 +355,6 @@ export function multiplePhrases(
                 verb: phrase.map(phraseAsVerb),
               },
             };
-          } else {
-            return null;
           }
         })
         .addErrorWhenNone(() =>
