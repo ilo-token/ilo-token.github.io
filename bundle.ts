@@ -5,6 +5,7 @@ import * as ESBuild from "esbuild";
 const WATCH = [
   "./dictionary/build.ts",
   "./dictionary/dictionary",
+  "./dictionary/misc.ts",
   "./dictionary/parser.ts",
   "./dictionary/type.ts",
   "./telo-misikeke/linku-data.json",
