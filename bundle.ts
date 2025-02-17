@@ -1,9 +1,9 @@
 import { denoPlugins } from "@luca/esbuild-deno-loader";
 import { debounce } from "@std/async/debounce";
 import * as ESBuild from "esbuild";
-import * as Dictionary from "./dictionary/build.ts";
 
 const WATCH = [
+  "./dictionary/build.ts",
   "./dictionary/dictionary",
   "./dictionary/parser.ts",
   "./dictionary/type.ts",
@@ -14,7 +14,7 @@ const WATCH = [
   "./src/",
   "./project-data.json",
 ];
-const DICTIONARY = /dictionary$/;
+const DICTIONARY = /dictionary[/\\]/;
 
 function buildOptions(minify: boolean): ESBuild.BuildOptions {
   return {
@@ -35,6 +35,7 @@ async function buildAll(options: {
   const { minify, buildDictionary, checkDictionary } = options;
   try {
     if (buildDictionary) {
+      const Dictionary = await import("./dictionary/build.ts");
       await Dictionary.build(checkDictionary ?? true);
     }
     console.log("Building main.js...");
