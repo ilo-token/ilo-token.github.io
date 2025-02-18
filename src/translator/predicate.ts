@@ -170,6 +170,7 @@ export function predicate(
             associatedPredicate(predicate, object, preposition),
         );
     }
+    // TODO: combine adjectives and nouns
     case "and conjunction":
     case "anu":
       return Output.combine(
