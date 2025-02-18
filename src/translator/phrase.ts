@@ -283,7 +283,7 @@ export function phraseAsVerb(
         adverb: [],
         presentPlural: "are",
         presentSingular: "is",
-        past: "was",
+        past: "were",
         wordEmphasis: false,
         reduplicationCount: 1,
         subjectComplement,

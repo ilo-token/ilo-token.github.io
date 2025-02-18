@@ -106,11 +106,22 @@ export function fromVerbForms(
   } else {
     presentSingular = verbForms.presentSingular;
   }
-  let present: string;
-  if (quantity === "singular") {
-    present = presentSingular;
+  let pastPlural: string;
+  let pastSingular: string;
+  if (is) {
+    pastPlural = "were";
+    pastSingular = "was";
   } else {
+    pastPlural = pastSingular = verbForms.past;
+  }
+  let past: string;
+  let present: string;
+  if (quantity !== "singular" || (!is && perspective !== "third")) {
+    past = pastPlural;
     present = verbForms.presentPlural;
+  } else {
+    past = pastSingular;
+    present = presentSingular;
   }
   let verb: Output<{ modal: null | string; infinite: string }>;
   switch (settings.tense) {
@@ -120,18 +131,18 @@ export function fromVerbForms(
           verb = new Output([{
             modal: null,
             infinite:
-              `${presentSingular}/${verbForms.presentPlural}/${verbForms.past}/will be`,
+              `${presentSingular}/${verbForms.presentPlural}/${pastSingular}/${pastPlural}/will be`,
           }]);
         } else {
           verb = new Output([{
             modal: null,
-            infinite: `${present}/${verbForms.past}/will be`,
+            infinite: `${present}/${past}/will be`,
           }]);
         }
       } else {
         verb = new Output([{
           modal: "(will)",
-          infinite: condenseVerb(present, verbForms.past),
+          infinite: condenseVerb(present, past),
         }]);
       }
       break;
@@ -144,7 +155,7 @@ export function fromVerbForms(
       }
       verb = new Output([
         { modal: null, infinite: present },
-        { modal: null, infinite: verbForms.past },
+        { modal: null, infinite: past },
         { modal: "will", infinite: future },
       ]);
       break;
