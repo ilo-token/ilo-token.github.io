@@ -1,10 +1,13 @@
+import * as Dictionary from "../../dictionary/type.ts";
 import { nullableAsArray } from "../misc.ts";
 import { Output } from "../output.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
 import { FilteredOutError, TranslationTodoError } from "./error.ts";
-import { multiplePhrases } from "./phrase.ts";
+import { multiplePhrases, multiplePhrasesAsNoun } from "./phrase.ts";
+import { predicate } from "./predicate.ts";
 import { nounAsPreposition } from "./preposition.ts";
+import { verb } from "./verb.ts";
 import { unemphasized } from "./word.ts";
 
 function phraseClause(
@@ -63,6 +66,29 @@ function phraseClause(
       },
     );
 }
+function liClause(
+  clause: TokiPona.Clause & { type: "li clause" },
+): Output<English.Clause> {
+  return Output.combine(
+    multiplePhrasesAsNoun(clause.subjects, "subject", true, "en"),
+    predicate(clause.predicates, "li"),
+  )
+    .flatMap(([subject, predicate]) => {
+      let perspective: Dictionary.Perspective;
+      if (subject.type === "simple") {
+        perspective = subject.perspective;
+      } else {
+        perspective = "third";
+      }
+      return verb(predicate, perspective, subject.quantity)
+        .map((verb) => ({
+          type: "default",
+          subject,
+          verb,
+          hideSubject: false,
+        }));
+    });
+}
 export function clause(clause: TokiPona.Clause): Output<English.Clause> {
   switch (clause.type) {
     case "phrases":
@@ -76,8 +102,9 @@ export function clause(clause: TokiPona.Clause): Output<English.Clause> {
             throw new FilteredOutError(`${phrase.type} within o vocative`);
           }
         });
-    case "prepositions":
     case "li clause":
+      return liClause(clause);
+    case "prepositions":
     case "o clause":
     case "quotation":
       return new Output(new TranslationTodoError(clause.type));

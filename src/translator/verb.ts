@@ -3,7 +3,7 @@ import { Output } from "../output.ts";
 import { settings } from "../settings.ts";
 import * as English from "./ast.ts";
 import { Word } from "./ast.ts";
-import { condense } from "./misc.ts";
+import { condense, CONJUNCTION } from "./misc.ts";
 import { noun } from "./noun.ts";
 import { nounAsPreposition } from "./preposition.ts";
 import { unemphasized, word } from "./word.ts";
@@ -164,4 +164,38 @@ export function fromVerbForms(
       infinite: word(verb.infinite, reduplicationCount, emphasis),
     };
   });
+}
+export function verb(
+  partialVerb: PartialCompoundVerb,
+  perspective: Dictionary.Perspective,
+  quantity: English.Quantity,
+): Output<English.VerbPhrase> {
+  switch (partialVerb.type) {
+    case "simple": {
+      return fromVerbForms(
+        partialVerb,
+        perspective,
+        quantity,
+        partialVerb.reduplicationCount,
+        partialVerb.wordEmphasis,
+      )
+        .map<English.VerbPhrase>((verb) => ({
+          ...partialVerb,
+          type: "default",
+          verb,
+          hideVerb: false,
+        }));
+    }
+    case "compound":
+      return Output.combine(
+        ...partialVerb.verb.map((partialVerb) =>
+          verb(partialVerb, perspective, quantity)
+        ),
+      )
+        .map((verbs) => ({
+          ...partialVerb,
+          type: "compound",
+          verbs,
+        }));
+  }
 }

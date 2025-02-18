@@ -375,3 +375,18 @@ export function multiplePhrases(
     }
   }
 }
+export function multiplePhrasesAsNoun(
+  phrases: TokiPona.MultiplePhrases,
+  place: Place,
+  includeGerund: boolean,
+  andParticle: string,
+): Output<English.NounPhrase> {
+  return multiplePhrases(phrases, place, includeGerund, andParticle, false)
+    .filterMap((phrase) => {
+      if (phrase.type === "noun") {
+        return phrase.noun;
+      } else {
+        return null;
+      }
+    });
+}

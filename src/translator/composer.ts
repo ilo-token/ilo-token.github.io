@@ -136,7 +136,6 @@ function defaultClause(clause: English.Clause & { type: "default" }): string {
   return [
     ...subject,
     verb(clause.verb, 0),
-    ...clause.preposition.map(preposition),
   ]
     .join(" ");
 }

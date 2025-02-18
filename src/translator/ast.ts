@@ -77,7 +77,6 @@ export type Clause =
     type: "default";
     subject: NounPhrase;
     verb: VerbPhrase;
-    preposition: Array<Preposition>;
     hideSubject: boolean;
   }
   | { type: "subject phrase"; subject: NounPhrase }
