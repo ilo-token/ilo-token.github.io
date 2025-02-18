@@ -4,8 +4,8 @@ import {
   FullClause,
   Modifier,
   MultiplePhrases,
-  MultiplePredicates,
   Phrase,
+  Predicate,
   Preposition,
   Sentence,
   WordUnit,
@@ -58,7 +58,7 @@ export function everyWordUnitInPreposition(
   ];
 }
 export function everyWordUnitInMultiplePredicates(
-  predicate: MultiplePredicates,
+  predicate: Predicate,
 ): Array<WordUnit> {
   switch (predicate.type) {
     case "single":
@@ -148,7 +148,7 @@ export function everyPhraseInMultiplePhrases(
   }
 }
 export function everyObjectInMultiplePredicates(
-  predicates: MultiplePredicates,
+  predicates: Predicate,
 ): Array<Phrase> {
   switch (predicates.type) {
     case "single":

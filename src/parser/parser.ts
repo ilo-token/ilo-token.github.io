@@ -20,9 +20,9 @@ import {
   HeadedWordUnit,
   Modifier,
   MultiplePhrases,
-  MultiplePredicates,
   MultipleSentences,
   Phrase,
+  Predicate,
   Preposition,
   Sentence,
   SimpleHeadedWordUnit,
@@ -609,7 +609,7 @@ function preposition(): Parser<Preposition> {
  */
 function associatedPredicates(
   nestingRule: Array<"li" | "o" | "anu">,
-): Parser<MultiplePredicates> {
+): Parser<Predicate> {
   return sequence(
     nestedPhrasesOnly(nestingRule),
     optional(
@@ -633,9 +633,9 @@ function associatedPredicates(
 /** Parses multiple predicates without "li" nor "o" at the beginning. */
 function multiplePredicates(
   nestingRule: Array<"li" | "o" | "anu">,
-): Parser<MultiplePredicates> {
+): Parser<Predicate> {
   if (nestingRule.length === 0) {
-    return choice<MultiplePredicates>(
+    return choice<Predicate>(
       associatedPredicates([]),
       PHRASE.map((predicate) => ({ type: "single", predicate })),
     );
@@ -647,7 +647,7 @@ function multiplePredicates(
     } else {
       type = "anu";
     }
-    return choice<MultiplePredicates>(
+    return choice<Predicate>(
       associatedPredicates(nestingRule),
       sequence(
         choice(

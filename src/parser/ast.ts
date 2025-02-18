@@ -59,7 +59,7 @@ export type Preposition = {
   emphasis: null | Emphasis;
 };
 /** Represents multiple predicates. */
-export type MultiplePredicates =
+export type Predicate =
   | { type: "single"; predicate: Phrase }
   | {
     type: "associated";
@@ -67,8 +67,8 @@ export type MultiplePredicates =
     objects: null | MultiplePhrases;
     prepositions: Array<Preposition>;
   }
-  | { type: "and conjunction"; predicates: Array<MultiplePredicates> }
-  | { type: "anu"; predicates: Array<MultiplePredicates> };
+  | { type: "and conjunction"; predicates: Array<Predicate> }
+  | { type: "anu"; predicates: Array<Predicate> };
 /** Represents a simple clause. */
 export type Clause =
   | { type: "phrases"; phrases: MultiplePhrases }
@@ -76,13 +76,13 @@ export type Clause =
   | {
     type: "li clause";
     subjects: MultiplePhrases;
-    predicates: MultiplePredicates;
+    predicates: Predicate;
     explicitLi: boolean;
   }
   | {
     type: "o clause";
     subjects: null | MultiplePhrases;
-    predicates: MultiplePredicates;
+    predicates: Predicate;
   }
   | { type: "prepositions"; prepositions: Array<Preposition> }
   | ({ type: "quotation" } & Quotation);

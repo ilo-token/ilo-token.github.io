@@ -5,9 +5,9 @@ import {
   FullClause,
   Modifier,
   MultiplePhrases,
-  MultiplePredicates,
   MultipleSentences,
   Phrase,
+  Predicate,
   Preposition,
   Quotation,
   Sentence,
@@ -116,7 +116,7 @@ export function preposition(preposition: Preposition): string {
     .join(" ");
 }
 export function multiplePredicates(
-  predicates: MultiplePredicates,
+  predicates: Predicate,
   andParticle: string,
 ): string {
   switch (predicates.type) {

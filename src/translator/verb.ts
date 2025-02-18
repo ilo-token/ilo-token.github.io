@@ -7,20 +7,30 @@ import { condense } from "./misc.ts";
 import { noun } from "./noun.ts";
 import { unemphasized, word } from "./word.ts";
 
-export type PartialVerb = Dictionary.VerbForms & {
+export type VerbObjects = {
+  object: null | English.NounPhrase;
+  objectComplement: null | English.Complement;
+  preposition: Array<English.Preposition>;
+};
+export type PartialVerb = Dictionary.VerbForms & VerbObjects & {
   adverb: Array<English.Word>;
   reduplicationCount: number;
   wordEmphasis: boolean;
   subjectComplement: null | English.Complement;
-  object: null | English.NounPhrase;
-  preposition: Array<English.Preposition>;
   forObject: boolean | string;
   predicateType: null | "verb" | "noun adjective";
   phraseEmphasis: boolean;
 };
 export type PartialCompoundVerb =
   | ({ type: "simple" } & PartialVerb)
-  | { type: "compound"; conjunction: string; verb: Array<PartialCompoundVerb> };
+  | (
+    & {
+      type: "compound";
+      conjunction: string;
+      verb: Array<PartialCompoundVerb>;
+    }
+    & VerbObjects
+  );
 export function condenseVerb(present: string, past: string): string {
   const [first, ...rest] = present.split(" ");
   const second = past.split(" ")[0];
@@ -57,9 +67,30 @@ export function partialVerb(
       wordEmphasis: emphasis,
       subjectComplement: null,
       object,
+      objectComplement: null,
       preposition,
       phraseEmphasis: false,
     }));
+}
+export function everyPartialVerb(
+  verb: PartialCompoundVerb,
+): Array<PartialVerb> {
+  switch (verb.type) {
+    case "simple":
+      return [verb];
+    case "compound":
+      return verb.verb.flatMap(everyPartialVerb);
+  }
+}
+// TODO: error messages
+export function forObject(verb: PartialCompoundVerb): boolean | string {
+  const [{ forObject }, ...rest] = everyPartialVerb(verb);
+  if (
+    forObject === false || rest.some((verb) => forObject !== verb.forObject)
+  ) {
+    return false;
+  }
+  return forObject;
 }
 export function fromVerbForms(
   verbForms: Dictionary.VerbForms,

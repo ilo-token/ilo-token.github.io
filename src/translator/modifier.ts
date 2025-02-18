@@ -141,22 +141,19 @@ export function defaultModifier(
 export function piModifier(
   insidePhrase: TokiPona.Phrase,
 ): Output<ModifierTranslation> {
-  return phrase(insidePhrase, "object", true)
+  return phrase(insidePhrase, "object", true, false)
     .filter((modifier) =>
       modifier.type !== "noun" || modifier.noun.type !== "simple" ||
       modifier.noun.preposition.length === 0
     )
     .filter((modifier) =>
       modifier.type != "adjective" || modifier.inWayPhrase == null
-    )
-    .filter((modifier) => modifier.type !== "verb") as Output<
-      ModifierTranslation
-    >;
+    ) as Output<ModifierTranslation>;
 }
 function nanpaModifier(
   nanpa: TokiPona.Modifier & { type: "nanpa" },
 ): Output<ModifierTranslation> {
-  return phrase(nanpa.phrase, "object", true).map((phrase) => {
+  return phrase(nanpa.phrase, "object", true, false).map((phrase) => {
     if (phrase.type !== "noun") {
       throw new FilteredOutError(`${phrase.type} within "in position" phrase`);
     } else if (

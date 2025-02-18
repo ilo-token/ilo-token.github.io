@@ -23,7 +23,7 @@ import { PartialCompoundVerb, PartialVerb } from "./verb.ts";
 import { wordUnit } from "./word-unit.ts";
 import { unemphasized, word } from "./word.ts";
 
-type PhraseTranslation =
+export type PhraseTranslation =
   | { type: "noun"; noun: English.NounPhrase }
   | ({ type: "adjective" } & AdjectiveWithInWay)
   | { type: "verb"; verb: PartialCompoundVerb };
@@ -164,6 +164,7 @@ function defaultPhrase(
   phrase: TokiPona.Phrase & { type: "default" },
   place: Place,
   includeGerund: boolean,
+  includeVerb: boolean,
 ): Output<PhraseTranslation> {
   const emphasis = phrase.emphasis != null;
   return Output.combine(
@@ -181,7 +182,9 @@ function defaultPhrase(
           ...adjectivePhrase(emphasis, headWord.adjective, modifier),
           type: "adjective",
         }]);
-      } else if (headWord.type === "verb" && modifier.type === "adverbial") {
+      } else if (
+        includeVerb && headWord.type === "verb" && modifier.type === "adverbial"
+      ) {
         return new Output<PhraseTranslation>([{
           type: "verb",
           verb: { ...verbPhrase(emphasis, headWord, modifier), type: "simple" },
@@ -196,10 +199,11 @@ export function phrase(
   phrase: TokiPona.Phrase,
   place: Place,
   includeGerund: boolean,
+  includeVerb: boolean,
 ): Output<PhraseTranslation> {
   switch (phrase.type) {
     case "default":
-      return defaultPhrase(phrase, place, includeGerund);
+      return defaultPhrase(phrase, place, includeGerund, includeVerb);
     case "preverb":
     case "preposition":
     case "quotation":
@@ -258,7 +262,7 @@ function compoundAdjective(
     emphasis: false,
   };
 }
-function phraseAsVerb(
+export function phraseAsVerb(
   phrase: PhraseTranslation,
 ): PartialCompoundVerb {
   switch (phrase.type) {
@@ -289,6 +293,7 @@ function phraseAsVerb(
         reduplicationCount: 1,
         subjectComplement,
         object: null,
+        objectComplement: null,
         preposition: [],
         forObject: false,
         predicateType: null,
@@ -304,17 +309,24 @@ export function multiplePhrases(
   place: Place,
   includeGerund: boolean,
   andParticle: string,
+  includeVerb: boolean,
 ): Output<PhraseTranslation> {
   switch (phrases.type) {
     case "single":
-      return phrase(phrases.phrase, place, includeGerund);
+      return phrase(phrases.phrase, place, includeGerund, includeVerb);
     case "and conjunction":
     case "anu": {
       const conjunction = CONJUNCTION[phrases.type];
       return Output.combine(
         ...phrases.phrases
           .map((phrases) =>
-            multiplePhrases(phrases, place, includeGerund, andParticle)
+            multiplePhrases(
+              phrases,
+              place,
+              includeGerund,
+              andParticle,
+              includeVerb,
+            )
           ),
       )
         .filterMap<null | PhraseTranslation>((phrase) => {
@@ -346,15 +358,20 @@ export function multiplePhrases(
                 inWayPhrase: null,
               };
             }
-          } else {
+          } else if (includeVerb) {
             return {
               type: "verb",
               verb: {
                 type: "compound",
                 conjunction,
                 verb: phrase.map(phraseAsVerb),
+                object: null,
+                objectComplement: null,
+                preposition: [],
               },
             };
+          } else {
+            return null;
           }
         })
         .addErrorWhenNone(() =>
