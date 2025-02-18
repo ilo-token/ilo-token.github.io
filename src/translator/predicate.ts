@@ -1,6 +1,5 @@
 import { forObject, PartialCompoundVerb } from "./verb.ts";
 import * as English from "./ast.ts";
-import { unemphasized } from "./word.ts";
 import { AdjectiveWithInWay } from "./adjective.ts";
 import { nullableAsArray } from "../misc.ts";
 import * as TokiPona from "../parser/ast.ts";
@@ -12,7 +11,7 @@ import {
 } from "./phrase.ts";
 import { Output } from "../output.ts";
 import { FilteredOutError, UntranslatableError } from "./error.ts";
-import { preposition } from "./preposition.ts";
+import { nounAsPreposition, preposition } from "./preposition.ts";
 import { CONJUNCTION } from "./misc.ts";
 
 function verbObject(
@@ -30,10 +29,7 @@ function verbObject(
       preposition = [];
     } else {
       englishObject = null;
-      preposition = [{
-        preposition: unemphasized(useForObject),
-        object,
-      }];
+      preposition = [nounAsPreposition(object, useForObject)];
     }
     return { ...verb, object: englishObject, preposition };
   }
@@ -53,10 +49,7 @@ function applyTo(
     subjectComplement: null,
     object: predicate,
     objectComplement: null,
-    preposition: [{
-      preposition: unemphasized("to"),
-      object,
-    }],
+    preposition: [nounAsPreposition(object, "to")],
     forObject: false,
     predicateType: null,
     phraseEmphasis: false,
@@ -77,10 +70,7 @@ function turnInto(
     subjectComplement: null,
     object,
     objectComplement: null,
-    preposition: [{
-      preposition: unemphasized("into"),
-      object: predicate,
-    }],
+    preposition: [nounAsPreposition(predicate, "into")],
     forObject: false,
     predicateType: null,
     phraseEmphasis: false,
@@ -101,10 +91,8 @@ function make(
     subjectComplement: null,
     object,
     objectComplement: { type: "adjective", adjective: predicate.adjective },
-    preposition: nullableAsArray(predicate.inWayPhrase).map((phrase) => ({
-      preposition: unemphasized("in"),
-      object: phrase,
-    })),
+    preposition: nullableAsArray(predicate.inWayPhrase)
+      .map((phrase) => nounAsPreposition(phrase, "in")),
     forObject: false,
     predicateType: null,
     phraseEmphasis: false,

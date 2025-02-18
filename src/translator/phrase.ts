@@ -18,10 +18,11 @@ import {
   multipleModifiers,
 } from "./modifier.ts";
 import { fromNounForms, PartialNoun } from "./noun.ts";
+import { nounAsPreposition } from "./preposition.ts";
 import { Place } from "./pronoun.ts";
 import { PartialCompoundVerb, PartialVerb } from "./verb.ts";
 import { wordUnit } from "./word-unit.ts";
-import { unemphasized, word } from "./word.ts";
+import { word } from "./word.ts";
 
 export type PhraseTranslation =
   | { type: "noun"; noun: English.NounPhrase }
@@ -57,15 +58,9 @@ function nounPhrase(
     }
     const preposition = [
       ...nullableAsArray(modifier.inPositionPhrase)
-        .map((object) => ({
-          preposition: unemphasized("in"),
-          object,
-        })),
+        .map((object) => nounAsPreposition(object, "in")),
       ...nullableAsArray(modifier.ofPhrase)
-        .map((object) => ({
-          preposition: unemphasized("of"),
-          object,
-        })),
+        .map((object) => nounAsPreposition(object, "of")),
     ];
     if (preposition.length > 1) {
       throw new FilteredOutError("multiple preposition within noun phrase");
@@ -96,10 +91,10 @@ function nounPhrase(
         ...modifier.nounPreposition!.noun as English.NounPhrase & {
           type: "simple";
         },
-        preposition: [{
-          preposition: unemphasized(modifier.nounPreposition!.preposition),
-          object: noun,
-        }],
+        preposition: [nounAsPreposition(
+          noun,
+          modifier.nounPreposition!.preposition,
+        )],
         emphasis,
       }));
     } else {
@@ -151,7 +146,7 @@ function verbPhrase(
   const preposition = [
     ...verb.preposition,
     ...nullableAsArray(modifier.inWayPhrase)
-      .map((object) => ({ preposition: unemphasized("in"), object })),
+      .map((object) => nounAsPreposition(object, "in")),
   ];
   return {
     ...verb,

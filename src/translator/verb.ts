@@ -5,6 +5,7 @@ import * as English from "./ast.ts";
 import { Word } from "./ast.ts";
 import { condense } from "./misc.ts";
 import { noun } from "./noun.ts";
+import { nounAsPreposition } from "./preposition.ts";
 import { unemphasized, word } from "./word.ts";
 
 export type VerbObjects = {
@@ -53,10 +54,9 @@ export function partialVerb(
     ...definition.indirectObject
       .flatMap((indirectObject) =>
         noun(indirectObject.object, 1, false)
-          .map((object) => ({
-            preposition: unemphasized(indirectObject.preposition),
-            object,
-          }))
+          .map((object) =>
+            nounAsPreposition(object, indirectObject.preposition)
+          )
       ),
   );
   return Output.combine(object, preposition)

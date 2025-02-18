@@ -4,6 +4,7 @@ import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
 import { FilteredOutError, TranslationTodoError } from "./error.ts";
 import { multiplePhrases } from "./phrase.ts";
+import { nounAsPreposition } from "./preposition.ts";
 import { unemphasized } from "./word.ts";
 
 function phraseClause(
@@ -50,10 +51,7 @@ function phraseClause(
                 object: null,
                 objectComplement: null,
                 preposition: nullableAsArray(phrase.inWayPhrase)
-                  .map((object) => ({
-                    preposition: unemphasized("in"),
-                    object,
-                  })),
+                  .map((object) => nounAsPreposition(object, "in")),
                 hideVerb: true,
               },
               preposition: [],
