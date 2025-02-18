@@ -28,7 +28,7 @@ function verbObject(
       englishObject = object;
       preposition = [];
     } else {
-      englishObject = null;
+      englishObject = verb.object;
       preposition = [nounAsPreposition(object, useForObject)];
     }
     return { ...verb, object: englishObject, preposition };
