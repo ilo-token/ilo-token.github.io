@@ -1,11 +1,10 @@
 import * as Dictionary from "../../dictionary/type.ts";
 import { Output } from "../output.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";
-import * as English from "./ast.ts";
 import * as EnglishComposer from "./composer.ts";
 import { nounAsPlainString, simpleNounForms } from "./noun.ts";
 import { pronoun } from "./pronoun.ts";
-import { fromVerbForms, partialVerb } from "./verb.ts";
+import { partialVerb, verb } from "./verb.ts";
 
 export function definitionAsPlainString(
   definition: Dictionary.Definition,
@@ -36,17 +35,10 @@ export function definitionAsPlainString(
     case "interjection":
       return new Output([definition.interjection]);
     case "verb": {
-      return Output.combine(
-        fromVerbForms(definition, "third", "plural", 1, false),
-        partialVerb(definition, 1, false),
-      )
-        .map<English.VerbPhrase>(([verb, partialVerb]) => ({
-          ...partialVerb,
-          type: "default",
-          verb,
-          objectComplement: null,
-          hideVerb: false,
-        }))
+      return partialVerb(definition, 1, false)
+        .flatMap((partialVerb) =>
+          verb({ ...partialVerb, type: "simple" }, "third", "plural")
+        )
         .map((verb) => EnglishComposer.verb(verb, 0));
     }
     case "filler":
