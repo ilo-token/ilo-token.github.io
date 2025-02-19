@@ -3,17 +3,22 @@
  * and AST parser.
  */
 
-import { UnexpectedError } from "./error.ts";
-import { Output, OutputError } from "./output.ts";
+import { Output, OutputError } from "../output.ts";
 
 /** A single parsing result. */
-export type ValueRest<T> = { rest: string; value: T };
+export type ValueRest<T> = Readonly<{ rest: string; value: T }>;
 /** A special kind of Output that parsers returns. */
 export type ParserOutput<T> = Output<ValueRest<T>>;
 
 /** Wrapper of parser function with added methods for convenience. */
 export class Parser<T> {
-  constructor(public readonly parser: (src: string) => ParserOutput<T>) {}
+  readonly #parser: (src: string) => ParserOutput<T>;
+  constructor(parser: (src: string) => ParserOutput<T>) {
+    this.#parser = parser;
+  }
+  parser(src: string): ParserOutput<T> {
+    return Output.from(() => this.#parser(src));
+  }
   /**
    * Maps the parsing result. For convenience, the mapper function can throw
    * an OutputError; Other kinds of error are ignored.
@@ -57,15 +62,31 @@ export class Parser<T> {
   }
   /** Takes another parser and discards its parsing result. */
   skip<U>(parser: Parser<U>): Parser<T> {
-    return sequence(this, parser).map(([output, _]) => output);
+    return sequence(this, parser).map(([output]) => output);
   }
   parse(src: string): Output<T> {
     return this.parser(src).map(({ value }) => value);
   }
 }
+/** Represents Error with unexpected and expected elements. */
+export class UnexpectedError extends OutputError {
+  constructor(unexpected: string, expected: string) {
+    super(`unexpected ${unexpected}. ${expected} were expected instead`);
+    this.name = "UnexpectedError";
+  }
+}
+/** Represents Error caused by unrecognized elements. */
+export class UnrecognizedError extends OutputError {
+  constructor(element: string) {
+    super(`${element} is unrecognized`);
+    this.name = "UnrecognizedError";
+  }
+}
 /** Parser that always outputs an error. */
 export function error(error: OutputError): Parser<never> {
-  return new Parser(() => new Output(error));
+  return new Parser(() => {
+    throw error;
+  });
 }
 /** Parser that always outputs an empty output. */
 export function empty(): Parser<never> {
@@ -82,11 +103,32 @@ export function lookAhead<T>(parser: Parser<T>): Parser<T> {
   );
 }
 /**
+ * Evaluates the parser only during parsing, useful for parser that may change
+ * e.g. due to settings. Could also be used for non-changing recursive parser
+ * but consider using `lazy` instead.
+ */
+export function variable<T>(parser: () => Parser<T>): Parser<T> {
+  return new Parser((src) => parser().parser(src));
+}
+/**
  * Lazily evaluates the parser function only when needed. Useful for recursive
  * parsers.
+ *
+ * # Notes
+ *
+ * This combinator contains memoization, for it to be effective:
+ *
+ * - Don't use it for combinators, use `variable` instead.
+ * - Declare the parser as global constant.
  */
 export function lazy<T>(parser: () => Parser<T>): Parser<T> {
-  return new Parser((src) => parser().parser(src));
+  let cached: null | Parser<T> = null;
+  return new Parser((src) => {
+    if (cached == null) {
+      cached = parser();
+    }
+    return cached.parser(src);
+  });
 }
 /**
  * Evaluates all parsers on the same source string and sums it all on a single
@@ -99,20 +141,23 @@ export function choice<T>(...choices: Array<Parser<T>>): Parser<T> {
 }
 /**
  * Tries to evaluate each parsers one at a time and only only use the output of
- * the parser that is successful.
+ * the first parser that is successful.
  */
 export function choiceOnlyOne<T>(
   ...choices: Array<Parser<T>>
 ): Parser<T> {
-  return choices.reduceRight((newParser, parser) =>
-    new Parser((src) => {
-      const output = parser.parser(src);
-      if (output.isError()) {
-        return Output.concat(output, newParser.parser(src));
-      } else {
-        return output;
-      }
-    }), empty());
+  return choices.reduceRight(
+    (right, left) =>
+      new Parser((src) => {
+        const output = left.parser(src);
+        if (output.isError()) {
+          return Output.concat(output, right.parser(src));
+        } else {
+          return output;
+        }
+      }),
+    empty(),
+  );
 }
 /** Combines `parser` and the `nothing` parser, and output `null | T`. */
 export function optional<T>(parser: Parser<T>): Parser<null | T> {
@@ -131,11 +176,9 @@ export function sequence<T extends Array<unknown>>(
 ): Parser<T> {
   // We resorted to using `any` types here, make sure it works properly
   return sequence.reduceRight(
-    // deno-lint-ignore no-explicit-any
-    (newParser: Parser<any>, parser) =>
-      parser.then((value) => newParser.map((newValue) => [value, ...newValue])),
+    (right: Parser<any>, left) =>
+      left.then((value) => right.map((newValue) => [value, ...newValue])),
     nothing().map(() => []),
-    // deno-lint-ignore no-explicit-any
   ) as Parser<any>;
 }
 /**
@@ -149,7 +192,7 @@ export function sequence<T extends Array<unknown>>(
  */
 export function many<T>(parser: Parser<T>): Parser<Array<T>> {
   return choice(
-    sequence(parser, lazy(() => many(parser)))
+    sequence(parser, variable(() => many(parser)))
       .map(([first, rest]) => [first, ...rest]),
     nothing().map(() => []),
   );
@@ -175,7 +218,7 @@ export function manyAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
  */
 export function all<T>(parser: Parser<T>): Parser<Array<T>> {
   return choiceOnlyOne(
-    sequence(parser, lazy(() => all(parser)))
+    sequence(parser, variable(() => all(parser)))
       .map(([first, rest]) => [first, ...rest]),
     nothing().map(() => []),
   );
@@ -194,11 +237,29 @@ export function allAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
 export function count<T>(parser: Parser<Array<T>>): Parser<number> {
   return parser.map((array) => array.length);
 }
+function throwWithSourceDescription(src: string, expected: string): never {
+  let tokenDescription: string;
+  if (src === "") {
+    tokenDescription = "end of text";
+  } else {
+    const [token] = src.match(/\S*/)!;
+    if (token === "") {
+      if (/^[\n\r]/.test(src)) {
+        tokenDescription = "newline";
+      } else {
+        tokenDescription = "space";
+      }
+    } else {
+      tokenDescription = `"${token}"`;
+    }
+  }
+  throw new UnexpectedError(tokenDescription, expected);
+}
 /**
  * Uses Regular Expression to create parser. The parser outputs
  * RegExpMatchArray, which is what `string.match( ... )` returns.
  */
-export function match(
+export function matchCapture(
   regex: RegExp,
   description: string,
 ): Parser<RegExpMatchArray> {
@@ -207,36 +268,78 @@ export function match(
     const match = src.match(newRegex);
     if (match != null) {
       return new Output([{ value: match, rest: src.slice(match[0].length) }]);
-    } else if (src === "") {
-      return new Output(new UnexpectedError("end of text", description));
-    } else {
-      const token = src.match(/[^\s]*/)![0];
-      let tokenDescription: string;
-      if (token === "") {
-        tokenDescription = "space";
-      } else {
-        tokenDescription = `"${token}"`;
-      }
-      return new Output(new UnexpectedError(tokenDescription, description));
     }
+    throwWithSourceDescription(src, description);
   });
 }
-/** Parses the end of line (or the end of sentence in context of Toki Pona) */
-export function eol(): Parser<null> {
+export function match(regex: RegExp, description: string): Parser<string> {
+  return matchCapture(regex, description).map(([matched]) => matched);
+}
+/** parses a string of consistent length. */
+export function slice(length: number, description: string): Parser<string> {
   return new Parser((src) => {
-    if (src === "") return new Output([{ value: null, rest: "" }]);
-    else return new Output(new UnexpectedError(`"${src}"`, "end of text"));
+    if (src.length >= length) {
+      return new Output([{
+        rest: src.slice(length),
+        value: src.slice(0, length),
+      }]);
+    }
+    throwWithSourceDescription(src, description);
   });
 }
+/** Parses a string that exactly matches the given string. */
+export function matchString(
+  match: string,
+  description: string = `"${match}"`,
+): Parser<string> {
+  return new Parser((src) => {
+    if (src.length >= match.length && src.slice(0, match.length) === match) {
+      return new Output([{ rest: src.slice(match.length), value: match }]);
+    }
+    throwWithSourceDescription(src, description);
+  });
+}
+export function character(): Parser<string> {
+  return match(/./us, "character");
+}
+/** Parses the end of text */
+export function end(): Parser<null> {
+  return new Parser((src) => {
+    if (src === "") {
+      return new Output([{ value: null, rest: "" }]);
+    }
+    throwWithSourceDescription(src, "end of text");
+  });
+}
+export function withSource<T>(
+  parser: Parser<T>,
+): Parser<[value: T, source: string]> {
+  return new Parser((src) =>
+    parser.parser(src).map((value) => ({
+      value: [value.value, src.slice(0, src.length - value.rest.length)],
+      rest: value.rest,
+    }))
+  );
+}
+export function sourceOnly<T>(
+  parser: Parser<T>,
+): Parser<string> {
+  return withSource(parser).map(([_, source]) => source);
+}
+/**
+ * Enables memoization, for it to be effective:
+ *
+ * - Don't use it for combinators.
+ * - Declare the parser as global constant.
+ * - It must not contain variable parsers e.g. with `variable`.
+ */
 export function cached<T>(parser: Parser<T>): Parser<T> {
   const cache: { [word: string]: ParserOutput<T> } = {};
   return new Parser((src) => {
     if (Object.hasOwn(cache, src)) {
       return cache[src];
     } else {
-      const output = parser.parser(src);
-      cache[src] = output;
-      return output;
+      return cache[src] = parser.parser(src);
     }
   });
 }

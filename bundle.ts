@@ -1,84 +1,87 @@
-import { bundle } from "@deno/emit";
-import { buildTeloMisikeke } from "telo-misikeke/build.ts";
-import { buildDictionary } from "dictionary/build.ts";
+import { denoPlugins } from "@luca/esbuild-deno-loader";
+import { debounce } from "@std/async/debounce";
+import * as ESBuild from "esbuild";
 
-const SOURCE = new URL("./src/main.ts", import.meta.url);
-const DESTINATION = new URL("./dist/main.js", import.meta.url);
-const IMPORT_MAP = new URL("./deno.json", import.meta.url);
+const WATCH = [
+  "./dictionary/build.ts",
+  "./dictionary/dictionary",
+  "./dictionary/misc.ts",
+  "./dictionary/parser.ts",
+  "./dictionary/type.ts",
+  "./telo-misikeke/linku-data.json",
+  "./telo-misikeke/Parser.js",
+  "./telo-misikeke/rules.js",
+  "./telo-misikeke/telo-misikeke.js",
+  "./src/",
+  "./project-data.json",
+];
+const DICTIONARY = /dictionary[/\\]/;
 
-switch (Deno.args[0]) {
-  case "build": {
-    console.log("Building telo misikeke...");
-    await buildTeloMisikeke();
-    console.log("Building dictionary...");
-    if (!await buildDictionary()) {
-      break;
+function buildOptions(minify: boolean): ESBuild.BuildOptions {
+  return {
+    entryPoints: ["./src/main.ts"],
+    outfile: "./dist/main.js",
+    format: "iife",
+    bundle: true,
+    minify,
+    sourcemap: "linked",
+    plugins: [...denoPlugins()],
+  };
+}
+async function buildAll(options: {
+  minify: boolean;
+  buildDictionary: boolean;
+  checkDictionary?: boolean;
+}): Promise<void> {
+  const { minify, buildDictionary, checkDictionary } = options;
+  try {
+    if (buildDictionary) {
+      const Dictionary = await import("./dictionary/build.ts");
+      await Dictionary.build(checkDictionary ?? true);
     }
     console.log("Building main.js...");
-    const bundled = await bundle(SOURCE, {
-      type: "classic",
-      importMap: IMPORT_MAP,
-    });
-    const useStrict = addUseStrict(bundled.code);
-    const { stop, transform } = await import("esbuild");
-    const minified = await transform(useStrict, { minify: true });
-    await stop();
-    await Deno.writeTextFile(DESTINATION, minified.code);
+    await ESBuild.build(buildOptions(minify));
     console.log("Building done!");
-    break;
+  } catch (error) {
+    console.error(error);
   }
-  case "watch": {
-    const builder = debounce(async () => {
-      console.log("Starting to build...");
-      try {
-        const { code } = await bundle(SOURCE, {
-          compilerOptions: { inlineSourceMap: true },
-          type: "classic",
-          importMap: IMPORT_MAP,
-        });
-        const useStrict = addUseStrict(code);
-        await Deno.writeTextFile(DESTINATION, useStrict);
-        console.log("Building done!");
-      } catch (error) {
-        console.error(error);
-      }
-    }, 500);
-    const watcher = Deno.watchFs([
-      "./src/",
-      "./telo-misikeke/",
-      "./dictionary/",
-    ]);
-    try {
-      builder();
-      for await (const _ of watcher) {
-        builder();
-      }
-    } finally {
-      watcher.close();
+}
+if (import.meta.main) {
+  switch (Deno.args[0]) {
+    case "build": {
+      await buildAll({ minify: true, buildDictionary: true });
+      break;
     }
-    throw new Error("unreachable");
-  }
-  default:
-    throw new Error(`Unrecognized build option, ${Deno.args[0]}`);
-}
-function addUseStrict(src: string): string {
-  return src.replace(/\(\s*function\s*\(\s*\)\s*\{/, '$&"use strict";');
-}
-function debounce(callback: () => Promise<void>, delay: number): () => void {
-  let previous = { aborted: true };
-  let current = Promise.resolve();
-  return () => {
-    previous.aborted = true;
-    const newPrevious = { aborted: false };
-    setTimeout(() => {
-      if (!newPrevious.aborted) {
-        current = current
-          .then(() => callback())
-          .catch((error) => {
-            throw error;
+    case "watch": {
+      console.log("Press ctrl+c to exit.");
+      const watcher = Deno.watchFs(WATCH);
+      let task = Promise.resolve();
+      try {
+        await buildAll({ minify: false, buildDictionary: true });
+        let dictionaryChanged = false;
+        const buildDebounced = debounce((buildDictionary: boolean) => {
+          task = task.then(async () => {
+            await buildAll({
+              minify: true,
+              buildDictionary,
+              checkDictionary: false,
+            });
+            dictionaryChanged = false;
           });
+        }, 500);
+        for await (const event of watcher) {
+          if (event.paths.some((path) => DICTIONARY.test(path))) {
+            dictionaryChanged = true;
+          }
+          buildDebounced(dictionaryChanged);
+        }
+        throw new Error("unreachable");
+      } finally {
+        watcher.close();
+        await task;
       }
-    }, delay);
-    previous = newPrevious;
-  };
+    }
+    default:
+      throw new Error(`unrecognized build option: ${Deno.args[0]}`);
+  }
 }

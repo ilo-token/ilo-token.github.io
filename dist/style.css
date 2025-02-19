@@ -1,6 +1,6 @@
 @font-face {
   font-family: nasin-nanpa;
-  src: url("https://github.com/ETBCOR/nasin-nanpa/raw/main/versions/nasin-nanpa.otf");
+  src: url("./nasin-nanpa.otf");
 }
 body {
   margin: 10px;
@@ -12,25 +12,24 @@ a {
 a:visited {
   color: #551a8b;
 }
-#input {
-  box-sizing: border-box;
-  resize: none;
-  width: 100%;
-
+input[type="text"],
+textarea {
   background-color: inherit;
   color: inherit;
-  padding: 5px;
-
   border-color: gray;
   border-width: 2px;
   border-radius: 2px;
 }
+#input {
+  box-sizing: border-box;
+  resize: none;
+  width: 100%;
+  padding: 5px;
+  overflow: hidden;
+}
 #error,
 #error-list {
   color: #b60000;
-}
-.align-right {
-  text-align: right;
 }
 summary {
   cursor: pointer;
@@ -49,7 +48,19 @@ dialog {
 dialog:modal {
   display: flex;
 }
-dialog > label,
+#custom-dictionary-box {
+  box-sizing: border-box;
+  height: 100%;
+}
+dialog details {
+  margin: 0;
+  padding: 0;
+  flex-direction: column;
+  resize: both;
+  display: flex;
+}
+dialog label,
+dialog summary,
 dialog > h1 {
   padding: 10px;
   margin: 0;
@@ -61,11 +72,19 @@ dialog > select {
   margin: 10px;
   margin-top: 0px;
 }
+dialog > textarea {
+  font-family: monospace;
+  margin: 10px;
+  resize: none;
+  overflow: auto;
+  flex-grow: 1;
+}
 dialog > div {
   margin: 10px;
   display: flex;
 }
-dialog > div > div {
+dialog > div > div,
+dialog > div > input[type="text"] {
   flex-grow: 1;
 }
 dialog input[type="checkbox"] {
@@ -101,7 +120,4 @@ dialog input[type="checkbox"] {
   #error-list {
     color: #ff5e5e;
   }
-}
-.hide {
-  display: none;
 }

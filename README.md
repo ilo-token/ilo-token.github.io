@@ -1,10 +1,13 @@
 # ilo Token
 
-A rule-based Toki Pona to English translator that translates into multiple sentences. This emphasizes how broad Toki Pona can be. Everything is hardcoded, no machine learning involved.
+A rule-based dictionary-based Toki Pona to English translator that translates
+into multiple English outputs showing many possible grammatical and semantic
+interpretation of the text. No machine learning involved.
 
 [Try it](https://ilo-token.github.io/)
 
-**It is work in progress!** [We welcome contributors however!](./CONTRIBUTING.md)
+**It is work in progress!**
+[We welcome contributors however!](./CONTRIBUTING.md)
 
 ## Dependencies
 
@@ -14,26 +17,40 @@ You'll need the following in order to run commands:
 
 ## Building
 
-This fetches more dependencies needed, builds the dictionary, and builds `./dist/main.js` as a minified file ready for production use. If you made changes to the dictionary, you'll need to run this again.
+This builds the distribution code at `./dist/main.js` as minified file ready for
+production use, it also builds the source map so contributors can directly debug
+the production code.
 
 ```
 deno task build
 ```
 
+Before building the distribution code, it builds the dictionary first by
+transforming the dictionary into a code at `./dictionary/dictionary.ts`. This
+enables faster code startup without dealing with file access or network access.
+
 ## Watching
 
-Before running this command, you'll need to run `deno task build` first. This is because `deno task watch` doesn't fetch dependencies nor builds the dictionary. You'll only need to run this command once.
-
-This builds `./dist/main.js` as a non-minified file with source mapping, intended for testing and debugging. This command also watches the source codes in `./src/` path and rebuilds `./dist/main.js` whenever there are changes.
+This is similar to [building](#building) but it doesn't minify the code. This
+command also watches the codes in `./src/` and `./dictionary/` including the
+dictionary and rebuilds whenever there are changes. To stop this command, simply
+press Ctrl + C.
 
 ```
 deno task watch
 ```
 
-To stop this command, simply press Ctrl + C.
+## Running locally with browser
 
-## Running locally
+After building or watching, you can directly run `./dist/index.html` with your
+browser to test ilo Token. If you wish to start a local server, run
+`deno task start`. The stdout will tell you the URL to use.
 
-After building or watching, you can directly run `./dist/index.js` using your favorite browser with some caveat however: UCSUR characters will display as tofu.
+## Running locally with Deno
 
-This could be mitigated by making use of local server but I didn't do that, there's little need for that.
+This will run a REPL that you can use to test ilo Token. To stop this command,
+simply press Ctrl + D or Ctrl + C.
+
+```
+deno task run
+```

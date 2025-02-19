@@ -1,14 +1,22 @@
-export type Noun = {
-  determiner: Array<Determiner>;
-  adjective: Array<Adjective>;
+export type NounForms = {
   singular: null | string;
   plural: null | string;
+};
+export type Noun = NounForms & {
+  determiner: Array<Determiner>;
+  adjective: Array<Adjective>;
   gerund: boolean;
   postAdjective: null | {
     adjective: string;
     name: string;
   };
 };
+export type PronounForms = {
+  singular: null | { subject: string; object: string };
+  plural: null | { subject: string; object: string };
+};
+export type Perspective = "first" | "second" | "third";
+export type Pronoun = PronounForms & { perspective: Perspective };
 export type DeterminerType =
   | "article"
   | "demonstrative"
@@ -16,13 +24,14 @@ export type DeterminerType =
   | "interrogative"
   | "possessive"
   | "quantifier"
-  | "negative";
+  | "negative"
+  | "numeral";
 export type Quantity = "singular" | "plural" | "both";
 export type Determiner = {
   determiner: string;
   plural: null | string;
   kind: DeterminerType;
-  number: Quantity;
+  quantity: Quantity;
 };
 export type AdjectiveType =
   | "opinion"
@@ -38,6 +47,20 @@ export type Adjective = {
   adjective: string;
   kind: AdjectiveType;
 };
+export type VerbForms = {
+  presentPlural: string;
+  presentSingular: string;
+  past: string;
+};
+export type Verb = VerbForms & {
+  directObject: null | Noun;
+  indirectObject: Array<{
+    preposition: string;
+    object: Noun;
+  }>;
+  forObject: boolean | string;
+  predicateType: null | "verb" | "noun adjective";
+};
 export type Definition =
   | { type: "filler"; before: string; repeat: string; after: string }
   | { type: "particle definition"; definition: string }
@@ -47,43 +70,15 @@ export type Definition =
     noun: Noun;
     preposition: string;
   }
-  | {
-    type: "personal pronoun";
-    singular: null | { subject: string; object: string };
-    plural: null | { subject: string; object: string };
-  }
+  | ({ type: "personal pronoun" } & Pronoun)
   | ({ type: "determiner" } & Determiner)
   | { type: "numeral"; numeral: number }
   | ({ type: "adjective" } & Adjective)
   | { type: "compound adjective"; adjective: Array<Adjective> }
   | { type: "adverb"; adverb: string }
-  | {
-    type: "verb";
-    presentSingular: string;
-    presentPlural: string;
-    past: string;
-    directObject: null | Noun;
-    indirectObject: Array<{
-      preposition: string;
-      object: Noun;
-    }>;
-    forObject: boolean | string;
-  }
-  | {
-    type: "preverb as linking verb";
-    linkingVerb: string;
-  }
-  | {
-    type: "preverb as finite verb";
-    presentSingular: string;
-    presentPlural: string;
-    past: string;
-    particle: null | string;
-  }
-  | {
-    type: "preverb as modal verb";
-    verb: string;
-  }
+  | ({ type: "verb" } & Verb)
+  | { type: "modal verb"; verb: string }
   | { type: "preposition"; preposition: string }
   | { type: "interjection"; interjection: string };
-export type Dictionary = { [word: string]: Array<Definition> };
+export type Entry = { definitions: Array<Definition>; src: string };
+export type Dictionary = { [word: string]: Entry };

@@ -1,32 +1,88 @@
-export function nullableAsArray<T>(
-  value?: T | null | undefined,
-): Array<NonNullable<T>> {
+import { escape } from "@std/html/entities";
+
+export const NEWLINES = /\r\n|\n|\r/g;
+
+export function nullableAsArray<T>(value?: T): Array<NonNullable<T>> {
   if (value == null) {
     return [];
   } else {
     return [value];
   }
 }
-export function repeat(text: string, count: number): string {
-  return new Array(count).fill(text).join("");
+export function repeatArray<T>(element: T, count: number): Array<T> {
+  return new Array(count).fill(element);
 }
 export function repeatWithSpace(text: string, count: number): string {
-  return new Array(count).fill(text).join(" ");
+  return repeatArray(text, count).join(" ");
 }
-// https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
-export function shuffle<T>(array: Array<T>) {
-  let currentIndex = array.length;
-
-  // While there remain elements to shuffle...
-  while (currentIndex != 0) {
-    // Pick a remaining element...
-    const randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-
-    // And swap it with the current element.
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex],
-      array[currentIndex],
-    ];
+let localStorageAvailable: undefined | boolean;
+export function checkLocalStorage(): boolean {
+  if (localStorageAvailable == null) {
+    if (typeof localStorage === "undefined") {
+      localStorageAvailable = false;
+    } else {
+      // https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
+      try {
+        const x = "__storage_test__";
+        localStorage.setItem(x, x);
+        localStorage.removeItem(x);
+        localStorageAvailable = true;
+      } catch (e) {
+        localStorageAvailable = e instanceof DOMException &&
+          e.name === "QuotaExceededError" &&
+          // acknowledge QuotaExceededError only if there's something already stored
+          localStorage &&
+          localStorage.length !== 0;
+      }
+    }
+  }
+  return localStorageAvailable;
+}
+export function newlineAsHtml(text: string): string {
+  return text.replaceAll(NEWLINES, "<br/>");
+}
+export function escapeHtmlWithNewline(text: string): string {
+  return newlineAsHtml(escape(text));
+}
+export function setIgnoreError(key: string, value: string): void {
+  if (!checkLocalStorage()) {
+    return;
+  }
+  try {
+    localStorage.setItem(key, value);
+  } catch (error) {
+    if (
+      !(error instanceof DOMException) || error.name !== "QuotaExceededError"
+    ) {
+      throw error;
+    }
+  }
+}
+export async function fetchOk(url: string | URL): Promise<Response> {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(
+      `unable to fetch ${url} (${response.status} ${response.statusText})`,
+    );
+  }
+  return response;
+}
+export function extractErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  } else {
+    return `${error}`;
+  }
+}
+export function filterSet<T>(
+  set: Array<[condition: boolean, value: T]>,
+): Array<T> {
+  return set.filter(([condition]) => condition).map(([_, value]) => value);
+}
+export function flattenError(error: unknown): Array<unknown> {
+  if (error instanceof AggregateError) {
+    return error.errors.flatMap(flattenError);
+  } else {
+    return [error];
   }
 }

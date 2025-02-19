@@ -24,10 +24,7 @@
     <link rel="apple-touch-icon" href="./images/180.png" sizes="180x180" />
     <meta name="theme-color" content="#893cf3" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="stylesheet"
-      href="https://necolas.github.io/normalize.css/8.0.1/normalize.css"
-    />
+    <link rel="stylesheet" href="./normalize.css" />
     <link rel="stylesheet" href="./style.css" />
     <script src="./main.js"></script>
   </head>
@@ -42,13 +39,21 @@
       collected.
       <a
         href="https://github.com/ilo-token/ilo-token.github.io/wiki/Limitations"
-        >Limitations</a
-      >.
+      >Limitations</a>.
     </p>
-    <textarea id="input" placeholder="o toki tawa ni" lang="tok"></textarea>
-    <div>
-      <button id="translate-button">Translate</button>
+    <p>
+      <button id="custom-dictionary-button">Custom Dictionary</button>
       <button id="settings-button">Settings</button>
+    </p>
+    <textarea
+      id="input"
+      placeholder="o toki tawa ni"
+      lang="tok"
+      cols="10"
+      rows="1"
+    ></textarea>
+    <div>
+      <button id="translate-button">Translate (Ctrl + Enter)</button>
     </div>
     <noscript>
       <p>This page needs JavaScript enabled for translation.</p>
@@ -60,25 +65,18 @@
       <summary>Provide feedback</summary>
       <ul>
         <li>
-          Github (public):
-          <a href="https://github.com/ilo-token/ilo-token.github.io"
-            >ilo-token/ilo-token.github.io</a
-          >
-          (<a
+          <a href="https://github.com/ilo-token/ilo-token.github.io">Github</a>
+          (public) (<a
             href="https://github.com/ilo-token/ilo-token.github.io/blob/master/CONTRIBUTING.md"
-            >Contributing Instruction</a
-          >)
+          >Contributing Instruction</a>)
         </li>
         <li>
           <a
             href="https://docs.google.com/forms/d/e/1FAIpQLSfdDEMbde9mieybZdbZr8haRzNzGsg0BVkuTIzuHaATCdcrlw/viewform?usp=sf_link"
-            >Google forms (private)</a
-          >
+          >Google forms</a>
+          (private)
         </li>
-        <li>
-          Email (private):
-          <a href="mailto:neverrare@proton.me">neverrare@proton.me</a>
-        </li>
+        <li><a href="mailto:neverrare@proton.me">Email</a> (private)</li>
       </ul>
     </details>
     <footer>
@@ -87,40 +85,77 @@
           href="https://github.com/ilo-token/ilo-token.github.io/blob/master/CHANGELOG.md"
           id="version"
         ></a>
+        - <a href="https://github.com/ilo-token/ilo-token.github.io">Github</a>
       </p>
     </footer>
-    <dialog id="dialog-box">
+    <dialog id="settings-box">
       <h1>
         Settings
         <a
           href="https://github.com/ilo-token/ilo-token.github.io/wiki/Settings-Help"
-          >(Help)</a
-        >
+          target="_blank"
+        >(Help)</a>
       </h1>
       <label>
         Use telo misikeke error messages
-        <input type="checkbox" id="use-telo-misikeke" />
+        <input type="checkbox" id="telo-misikeke" />
       </label>
       <label>
         Randomize output order <input type="checkbox" id="randomize" />
       </label>
-      <label for="number-settings">Singular and plural forms</label>
-      <select id="number-settings">
+      <label>
+        Multiline input <input type="checkbox" id="multiline" />
+      </label>
+      <label for="quantity">Singular and plural forms</label>
+      <select id="quantity">
         <option value="both">Show all</option>
         <option value="condensed">Condensed</option>
         <option value="default only">Show singular only</option>
       </select>
-      <label for="tense-settings">Verb tenses</label>
-      <select id="tense-settings">
+      <label for="tense">Verb tenses</label>
+      <select id="tense">
         <option value="both">Show all</option>
         <option value="condensed">Condensed</option>
         <option value="default only">Show present only</option>
       </select>
+      <details>
+        <summary>Advance settings</summary>
+        <label>
+          Allow X ala X partial parsing
+          <input type="checkbox" id="x-ala-x-partial-parsing" />
+        </label>
+        <label>
+          Allow separate repeated modifiers
+          <input type="checkbox" id="separate-repeated-modifiers" />
+        </label>
+      </details>
       <div>
         <button id="reset-button">Reset to default</button>
         <div></div>
         <button id="cancel-button">Cancel</button>
         <button id="confirm-button">Confirm</button>
+      </div>
+    </dialog>
+    <dialog id="custom-dictionary-box">
+      <h1>
+        Custom Dictionary
+        <a
+          href="https://github.com/ilo-token/ilo-token.github.io/wiki/Guidelines-for-editing-dictionary"
+          target="_blank"
+        >(Help)</a>
+      </h1>
+      <div>
+        <input id="add-word" type="text" />
+        <button id="add-word-button">Add word</button>
+      </div>
+      <textarea
+        id="custom-dictionary"
+        placeholder="Type here custom dictionary. Press Help above to get started."
+      ></textarea>
+      <div>
+        <div></div>
+        <button id="discard-button">Discard Changes and Close</button>
+        <button id="save-button">Save and Close</button>
       </div>
     </dialog>
   </body>

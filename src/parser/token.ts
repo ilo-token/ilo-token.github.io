@@ -1,5 +1,7 @@
 /** Module describing token. */
 
+import { repeatWithSpace } from "../misc.ts";
+
 /** Represents token. */
 export type Token =
   | { type: "word"; word: string }
@@ -44,6 +46,7 @@ export function describe(token: Token): string {
       return `combined glyphs "${token.words.join(" ")}"`;
     case "space long glyph":
     case "headed long glyph start":
+      return `long "${token.words.join(" ")}"`;
     case "headless long glyph start":
       return "long glyph";
     case "headless long glyph end":
@@ -51,9 +54,9 @@ export function describe(token: Token): string {
     case "inside long glyph":
       return "end of long glyph";
     case "multiple a":
-      return `"${new Array(token.count).fill("a").join(" ")}"`;
+      return `"${repeatWithSpace("a", token.count)}"`;
     case "long word":
-      return `"${new Array(token.length).fill(token.word).join("")}"`;
+      return `"${token.word.repeat(token.length)}"`;
     case "x ala x":
       return `"${token.word} ala ${token.word}"`;
     case "proper word":
@@ -61,11 +64,11 @@ export function describe(token: Token): string {
         case "cartouche":
           return "cartouche";
         case "latin":
-          return "proper word";
+          return `proper word "${token.words}"`;
       }
       // this is unreachable
       // fallthrough
     case "punctuation":
-      return "punctuation mark";
+      return `punctuation mark "${token.punctuation}"`;
   }
 }

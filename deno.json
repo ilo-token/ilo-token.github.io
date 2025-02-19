@@ -1,22 +1,45 @@
 {
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "dom.asynciterable", "deno.ns"]
+    "lib": ["dom", "deno.ns"]
   },
   "tasks": {
-    "build": "deno run --allow-read --allow-write --allow-env --allow-net ./bundle.ts build",
-    "watch": "deno run --allow-read --allow-write --allow-env --allow-net ./bundle.ts watch"
+    "build": "deno run --allow-read --allow-write --allow-env --allow-net --allow-run --no-prompt ./bundle.ts build",
+    "run": {
+      "command": "deno run --allow-env --no-prompt ./src/repl.ts",
+      "dependencies": ["build-dictionary"]
+    },
+    "start": "deno run --allow-net --allow-read --no-prompt jsr:@std/http/file-server ./dist/",
+    "watch": "deno run --allow-read --allow-write --allow-env --allow-net --allow-run --no-prompt ./bundle.ts watch",
+    "update": "deno outdated --update && deno run --allow-write --allow-net --no-prompt ./telo-misikeke/update.ts",
+    "build-dictionary": "deno run --allow-read --allow-write --no-prompt ./dictionary/build.ts"
   },
   "fmt": {
-    "include": ["./**/*.ts", "./**/*.js"]
+    "exclude": [
+      "./dictionary/dictionary.ts",
+      "./dist/main.js",
+      "./telo-misikeke/linku-data.json",
+      "./telo-misikeke/rules.js",
+      "./telo-misikeke/Parser.js"
+    ]
   },
   "lint": {
-    "include": ["./**/*.ts", "./**/*.js"]
+    "exclude": [
+      "./dictionary/dictionary.ts",
+      "./dist/main.js",
+      "./telo-misikeke/rules.js",
+      "./telo-misikeke/Parser.js"
+    ],
+    "rules": {
+      "exclude": ["no-explicit-any"]
+    }
   },
   "imports": {
-    "compromise": "npm:compromise@14.14.0",
-    "dictionary/": "./dictionary/",
-    "@deno/emit": "jsr:@deno/emit@0.44.0",
-    "esbuild": "https://deno.land/x/esbuild@v0.23.0/wasm.js",
-    "telo-misikeke/": "./telo-misikeke/"
+    "@luca/esbuild-deno-loader": "jsr:@luca/esbuild-deno-loader@^0.11.1",
+    "@std/async": "jsr:@std/async@^1.0.10",
+    "@std/html": "jsr:@std/html@^1.0.3",
+    "@std/random": "jsr:@std/random@^0.1.0",
+    "@std/text": "jsr:@std/text@^1.0.10",
+    "compromise": "npm:compromise@^14.14.3",
+    "esbuild": "npm:esbuild@^0.25.0"
   }
 }

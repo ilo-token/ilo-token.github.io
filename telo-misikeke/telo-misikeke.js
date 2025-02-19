@@ -1,10 +1,13 @@
 /** Glue code for telo misikeke */
 
+// @ts-self-types="./telo-misikeke.d.ts"
+
+import { escapeHtmlWithNewline, newlineAsHtml } from "../src/misc.ts";
+import LINKU from "./linku-data.json" with { type: "json" };
 import { ParserWithCallbacks } from "./Parser.js";
 import { build_rules, getMessage } from "./rules.js";
-import { DATA } from "./linku-data.js";
 
-const RULES = build_rules(DATA);
+const RULES = build_rules(LINKU);
 
 /** Gets all telo misikeke error messages. */
 export function errors(text) {
@@ -12,12 +15,8 @@ export function errors(text) {
     .tokenize(text)
     .filter((token) => RULES[token.ruleName].category === "error")
     .map((token) => {
-      const src = token.text
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll("&", "&amp;");
-      const message = getMessage(token.ruleName, token.match)
-        .replace(/\n/g, "<br>");
+      const src = escapeHtmlWithNewline(token.text);
+      const message = newlineAsHtml(getMessage(token.ruleName, token.match));
       return `"${src}" ${message}`;
     });
 }

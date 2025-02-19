@@ -1,26 +1,33 @@
 # Contributing
 
-Thank you so much for considering to contribute! Here are useful information about the pages to get you started. Remember you can always ask for help in the [discussion](#Discussion) or privately through my email: [neverrare@proton.me](mailto:neverrare@proton.me)
+Thank you so much for considering to contribute! Here are useful information
+about the pages to get you started. Remember you can always ask for help in the
+[discussion](#Discussion) or privately through my email:
+[neverrare@proton.me](mailto:neverrare@proton.me)
 
 ## [Wiki](https://github.com/ilo-token/ilo-token.github.io/wiki)
 
-The wiki is a place full of useful information for contributors from how the code works to guidelines for editing the dictionary!
+The wiki is a place full of useful information for contributors from how the
+code works to guidelines for editing the dictionary!
 
 It's not perfect however. If you spot a mistake, please open an issue.
 
 ## [Issue](https://github.com/ilo-token/ilo-token.github.io/issues)
 
-The issue page is intended for tracking the development of ilo Token as well as its wiki. You may open an issue for:
+The issue page is intended for tracking the development of ilo Token as well as
+its wiki. You may open an issue for:
 
 - Bug report
 - Feature request
 - Fix suggestion to the wiki
 
-Please remember to search first before opening an issue, it might already exist! Duplicate issues are unnecessary.
+Please remember to search first before opening an issue, it might already exist!
+Duplicate issues are unnecessary.
 
 ## [Discussion](https://github.com/ilo-token/ilo-token.github.io/discussions)
 
-This GitHub repository have discussion, a dedicated forum page and shall serve as a public space for ilo Token development. You may open a new page for:
+This GitHub repository have discussion, a dedicated forum page and shall serve
+as a public space for ilo Token development. You may open a new page for:
 
 - Suggestion for translation e.g. how it can be improved
 - Questions
@@ -30,27 +37,48 @@ Please search first before opening a new page! Duplicate pages are unnecessary.
 
 ## [Pull request](https://github.com/ilo-token/ilo-token.github.io/pulls)
 
-Before forking and editing, please claim an issue first or open an issue then claim it. After that, you can start away. This is necessary to avoid wasted duplicate efforts.
+Before forking and editing, please claim an issue first or open an issue then
+claim it. After that, you can start away. This is necessary to avoid wasted
+duplicate efforts.
 
 You **don't** have to do this if:
 
 - It is a contribution to the dictionary
 - It is a minor edit e.g. a typo fix
 
-[The wiki](https://github.com/ilo-token/ilo-token.github.io/wiki) contains useful for contributors.
+Please don't do the following, we can do this ourselves.
+
+- Updating dependencies
+
+Additionally, please format the code when you make changes. We use Deno's
+built-in formatter.
+
+[The wiki](https://github.com/ilo-token/ilo-token.github.io/wiki) contains
+useful for contributors.
 
 As a thank you for contributing, you'll get a shout out in the changelog!
 
 ## Alternative contact options
 
-If you have no github account or want to provide feedback privately, these are alternative contact options:
+If you have no github account or want to provide feedback privately, these are
+alternative contact options:
 
 - [Google forms](https://docs.google.com/forms/d/e/1FAIpQLSfdDEMbde9mieybZdbZr8haRzNzGsg0BVkuTIzuHaATCdcrlw/viewform?usp=sf_link)
 - Email: [neverrare@proton.me](mailto:neverrare@proton.me)
 
-ilo Token have a dedicated space for the following Discord server. Although these server themselves serves as a space for broader topics, not just ilo Token.
+ilo Token have a dedicated space for the following Discord server. Although
+these server themselves serves as a space for broader topics, not just ilo
+Token.
 
-- [ma pona pi toki pona](https://discord.gg/Byqn5z9) ([Thread for ilo Token](https://discord.com/channels/301377942062366741/1053538532993548320)): A Discord server for Toki Pona.
-- [r/ProgrammingLanguages](https://discord.gg/4Kjt3ZE) ([Channel for ilo Token](https://discord.com/channels/530598289813536771/1224854915214737522)): A Discord server for programming language development. While ilo Token isn't a programming language, it uses similar techniques found in programming language development e.g. parsing.
+- [ma pona pi toki pona](https://discord.gg/Byqn5z9)
+  ([Thread for ilo Token](https://discord.com/channels/301377942062366741/1053538532993548320)):
+  A Discord server for Toki Pona.
+- [r/ProgrammingLanguages](https://discord.gg/4Kjt3ZE)
+  ([Channel for ilo Token](https://discord.com/channels/530598289813536771/1224854915214737522)):
+  A Discord server for programming language development. While ilo Token isn't a
+  programming language, it uses similar techniques found in programming language
+  development e.g. parsing.
 
-These are unnoficial spaces and are not subject to the [Contributor Covenant Code of Conduct](https://github.com/ilo-token/ilo-token.github.io/blob/master/CODE_OF_CONDUCT.md). Instead, each have its own rules and different moderators.
+These are unnoficial spaces and are not subject to the
+[Contributor Covenant Code of Conduct](https://github.com/ilo-token/ilo-token.github.io/blob/master/CODE_OF_CONDUCT.md).
+Instead, each have its own rules and different moderators.

@@ -1,24 +1,20 @@
 /** Module for describing English AST. */
 
-import {
-  AdjectiveType,
-  DeterminerType as OriginalDeterminerType,
-} from "dictionary/type.ts";
+import * as Dictionary from "../../dictionary/type.ts";
 
 export type Word = {
   word: string;
   emphasis: boolean;
 };
-export type Quantity = "singular" | "plural" | "both" | "condensed";
-export type DeterminerType = OriginalDeterminerType | "numeral";
+export type Quantity = "singular" | "plural" | "condensed";
 export type NounPhrase =
   | {
     type: "simple";
     determiner: Array<Determiner>;
     adjective: Array<AdjectivePhrase>;
     noun: Word;
-    number: Quantity;
-    postCompound: null | NounPhrase;
+    quantity: Quantity;
+    perspective: Dictionary.Perspective;
     postAdjective: null | { adjective: string; name: string };
     preposition: Array<Preposition>;
     emphasis: boolean;
@@ -27,17 +23,17 @@ export type NounPhrase =
     type: "compound";
     conjunction: string;
     nouns: Array<NounPhrase>;
-    number: Quantity;
+    quantity: Quantity;
   };
 export type Determiner = {
-  kind: DeterminerType;
+  kind: Dictionary.DeterminerType;
   determiner: Word;
-  number: Quantity;
+  quantity: Dictionary.Quantity;
 };
 export type AdjectivePhrase =
   | {
     type: "simple";
-    kind: AdjectiveType;
+    kind: Dictionary.AdjectiveType;
     adverb: Array<Word>;
     adjective: Word;
     emphasis: boolean;
@@ -48,29 +44,31 @@ export type AdjectivePhrase =
     adjective: Array<AdjectivePhrase>;
     emphasis: boolean;
   };
+export type Complement =
+  | { type: "noun"; noun: NounPhrase }
+  | { type: "adjective"; adjective: AdjectivePhrase };
+export type Verb = {
+  modal: null | Word;
+  finite: Array<Word>;
+  infinite: Word;
+};
 export type VerbPhrase =
   | {
     type: "default";
     adverb: Array<Word>;
-    verb: Word;
+    verb: Verb;
+    subjectComplement: null | Complement;
+    object: null | NounPhrase;
+    objectComplement: null | Complement;
     preposition: Array<Preposition>;
-  }
-  | {
-    type: "linking noun";
-    linkingVerb: Word;
-    noun: NounPhrase;
-    preposition: Array<Preposition>;
-  }
-  | {
-    type: "linking adjective";
-    linkingVerb: Word;
-    adjective: AdjectivePhrase;
-    preposition: Array<Preposition>;
+    hideVerb: boolean;
   }
   | {
     type: "compound";
-    conjunction: Word;
-    verbs: VerbPhrase;
+    conjunction: string;
+    verbs: Array<VerbPhrase>;
+    object: null | NounPhrase;
+    objectComplement: null | Complement;
     preposition: Array<Preposition>;
   };
 export type Clause =
@@ -79,24 +77,14 @@ export type Clause =
     type: "default";
     subject: NounPhrase;
     verb: VerbPhrase;
-    object: null | NounPhrase;
-    preposition: Array<Preposition>;
+    hideSubject: boolean;
   }
   | { type: "subject phrase"; subject: NounPhrase }
-  | {
-    type: "implied it's";
-    verb: VerbPhrase;
-  }
   | { type: "interjection"; interjection: Word }
   | { type: "vocative"; call: string; addressee: NounPhrase }
-  | {
-    type: "compound";
-    conjunction: string;
-    clauses: Array<Clause>;
-    preposition: Array<Preposition>;
-  }
   | { type: "dependent"; conjunction: Word; clause: Clause };
 export type Preposition = {
+  adverb: Array<Word>;
   preposition: Word;
   object: NounPhrase;
 };
