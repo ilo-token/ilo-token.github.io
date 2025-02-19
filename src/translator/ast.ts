@@ -84,6 +84,7 @@ export type Clause =
   | { type: "vocative"; call: string; addressee: NounPhrase }
   | { type: "dependent"; conjunction: Word; clause: Clause };
 export type Preposition = {
+  adverb: Array<Word>;
   preposition: Word;
   object: NounPhrase;
 };
