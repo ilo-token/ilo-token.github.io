@@ -15,6 +15,16 @@ NOTE: Before publishing:
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
 
+ilo Token can now translate into verbs! This means it can translate sentences!
+It still can't do the following however:
+
+- Preverb
+- Preposition as predicate
+- Preposition before "la"
+- "o" imperative sentence
+
+[Check the limitations](https://github.com/ilo-token/ilo-token.github.io/wiki/Limitations).
+
 ilo Token now has custom dictionary editor! This allows users to customize the
 dictionary to their liking. Users can customize existing words and also extend
 ilo Token with more non-pu words. It comes with limitations however.
@@ -24,6 +34,7 @@ Some of the settings may reset. Please reconfigure it again to your preferred
 settings. Sorry for the inconvenience. We've decided to reset some of the
 settings after refactoring to make the code easier to work with.
 
+- Implement translation to verbs.
 - Implement custom dictionary editor.
 - Fixed "la" translation.
 - Output translations are now capitalized.
