@@ -1,5 +1,6 @@
 /** Module containing the Array Result data type. */
 
+import { distinctBy } from "@std/collections/distinct-by";
 import { flattenError } from "./misc.ts";
 
 export type ArrayResultOptions = {
@@ -115,15 +116,9 @@ export class ArrayResult<T> {
   }
   deduplicateErrors(): ArrayResult<T> {
     if (this.isError()) {
-      const messages: Set<string> = new Set();
-      return ArrayResult.errors(this.errors.filter((error) => {
-        if (messages.has(error.message)) {
-          return false;
-        } else {
-          messages.add(error.message);
-          return true;
-        }
-      }));
+      return ArrayResult.errors(
+        distinctBy(this.errors, ({ message }) => message),
+      );
     } else {
       return this;
     }
