@@ -7,13 +7,16 @@ NOTE: Before publishing:
 - Remove details
 -->
 
-<!--
 <details>
+
 <summary>On development changelog</summary>
+
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
+
+- Fix custom dictionary errors.
+
 </details>
--->
 
 ## 0.4.0
 
