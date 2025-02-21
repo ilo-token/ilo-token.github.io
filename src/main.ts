@@ -306,7 +306,7 @@ function main(): void {
       const errorListMessage = errors
         .map(extractErrorMessage)
         .map((message) =>
-          asComment(`- ${message.replaceAll(NEWLINES, "$&  ")}\n`)
+          `${asComment(`- ${message.replaceAll(NEWLINES, "$&  ")}`)}\n`
         )
         .join("");
       displayToCustomDictionary(
