@@ -25,6 +25,7 @@ On this on-development version, things can be broken.
 ilo Token can now translate into verbs! This means it can translate sentences!
 It still can't do the following however:
 
+- X ala X construction
 - Preverb
 - Preposition
 - "o" imperative sentence
