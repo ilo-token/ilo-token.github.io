@@ -35,12 +35,12 @@ function nounPhrase(
 ): Output<English.NounPhrase> {
   return Output.from(() => {
     const determiner = fixDeterminer([
-      ...modifier.determiner.slice().reverse(),
+      ...[...modifier.determiner].reverse(),
       ...partialNoun.determiner,
     ]);
     const quantity = findNumber(determiner);
     const adjective = fixAdjective([
-      ...modifier.adjective.slice().reverse(),
+      ...[...modifier.adjective].reverse(),
       ...partialNoun.adjective,
     ]);
     let postAdjective: null | {
@@ -111,7 +111,7 @@ function adjectivePhrase(
   switch (adjective.type) {
     case "simple": {
       const adverb = fixAdverb([
-        ...modifier.adverb.slice().reverse(),
+        ...[...modifier.adverb].reverse(),
         ...adjective.adverb,
       ]);
       return {
@@ -140,7 +140,7 @@ function verbPhrase(
   modifier: AdverbialModifier,
 ): PartialVerb {
   const adverb = fixAdverb([
-    ...modifier.adverb.slice().reverse(),
+    ...[...modifier.adverb].reverse(),
     ...verb.adverb,
   ]);
   const preposition = [

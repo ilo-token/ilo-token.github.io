@@ -106,7 +106,7 @@ export class Output<T> {
     if (this.isError()) {
       return this;
     } else {
-      return new Output(this.output.slice().sort(comparer));
+      return new Output([...this.output].sort(comparer));
     }
   }
   sortBy(mapper: (value: T) => number): Output<T> {
