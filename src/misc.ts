@@ -50,11 +50,10 @@ export function setIgnoreError(key: string, value: string): void {
     }
   }
 }
-export async function fetchOk(url: string | URL): Promise<Response> {
-  const response = await fetch(url);
+export function throwWhenFailed(response: Response): Response {
   if (!response.ok) {
     throw new Error(
-      `unable to fetch ${url} (${response.status} ${response.statusText})`,
+      `unable to fetch ${response.url} (${response.status} ${response.statusText})`,
     );
   }
   return response;

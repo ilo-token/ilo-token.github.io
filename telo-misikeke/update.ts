@@ -1,6 +1,6 @@
 /** Codes for updating telo misikeke and Linku data. */
 
-import { fetchOk } from "../src/misc.ts";
+import { throwWhenFailed } from "../src/misc.ts";
 
 const TELO_MISIKEKE_URL =
   "https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/-/raw/main/";
@@ -31,7 +31,8 @@ async function buildCode(
   destination: URL,
   exportItems: Array<string>,
 ): Promise<void> {
-  const response = await fetchOk(source);
+  const response = await fetch(source);
+  throwWhenFailed(response);
   const rawCode = await response.text();
   const withoutCjs = rawCode.replaceAll(COMMONJS_EXPORT, "");
   if (withoutCjs.includes("module.exports")) {
@@ -54,7 +55,8 @@ export { ${exports} };
   await Deno.writeTextFile(destination, code);
 }
 async function buildSonaLinku(): Promise<void> {
-  const response = await fetchOk(LINKU_URL);
+  const response = await fetch(LINKU_URL);
+  throwWhenFailed(response);
   const json = await response.json();
   const processedJson = parseLipuLinku(json);
   await Deno.writeTextFile(
