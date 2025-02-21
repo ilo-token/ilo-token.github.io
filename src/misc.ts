@@ -15,29 +15,21 @@ export function repeatArray<T>(element: T, count: number): Array<T> {
 export function repeatWithSpace(text: string, count: number): string {
   return repeatArray(text, count).join(" ");
 }
-let localStorageAvailable: undefined | boolean;
-export function checkLocalStorage(): boolean {
-  if (localStorageAvailable == null) {
-    if (typeof localStorage === "undefined") {
-      localStorageAvailable = false;
-    } else {
-      // https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
-      try {
-        const x = "__storage_test__";
-        localStorage.setItem(x, x);
-        localStorage.removeItem(x);
-        localStorageAvailable = true;
-      } catch (e) {
-        localStorageAvailable = e instanceof DOMException &&
-          e.name === "QuotaExceededError" &&
-          // acknowledge QuotaExceededError only if there's something already stored
-          localStorage &&
-          localStorage.length !== 0;
-      }
-    }
+export const checkLocalStorage = lazy(() => {
+  // https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
+  try {
+    const x = "__storage_test__";
+    localStorage.setItem(x, x);
+    localStorage.removeItem(x);
+    return true;
+  } catch (e) {
+    return e instanceof DOMException &&
+      e.name === "QuotaExceededError" &&
+      // acknowledge QuotaExceededError only if there's something already stored
+      localStorage &&
+      localStorage.length !== 0;
   }
-  return localStorageAvailable;
-}
+});
 export function newlineAsHtml(text: string): string {
   return text.replaceAll(NEWLINES, "<br/>");
 }
@@ -85,4 +77,15 @@ export function flattenError(error: unknown): Array<unknown> {
   } else {
     return [error];
   }
+}
+export function lazy<T>(fn: () => T): () => T {
+  let evaluated = false;
+  let value: undefined | T;
+  return () => {
+    if (!evaluated) {
+      evaluated = true;
+      value = fn();
+    }
+    return value!;
+  };
 }

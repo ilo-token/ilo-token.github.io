@@ -4,6 +4,7 @@
  */
 
 import { memoize } from "@std/cache/memoize";
+import { lazy as lazyEval } from "../misc.ts";
 import { ArrayResult, ArrayResultError } from "../array-result.ts";
 
 /** A single parsing result. */
@@ -123,13 +124,8 @@ export function variable<T>(parser: () => Parser<T>): Parser<T> {
  * - Declare the parser as global constant.
  */
 export function lazy<T>(parser: () => Parser<T>): Parser<T> {
-  let cached: null | Parser<T> = null;
-  return new Parser((src) => {
-    if (cached == null) {
-      cached = parser();
-    }
-    return cached.parser(src);
-  });
+  const cachedParser = lazyEval(parser);
+  return new Parser((src) => cachedParser().parser(src));
 }
 /**
  * Evaluates all parsers on the same source string and sums it all on a single
