@@ -1,7 +1,7 @@
 /** Codes for updating telo misikeke and Linku data. */
 
-import { throwWhenFailed } from "../src/misc.ts";
 import { retry } from "@std/async/retry";
+import { throwWhenFailed } from "../src/misc.ts";
 
 const TELO_MISIKEKE_URL =
   "https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/-/raw/main/";
