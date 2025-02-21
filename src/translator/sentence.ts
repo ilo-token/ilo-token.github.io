@@ -75,9 +75,9 @@ function emphasisAsPunctuation(
 }
 function interjection(clause: TokiPona.Clause): ArrayResult<English.Clause> {
   if (clause.type === "phrases" && clause.phrases.type === "single") {
-    const phrase = clause.phrases.phrase;
+    const { phrase } = clause.phrases;
     if (phrase.type === "default" && phrase.modifiers.length === 0) {
-      const headWord = phrase.headWord;
+      const { headWord } = phrase;
       if (headWord.type === "default" || headWord.type === "reduplication") {
         return new ArrayResult(dictionary[headWord.word].definitions)
           .filterMap((definition) => {

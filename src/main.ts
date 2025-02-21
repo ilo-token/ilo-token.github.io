@@ -290,10 +290,10 @@ function main(): void {
     customDictionaryDialogBox.close();
   });
   saveButton.addEventListener("click", () => {
-    const dictionary = customDictionaryTextBox.value;
+    const { value } = customDictionaryTextBox;
     try {
-      loadCustomDictionary(dictionary);
-      setIgnoreError(DICTIONARY_KEY, dictionary);
+      loadCustomDictionary(value);
+      setIgnoreError(DICTIONARY_KEY, value);
       customDictionaryDialogBox.close();
     } catch (error) {
       const errors = flattenError(error);

@@ -141,7 +141,7 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
   // pi cannot have emphasis particle
   (modifier) => {
     if (modifier.type === "pi") {
-      const phrase = modifier.phrase;
+      const { phrase } = modifier;
       if (
         (
           phrase.type === "default" ||
@@ -158,7 +158,7 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
   // nanpa cannot have emphasis particle
   (modifier) => {
     if (modifier.type === "nanpa") {
-      const phrase = modifier.phrase;
+      const { phrase } = modifier;
       if (
         (
           phrase.type === "default" ||
@@ -404,7 +404,7 @@ export const CLAUSE_RULE: Array<(clause: Clause) => boolean> = [
       clause.explicitLi &&
       clause.subjects.type === "single"
     ) {
-      const phrase = clause.subjects.phrase;
+      const { phrase } = clause.subjects;
       if (
         phrase.type === "default" &&
         phrase.headWord.type === "default" &&
@@ -412,7 +412,7 @@ export const CLAUSE_RULE: Array<(clause: Clause) => boolean> = [
         phrase.modifiers.length === 0 &&
         phrase.emphasis == null
       ) {
-        const word = phrase.headWord.word;
+        const { word } = phrase.headWord;
         if (word === "mi" || word === "sina") {
           throw new UnrecognizedError(`"${word} li"`);
         }
@@ -428,7 +428,7 @@ export const FULL_CLAUSE_RULE: Array<(fullClase: FullClause) => boolean> = [
       if (
         fullClause.kinOrTaso != null && fullClause.kinOrTaso.type === "x ala x"
       ) {
-        const word = fullClause.kinOrTaso.word;
+        const { word } = fullClause.kinOrTaso;
         throw new UnrecognizedError(`"${word} ala ${word}"`);
       }
     }
