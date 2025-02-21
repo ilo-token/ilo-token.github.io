@@ -3,6 +3,7 @@
  * and AST parser.
  */
 
+import { memoize } from "@std/cache/memoize";
 import { ArrayResult, ArrayResultError } from "../array-result.ts";
 
 /** A single parsing result. */
@@ -337,12 +338,5 @@ export function sourceOnly<T>(
  * - It must not contain variable parsers e.g. with `variable`.
  */
 export function cached<T>(parser: Parser<T>): Parser<T> {
-  const cache: { [word: string]: ParserResult<T> } = {};
-  return new Parser((src) => {
-    if (Object.hasOwn(cache, src)) {
-      return cache[src];
-    } else {
-      return cache[src] = parser.parser(src);
-    }
-  });
+  return new Parser(memoize((src) => parser.parser(src)));
 }
