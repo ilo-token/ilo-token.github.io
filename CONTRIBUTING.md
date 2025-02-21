@@ -66,18 +66,20 @@ alternative contact options:
 - [Google forms](https://docs.google.com/forms/d/e/1FAIpQLSfdDEMbde9mieybZdbZr8haRzNzGsg0BVkuTIzuHaATCdcrlw/viewform?usp=sf_link)
 - Email: [neverrare@proton.me](mailto:neverrare@proton.me)
 
-ilo Token have a dedicated space for the following Discord server. Although
-these server themselves serves as a space for broader topics, not just ilo
-Token.
+ilo Token have a dedicated space for the following site.
 
-- [ma pona pi toki pona](https://discord.gg/Byqn5z9)
+<!--
+- [ma pona pi toki pona Discord Server](https://discord.gg/Byqn5z9)
   ([Thread for ilo Token](https://discord.com/channels/301377942062366741/1053538532993548320)):
   A Discord server for Toki Pona.
-- [r/ProgrammingLanguages](https://discord.gg/4Kjt3ZE)
+  -->
+
+- [r/ProgrammingLanguages Discord Server](https://discord.gg/4Kjt3ZE)
   ([Channel for ilo Token](https://discord.com/channels/530598289813536771/1224854915214737522)):
   A Discord server for programming language development. While ilo Token isn't a
   programming language, it uses similar techniques found in programming language
   development e.g. parsing.
+- [Forum page from Conlangs from Space](https://conlangsfrom.space/t/ilo-token-a-wip-rule-based-toki-pona-to-english-translator/452)
 
 These are unnoficial spaces and are not subject to the
 [Contributor Covenant Code of Conduct](https://github.com/ilo-token/ilo-token.github.io/blob/master/CODE_OF_CONDUCT.md).
