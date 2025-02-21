@@ -11,8 +11,8 @@ if (import.meta.main) {
       break;
     }
     try {
-      const output = translate(input);
-      for (const translation of output) {
+      const arrayResult = translate(input);
+      for (const translation of arrayResult) {
         const count = translation.match(/<strong>/g)?.length ?? 0;
         console.log(
           `  - ${translation.replaceAll(/<\/?strong>/g, "%c")}`,

@@ -1,6 +1,6 @@
 import * as Dictionary from "../../dictionary/type.ts";
 import { filterSet } from "../misc.ts";
-import { Output } from "../output.ts";
+import { ArrayResult } from "../array-result.ts";
 import * as English from "./ast.ts";
 import { FilteredOutError } from "./error.ts";
 import { simpleNounForms } from "./noun.ts";
@@ -59,7 +59,7 @@ export function determiner(
   definition: Dictionary.Determiner,
   reduplicationCount: number,
   emphasis: boolean,
-): Output<English.Determiner> {
+): ArrayResult<English.Determiner> {
   return simpleNounForms({
     singular: definition.determiner,
     plural: definition.plural,

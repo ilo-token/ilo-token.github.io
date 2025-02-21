@@ -12,7 +12,7 @@ import {
   tokiPonaWordSet,
 } from "../dictionary.ts";
 import { nullableAsArray } from "../misc.ts";
-import { Output } from "../output.ts";
+import { ArrayResult } from "../array-result.ts";
 import {
   Clause,
   Emphasis,
@@ -842,8 +842,8 @@ const FULL_PARSER = spaces()
       .map((sentences) => ({ type: "sentences", sentences })),
   ));
 /** Turns string into Toki Pona AST. */
-export function parse(src: string): Output<MultipleSentences> {
-  return Output.from(() => {
+export function parse(src: string): ArrayResult<MultipleSentences> {
+  return ArrayResult.from(() => {
     if (src.trim().length > 500) {
       throw new UnrecognizedError("long text");
     } else {

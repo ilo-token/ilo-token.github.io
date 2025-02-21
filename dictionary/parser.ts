@@ -1,7 +1,7 @@
 import { escape } from "@std/html/entities";
 import nlp from "compromise/three";
 import { nullableAsArray } from "../src/misc.ts";
-import { Output, OutputError } from "../src/output.ts";
+import { ArrayResult, ArrayResultError } from "../src/array-result.ts";
 import {
   all,
   allAtLeastOnce,
@@ -55,7 +55,7 @@ function word(): Parser<string> {
     .map((word) => word.join("").replaceAll(/\s+/g, " ").trim())
     .filter((word) => {
       if (word.length === 0) {
-        throw new OutputError("missing word");
+        throw new ArrayResultError("missing word");
       } else {
         return true;
       }
@@ -120,7 +120,7 @@ function detectRepetition(
       return { before, repeat: repeatString, after };
     }
   }
-  throw new OutputError(
+  throw new ArrayResultError(
     `"${source.join("/")}" has no repetition pattern found`,
   );
 }
@@ -150,13 +150,13 @@ function nounOnly(): Parser<NounForms & { gerund: boolean }> {
               .toPlural()
               .text();
             if (singular === "" || plural === "") {
-              throw new OutputError(
+              throw new ArrayResultError(
                 `no singular or plural form found for "${first}". consider ` +
                   "providing both singular and plural forms instead",
               );
             }
             if (first !== singular) {
-              throw new OutputError(
+              throw new ArrayResultError(
                 `conjugation error: "${first}" is not "${singular}". ` +
                   "consider providing both singular and plural forms instead",
               );
@@ -170,7 +170,7 @@ function nounOnly(): Parser<NounForms & { gerund: boolean }> {
         case "singular":
         case "plural":
           if (second != null) {
-            throw new OutputError(
+            throw new ArrayResultError(
               "number inside tag may not be provided when two forms of noun " +
                 "are already provided",
             );
@@ -257,7 +257,7 @@ function verbOnly(tagInside: Parser<unknown>): Parser<VerbForms> {
             particle !== singularParticles[i] || particle !== pastParticles[i]
           )
         ) {
-          throw new OutputError(
+          throw new ArrayResultError(
             "mismatched verb particles " +
               `"${presentPlural}/${presentSingular}/${past}"`,
           );
@@ -282,10 +282,10 @@ function verbOnly(tagInside: Parser<unknown>): Parser<VerbForms> {
           FutureTense: string;
         };
         if (conjugations == null) {
-          throw new OutputError(`no verb conjugation found for "${verb}"`);
+          throw new ArrayResultError(`no verb conjugation found for "${verb}"`);
         }
         if (verb !== conjugations.Infinitive) {
-          throw new OutputError(
+          throw new ArrayResultError(
             `conjugation error: "${verb}" is not ` +
               `"${conjugations.Infinitive}". consider providing all ` +
               "conjugations instead",
@@ -335,7 +335,7 @@ const DEFINITION = cached(choiceOnlyOne<Definition>(
       if (first.adverb.length === 0 && second.adverb.length === 0) {
         return true;
       } else {
-        throw new OutputError("compound adjective cannot have adverb");
+        throw new ArrayResultError("compound adjective cannot have adverb");
       }
     })
     .skip(semicolon())
@@ -399,7 +399,7 @@ const DEFINITION = cached(choiceOnlyOne<Definition>(
     .map((unit) => {
       const numeral = Number.parseInt(unit);
       if (Number.isNaN(numeral)) {
-        throw new OutputError(`"${unit}" is not a number`);
+        throw new ArrayResultError(`"${unit}" is not a number`);
       } else {
         return { type: "numeral", numeral };
       }
@@ -523,25 +523,25 @@ const DEFINITION_EXTRACT = spaces()
 const DEFINITION_ALONE = spaces().with(DEFINITION).skip(end());
 
 export function parseDictionary(sourceText: string): Dictionary {
-  const output = DICTIONARY.parse(sourceText);
-  if (!output.isError()) {
-    return output.output[0];
+  const arrayResult = DICTIONARY.parse(sourceText);
+  if (!arrayResult.isError()) {
+    return arrayResult.array[0];
   } else {
     const definitions = DEFINITION_EXTRACT.parse(sourceText);
-    let errors: Output<never>;
+    let errors: ArrayResult<never>;
     if (!definitions.isError()) {
-      errors = Output.errors(
-        definitions.output[0]
+      errors = ArrayResult.errors(
+        definitions.array[0]
           .flatMap((definition) =>
             DEFINITION_ALONE.parse(definition).errors.map((error) =>
-              new OutputError(`${error.message} at ${definition.trim()}`, {
+              new ArrayResultError(`${error.message} at ${definition.trim()}`, {
                 cause: error,
               })
             )
           ),
       );
     } else {
-      errors = Output.errors(output.errors);
+      errors = ArrayResult.errors(arrayResult.errors);
     }
     throw new AggregateError(errors.deduplicateErrors().errors);
   }

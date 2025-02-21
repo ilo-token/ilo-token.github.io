@@ -1,6 +1,6 @@
 import * as Dictionary from "../../dictionary/type.ts";
 import { nullableAsArray } from "../misc.ts";
-import { Output } from "../output.ts";
+import { ArrayResult } from "../array-result.ts";
 import { settings } from "../settings.ts";
 import { adjective } from "./adjective.ts";
 import * as English from "./ast.ts";
@@ -21,16 +21,16 @@ export function partialNoun(
   definition: Dictionary.Noun,
   reduplicationCount: number,
   emphasis: boolean,
-): Output<PartialNoun> {
-  const engDeterminer = Output.combine(
+): ArrayResult<PartialNoun> {
+  const engDeterminer = ArrayResult.combine(
     ...definition.determiner
       .map((definition) => determiner(definition, 1, false)),
   );
-  const engAdjective = Output.combine(
+  const engAdjective = ArrayResult.combine(
     ...definition.adjective
       .map((definition) => adjective(definition, 1, null)),
   );
-  return Output.combine(engDeterminer, engAdjective)
+  return ArrayResult.combine(engDeterminer, engAdjective)
     .map(([determiner, adjective]) => ({
       determiner,
       adjective,
@@ -45,13 +45,13 @@ export function partialNoun(
 export function fromNounForms(
   nounForms: Dictionary.NounForms,
   determinerNumber: Dictionary.Quantity,
-): Output<{ noun: string; quantity: English.Quantity }> {
+): ArrayResult<{ noun: string; quantity: English.Quantity }> {
   const { singular, plural } = nounForms;
   switch (determinerNumber) {
     case "both":
       switch (settings.quantity) {
         case "both":
-          return new Output([
+          return new ArrayResult([
             ...nullableAsArray(singular)
               .map((noun) => ({ noun, quantity: "singular" as const })),
             ...nullableAsArray(plural)
@@ -59,7 +59,7 @@ export function fromNounForms(
           ]);
         case "condensed":
           if (singular != null && plural != null) {
-            return new Output([{
+            return new ArrayResult([{
               noun: condense(singular, plural),
               quantity: "condensed",
             }]);
@@ -67,32 +67,32 @@ export function fromNounForms(
           // fallthrough
         case "default only":
           if (singular != null) {
-            return new Output([{ noun: singular, quantity: "singular" }]);
+            return new ArrayResult([{ noun: singular, quantity: "singular" }]);
           } else {
-            return new Output([{ noun: plural!, quantity: "plural" }]);
+            return new ArrayResult([{ noun: plural!, quantity: "plural" }]);
           }
       }
       // unreachable
       // fallthrough
     case "singular":
-      return new Output(nullableAsArray(singular))
+      return new ArrayResult(nullableAsArray(singular))
         .map((noun) => ({ noun, quantity: "singular" as const }));
     case "plural":
-      return new Output(nullableAsArray(plural))
+      return new ArrayResult(nullableAsArray(plural))
         .map((noun) => ({ noun, quantity: "plural" as const }));
   }
 }
 export function simpleNounForms(
   nounForms: Dictionary.NounForms,
-): Output<string> {
+): ArrayResult<string> {
   return fromNounForms(nounForms, "both").map((noun) => noun.noun);
 }
 export function noun(
   definition: Dictionary.Noun,
   reduplicationCount: number,
   emphasis: boolean,
-): Output<English.NounPhrase> {
-  return Output.combine(
+): ArrayResult<English.NounPhrase> {
+  return ArrayResult.combine(
     fromNounForms(definition, "both"),
     partialNoun(definition, reduplicationCount, emphasis),
   )
@@ -105,7 +105,9 @@ export function noun(
       emphasis: false,
     }));
 }
-export function nounAsPlainString(definition: Dictionary.Noun): Output<string> {
+export function nounAsPlainString(
+  definition: Dictionary.Noun,
+): ArrayResult<string> {
   return noun(definition, 1, false).map((noun) =>
     EnglishComposer.noun(noun, 0)
   );

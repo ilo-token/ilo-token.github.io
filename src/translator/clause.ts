@@ -1,6 +1,6 @@
 import * as Dictionary from "../../dictionary/type.ts";
 import { nullableAsArray } from "../misc.ts";
-import { Output } from "../output.ts";
+import { ArrayResult } from "../array-result.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
 import { FilteredOutError, TranslationTodoError } from "./error.ts";
@@ -12,7 +12,7 @@ import { unemphasized } from "./word.ts";
 
 function phraseClause(
   phrases: TokiPona.MultiplePhrases,
-): Output<English.Clause> {
+): ArrayResult<English.Clause> {
   return multiplePhrases(phrases, "object", true, "en", false)
     .map<English.Clause>(
       (phrase) => {
@@ -68,8 +68,8 @@ function phraseClause(
 }
 function liClause(
   clause: TokiPona.Clause & { type: "li clause" },
-): Output<English.Clause> {
-  return Output.combine(
+): ArrayResult<English.Clause> {
+  return ArrayResult.combine(
     multiplePhrasesAsNoun(clause.subjects, "subject", true, "en"),
     predicate(clause.predicates, "li"),
   )
@@ -89,7 +89,7 @@ function liClause(
         }));
     });
 }
-export function clause(clause: TokiPona.Clause): Output<English.Clause> {
+export function clause(clause: TokiPona.Clause): ArrayResult<English.Clause> {
   switch (clause.type) {
     case "phrases":
       return phraseClause(clause.phrases);
@@ -107,6 +107,6 @@ export function clause(clause: TokiPona.Clause): Output<English.Clause> {
     case "prepositions":
     case "o clause":
     case "quotation":
-      return new Output(new TranslationTodoError(clause.type));
+      return new ArrayResult(new TranslationTodoError(clause.type));
   }
 }

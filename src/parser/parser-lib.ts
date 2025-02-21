@@ -3,25 +3,25 @@
  * and AST parser.
  */
 
-import { Output, OutputError } from "../output.ts";
+import { ArrayResult, ArrayResultError } from "../array-result.ts";
 
 /** A single parsing result. */
 export type ValueRest<T> = Readonly<{ rest: string; value: T }>;
-/** A special kind of Output that parsers returns. */
-export type ParserOutput<T> = Output<ValueRest<T>>;
+/** A special kind of ArrayResult that parsers returns. */
+export type ParserResult<T> = ArrayResult<ValueRest<T>>;
 
 /** Wrapper of parser function with added methods for convenience. */
 export class Parser<T> {
-  readonly #parser: (src: string) => ParserOutput<T>;
-  constructor(parser: (src: string) => ParserOutput<T>) {
+  readonly #parser: (src: string) => ParserResult<T>;
+  constructor(parser: (src: string) => ParserResult<T>) {
     this.#parser = parser;
   }
-  parser(src: string): ParserOutput<T> {
-    return Output.from(() => this.#parser(src));
+  parser(src: string): ParserResult<T> {
+    return ArrayResult.from(() => this.#parser(src));
   }
   /**
    * Maps the parsing result. For convenience, the mapper function can throw
-   * an OutputError; Other kinds of error are ignored.
+   * an ArrayResultError; Other kinds of error are ignored.
    */
   map<U>(mapper: (value: T) => U): Parser<U> {
     return new Parser((src) =>
@@ -31,7 +31,7 @@ export class Parser<T> {
     );
   }
   /**
-   * Filters outputs. Instead of returning false, OutputError must be thrown
+   * Filters ArrayResults. Instead of returning false, ArrayResultError must be thrown
    * instead.
    */
   filter(mapper: (value: T) => boolean): Parser<T> {
@@ -58,43 +58,43 @@ export class Parser<T> {
   }
   /** Takes another parser and discards the parsing result of `this`. */
   with<U>(parser: Parser<U>): Parser<U> {
-    return sequence(this, parser).map(([_, output]) => output);
+    return sequence(this, parser).map(([_, arrayResult]) => arrayResult);
   }
   /** Takes another parser and discards its parsing result. */
   skip<U>(parser: Parser<U>): Parser<T> {
-    return sequence(this, parser).map(([output]) => output);
+    return sequence(this, parser).map(([arrayResult]) => arrayResult);
   }
-  parse(src: string): Output<T> {
+  parse(src: string): ArrayResult<T> {
     return this.parser(src).map(({ value }) => value);
   }
 }
 /** Represents Error with unexpected and expected elements. */
-export class UnexpectedError extends OutputError {
+export class UnexpectedError extends ArrayResultError {
   constructor(unexpected: string, expected: string) {
     super(`unexpected ${unexpected}. ${expected} were expected instead`);
     this.name = "UnexpectedError";
   }
 }
 /** Represents Error caused by unrecognized elements. */
-export class UnrecognizedError extends OutputError {
+export class UnrecognizedError extends ArrayResultError {
   constructor(element: string) {
     super(`${element} is unrecognized`);
     this.name = "UnrecognizedError";
   }
 }
 /** Parser that always outputs an error. */
-export function error(error: OutputError): Parser<never> {
+export function error(error: ArrayResultError): Parser<never> {
   return new Parser(() => {
     throw error;
   });
 }
-/** Parser that always outputs an empty output. */
+/** Parser that always outputs an empty ArrayResult. */
 export function empty(): Parser<never> {
-  return new Parser(() => new Output());
+  return new Parser(() => new ArrayResult());
 }
 /** Parses nothing and leaves the source string intact. */
 export function nothing(): Parser<null> {
-  return new Parser((src) => new Output([{ value: null, rest: src }]));
+  return new Parser((src) => new ArrayResult([{ value: null, rest: src }]));
 }
 /** Parses without consuming the source string */
 export function lookAhead<T>(parser: Parser<T>): Parser<T> {
@@ -132,15 +132,15 @@ export function lazy<T>(parser: () => Parser<T>): Parser<T> {
 }
 /**
  * Evaluates all parsers on the same source string and sums it all on a single
- * Output.
+ * ArrayResult.
  */
 export function choice<T>(...choices: Array<Parser<T>>): Parser<T> {
   return new Parser((src) =>
-    new Output(choices).flatMap((parser) => parser.parser(src))
+    new ArrayResult(choices).flatMap((parser) => parser.parser(src))
   );
 }
 /**
- * Tries to evaluate each parsers one at a time and only only use the output of
+ * Tries to evaluate each parsers one at a time and only only use the ArrayResult of
  * the first parser that is successful.
  */
 export function choiceOnlyOne<T>(
@@ -149,11 +149,11 @@ export function choiceOnlyOne<T>(
   return choices.reduceRight(
     (right, left) =>
       new Parser((src) => {
-        const output = left.parser(src);
-        if (output.isError()) {
-          return Output.concat(output, right.parser(src));
+        const arrayResult = left.parser(src);
+        if (arrayResult.isError()) {
+          return ArrayResult.concat(arrayResult, right.parser(src));
         } else {
-          return output;
+          return arrayResult;
         }
       }),
     empty(),
@@ -183,7 +183,7 @@ export function sequence<T extends Array<unknown>>(
 }
 /**
  * Parses `parser` multiple times and returns an `Array<T>`. The resulting
- * output includes all outputs from parsing nothing to parsing as many as
+ * ArrayResult includes all ArrayResult from parsing nothing to parsing as many as
  * possible.
  *
  * ## ⚠️ Warning
@@ -267,7 +267,10 @@ export function matchCapture(
   return new Parser((src) => {
     const match = src.match(newRegex);
     if (match != null) {
-      return new Output([{ value: match, rest: src.slice(match[0].length) }]);
+      return new ArrayResult([{
+        value: match,
+        rest: src.slice(match[0].length),
+      }]);
     }
     throwWithSourceDescription(src, description);
   });
@@ -279,7 +282,7 @@ export function match(regex: RegExp, description: string): Parser<string> {
 export function slice(length: number, description: string): Parser<string> {
   return new Parser((src) => {
     if (src.length >= length) {
-      return new Output([{
+      return new ArrayResult([{
         rest: src.slice(length),
         value: src.slice(0, length),
       }]);
@@ -294,7 +297,7 @@ export function matchString(
 ): Parser<string> {
   return new Parser((src) => {
     if (src.length >= match.length && src.slice(0, match.length) === match) {
-      return new Output([{ rest: src.slice(match.length), value: match }]);
+      return new ArrayResult([{ rest: src.slice(match.length), value: match }]);
     }
     throwWithSourceDescription(src, description);
   });
@@ -306,7 +309,7 @@ export function character(): Parser<string> {
 export function end(): Parser<null> {
   return new Parser((src) => {
     if (src === "") {
-      return new Output([{ value: null, rest: "" }]);
+      return new ArrayResult([{ value: null, rest: "" }]);
     }
     throwWithSourceDescription(src, "end of text");
   });
@@ -334,7 +337,7 @@ export function sourceOnly<T>(
  * - It must not contain variable parsers e.g. with `variable`.
  */
 export function cached<T>(parser: Parser<T>): Parser<T> {
-  const cache: { [word: string]: ParserOutput<T> } = {};
+  const cache: { [word: string]: ParserResult<T> } = {};
   return new Parser((src) => {
     if (Object.hasOwn(cache, src)) {
       return cache[src];

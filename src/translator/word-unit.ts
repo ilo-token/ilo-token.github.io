@@ -1,5 +1,5 @@
 import { dictionary } from "../dictionary.ts";
-import { Output } from "../output.ts";
+import { ArrayResult } from "../array-result.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";
 import * as English from "./ast.ts";
@@ -34,19 +34,19 @@ function defaultWordUnit(
   emphasis: null | TokiPona.Emphasis,
   place: Place,
   includeGerund: boolean,
-): Output<WordUnitTranslation> {
-  return new Output(dictionary[word].definitions)
+): ArrayResult<WordUnitTranslation> {
+  return new ArrayResult(dictionary[word].definitions)
     .flatMap((definition) => {
       switch (definition.type) {
         case "noun":
           if (!includeGerund && definition.gerund) {
-            return new Output();
+            return new ArrayResult();
           } else {
             return partialNoun(definition, reduplicationCount, emphasis != null)
               .map<WordUnitTranslation>((noun) => ({ ...noun, type: "noun" }));
           }
         case "personal pronoun":
-          return new Output<WordUnitTranslation>([{
+          return new ArrayResult<WordUnitTranslation>([{
             ...partialPronoun(
               definition,
               reduplicationCount,
@@ -79,7 +79,7 @@ function defaultWordUnit(
           return partialVerb(definition, reduplicationCount, emphasis != null)
             .map<WordUnitTranslation>((verb) => ({ ...verb, type: "verb" }));
         default:
-          return new Output();
+          return new ArrayResult();
       }
     });
 }
@@ -87,14 +87,14 @@ export function wordUnit(
   wordUnit: TokiPona.WordUnit,
   place: Place,
   includeGerund: boolean,
-): Output<WordUnitTranslation> {
+): ArrayResult<WordUnitTranslation> {
   switch (wordUnit.type) {
     case "number":
-      return new Output([
+      return new ArrayResult([
         numberWordUnit(wordUnit.number, wordUnit.emphasis != null),
       ]);
     case "x ala x":
-      return new Output(new TranslationTodoError("x ala x"));
+      return new ArrayResult(new TranslationTodoError("x ala x"));
     case "default":
     case "reduplication": {
       let reduplicationCount: number;

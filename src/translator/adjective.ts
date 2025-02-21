@@ -1,6 +1,6 @@
 import * as Dictionary from "../../dictionary/type.ts";
 import { nullableAsArray, repeatWithSpace } from "../misc.ts";
-import { Output } from "../output.ts";
+import { ArrayResult } from "../array-result.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
 import { UntranslatableError } from "./error.ts";
@@ -31,11 +31,11 @@ export function adjective(
   definition: Dictionary.Adjective,
   reduplicationCount: number,
   emphasis: null | TokiPona.Emphasis,
-): Output<English.AdjectivePhrase & { type: "simple" }> {
-  return Output.concat<{ emphasis: boolean; so: null | string }>(
-    Output.from(() => new Output([so(emphasis)]))
+): ArrayResult<English.AdjectivePhrase & { type: "simple" }> {
+  return ArrayResult.concat<{ emphasis: boolean; so: null | string }>(
+    ArrayResult.from(() => new ArrayResult([so(emphasis)]))
       .map((so) => ({ emphasis: false, so })),
-    new Output([{ emphasis: emphasis != null, so: null }]),
+    new ArrayResult([{ emphasis: emphasis != null, so: null }]),
   )
     .map(({ emphasis, so }) => ({
       type: "simple",
@@ -49,10 +49,10 @@ export function compoundAdjective(
   adjectives: Array<Dictionary.Adjective>,
   reduplicationCount: number,
   emphasis: null | TokiPona.Emphasis,
-): Output<English.AdjectivePhrase & { type: "compound" }> {
-  return Output.from(() => {
+): ArrayResult<English.AdjectivePhrase & { type: "compound" }> {
+  return ArrayResult.from(() => {
     if (reduplicationCount === 1) {
-      return Output.combine(
+      return ArrayResult.combine(
         ...adjectives
           .map((definition) => adjective(definition, 1, emphasis)),
       )

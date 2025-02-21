@@ -13,7 +13,7 @@ import {
   setIgnoreError,
 } from "./misc.ts";
 import { translate } from "./mod.ts";
-import { OutputError } from "./output.ts";
+import { ArrayResultError } from "./array-result.ts";
 import {
   loadFromElements,
   loadFromLocalStorage,
@@ -222,7 +222,7 @@ function main(): void {
       errorDisplay.innerHTML = escapeHtmlWithNewline(message);
       for (const item of errors) {
         let property: "innerHTML" | "innerText";
-        if (item instanceof OutputError && item.isHtml) {
+        if (item instanceof ArrayResultError && item.isHtml) {
           property = "innerHTML";
         } else {
           property = "innerText";
@@ -323,7 +323,7 @@ function main(): void {
 }
 function errorsFixable(errors: Array<unknown>): boolean {
   return errors.length > 0 &&
-    errors.every((error) => error instanceof OutputError);
+    errors.every((error) => error instanceof ArrayResultError);
 }
 if (typeof document !== "undefined") {
   if (document.readyState === "loading") {
