@@ -305,13 +305,8 @@ function main(): void {
       }
       const errorListMessage = errors
         .map(extractErrorMessage)
-        .map((message) =>
-          `${asComment(`- ${message.replaceAll(NEWLINES, "$&  ")}`)}\n`
-        )
-        .join("");
-      displayToCustomDictionary(
-        `${asComment(message)}\n${errorListMessage}`,
-      );
+        .map((message) => `\n- ${message.replaceAll(NEWLINES, "$&  ")}`);
+      displayToCustomDictionary(asComment(`${message}${errorListMessage}`));
       console.error(error);
     }
   });
