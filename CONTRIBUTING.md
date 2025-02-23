@@ -74,12 +74,14 @@ ilo Token have a dedicated space for the following site.
   A Discord server for Toki Pona.
   -->
 
+- [Conlangs from Space](https://conlangsfrom.space/)
+  ([Forum page for ilo Token](https://conlangsfrom.space/t/ilo-token-a-wip-rule-based-toki-pona-to-english-translator/452)):
+  A forum site dedicated for all conlangs, not just Toki Pona.
 - [r/ProgrammingLanguages Discord Server](https://discord.gg/4Kjt3ZE)
   ([Channel for ilo Token](https://discord.com/channels/530598289813536771/1224854915214737522)):
   A Discord server for programming language development. While ilo Token isn't a
   programming language, it uses similar techniques found in programming language
   development e.g. parsing.
-- [Forum page from Conlangs from Space](https://conlangsfrom.space/t/ilo-token-a-wip-rule-based-toki-pona-to-english-translator/452)
 
 These are unnoficial spaces and are not subject to the
 [Contributor Covenant Code of Conduct](https://github.com/ilo-token/ilo-token.github.io/blob/master/CODE_OF_CONDUCT.md).
