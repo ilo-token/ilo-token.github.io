@@ -266,7 +266,7 @@ function main(): void {
   });
   function displayToCustomDictionary(message: string): void {
     let original = customDictionaryTextBox.value.trimEnd();
-    if (original.length !== 0) {
+    if (original !== "") {
       original += "\n\n";
     }
     customDictionaryTextBox.value = `${original}${message.trimEnd()}\n`;

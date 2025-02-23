@@ -54,7 +54,7 @@ function word(): Parser<string> {
   )
     .map((word) => word.join("").replaceAll(/\s+/g, " ").trim())
     .filter((word) => {
-      if (word.length === 0) {
+      if (word === "") {
         throw new ArrayResultError("missing word");
       } else {
         return true;
