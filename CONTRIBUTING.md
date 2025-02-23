@@ -66,7 +66,8 @@ alternative contact options:
 - [Google forms](https://docs.google.com/forms/d/e/1FAIpQLSfdDEMbde9mieybZdbZr8haRzNzGsg0BVkuTIzuHaATCdcrlw/viewform?usp=sf_link)
 - Email: [neverrare@proton.me](mailto:neverrare@proton.me)
 
-ilo Token have a dedicated space for the following site.
+ilo Token have a dedicated space for the following site. Although these sites
+themselves serves as a space for broader topics, not just ilo Token.
 
 <!--
 - [ma pona pi toki pona Discord Server](https://discord.gg/Byqn5z9)
