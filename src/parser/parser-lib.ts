@@ -234,23 +234,21 @@ export function allAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
 export function count<T>(parser: Parser<Array<T>>): Parser<number> {
   return parser.map((array) => array.length);
 }
-function throwWithSourceDescription(src: string, expected: string): never {
-  let tokenDescription: string;
+function describeSource(src: string): string {
   if (src === "") {
-    tokenDescription = "end of text";
+    return "end of text";
   } else {
     const [token] = src.match(/\S*/)!;
     if (token === "") {
       if (/^[\n\r]/.test(src)) {
-        tokenDescription = "newline";
+        return "newline";
       } else {
-        tokenDescription = "space";
+        return "space";
       }
     } else {
-      tokenDescription = `"${token}"`;
+      return `"${token}"`;
     }
   }
-  throw new UnexpectedError(tokenDescription, expected);
 }
 /**
  * Uses Regular Expression to create parser. The parser outputs
@@ -269,7 +267,7 @@ export function matchCapture(
         rest: src.slice(match[0].length),
       }]);
     }
-    throwWithSourceDescription(src, description);
+    throw new UnexpectedError(describeSource(src), description);
   });
 }
 export function match(regex: RegExp, description: string): Parser<string> {
@@ -284,7 +282,7 @@ export function slice(length: number, description: string): Parser<string> {
         value: src.slice(0, length),
       }]);
     }
-    throwWithSourceDescription(src, description);
+    throw new UnexpectedError(describeSource(src), description);
   });
 }
 /** Parses a string that exactly matches the given string. */
@@ -296,7 +294,7 @@ export function matchString(
     if (src.length >= match.length && src.slice(0, match.length) === match) {
       return new ArrayResult([{ rest: src.slice(match.length), value: match }]);
     }
-    throwWithSourceDescription(src, description);
+    throw new UnexpectedError(describeSource(src), description);
   });
 }
 export function character(): Parser<string> {
@@ -308,7 +306,7 @@ export function end(): Parser<null> {
     if (src === "") {
       return new ArrayResult([{ value: null, rest: "" }]);
     }
-    throwWithSourceDescription(src, "end of text");
+    throw new UnexpectedError(describeSource(src), "end of text");
   });
 }
 export function withSource<T>(

@@ -50,7 +50,7 @@ export function setIgnoreError(key: string, value: string): void {
     }
   }
 }
-export function throwWhenFailed(response: Response): Response {
+export function assertOk(response: Response): Response {
   if (!response.ok) {
     throw new Error(
       `unable to fetch ${response.url} (${response.status} ${response.statusText})`,
