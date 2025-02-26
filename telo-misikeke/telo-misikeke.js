@@ -15,8 +15,10 @@ export function errors(text) {
     .tokenize(text)
     .filter((token) => RULES[token.ruleName].category === "error")
     .map((token) => {
-      const src = newlineAsHtmlLineBreak(token.text);
-      const message = newlineAsHtml(getMessage(token.ruleName, token.match));
+      const src = escapeHtmlWithNewline(token.text);
+      const message = newlineAsHtmlLineBreak(
+        getMessage(token.ruleName, token.match),
+      );
       return `"${src}" ${message}`;
     });
 }
