@@ -16,7 +16,10 @@ NOTE: Before publishing:
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
 
-- Fix custom dictionary errors.
+ilo Token is now a lot faster.
+
+- Fix custom dictionary error messages.
+- Fix custom dictionary not loading when ilo Token is newly loaded.
 
 </details>
 
