@@ -59,6 +59,8 @@ import {
 } from "./parser-lib.ts";
 import { describe, Token } from "./token.ts";
 
+const spaces = match(/\s*/, "spaces");
+
 Parser.startCache(CACHE);
 
 /** Parses a specific type of token. */
@@ -793,7 +795,6 @@ const sentence = sequence(
     };
   })
   .filter(filter(SENTENCE_RULE));
-const spaces = match(/\s*/, "spaces");
 /** A multiple sentence parser for final parser. */
 const FULL_PARSER = spaces
   .with(choiceOnlyOne<MultipleSentences>(

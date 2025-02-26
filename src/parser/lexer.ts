@@ -40,8 +40,6 @@ import {
   UCSUR_TO_LATIN,
 } from "./ucsur.ts";
 
-Parser.startCache(CACHE);
-
 const spacesWithoutNewline = match(/[^\S\n\r]*/, "spaces");
 const newline = match(/[\n\r]\s*/, "newline");
 /** parses space. */
@@ -113,6 +111,9 @@ const longWord = choiceOnlyOne(matchString("a"), matchString("n"))
       }))
   )
   .skip(spaces);
+
+Parser.startCache(CACHE);
+
 /** Parses X ala X constructions if allowed by the settings. */
 const xAlaX = lazy(() => {
   if (settings.xAlaXPartialParsing) {
@@ -124,6 +125,9 @@ const xAlaX = lazy(() => {
       );
   }
 });
+
+Parser.endCache();
+
 /** Parses a punctuation. */
 const punctuation = choiceOnlyOne(
   match(/[.,:;?!…·。｡︒\u{F199C}\u{F199D}]+/u, "punctuation")
@@ -263,5 +267,3 @@ export const token = choiceOnlyOne<Token>(
     kind: "cartouche",
   })),
 );
-
-Parser.endCache();
