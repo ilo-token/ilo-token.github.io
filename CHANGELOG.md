@@ -7,21 +7,20 @@ NOTE: Before publishing:
 - Remove details
 -->
 
+<!--
 <details>
-
 <summary>On development changelog</summary>
-
-## 0.4.1 (On development)
-
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
+</details>
+-->
+
+## 0.4.1
 
 ilo Token is now a lot faster.
 
 - Fix custom dictionary error messages.
 - Fix custom dictionary not loading when ilo Token is newly loaded.
-
-</details>
 
 ## 0.4.0
 
