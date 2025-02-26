@@ -15,11 +15,11 @@ export type ParserResult<T> = ArrayResult<ValueRest<T>>;
 /** Wrapper of parser function with added methods for convenience. */
 export class Parser<T> {
   readonly #parser: (src: string) => ParserResult<T>;
-  static #parserCache: null | Cache = null;
+  static cache: null | Cache = null;
   constructor(parser: (src: string) => ParserResult<T>) {
     const cache = new Map<string, ParserResult<T>>();
-    if (Parser.#parserCache != null) {
-      Parser.#parserCache.add(cache);
+    if (Parser.cache != null) {
+      Parser.cache.add(cache);
     }
     this.#parser = memoize(parser, { cache });
   }
@@ -75,21 +75,18 @@ export class Parser<T> {
     return this.parser(src).map(({ value }) => value);
   }
   static addToCache(cache: Clearable): void {
-    if (Parser.#parserCache != null) {
-      Parser.#parserCache.add(cache);
+    if (Parser.cache != null) {
+      Parser.cache.add(cache);
     }
   }
   static startCache(cache: Cache): void {
-    Parser.#parserCache = cache;
+    Parser.cache = cache;
   }
   static endCache(): void {
-    Parser.#parserCache = null;
+    Parser.cache = null;
   }
   static startOrEndCache(cache?: null | Cache): void {
-    Parser.#parserCache = cache ?? null;
-  }
-  static get cache(): null | Cache {
-    return Parser.#parserCache;
+    Parser.cache = cache ?? null;
   }
 }
 /** Represents Error with unexpected and expected elements. */
