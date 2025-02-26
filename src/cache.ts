@@ -2,12 +2,12 @@ export interface Clearable {
   clear(): void;
 }
 export class Cache {
-  caches: Array<Clearable> = [];
+  #caches: Array<Clearable> = [];
   add(cache: Clearable): void {
-    this.caches.push(cache);
+    this.#caches.push(cache);
   }
   clear(): void {
-    for (const cache of this.caches) {
+    for (const cache of this.#caches) {
       cache.clear();
     }
   }
