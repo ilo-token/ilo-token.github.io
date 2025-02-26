@@ -18,9 +18,7 @@ export class Parser<T> {
   static cache: null | Cache = null;
   constructor(parser: (src: string) => ParserResult<T>) {
     const cache = new Map<string, ParserResult<T>>();
-    if (Parser.cache != null) {
-      Parser.cache.add(cache);
-    }
+    Parser.cache?.add(cache);
     this.#parser = memoize(parser, { cache });
   }
   parser(src: string): ParserResult<T> {
