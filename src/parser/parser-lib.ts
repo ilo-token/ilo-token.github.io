@@ -201,14 +201,13 @@ export function sequence<T extends Array<unknown>>(
  *
  * Will cause infinite recursion if the parser can parse nothing.
  */
-export function many_<T>(parser: Parser<T>): Parser<Array<T>> {
-  return choice(
+export const many = memoize(<T>(parser: Parser<T>): Parser<Array<T>> =>
+  choice(
     sequence(parser, lazy(() => many(parser)))
       .map(([first, rest]) => [first, ...rest]),
     emptyArray,
-  );
-}
-export const many = memoize(many_);
+  )
+);
 /**
  * Like `many` but parses at least once.
  *
@@ -228,14 +227,13 @@ export function manyAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
  *
  * Will cause infinite recursion if the parser can parse nothing.
  */
-export function all_<T>(parser: Parser<T>): Parser<Array<T>> {
-  return choiceOnlyOne(
+export const all = memoize(<T>(parser: Parser<T>): Parser<Array<T>> =>
+  choiceOnlyOne(
     sequence(parser, lazy(() => all(parser)))
       .map(([first, rest]) => [first, ...rest]),
     emptyArray,
-  );
-}
-export const all = memoize(all_);
+  )
+);
 /**
  * Like `all` but parses at least once.
  *
@@ -247,8 +245,8 @@ export function allAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
   return sequence(parser, all(parser))
     .map(([first, rest]) => [first, ...rest]);
 }
-export function count<T>(parser: Parser<Array<T>>): Parser<number> {
-  return parser.map((array) => array.length);
+export function count(parser: Parser<{ length: number }>): Parser<number> {
+  return parser.map(({ length }) => length);
 }
 function describeSource(src: string): string {
   if (src === "") {
