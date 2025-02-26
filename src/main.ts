@@ -7,7 +7,7 @@ import { ArrayResultError } from "./array-result.ts";
 import { loadCustomDictionary } from "./dictionary.ts";
 import {
   checkLocalStorage,
-  escapeHtmlWithNewline,
+  escapeHtmlWithLineBreak,
   extractErrorMessage,
   flattenError,
   NEWLINES,
@@ -152,7 +152,7 @@ function main(): void {
       } else {
         message = DICTIONARY_LOADING_FAILED_UNFIXABLE_MESSAGE;
       }
-      errorDisplay.innerText = escapeHtmlWithNewline(message);
+      errorDisplay.innerText = escapeHtmlWithLineBreak(message);
       console.error(error);
     }
   }
@@ -220,7 +220,7 @@ function main(): void {
           message = MULTIPLE_ERROR_MESSAGE;
           break;
       }
-      errorDisplay.innerHTML = escapeHtmlWithNewline(message);
+      errorDisplay.innerHTML = escapeHtmlWithLineBreak(message);
       for (const item of errors) {
         let property: "innerHTML" | "innerText";
         if (item instanceof ArrayResultError && item.isHtml) {

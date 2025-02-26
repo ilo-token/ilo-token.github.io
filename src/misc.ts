@@ -31,11 +31,11 @@ export const checkLocalStorage = lazy(() => {
       localStorage.length !== 0;
   }
 });
-export function newlineAsHtml(text: string): string {
+export function newlineAsHtmlLineBreak(text: string): string {
   return text.replaceAll(NEWLINES, "<br/>");
 }
-export function escapeHtmlWithNewline(text: string): string {
-  return newlineAsHtml(escape(text));
+export function escapeHtmlWithLineBreak(text: string): string {
+  return newlineAsHtmlLineBreak(escape(text));
 }
 export function setIgnoreError(key: string, value: string): void {
   if (!checkLocalStorage()) {
