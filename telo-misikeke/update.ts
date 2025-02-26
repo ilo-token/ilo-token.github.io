@@ -66,8 +66,8 @@ async function buildSonaLinku(): Promise<void> {
 function parseLipuLinku(
   data: { [word: string]: { usage_category: string } },
 ): [string, string][] {
-  return Object.keys(data)
-    .map<[string, string]>((word) => [word, data[word].usage_category])
+  return Object.entries(data)
+    .map<[string, string]>(([word, data]) => [word, data.usage_category])
     .filter(([_, category]) => category !== "sandbox");
 }
 if (import.meta.main) {

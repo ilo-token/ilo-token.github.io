@@ -508,15 +508,13 @@ function entry(): Parser<Entry> {
 const DICTIONARY = spaces()
   .with(all(sequence(HEAD, entry())))
   .skip(end())
-  .map((entries) => {
-    const dictionary: Dictionary = {};
-    for (const [words, definitions] of entries) {
-      for (const word of words) {
-        dictionary[word] = definitions;
-      }
-    }
-    return dictionary;
-  });
+  .map((entries) =>
+    new Map(
+      entries.flatMap(([words, definition]) =>
+        words.map((word) => [word, definition])
+      ),
+    )
+  );
 const DEFINITION_EXTRACT = spaces()
   .with(all(optionalAll(lex(HEAD)).with(lex(match(/[^;]*;/, "definition")))))
   .skip(end());

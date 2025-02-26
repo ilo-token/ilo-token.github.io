@@ -3,8 +3,8 @@ import { parseDictionary } from "../dictionary/parser.ts";
 import { Definition, Dictionary } from "../dictionary/type.ts";
 import { ArrayResultError } from "./array-result.ts";
 
-const customDictionary: Dictionary = {};
-export const dictionary: Dictionary = {};
+const customDictionary: Dictionary = new Map();
+export const dictionary: Dictionary = new Map();
 
 export const contentWordSet: Set<string> = new Set();
 export const prepositionSet: Set<string> = new Set();
@@ -23,27 +23,23 @@ export class MissingEntryError extends ArrayResultError {
 /** Updates custom dictionary. */
 export function loadCustomDictionary(dictionaryText: string): void {
   const dictionary = parseDictionary(dictionaryText);
-  for (const key of Object.keys(customDictionary)) {
-    delete customDictionary[key];
-  }
-  for (const [key, value] of Object.entries(dictionary)) {
-    customDictionary[key] = value;
+  customDictionary.clear();
+  for (const [key, value] of dictionary) {
+    customDictionary.set(key, value);
   }
   update();
 }
 function update(): void {
-  for (const key of Object.keys(dictionary)) {
-    delete dictionary[key];
-  }
+  dictionary.clear();
   for (
     const word of new Set([
-      ...Object.keys(globalDictionary),
-      ...Object.keys(customDictionary),
+      ...globalDictionary.keys(),
+      ...customDictionary.keys(),
     ])
   ) {
-    const entry = customDictionary[word] ?? globalDictionary[word];
+    const entry = customDictionary.get(word) ?? globalDictionary.get(word)!;
     if (entry.definitions.length > 0) {
-      dictionary[word] = entry;
+      dictionary.set(word, entry);
     }
   }
   for (

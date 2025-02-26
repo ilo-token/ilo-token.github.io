@@ -77,7 +77,7 @@ export function defaultModifier(
           reduplicationCount = wordUnit.count;
           break;
       }
-      return new ArrayResult(dictionary[wordUnit.word].definitions)
+      return new ArrayResult(dictionary.get(wordUnit.word)!.definitions)
         .flatMap((definition) => {
           switch (definition.type) {
             case "noun":

@@ -66,14 +66,17 @@ function variationSelector(): Parser<string> {
  */
 function ucsur(): Parser<string> {
   return match(UCSUR_CHARACTER_REGEX, "UCSUR glyph")
-    .map((ucsur) => UCSUR_TO_LATIN[ucsur]);
+    .map((ucsur) => UCSUR_TO_LATIN.get(ucsur)!);
 }
 /**
  * Parses special UCSUR character, this doesn't parse space and so must be
  * manually added if needed
  */
 function specificSpecialUcsur(specialUcsur: string): Parser<string> {
-  return matchString(specialUcsur, SPECIAL_UCSUR_DESCRIPTIONS[specialUcsur]);
+  return matchString(
+    specialUcsur,
+    SPECIAL_UCSUR_DESCRIPTIONS.get(specialUcsur)!,
+  );
 }
 /** Parses a single UCSUR word. */
 function singleUcsurWord(): Parser<string> {

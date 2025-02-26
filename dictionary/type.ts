@@ -81,4 +81,4 @@ export type Definition =
   | { type: "preposition"; preposition: string }
   | { type: "interjection"; interjection: string };
 export type Entry = { definitions: Array<Definition>; src: string };
-export type Dictionary = { [word: string]: Entry };
+export type Dictionary = Map<string, Entry>;

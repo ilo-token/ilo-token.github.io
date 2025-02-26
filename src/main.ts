@@ -276,8 +276,9 @@ function main(): void {
     const word = addWordTextBox.value.trim();
     if (/^[a-z][a-zA-Z]*$/.test(word)) {
       let definitions: string;
-      if (Object.hasOwn(dictionary, word)) {
-        definitions = dictionary[word].src;
+      const dictionaryEntry = dictionary.get(word);
+      if (dictionaryEntry != null) {
+        definitions = dictionaryEntry.src;
       } else {
         definitions = `\n${
           asComment(EMPTY_DEFINITION_PLACEHOLDER)

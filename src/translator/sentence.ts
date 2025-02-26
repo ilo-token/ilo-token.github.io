@@ -21,7 +21,7 @@ function filler(filler: TokiPona.Emphasis): ArrayResult<string> {
           length = filler.length;
           break;
       }
-      return new ArrayResult(nullableAsArray(dictionary[filler.word]))
+      return new ArrayResult(nullableAsArray(dictionary.get(filler.word)!))
         .flatMap((entry) => new ArrayResult(entry.definitions))
         .filterMap((definition) => {
           if (definition.type === "filler") {
@@ -79,7 +79,7 @@ function interjection(clause: TokiPona.Clause): ArrayResult<English.Clause> {
     if (phrase.type === "default" && phrase.modifiers.length === 0) {
       const { headWord } = phrase;
       if (headWord.type === "default" || headWord.type === "reduplication") {
-        return new ArrayResult(dictionary[headWord.word].definitions)
+        return new ArrayResult(dictionary.get(headWord.word)!.definitions)
           .filterMap((definition) => {
             if (definition.type === "interjection") {
               switch (headWord.type) {
@@ -255,7 +255,7 @@ export function multipleSentences(
   switch (sentences.type) {
     case "single word": {
       const { word } = sentences;
-      return new ArrayResult(dictionary[word].definitions)
+      return new ArrayResult(dictionary.get(word)!.definitions)
         .flatMap(definitionAsPlainString)
         .map<English.Sentence>((definition) => ({
           clauses: [{ type: "free form", text: definition }],

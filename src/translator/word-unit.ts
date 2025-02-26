@@ -35,7 +35,7 @@ function defaultWordUnit(
   place: Place,
   includeGerund: boolean,
 ): ArrayResult<WordUnitTranslation> {
-  return new ArrayResult(dictionary[word].definitions)
+  return new ArrayResult(dictionary.get(word)!.definitions)
     .flatMap((definition) => {
       switch (definition.type) {
         case "noun":
