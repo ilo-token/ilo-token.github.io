@@ -7,7 +7,7 @@
  */
 
 import { settings } from "../settings.ts";
-import { CACHE } from "./cache.ts";
+import { cache } from "./cache.ts";
 import {
   allAtLeastOnce,
   choice,
@@ -112,7 +112,7 @@ const longWord = choiceOnlyOne(matchString("a"), matchString("n"))
   )
   .skip(spaces);
 
-Parser.startCache(CACHE);
+Parser.startCache(cache);
 
 /** Parses X ala X constructions if allowed by the settings. */
 const xAlaX = lazy(() => {

@@ -27,7 +27,7 @@ import {
   SimpleHeadedWordUnit,
   SimpleWordUnit,
 } from "./ast.ts";
-import { CACHE } from "./cache.ts";
+import { cache } from "./cache.ts";
 import { everyWordUnitInFullClause } from "./extract.ts";
 import {
   CLAUSE_RULE,
@@ -61,7 +61,7 @@ import { describe, Token } from "./token.ts";
 
 const spaces = match(/\s*/, "spaces");
 
-Parser.startCache(CACHE);
+Parser.startCache(cache);
 
 /** Parses a specific type of token. */
 function specificToken<T extends Token["type"]>(
