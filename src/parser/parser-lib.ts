@@ -75,9 +75,7 @@ export class Parser<T> {
     return this.parser(src).map(({ value }) => value);
   }
   static addToCache(cache: Clearable): void {
-    if (Parser.cache != null) {
-      Parser.cache.add(cache);
-    }
+    Parser.cache?.add(cache);
   }
   static startCache(cache: Cache): void {
     Parser.cache = cache;
