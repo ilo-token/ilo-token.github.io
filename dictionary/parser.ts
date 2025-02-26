@@ -1,11 +1,10 @@
 import { escape } from "@std/html/entities";
 import nlp from "compromise/three";
-import { nullableAsArray } from "../src/misc.ts";
 import { ArrayResult, ArrayResultError } from "../src/array-result.ts";
+import { nullableAsArray } from "../src/misc.ts";
 import {
   all,
   allAtLeastOnce,
-  cached,
   character,
   choiceOnlyOne,
   end,
@@ -19,56 +18,40 @@ import {
   withSource,
 } from "../src/parser/parser-lib.ts";
 import {
-  Adjective,
-  AdjectiveType,
   Definition,
   Determiner,
-  DeterminerType,
   Dictionary,
-  Entry,
   Noun,
   NounForms,
   VerbForms,
 } from "./type.ts";
 
-function comment(): Parser<string> {
-  return match(/#[^\n\r]*/, "comment");
-}
-function spaces(): Parser<string> {
-  return sourceOnly(all(choiceOnlyOne(match(/\s/, "space"), comment())));
-}
+const comment = match(/#[^\n\r]*/, "comment");
+const spaces = sourceOnly(all(choiceOnlyOne(match(/\s/, "space"), comment)));
 function lex<T>(parser: Parser<T>): Parser<T> {
-  return parser.skip(spaces());
+  return parser.skip(spaces);
 }
-function backtick(): Parser<string> {
-  return matchString("`", "backtick");
-}
-function word(): Parser<string> {
-  return allAtLeastOnce(
-    choiceOnlyOne(
-      match(/[^():;#/`]/, "word"),
-      sequence(backtick(), character(), backtick())
-        .map(([_, character]) => character),
-      comment().map(() => ""),
-    ),
-  )
-    .map((word) => word.join("").replaceAll(/\s+/g, " ").trim())
-    .filter((word) => {
-      if (word === "") {
-        throw new ArrayResultError("missing word");
-      } else {
-        return true;
-      }
-    })
-    .map(escape);
-}
-function slash(): Parser<string> {
-  return lex(matchString("/", "slash"));
-}
-function forms(): Parser<Array<string>> {
-  return sequence(word(), all(slash().with(word())))
-    .map(([first, rest]) => [first, ...rest]);
-}
+const backtick = matchString("`", "backtick");
+const word = allAtLeastOnce(
+  choiceOnlyOne(
+    match(/[^():;#/`]/, "word"),
+    sequence(backtick, character, backtick)
+      .map(([_, character]) => character),
+    comment.map(() => ""),
+  ),
+)
+  .map((word) => word.join("").replaceAll(/\s+/g, " ").trim())
+  .filter((word) => {
+    if (word === "") {
+      throw new ArrayResultError("missing word");
+    } else {
+      return true;
+    }
+  })
+  .map(escape);
+const slash = lex(matchString("/", "slash"));
+const forms = sequence(word, all(slash.with(word)))
+  .map(([first, rest]) => [first, ...rest]);
 function keyword<T extends string>(keyword: T): Parser<T> {
   return lex(match(/[a-z]+/, keyword))
     .filter((that) => {
@@ -79,15 +62,13 @@ function keyword<T extends string>(keyword: T): Parser<T> {
       }
     }) as Parser<T>;
 }
-function number(): Parser<"singular" | "plural"> {
-  return choiceOnlyOne(keyword("singular"), keyword("plural"));
-}
-function optionalNumber(): Parser<null | "singular" | "plural"> {
-  return optionalAll(number());
-}
-function perspective(): Parser<"first" | "second" | "third"> {
-  return choiceOnlyOne(keyword("first"), keyword("second"), keyword("third"));
-}
+const number = choiceOnlyOne(keyword("singular"), keyword("plural"));
+const optionalNumber = optionalAll(number);
+const perspective = choiceOnlyOne(
+  keyword("first"),
+  keyword("second"),
+  keyword("third"),
+);
 function tag<T>(parser: Parser<T>): Parser<T> {
   return lex(matchString("(", "open parenthesis"))
     .with(parser)
@@ -99,7 +80,7 @@ function template<T>(parser: Parser<T>): Parser<T> {
     .skip(lex(matchString("]", "close square bracket")));
 }
 function simpleUnit(kind: string): Parser<string> {
-  return word().skip(tag(keyword(kind)));
+  return word.skip(tag(keyword(kind)));
 }
 function detectRepetition(
   source: Array<string>,
@@ -124,127 +105,136 @@ function detectRepetition(
     `"${source.join("/")}" has no repetition pattern found`,
   );
 }
-function nounOnly(): Parser<NounForms & { gerund: boolean }> {
-  return sequence(
-    word(),
-    optionalAll(slash().with(word())),
-    tag(
-      keyword("n")
-        .with(sequence(optionalAll(keyword("gerund")), optionalNumber())),
-    ),
-  )
-    .map(([first, second, [gerund, number]]) => {
-      let singular: null | string = null;
-      let plural: null | string = null;
-      switch (number) {
-        case null: {
-          if (second == null) {
-            const sentence = nlp(first);
-            sentence.tag("Noun");
-            singular = sentence
-              .nouns()
-              .toSingular()
-              .text();
-            plural = sentence
-              .nouns()
-              .toPlural()
-              .text();
-            if (singular === "" || plural === "") {
-              throw new ArrayResultError(
-                `no singular or plural form found for "${first}". consider ` +
-                  "providing both singular and plural forms instead",
-              );
-            }
-            if (first !== singular) {
-              throw new ArrayResultError(
-                `conjugation error: "${first}" is not "${singular}". ` +
-                  "consider providing both singular and plural forms instead",
-              );
-            }
-          } else {
-            singular = first;
-            plural = second;
-          }
-          break;
-        }
-        case "singular":
-        case "plural":
-          if (second != null) {
+const nounOnly = sequence(
+  word,
+  optionalAll(slash.with(word)),
+  tag(
+    keyword("n")
+      .with(sequence(optionalAll(keyword("gerund")), optionalNumber)),
+  ),
+)
+  .map<NounForms & { gerund: boolean }>(([first, second, [gerund, number]]) => {
+    let singular: null | string = null;
+    let plural: null | string = null;
+    switch (number) {
+      case null: {
+        if (second == null) {
+          const sentence = nlp(first);
+          sentence.tag("Noun");
+          singular = sentence
+            .nouns()
+            .toSingular()
+            .text();
+          plural = sentence
+            .nouns()
+            .toPlural()
+            .text();
+          if (singular === "" || plural === "") {
             throw new ArrayResultError(
-              "number inside tag may not be provided when two forms of noun " +
-                "are already provided",
+              `no singular or plural form found for "${first}". consider ` +
+                "providing both singular and plural forms instead",
             );
           }
-          switch (number) {
-            case "singular":
-              singular = first;
-              break;
-            case "plural":
-              plural = first;
-              break;
+          if (first !== singular) {
+            throw new ArrayResultError(
+              `conjugation error: "${first}" is not "${singular}". ` +
+                "consider providing both singular and plural forms instead",
+            );
           }
-          break;
+        } else {
+          singular = first;
+          plural = second;
+        }
+        break;
       }
-      return { singular, plural, gerund: gerund != null };
-    });
-}
-function noun(): Parser<Noun> {
-  return sequence(
-    all(determiner()),
-    all(adjective()),
-    nounOnly(),
-    optionalAll(
-      sequence(simpleUnit("adj"), word())
-        .skip(tag(sequence(keyword("n"), keyword("proper")))),
-    ),
-  )
-    .map(([determiner, adjective, noun, post]) => {
-      let postAdjective: null | { adjective: string; name: string };
-      if (post == null) {
-        postAdjective = null;
-      } else {
-        const [adjective, name] = post;
-        postAdjective = { adjective, name };
-      }
-      return {
-        ...noun,
-        determiner,
-        adjective,
-        postAdjective,
-      };
-    });
-}
-function determinerType(): Parser<DeterminerType> {
-  return choiceOnlyOne(
-    keyword("article"),
-    keyword("demonstrative"),
-    keyword("distributive"),
-    keyword("interrogative"),
-    keyword("possessive"),
-    keyword("quantifier"),
-    keyword("negative"),
-    keyword("numeral"),
-  );
-}
-function adjectiveKind(): Parser<AdjectiveType> {
-  return choiceOnlyOne(
-    keyword("opinion"),
-    keyword("size"),
-    sequence(keyword("physical"), keyword("quality"))
-      .map(() => "physical quality"),
-    keyword("age"),
-    keyword("color"),
-    keyword("origin"),
-    keyword("material"),
-    keyword("qualifier"),
-  );
-}
+      case "singular":
+      case "plural":
+        if (second != null) {
+          throw new ArrayResultError(
+            "number inside tag may not be provided when two forms of noun " +
+              "are already provided",
+          );
+        }
+        switch (number) {
+          case "singular":
+            singular = first;
+            break;
+          case "plural":
+            plural = first;
+            break;
+        }
+        break;
+    }
+    return { singular, plural, gerund: gerund != null };
+  });
+const determinerType = choiceOnlyOne(
+  keyword("article"),
+  keyword("demonstrative"),
+  keyword("distributive"),
+  keyword("interrogative"),
+  keyword("possessive"),
+  keyword("quantifier"),
+  keyword("negative"),
+  keyword("numeral"),
+);
+const determiner = sequence(
+  word,
+  optionalAll(slash.with(word)),
+  tag(keyword("d").with(sequence(determinerType, optionalNumber))),
+)
+  .map<Determiner>(([determiner, plural, [kind, quantity]]) => ({
+    determiner,
+    plural,
+    kind,
+    quantity: quantity ?? "both",
+  }));
+const adjectiveKind = choiceOnlyOne(
+  keyword("opinion"),
+  keyword("size"),
+  sequence(keyword("physical"), keyword("quality"))
+    .map(() => "physical quality" as const),
+  keyword("age"),
+  keyword("color"),
+  keyword("origin"),
+  keyword("material"),
+  keyword("qualifier"),
+);
+const adjective = sequence(
+  all(simpleUnit("adv")),
+  word,
+  tag(keyword("adj").with(adjectiveKind)),
+)
+  .map(([adverb, adjective, kind]) => ({ adverb, adjective, kind }));
+const noun = sequence(
+  all(determiner),
+  all(adjective),
+  nounOnly,
+  optionalAll(
+    sequence(simpleUnit("adj"), word)
+      .skip(tag(sequence(keyword("n"), keyword("proper")))),
+  ),
+)
+  .map<Noun>(([determiner, adjective, noun, post]) => {
+    let postAdjective: null | { adjective: string; name: string };
+    if (post == null) {
+      postAdjective = null;
+    } else {
+      const [adjective, name] = post;
+      postAdjective = { adjective, name };
+    }
+    return {
+      ...noun,
+      determiner,
+      adjective,
+      postAdjective,
+    };
+  });
 function verbOnly(tagInside: Parser<unknown>): Parser<VerbForms> {
   return choiceOnlyOne(
     sequence(
-      word().skip(slash()),
-      word().skip(slash()),
-      word().skip(tag(tagInside)),
+      word.skip(slash),
+      word.skip(slash),
+      word.skip(tag(tagInside)),
     )
       .filter(([presentPlural, presentSingular, past]) => {
         const [_, ...pluralParticles] = presentPlural.split(" ");
@@ -269,7 +259,7 @@ function verbOnly(tagInside: Parser<unknown>): Parser<VerbForms> {
         presentSingular,
         past,
       })),
-    word()
+    word
       .skip(tag(tagInside))
       .map((verb) => {
         const sentence = nlp(verb);
@@ -299,37 +289,14 @@ function verbOnly(tagInside: Parser<unknown>): Parser<VerbForms> {
       }),
   );
 }
-function determiner(): Parser<Determiner> {
-  return sequence(
-    word(),
-    optionalAll(slash().with(word())),
-    tag(keyword("d").with(sequence(determinerType(), optionalNumber()))),
-  )
-    .map(([determiner, plural, [kind, quantity]]) => ({
-      determiner,
-      plural,
-      kind,
-      quantity: quantity ?? "both",
-    }));
-}
-function adjective(): Parser<Adjective> {
-  return sequence(
-    all(simpleUnit("adv")),
-    word(),
-    tag(keyword("adj").with(adjectiveKind())),
-  )
-    .map(([adverb, adjective, kind]) => ({ adverb, adjective, kind }));
-}
-function semicolon(): Parser<string> {
-  return lex(matchString(";", "semicolon"));
-}
-const DEFINITION = cached(choiceOnlyOne<Definition>(
-  adjective()
-    .skip(semicolon())
+const semicolon = lex(matchString(";", "semicolon"));
+const definition = choiceOnlyOne<Definition>(
+  adjective
+    .skip(semicolon)
     .map((adjective) => ({ ...adjective, type: "adjective" })),
   sequence(
-    adjective().skip(keyword("and")).skip(tag(keyword("c"))),
-    adjective(),
+    adjective.skip(keyword("and")).skip(tag(keyword("c"))),
+    adjective,
   )
     .filter(([first, second]) => {
       if (first.adverb.length === 0 && second.adverb.length === 0) {
@@ -338,21 +305,21 @@ const DEFINITION = cached(choiceOnlyOne<Definition>(
         throw new ArrayResultError("compound adjective cannot have adverb");
       }
     })
-    .skip(semicolon())
+    .skip(semicolon)
     .map((adjective) => ({ type: "compound adjective", adjective })),
-  noun()
-    .skip(semicolon())
+  noun
+    .skip(semicolon)
     .map((noun) => ({ ...noun, type: "noun" })),
   sequence(
     verbOnly(keyword("v")),
     optionalAll(template(keyword("object"))),
     optionalAll(
-      sequence(simpleUnit("prep"), noun())
+      sequence(simpleUnit("prep"), noun)
         .map(([preposition, object]) => ({ preposition, object })),
     )
       .map(nullableAsArray),
   )
-    .skip(semicolon())
+    .skip(semicolon)
     .map(([verb, forObject, indirectObject]) => ({
       ...verb,
       type: "verb",
@@ -363,10 +330,10 @@ const DEFINITION = cached(choiceOnlyOne<Definition>(
     })),
   sequence(
     verbOnly(keyword("v")),
-    optionalAll(noun()),
+    optionalAll(noun),
     optionalAll(simpleUnit("prep").skip(template(keyword("object")))),
   )
-    .skip(semicolon())
+    .skip(semicolon)
     .map(([verb, directObject, preposition]) => ({
       ...verb,
       type: "verb",
@@ -376,26 +343,26 @@ const DEFINITION = cached(choiceOnlyOne<Definition>(
       predicateType: null,
     })),
   simpleUnit("i")
-    .skip(semicolon())
+    .skip(semicolon)
     .map((preposition) => ({
       type: "interjection",
       interjection: preposition,
     })),
-  word().skip(tag(sequence(keyword("particle"), keyword("def"))))
-    .skip(semicolon())
+  word.skip(tag(sequence(keyword("particle"), keyword("def"))))
+    .skip(semicolon)
     .map((definition) => ({ type: "particle definition", definition })),
   simpleUnit("adv")
-    .skip(semicolon())
+    .skip(semicolon)
     .map((adverb) => ({ type: "adverb", adverb })),
-  determiner()
-    .skip(semicolon())
+  determiner
+    .skip(semicolon)
     .map((determiner) => ({ ...determiner, type: "determiner" })),
   simpleUnit("prep")
     .skip(template(sequence(keyword("indirect"), keyword("object"))))
-    .skip(semicolon())
+    .skip(semicolon)
     .map((preposition) => ({ type: "preposition", preposition })),
   simpleUnit("num")
-    .skip(semicolon())
+    .skip(semicolon)
     .map((unit) => {
       const numeral = Number.parseInt(unit);
       if (Number.isNaN(numeral)) {
@@ -406,7 +373,7 @@ const DEFINITION = cached(choiceOnlyOne<Definition>(
     }),
   verbOnly(keyword("v"))
     .skip(template(keyword("predicate")))
-    .skip(semicolon())
+    .skip(semicolon)
     .map((verb) => ({
       ...verb,
       type: "verb",
@@ -415,26 +382,26 @@ const DEFINITION = cached(choiceOnlyOne<Definition>(
       forObject: false,
       predicateType: "verb",
     })),
-  sequence(noun(), simpleUnit("prep"))
+  sequence(noun, simpleUnit("prep"))
     .skip(template(keyword("headword")))
-    .skip(semicolon())
+    .skip(semicolon)
     .map(([noun, preposition]) => ({
       type: "noun preposition",
       noun,
       preposition,
     })),
   sequence(
-    word().skip(slash()),
-    word().skip(slash()),
-    word().skip(slash()),
-    word(),
+    word.skip(slash),
+    word.skip(slash),
+    word.skip(slash),
+    word,
     tag(
       keyword("personal")
         .with(keyword("pronoun"))
-        .with(perspective()),
+        .with(perspective),
     ),
   )
-    .skip(semicolon())
+    .skip(semicolon)
     .map((
       [
         singularSubject,
@@ -450,15 +417,15 @@ const DEFINITION = cached(choiceOnlyOne<Definition>(
       perspective,
     })),
   sequence(
-    word().skip(slash()),
-    word(),
+    word.skip(slash),
+    word,
     tag(
       keyword("personal").with(keyword("pronoun")).with(
-        sequence(perspective(), number()),
+        sequence(perspective, number),
       ),
     ),
   )
-    .skip(semicolon())
+    .skip(semicolon)
     .map(([subject, object, [perspective, number]]) => ({
       type: "personal pronoun",
       singular: null,
@@ -466,16 +433,16 @@ const DEFINITION = cached(choiceOnlyOne<Definition>(
       [number]: { subject, object },
       perspective,
     })),
-  word()
+  word
     .skip(tag(sequence(keyword("v"), keyword("modal"))))
     .skip(template(keyword("predicate")))
-    .skip(semicolon()).map((verb) => ({
+    .skip(semicolon).map((verb) => ({
       type: "modal verb",
       verb,
     })),
   verbOnly(sequence(keyword("v"), keyword("linking")))
     .skip(template(keyword("predicate")))
-    .skip(semicolon()).map((verb) => ({
+    .skip(semicolon).map((verb) => ({
       ...verb,
       type: "verb",
       directObject: null,
@@ -483,31 +450,25 @@ const DEFINITION = cached(choiceOnlyOne<Definition>(
       forObject: false,
       predicateType: "noun adjective",
     })),
-  forms().skip(tag(keyword("f")))
-    .skip(semicolon())
+  forms.skip(tag(keyword("f")))
+    .skip(semicolon)
     .map((unit) => ({
       ...detectRepetition(unit),
       type: "filler",
     })),
-));
-function singleWord(): Parser<string> {
-  return lex(match(/[a-z][a-zA-Z]*/, "word"));
-}
-const HEAD = cached(
-  sequence(
-    all(singleWord().skip(lex(matchString(",", "comma")))),
-    singleWord(),
-  )
-    .skip(matchString(":", "colon"))
-    .map(([init, last]) => [...init, last]),
 );
-function entry(): Parser<Entry> {
-  return withSource(spaces().with(all(DEFINITION)))
-    .map(([definitions, src]) => ({ definitions, src: src.trimEnd() }));
-}
-const DICTIONARY = spaces()
-  .with(all(sequence(HEAD, entry())))
-  .skip(end())
+const singleWord = lex(match(/[a-z][a-zA-Z]*/, "word"));
+const head = sequence(
+  all(singleWord.skip(lex(matchString(",", "comma")))),
+  singleWord,
+)
+  .skip(matchString(":", "colon"))
+  .map(([init, last]) => [...init, last]);
+const entry = withSource(spaces.with(all(definition)))
+  .map(([definitions, src]) => ({ definitions, src: src.trimEnd() }));
+const dictionary = spaces
+  .with(all(sequence(head, entry)))
+  .skip(end)
   .map((entries) =>
     new Map(
       entries.flatMap(([words, definition]) =>
@@ -515,23 +476,23 @@ const DICTIONARY = spaces()
       ),
     )
   );
-const DEFINITION_EXTRACT = spaces()
-  .with(all(optionalAll(lex(HEAD)).with(lex(match(/[^;]*;/, "definition")))))
-  .skip(end());
-const DEFINITION_ALONE = spaces().with(DEFINITION).skip(end());
+const definitionExtract = spaces
+  .with(all(optionalAll(lex(head)).with(lex(match(/[^;]*;/, "definition")))))
+  .skip(end);
+const definitionAlone = spaces.with(definition).skip(end);
 
 export function parseDictionary(sourceText: string): Dictionary {
-  const arrayResult = DICTIONARY.parse(sourceText);
+  const arrayResult = dictionary.parse(sourceText);
   if (!arrayResult.isError()) {
     return arrayResult.array[0];
   } else {
-    const definitions = DEFINITION_EXTRACT.parse(sourceText);
+    const definitions = definitionExtract.parse(sourceText);
     let errors: ArrayResult<never>;
     if (!definitions.isError()) {
       errors = ArrayResult.errors(
         definitions.array[0]
           .flatMap((definition) =>
-            DEFINITION_ALONE.parse(definition).errors.map((error) =>
+            definitionAlone.parse(definition).errors.map((error) =>
               new ArrayResultError(`${error.message} at ${definition.trim()}`, {
                 cause: error,
               })

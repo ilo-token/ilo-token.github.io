@@ -8,6 +8,7 @@ import { translate as rawTranslate } from "./translator/composer.ts";
 export { ArrayResultError } from "./array-result.ts";
 export type { ArrayResultOptions } from "./array-result.ts";
 export { loadCustomDictionary } from "./dictionary.ts";
+export { clearCache } from "./parser/cache.ts";
 export { defaultSettings, settings } from "./settings.ts";
 export type { RedundancySettings, Settings } from "./settings.ts";
 

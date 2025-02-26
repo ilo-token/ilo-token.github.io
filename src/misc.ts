@@ -1,4 +1,5 @@
 import { escape } from "@std/html/entities";
+import { Lazy } from "./cache.ts";
 
 export const NEWLINES = /\r\n|\n|\r/g;
 
@@ -78,13 +79,6 @@ export function flattenError(error: unknown): Array<unknown> {
   }
 }
 export function lazy<T>(fn: () => T): () => T {
-  let evaluated = false;
-  let value: undefined | T;
-  return () => {
-    if (!evaluated) {
-      evaluated = true;
-      value = fn();
-    }
-    return value!;
-  };
+  const cache = new Lazy(fn);
+  return () => cache.getValue();
 }

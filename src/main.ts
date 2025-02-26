@@ -3,6 +3,7 @@
 import { dictionary } from "../dictionary/dictionary.ts";
 import { asComment } from "../dictionary/misc.ts";
 import PROJECT_DATA from "../project-data.json" with { type: "json" };
+import { ArrayResultError } from "./array-result.ts";
 import { loadCustomDictionary } from "./dictionary.ts";
 import {
   checkLocalStorage,
@@ -13,7 +14,7 @@ import {
   setIgnoreError,
 } from "./misc.ts";
 import { translate } from "./mod.ts";
-import { ArrayResultError } from "./array-result.ts";
+import { clearCache } from "./parser/cache.ts";
 import {
   loadFromElements,
   loadFromLocalStorage,
@@ -240,6 +241,7 @@ function main(): void {
   confirmButton.addEventListener("click", () => {
     loadFromElements();
     updateLabel();
+    clearCache();
     settingsDialogBox.close();
   });
   cancelButton.addEventListener("click", () => {
@@ -298,6 +300,7 @@ function main(): void {
     try {
       loadCustomDictionary(value);
       setIgnoreError(DICTIONARY_KEY, value);
+      clearCache();
       customDictionaryDialogBox.close();
     } catch (error) {
       const errors = flattenError(error);

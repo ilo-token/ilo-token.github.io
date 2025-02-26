@@ -4,8 +4,8 @@
  */
 
 import { memoize } from "@std/cache/memoize";
-import { lazy as lazyEval } from "../misc.ts";
 import { ArrayResult, ArrayResultError } from "../array-result.ts";
+import { Cache, Clearable, Lazy } from "../cache.ts";
 
 /** A single parsing result. */
 export type ValueRest<T> = Readonly<{ rest: string; value: T }>;
@@ -15,8 +15,13 @@ export type ParserResult<T> = ArrayResult<ValueRest<T>>;
 /** Wrapper of parser function with added methods for convenience. */
 export class Parser<T> {
   readonly #parser: (src: string) => ParserResult<T>;
+  static #parserCache: null | Cache = null;
   constructor(parser: (src: string) => ParserResult<T>) {
-    this.#parser = parser;
+    const cache = new Map<string, ParserResult<T>>();
+    if (Parser.#parserCache != null) {
+      Parser.#parserCache.add(cache);
+    }
+    this.#parser = memoize(parser, { cache });
   }
   parser(src: string): ParserResult<T> {
     return ArrayResult.from(() => this.#parser(src));
@@ -69,6 +74,23 @@ export class Parser<T> {
   parse(src: string): ArrayResult<T> {
     return this.parser(src).map(({ value }) => value);
   }
+  static addToCache(cache: Clearable): void {
+    if (Parser.#parserCache != null) {
+      Parser.#parserCache.add(cache);
+    }
+  }
+  static startCache(cache: Cache): void {
+    Parser.#parserCache = cache;
+  }
+  static endCache(): void {
+    Parser.#parserCache = null;
+  }
+  static startOrEndCache(cache?: null | Cache): void {
+    Parser.#parserCache = cache ?? null;
+  }
+  static get cache(): null | Cache {
+    return Parser.#parserCache;
+  }
 }
 /** Represents Error with unexpected and expected elements. */
 export class UnexpectedError extends ArrayResultError {
@@ -91,26 +113,17 @@ export function error(error: ArrayResultError): Parser<never> {
   });
 }
 /** Parser that always outputs an empty ArrayResult. */
-export function empty(): Parser<never> {
-  return new Parser(() => new ArrayResult());
-}
+export const empty = new Parser<never>(() => new ArrayResult());
 /** Parses nothing and leaves the source string intact. */
-export function nothing(): Parser<null> {
-  return new Parser((src) => new ArrayResult([{ value: null, rest: src }]));
-}
+export const nothing = new Parser((src) =>
+  new ArrayResult([{ value: null, rest: src }])
+);
+export const emptyArray = nothing.map(() => []);
 /** Parses without consuming the source string */
 export function lookAhead<T>(parser: Parser<T>): Parser<T> {
   return new Parser((src) =>
     parser.parser(src).map(({ value }) => ({ value, rest: src }))
   );
-}
-/**
- * Evaluates the parser only during parsing, useful for parser that may change
- * e.g. due to settings. Could also be used for non-changing recursive parser
- * but consider using `lazy` instead.
- */
-export function variable<T>(parser: () => Parser<T>): Parser<T> {
-  return new Parser((src) => parser().parser(src));
 }
 /**
  * Lazily evaluates the parser function only when needed. Useful for recursive
@@ -124,8 +137,16 @@ export function variable<T>(parser: () => Parser<T>): Parser<T> {
  * - Declare the parser as global constant.
  */
 export function lazy<T>(parser: () => Parser<T>): Parser<T> {
-  const cachedParser = lazyEval(parser);
-  return new Parser((src) => cachedParser().parser(src));
+  const { cache } = Parser;
+  const cachedParser = new Lazy(() => {
+    const previousCache = Parser.cache;
+    Parser.startOrEndCache(cache);
+    const useParser = parser();
+    Parser.startOrEndCache(previousCache);
+    return useParser;
+  });
+  Parser.addToCache(cachedParser);
+  return new Parser((src) => cachedParser.getValue().parser(src));
 }
 /**
  * Evaluates all parsers on the same source string and sums it all on a single
@@ -153,19 +174,19 @@ export function choiceOnlyOne<T>(
           return arrayResult;
         }
       }),
-    empty(),
+    empty,
   );
 }
 /** Combines `parser` and the `nothing` parser, and output `null | T`. */
 export function optional<T>(parser: Parser<T>): Parser<null | T> {
-  return choice(parser, nothing());
+  return choice(parser, nothing);
 }
 /**
  * Like `optional` but when the parser is successful, it doesn't consider
  * parsing nothing.
  */
 export function optionalAll<T>(parser: Parser<T>): Parser<null | T> {
-  return choiceOnlyOne(parser, nothing());
+  return choiceOnlyOne(parser, nothing);
 }
 /** Takes all parsers and applies them one after another. */
 export function sequence<T extends Array<unknown>>(
@@ -175,7 +196,7 @@ export function sequence<T extends Array<unknown>>(
   return sequence.reduceRight(
     (right: Parser<any>, left) =>
       left.then((value) => right.map((newValue) => [value, ...newValue])),
-    nothing().map(() => []),
+    nothing.map(() => []),
   ) as Parser<any>;
 }
 /**
@@ -189,9 +210,9 @@ export function sequence<T extends Array<unknown>>(
  */
 export function many<T>(parser: Parser<T>): Parser<Array<T>> {
   return choice(
-    sequence(parser, variable(() => many(parser)))
+    sequence(parser, lazy(() => many(parser)))
       .map(([first, rest]) => [first, ...rest]),
-    nothing().map(() => []),
+    emptyArray,
   );
 }
 /**
@@ -215,9 +236,9 @@ export function manyAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
  */
 export function all<T>(parser: Parser<T>): Parser<Array<T>> {
   return choiceOnlyOne(
-    sequence(parser, variable(() => all(parser)))
+    sequence(parser, lazy(() => all(parser)))
       .map(([first, rest]) => [first, ...rest]),
-    nothing().map(() => []),
+    emptyArray,
   );
 }
 /**
@@ -297,18 +318,14 @@ export function matchString(
     throw new UnexpectedError(describeSource(src), description);
   });
 }
-export function character(): Parser<string> {
-  return match(/./us, "character");
-}
+export const character = match(/./us, "character");
 /** Parses the end of text */
-export function end(): Parser<null> {
-  return new Parser((src) => {
-    if (src === "") {
-      return new ArrayResult([{ value: null, rest: "" }]);
-    }
-    throw new UnexpectedError(describeSource(src), "end of text");
-  });
-}
+export const end = new Parser((src) => {
+  if (src === "") {
+    return new ArrayResult([{ value: null, rest: "" }]);
+  }
+  throw new UnexpectedError(describeSource(src), "end of text");
+});
 export function withSource<T>(
   parser: Parser<T>,
 ): Parser<[value: T, source: string]> {
@@ -323,14 +340,4 @@ export function sourceOnly<T>(
   parser: Parser<T>,
 ): Parser<string> {
   return withSource(parser).map(([_, source]) => source);
-}
-/**
- * Enables memoization, for it to be effective:
- *
- * - Don't use it for combinators.
- * - Declare the parser as global constant.
- * - It must not contain variable parsers e.g. with `variable`.
- */
-export function cached<T>(parser: Parser<T>): Parser<T> {
-  return new Parser(memoize((src) => parser.parser(src)));
 }
