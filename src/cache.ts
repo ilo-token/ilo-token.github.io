@@ -2,13 +2,18 @@ export interface Clearable {
   clear(): void;
 }
 export class Cache {
-  #caches: Array<Clearable> = [];
+  #caches: Set<WeakRef<Clearable>> = new Set();
   add(cache: Clearable): void {
-    this.#caches.push(cache);
+    this.#caches.add(new WeakRef(cache));
   }
   clear(): void {
-    for (const cache of this.#caches) {
-      cache.clear();
+    for (const ref of this.#caches) {
+      const cache = ref.deref();
+      if (cache != null) {
+        cache.clear();
+      } else {
+        this.#caches.delete(ref);
+      }
     }
   }
 }
