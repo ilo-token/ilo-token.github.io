@@ -246,7 +246,6 @@ function main(): void {
   });
   cancelButton.addEventListener("click", () => {
     resetElementsToCurrent();
-    updateLabel();
     settingsDialogBox.close();
   });
   resetButton.addEventListener("click", () => {
