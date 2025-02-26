@@ -33,5 +33,6 @@ export class Lazy<T> implements Clearable {
   }
   clear(): void {
     this.#evaluated = false;
+    this.#value = undefined;
   }
 }
