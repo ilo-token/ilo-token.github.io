@@ -152,7 +152,7 @@ function main(): void {
       } else {
         message = DICTIONARY_LOADING_FAILED_UNFIXABLE_MESSAGE;
       }
-      errorDisplay.innerText = escapeHtmlWithLineBreak(message);
+      errorDisplay.innerHTML = escapeHtmlWithLineBreak(message);
       console.error(error);
     }
   }
