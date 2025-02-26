@@ -208,13 +208,14 @@ export function sequence<T extends Array<unknown>>(
  *
  * Will cause infinite recursion if the parser can parse nothing.
  */
-export function many<T>(parser: Parser<T>): Parser<Array<T>> {
+export function many_<T>(parser: Parser<T>): Parser<Array<T>> {
   return choice(
     sequence(parser, lazy(() => many(parser)))
       .map(([first, rest]) => [first, ...rest]),
     emptyArray,
   );
 }
+export const many = memoize(many_);
 /**
  * Like `many` but parses at least once.
  *
@@ -234,13 +235,14 @@ export function manyAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
  *
  * Will cause infinite recursion if the parser can parse nothing.
  */
-export function all<T>(parser: Parser<T>): Parser<Array<T>> {
+export function all_<T>(parser: Parser<T>): Parser<Array<T>> {
   return choiceOnlyOne(
     sequence(parser, lazy(() => all(parser)))
       .map(([first, rest]) => [first, ...rest]),
     emptyArray,
   );
 }
+export const all = memoize(all_);
 /**
  * Like `all` but parses at least once.
  *
