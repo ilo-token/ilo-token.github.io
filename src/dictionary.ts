@@ -66,11 +66,9 @@ function addSet(
   set: Set<string>,
   filter: (definition: Definition) => boolean,
 ): void {
-  const array = Object
-    .entries(dictionary)
-    .filter(([_, entry]) => entry.definitions.some(filter))
-    .map(([word]) => word);
-  for (const word of array) {
-    set.add(word);
+  for (const [word, entry] of dictionary) {
+    if (entry.definitions.some(filter)) {
+      set.add(word);
+    }
   }
 }
