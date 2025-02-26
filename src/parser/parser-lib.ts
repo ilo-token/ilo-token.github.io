@@ -83,8 +83,8 @@ export class Parser<T> {
   static endCache(): void {
     Parser.cache = null;
   }
-  static startOrEndCache(cache?: null | Cache): void {
-    Parser.cache = cache ?? null;
+  static startOrEndCache(cache: null | Cache = null): void {
+    Parser.cache = cache;
   }
 }
 /** Represents Error with unexpected and expected elements. */
