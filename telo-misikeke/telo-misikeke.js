@@ -2,7 +2,10 @@
 
 // @ts-self-types="./telo-misikeke.d.ts"
 
-import { escapeHtmlWithNewline, newlineAsHtmlLineBreak } from "../src/misc.ts";
+import {
+  escapeHtmlWithLineBreak,
+  newlineAsHtmlLineBreak,
+} from "../src/misc.ts";
 import LINKU from "./linku-data.json" with { type: "json" };
 import { ParserWithCallbacks } from "./Parser.js";
 import { build_rules, getMessage } from "./rules.js";
@@ -15,7 +18,7 @@ export function errors(text) {
     .tokenize(text)
     .filter((token) => RULES[token.ruleName].category === "error")
     .map((token) => {
-      const src = escapeHtmlWithNewline(token.text);
+      const src = escapeHtmlWithLineBreak(token.text);
       const message = newlineAsHtmlLineBreak(
         getMessage(token.ruleName, token.match),
       );
