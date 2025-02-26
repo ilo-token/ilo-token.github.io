@@ -138,9 +138,9 @@ function main(): void {
   // load custom dictionary
   let customDictionary: string;
   if (checkLocalStorage()) {
-    customDictionary = customDictionaryTextBox.value;
-  } else {
     customDictionary = localStorage.getItem(DICTIONARY_KEY) ?? "";
+  } else {
+    customDictionary = customDictionaryTextBox.value;
   }
   if (customDictionary.trim() !== "") {
     try {
