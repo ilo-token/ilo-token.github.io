@@ -49,9 +49,11 @@ export class Parser<T> {
    * parser is then also parsed.
    */
   then<U>(mapper: (value: T) => Parser<U>): Parser<U> {
-    return new Parser((src) =>
-      this.parser(src).flatMap(({ value, rest }) => mapper(value).parser(rest))
-    );
+    const { cache } = Parser;
+    return new Parser((src) => {
+      const parser = Parser.inContext(() => this.parser(src), cache);
+      return parser.flatMap(({ value, rest }) => mapper(value).parser(rest));
+    });
   }
   sort(comparer: (left: T, right: T) => number): Parser<T> {
     return new Parser((src) =>
@@ -83,6 +85,13 @@ export class Parser<T> {
   }
   static startOrEndCache(cache: null | Cache = null): void {
     Parser.cache = cache;
+  }
+  static inContext<T>(fn: () => T, cache: null | Cache = null): T {
+    const previousCache = Parser.cache;
+    Parser.startOrEndCache(cache);
+    const value = fn();
+    Parser.startOrEndCache(previousCache);
+    return value;
   }
 }
 /** Represents Error with unexpected and expected elements. */
@@ -131,13 +140,7 @@ export function lookAhead<T>(parser: Parser<T>): Parser<T> {
  */
 export function lazy<T>(parser: () => Parser<T>): Parser<T> {
   const { cache } = Parser;
-  const cachedParser = new Lazy(() => {
-    const previousCache = Parser.cache;
-    Parser.startOrEndCache(cache);
-    const useParser = parser();
-    Parser.startOrEndCache(previousCache);
-    return useParser;
-  });
+  const cachedParser = new Lazy(() => Parser.inContext(parser, cache));
   Parser.addToCache(cachedParser);
   return new Parser((src) => cachedParser.getValue().parser(src));
 }
