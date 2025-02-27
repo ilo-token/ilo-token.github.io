@@ -110,3 +110,13 @@ export function clause(clause: TokiPona.Clause): ArrayResult<English.Clause> {
       return new ArrayResult(new TranslationTodoError(clause.type));
   }
 }
+export function contextClause(
+  contextClause: TokiPona.ContextClause,
+): ArrayResult<English.Clause> {
+  switch (contextClause.type) {
+    case "nanpa":
+      return new ArrayResult(new TranslationTodoError("nanpa context clause"));
+    default:
+      return clause(contextClause);
+  }
+}

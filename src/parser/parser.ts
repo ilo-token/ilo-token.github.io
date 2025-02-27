@@ -10,27 +10,29 @@ import {
 import { nullableAsArray } from "../misc.ts";
 import {
   Clause,
+  ContextClause,
   Emphasis,
-  FullClause,
   HeadedWordUnit,
   Modifier,
   MultiplePhrases,
   MultipleSentences,
+  Nanpa,
   Phrase,
   Predicate,
   Preposition,
+  Sentence,
   SimpleHeadedWordUnit,
   SimpleWordUnit,
 } from "./ast.ts";
 import { cache } from "./cache.ts";
-import { everyWordUnitInFullClause } from "./extract.ts";
+import { everyWordUnitInSentence } from "./extract.ts";
 import {
   CLAUSE_RULE,
   filter,
-  FULL_CLAUSE_RULE,
   MODIFIER_RULES,
   MULTIPLE_MODIFIERS_RULES,
   MULTIPLE_SENTENCES_RULE,
+  NANPA_RULES,
   PHRASE_RULE,
   PREPOSITION_RULE,
   SENTENCE_RULE,
@@ -43,6 +45,7 @@ import {
   count,
   end,
   lazy,
+  lookAhead,
   many,
   manyAtLeastOnce,
   match,
@@ -357,6 +360,9 @@ const phrase: Parser<Phrase> = lazy(() =>
   )
     .filter(filter(PHRASE_RULE))
 );
+const nanpa = sequence(wordUnit(new Set(["nanpa"]), '"nanpa"'), phrase)
+  .map<Nanpa>(([nanpa, phrase]) => ({ nanpa, phrase }))
+  .filter(filter(NANPA_RULES));
 const pi = choice(
   sequence(
     specificToken("headed long glyph start")
@@ -395,11 +401,7 @@ const modifiers = sequence(
         .filter(filter(MODIFIER_RULES)),
     ),
   ),
-  many(
-    sequence(wordUnit(new Set(["nanpa"]), '"nanpa"'), phrase)
-      .map<Modifier>(([nanpa, phrase]) => ({ type: "nanpa", nanpa, phrase }))
-      .filter(filter(MODIFIER_RULES)),
-  ),
+  many(nanpa.map<Modifier>((nanpa) => ({ ...nanpa, type: "nanpa" }))),
   many(
     pi
       .map<Modifier>((phrase) => ({ type: "pi", phrase }))
@@ -684,75 +686,86 @@ const clause = choice<Clause>(
     })),
 )
   .filter(filter(CLAUSE_RULE));
-const fullClause = choice<FullClause>(
+const contextClause = choice<ContextClause>(
+  nanpa.map((nanpa) => ({ ...nanpa, type: "nanpa" })),
+  clause,
+);
+const la = choice(
+  comma.with(specificWord("la")),
+  specificWord("la").skip(comma),
+  specificWord("la"),
+);
+const sentence = choice<Sentence>(
   sequence(
-    optional(emphasis.skip(optionalComma)),
     optional(
       wordUnit(new Set(["kin", "taso"]), "taso/kin").skip(optionalComma),
     ),
+    many(contextClause.skip(la)),
     clause,
     optional(
       optionalComma
         .with(specificWord("anu"))
         .with(wordUnit(new Set(["seme"]), '"seme"')),
     ),
-    optional(optionalComma.with(emphasis)),
+    optionalEmphasis,
+    choice(
+      punctuation,
+      end.map(() => ""),
+      lookAhead(sequence(emphasis, choice(punctuation, end))).map(() => ""),
+    ),
   )
-    .map<FullClause & { type: "default" }>(
-      ([startingParticle, kinOrTaso, clause, anuSeme, endingParticle]) => ({
-        type: "default",
-        startingParticle,
-        kinOrTaso,
-        clause,
-        anuSeme,
-        endingParticle,
-      }),
-    )
-    .sortBy((clause) => {
-      if (clause.anuSeme == null) {
+    .sortBy(([_, _1, _2, anuSeme]) => {
+      if (anuSeme == null) {
         return 1;
       } else {
         return 0;
       }
-    }),
-  emphasis
-    .map((emphasis) => ({ type: "filler", emphasis })),
+    })
+    .map<Sentence>(
+      (
+        [
+          kinOrTaso,
+          laClauses,
+          finalClause,
+          anuSeme,
+          emphasis,
+          punctuation,
+        ],
+      ) => {
+        const sentence = {
+          type: "default" as const,
+          kinOrTaso,
+          laClauses,
+          finalClause,
+          anuSeme,
+          emphasis,
+          punctuation,
+          interrogative: null,
+        };
+        const wordUnits = everyWordUnitInSentence(sentence);
+        let interrogative: null | "x ala x" | "seme" = null;
+        if (wordUnits.some((wordUnit) => wordUnit.type === "x ala x")) {
+          interrogative = "x ala x";
+        } else if (
+          wordUnits.some((wordUnit) =>
+            (wordUnit.type === "default" ||
+              wordUnit.type === "reduplication") &&
+            wordUnit.word === "seme"
+          )
+        ) {
+          interrogative = "seme";
+        }
+        return { ...sentence, interrogative };
+      },
+    ),
+  sequence(emphasis, optional(punctuation))
+    .map(([emphasis, punctuation]) => ({
+      type: "filler",
+      emphasis,
+      punctuation: punctuation ?? "",
+      interrogative: null,
+    })),
 )
-  .filter(filter(FULL_CLAUSE_RULE));
-const la = choice(
-  comma.with(specificWord("la")),
-  specificWord("la").skip(comma),
-  specificWord("la"),
-);
-const sentence = sequence(
-  many(fullClause.skip(la)),
-  fullClause,
-  choice(
-    end.map(() => ""),
-    punctuation,
-  ),
-)
-  .map(([laClauses, finalClause, punctuation]) => {
-    const wordUnits = [...laClauses, finalClause]
-      .flatMap(everyWordUnitInFullClause);
-    let interrogative: null | "x ala x" | "seme" = null;
-    if (wordUnits.some((wordUnit) => wordUnit.type === "x ala x")) {
-      interrogative = "x ala x";
-    } else if (
-      wordUnits.some((wordUnit) =>
-        (wordUnit.type === "default" || wordUnit.type === "reduplication") &&
-        wordUnit.word === "seme"
-      )
-    ) {
-      interrogative = "seme";
-    }
-    return {
-      laClauses,
-      finalClause,
-      interrogative,
-      punctuation,
-    };
-  })
   .filter(filter(SENTENCE_RULE));
 const FULL_PARSER = spaces
   .with(choiceOnlyOne<MultipleSentences>(

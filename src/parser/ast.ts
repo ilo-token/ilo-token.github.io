@@ -15,11 +15,12 @@ export type HeadedWordUnit =
 export type WordUnit =
   & SimpleWordUnit
   & { emphasis: null | Emphasis };
+export type Nanpa = { nanpa: WordUnit; phrase: Phrase };
 export type Modifier =
   | { type: "default"; word: WordUnit }
   | { type: "proper words"; words: string }
   | { type: "pi"; phrase: Phrase }
-  | { type: "nanpa"; nanpa: WordUnit; phrase: Phrase }
+  | ({ type: "nanpa" } & Nanpa)
   | ({ type: "quotation" } & Quotation);
 export type Phrase =
   | {
@@ -73,22 +74,26 @@ export type Clause =
   }
   | { type: "prepositions"; prepositions: Array<Preposition> }
   | ({ type: "quotation" } & Quotation);
-export type FullClause =
+export type ContextClause =
+  | Clause
+  | ({ type: "nanpa" } & Nanpa);
+export type Sentence =
   | {
     type: "default";
-    startingParticle: null | Emphasis;
     kinOrTaso: null | HeadedWordUnit;
-    clause: Clause;
+    laClauses: Array<ContextClause>;
+    finalClause: Clause;
     anuSeme: null | HeadedWordUnit;
-    endingParticle: null | Emphasis;
+    emphasis: null | Emphasis;
+    punctuation: string;
+    interrogative: null | "seme" | "x ala x";
   }
-  | { type: "filler"; emphasis: Emphasis };
-export type Sentence = {
-  laClauses: Array<FullClause>;
-  finalClause: FullClause;
-  interrogative: null | "seme" | "x ala x";
-  punctuation: string;
-};
+  | {
+    type: "filler";
+    emphasis: Emphasis;
+    punctuation: string;
+    interrogative: null | "seme" | "x ala x";
+  };
 export type Quotation = {
   sentences: Array<Sentence>;
   leftMark: string;

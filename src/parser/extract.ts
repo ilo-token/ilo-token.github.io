@@ -1,9 +1,10 @@
 import { nullableAsArray } from "../misc.ts";
 import {
   Clause,
-  FullClause,
+  ContextClause,
   Modifier,
   MultiplePhrases,
+  Nanpa,
   Phrase,
   Predicate,
   Preposition,
@@ -11,6 +12,9 @@ import {
   WordUnit,
 } from "./ast.ts";
 
+export function everyWordUnitInNanpa(nanpa: Nanpa): Array<WordUnit> {
+  return [nanpa.nanpa, ...everyWordUnitInPhrase(nanpa.phrase)];
+}
 export function everyWordUnitInModifier(modifier: Modifier): Array<WordUnit> {
   switch (modifier.type) {
     case "default":
@@ -18,7 +22,7 @@ export function everyWordUnitInModifier(modifier: Modifier): Array<WordUnit> {
     case "pi":
       return everyWordUnitInPhrase(modifier.phrase);
     case "nanpa":
-      return [modifier.nanpa, ...everyWordUnitInPhrase(modifier.phrase)];
+      return everyWordUnitInNanpa(modifier);
     case "quotation":
     case "proper words":
       return [];
@@ -97,21 +101,28 @@ export function everyWordUnitInClause(clause: Clause): Array<WordUnit> {
       return [];
   }
 }
-export function everyWordUnitInFullClause(clause: FullClause): Array<WordUnit> {
-  switch (clause.type) {
+export function everyWordUnitInContextClause(
+  contextClause: ContextClause,
+): Array<WordUnit> {
+  switch (contextClause.type) {
+    case "nanpa":
+      return everyWordUnitInNanpa(contextClause);
+    default:
+      return everyWordUnitInClause(contextClause);
+  }
+}
+export function everyWordUnitInSentence(sentence: Sentence): Array<WordUnit> {
+  switch (sentence.type) {
     case "default":
       return [
-        ...nullableAsArray(clause.kinOrTaso),
-        ...everyWordUnitInClause(clause.clause),
-        ...nullableAsArray(clause.anuSeme),
+        ...nullableAsArray(sentence.kinOrTaso),
+        ...sentence.laClauses.flatMap(everyWordUnitInContextClause),
+        ...everyWordUnitInClause(sentence.finalClause),
+        ...nullableAsArray(sentence.anuSeme),
       ];
     case "filler":
       return [];
   }
-}
-export function everyWordUnitInSentence(sentence: Sentence): Array<WordUnit> {
-  return [...sentence.laClauses, sentence.finalClause]
-    .flatMap(everyWordUnitInFullClause);
 }
 export function everyModifierInPhrase(phrase: Phrase): Array<Modifier> {
   switch (phrase.type) {

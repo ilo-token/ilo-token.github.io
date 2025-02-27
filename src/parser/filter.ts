@@ -2,9 +2,9 @@ import { settings } from "../settings.ts";
 import {
   Clause,
   Emphasis,
-  FullClause,
   Modifier,
   MultiplePhrases,
+  Nanpa,
   Phrase,
   Preposition,
   Sentence,
@@ -38,38 +38,31 @@ export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
     return true;
   },
 ];
-export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
-  // quotation modifier cannot exist
-  (modifier) => {
-    if (modifier.type === "quotation") {
-      throw new UnrecognizedError("quotation as modifier");
-    }
-    return true;
-  },
+export const NANPA_RULES: Array<(nanpa: Nanpa) => boolean> = [
   // disallow _nanpa ala nanpa_
   (modifier) => {
-    if (modifier.type === "nanpa" && modifier.nanpa.type === "x ala x") {
+    if (modifier.nanpa.type === "x ala x") {
       throw new UnrecognizedError('"nanpa ala nanpa"');
     }
     return true;
   },
   // nanpa construction cannot contain preposition
   (modifier) => {
-    if (modifier.type === "nanpa" && modifier.phrase.type === "preposition") {
+    if (modifier.phrase.type === "preposition") {
       throw new UnrecognizedError("preposition inside nanpa");
     }
     return true;
   },
   // nanpa construction cannot contain preverb
   (modifier) => {
-    if (modifier.type === "nanpa" && modifier.phrase.type === "preverb") {
+    if (modifier.phrase.type === "preverb") {
       throw new UnrecognizedError("preverb inside nanpa");
     }
     return true;
   },
   // nanpa construction cannot contain quotation
   (modifier) => {
-    if (modifier.type === "nanpa" && modifier.phrase.type === "quotation") {
+    if (modifier.phrase.type === "quotation") {
       throw new UnrecognizedError("quotation inside nanpa");
     }
     return true;
@@ -77,7 +70,6 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
   // nanpa construction cannot contain pi
   (modifier) => {
     if (
-      modifier.type === "nanpa" &&
       modifier.phrase.type === "default" &&
       modifier.phrase.modifiers.some((modifier) => modifier.type === "pi")
     ) {
@@ -88,11 +80,34 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
   // nanpa construction cannot contain nanpa
   (modifier) => {
     if (
-      modifier.type === "nanpa" &&
       modifier.phrase.type === "default" &&
       modifier.phrase.modifiers.some((modifier) => modifier.type === "nanpa")
     ) {
       throw new UnrecognizedError("nanpa inside nanpa");
+    }
+    return true;
+  },
+  // nanpa cannot have emphasis particle
+  (modifier) => {
+    const { phrase } = modifier;
+    if (
+      (
+        phrase.type === "default" ||
+        phrase.type === "preverb" ||
+        phrase.type === "preposition"
+      ) &&
+      phrase.emphasis != null
+    ) {
+      return false;
+    }
+    return true;
+  },
+];
+export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
+  // quotation modifier cannot exist
+  (modifier) => {
+    if (modifier.type === "quotation") {
+      throw new UnrecognizedError("quotation as modifier");
     }
     return true;
   },
@@ -137,23 +152,6 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
   // pi cannot have emphasis particle
   (modifier) => {
     if (modifier.type === "pi") {
-      const { phrase } = modifier;
-      if (
-        (
-          phrase.type === "default" ||
-          phrase.type === "preverb" ||
-          phrase.type === "preposition"
-        ) &&
-        phrase.emphasis != null
-      ) {
-        return false;
-      }
-    }
-    return true;
-  },
-  // nanpa cannot have emphasis particle
-  (modifier) => {
-    if (modifier.type === "nanpa") {
       const { phrase } = modifier;
       if (
         (
@@ -413,71 +411,28 @@ export const CLAUSE_RULE: Array<(clause: Clause) => boolean> = [
     return true;
   },
 ];
-export const FULL_CLAUSE_RULE: Array<(fullClase: FullClause) => boolean> = [
-  // Prevent "taso ala taso" or "kin ala kin"
-  (fullClause) => {
-    if (fullClause.type === "default") {
-      if (
-        fullClause.kinOrTaso != null && fullClause.kinOrTaso.type === "x ala x"
-      ) {
-        const { word } = fullClause.kinOrTaso;
-        throw new UnrecognizedError(`"${word} ala ${word}"`);
-      }
-    }
-    return true;
-  },
-];
 export const SENTENCE_RULE: Array<(sentence: Sentence) => boolean> = [
-  // If there is "la", there must be no filler
+  // Prevent "taso ala taso" or "kin ala kin"
   (sentence) => {
-    if (sentence.laClauses.length > 0) {
-      for (const clause of [...sentence.laClauses, sentence.finalClause]) {
-        if (clause.type === "filler") {
-          throw new UnrecognizedError('filler with "la"');
-        }
+    if (sentence.type === "default") {
+      if (
+        sentence.kinOrTaso != null && sentence.kinOrTaso.type === "x ala x"
+      ) {
+        const { word } = sentence.kinOrTaso;
+        throw new UnrecognizedError(`"${word} ala ${word}"`);
       }
     }
     return true;
   },
   // If there is "la", there can't be "taso" or "kin"
   (sentence) => {
-    if (sentence.laClauses.length > 0) {
-      for (const clause of [...sentence.laClauses, sentence.finalClause]) {
-        if (clause.type === "default" && clause.kinOrTaso != null) {
-          throw new UnrecognizedError(
-            `${clause.kinOrTaso.word} particle with "la"`,
-          );
-        }
-      }
-    }
-    return true;
-  },
-  // Only the last clause can have anu seme
-  (sentence) => {
-    for (const clause of sentence.laClauses) {
-      if (clause.type === "default" && clause.anuSeme != null) {
-        throw new UnrecognizedError("anu seme inside sentence");
-      }
-    }
-    return true;
-  },
-  // Only the first clause can have starting particle
-  (sentence) => {
-    for (
-      const clause of [...sentence.laClauses, sentence.finalClause].slice(1)
+    if (
+      sentence.type === "default" && sentence.laClauses.length > 0 &&
+      sentence.kinOrTaso != null
     ) {
-      if (clause.type === "default" && clause.startingParticle != null) {
-        throw new UnrecognizedError("emphasis phrase inside sentence");
-      }
-    }
-    return true;
-  },
-  // Only the last clause can have ending particle
-  (sentence) => {
-    for (const clause of sentence.laClauses) {
-      if (clause.type === "default" && clause.endingParticle != null) {
-        throw new UnrecognizedError("emphasis phrase inside sentence");
-      }
+      throw new UnrecognizedError(
+        `${sentence.kinOrTaso.word} particle with "la"`,
+      );
     }
     return true;
   },
