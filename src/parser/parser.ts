@@ -711,6 +711,8 @@ const filler = choice<Filler>(
   specificToken("multiple a")
     .map(({ count }) => ({ type: "multiple a", count })),
   specificToken("long word")
+    // TODO: error message
+    .filter(({ word }) => fillerSet.has(word))
     .map(({ word, length }) => ({ type: "long word", word, length })),
   wordFrom(fillerSet, "filler")
     .map((word) => ({ type: "word", word })),
