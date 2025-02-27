@@ -1,6 +1,8 @@
 export type Emphasis =
   | { type: "word"; word: string }
-  | { type: "long word"; word: string; length: number }
+  | { type: "long word"; word: string; length: number };
+export type Filler =
+  | Emphasis
   | { type: "multiple a"; count: number };
 export type SimpleHeadedWordUnit =
   | { type: "default"; word: string }
@@ -90,7 +92,7 @@ export type Sentence =
   }
   | {
     type: "filler";
-    emphasis: Emphasis;
+    filler: Filler;
     punctuation: string;
     interrogative: null | "seme" | "x ala x";
   };

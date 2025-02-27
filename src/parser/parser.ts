@@ -2,6 +2,7 @@ import { ArrayResult } from "../array-result.ts";
 import {
   contentWordSet,
   dictionary,
+  fillerSet,
   MissingEntryError,
   prepositionSet,
   preverbSet,
@@ -12,6 +13,7 @@ import {
   Clause,
   ContextClause,
   Emphasis,
+  Filler,
   HeadedWordUnit,
   Modifier,
   MultiplePhrases,
@@ -105,12 +107,12 @@ const emphasis = choice<Emphasis>(
       if (longGlyph.words.length !== 1) {
         throw new UnexpectedError(
           describe({ type: "combined glyphs", words: longGlyph.words }),
-          '"ala"',
+          '"a"',
         );
       }
       const word = longGlyph.words[0];
-      if (word !== "n" && word !== "a") {
-        throw new UnexpectedError(`"${word}"`, '"a" or "n"');
+      if (word !== "a") {
+        throw new UnexpectedError(`"${word}"`, '"a"');
       }
       return {
         type: "long word",
@@ -118,11 +120,11 @@ const emphasis = choice<Emphasis>(
         length: longGlyph.spaceLength,
       };
     }),
-  specificToken("multiple a")
-    .map(({ count }) => ({ type: "multiple a", count })),
   specificToken("long word")
+    // TODO: error message
+    .filter(({ word }) => word === "a")
     .map(({ word, length }) => ({ type: "long word", word, length })),
-  wordFrom(new Set(["a", "n"]), "a/n")
+  wordFrom(new Set(["a"]), '"a"')
     .map((word) => ({ type: "word", word })),
 );
 const optionalEmphasis = optional(emphasis);
@@ -695,6 +697,28 @@ const la = choice(
   specificWord("la").skip(comma),
   specificWord("la"),
 );
+const filler = choice<Filler>(
+  specificToken("space long glyph")
+    .map((longGlyph) => {
+      if (longGlyph.words.length !== 1) {
+        throw new UnexpectedError(
+          describe({ type: "combined glyphs", words: longGlyph.words }),
+          '"a"',
+        );
+      }
+      return {
+        type: "long word",
+        word: longGlyph.words[0],
+        length: longGlyph.spaceLength,
+      };
+    }),
+  specificToken("multiple a")
+    .map(({ count }) => ({ type: "multiple a", count })),
+  specificToken("long word")
+    .map(({ word, length }) => ({ type: "long word", word, length })),
+  wordFrom(fillerSet, "filler")
+    .map((word) => ({ type: "word", word })),
+);
 const sentence = choice<Sentence>(
   sequence(
     optional(
@@ -758,10 +782,10 @@ const sentence = choice<Sentence>(
         return { ...sentence, interrogative };
       },
     ),
-  sequence(emphasis, optional(punctuation))
-    .map(([emphasis, punctuation]) => ({
+  sequence(filler, optional(punctuation))
+    .map(([filler, punctuation]) => ({
       type: "filler",
-      emphasis,
+      filler,
       punctuation: punctuation ?? "",
       interrogative: null,
     })),

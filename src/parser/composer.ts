@@ -3,6 +3,7 @@ import {
   Clause,
   ContextClause,
   Emphasis,
+  Filler,
   Modifier,
   MultiplePhrases,
   MultipleSentences,
@@ -22,8 +23,14 @@ export function emphasis(emphasis: Emphasis): string {
       return emphasis.word;
     case "long word":
       return emphasis.word.repeat(emphasis.length);
+  }
+}
+export function filler(filler: Filler): string {
+  switch (filler.type) {
     case "multiple a":
-      return repeatWithSpace("a", emphasis.count);
+      return repeatWithSpace("a", filler.count);
+    default:
+      return emphasis(filler);
   }
 }
 function emphasisAsArray(value: null | Emphasis): Array<string> {
@@ -203,7 +210,7 @@ export function sentence(sentence: Sentence): string {
         .join(" ");
       break;
     case "filler":
-      text = emphasis(sentence.emphasis);
+      text = filler(sentence.filler);
       break;
   }
   return `${text}${sentence.punctuation}`;

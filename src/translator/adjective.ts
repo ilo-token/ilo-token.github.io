@@ -1,6 +1,6 @@
 import * as Dictionary from "../../dictionary/type.ts";
 import { ArrayResult } from "../array-result.ts";
-import { nullableAsArray, repeatWithSpace } from "../misc.ts";
+import { nullableAsArray } from "../misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
 import { UntranslatableError } from "./error.ts";
@@ -19,11 +19,6 @@ function so(emphasis: null | TokiPona.Emphasis): string {
         return "so";
       case "long word":
         return `s${"o".repeat(emphasis.length)}`;
-      case "multiple a":
-        throw new UntranslatableError(
-          `"${repeatWithSpace("a", emphasis.count)}"`,
-          "adverb",
-        );
     }
   }
 }

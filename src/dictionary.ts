@@ -9,6 +9,7 @@ export const dictionary: Dictionary = new Map();
 export const contentWordSet: Set<string> = new Set();
 export const prepositionSet: Set<string> = new Set();
 export const preverbSet: Set<string> = new Set();
+export const fillerSet: Set<string> = new Set();
 export const tokiPonaWordSet: Set<string> = new Set();
 
 update();
@@ -58,6 +59,7 @@ function update(): void {
       (definition.type === "verb" && definition.predicateType != null) ||
       definition.type === "modal verb",
   );
+  addSet(fillerSet, (definition) => definition.type === "filler");
   addSet(tokiPonaWordSet, () => true);
 }
 function addSet(

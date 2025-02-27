@@ -1,7 +1,6 @@
 import { settings } from "../settings.ts";
 import {
   Clause,
-  Emphasis,
   Modifier,
   MultiplePhrases,
   Nanpa,
@@ -18,22 +17,12 @@ import {
   everyWordUnitInSentence,
 } from "./extract.ts";
 import { UnrecognizedError } from "./parser-lib.ts";
-import { describe } from "./token.ts";
 
 export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
   // avoid "seme ala seme"
   (wordUnit) => {
     if (wordUnit.type === "x ala x" && wordUnit.word === "seme") {
       throw new UnrecognizedError('"seme ala seme"');
-    }
-    return true;
-  },
-  // "n" and multiple "a" cannot modify a word
-  (wordUnit) => {
-    if (isMultipleAOrN(wordUnit.emphasis)) {
-      throw new UnrecognizedError(
-        `${describe(wordUnit.emphasis!)} modifying a word`,
-      );
     }
     return true;
   },
@@ -272,18 +261,6 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
     phrase.type !== "default" ||
     phrase.emphasis == null ||
     phrase.modifiers.length > 0,
-  // "n" and multiple "a" cannot modify a phrase
-  (wordUnit) => {
-    if (
-      (wordUnit.type === "default" || wordUnit.type === "preverb") &&
-      isMultipleAOrN(wordUnit.emphasis)
-    ) {
-      throw new UnrecognizedError(
-        `${describe(wordUnit.emphasis!)} modifying a word`,
-      );
-    }
-    return true;
-  },
   // For preverbs, inner phrase must not have emphasis particle
   (phrase) =>
     phrase.type !== "preverb" ||
@@ -317,15 +294,6 @@ export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
         .some(hasPrepositionInPhrase)
     ) {
       throw new UnrecognizedError("preposition inside preposition");
-    }
-    return true;
-  },
-  // "n" and multiple "a" cannot modify a preposition
-  (wordUnit) => {
-    if (isMultipleAOrN(wordUnit.emphasis)) {
-      throw new UnrecognizedError(
-        `${describe(wordUnit.emphasis!)} modifying a word`,
-      );
     }
     return true;
   },
@@ -498,13 +466,6 @@ function hasPrepositionInPhrase(phrase: Phrase): boolean {
     case "quotation":
       return false;
   }
-}
-function isMultipleAOrN(emphasis: null | Emphasis): boolean {
-  return emphasis != null &&
-    (emphasis.type === "multiple a" ||
-      ((emphasis.type === "word" ||
-        emphasis.type === "long word") &&
-        emphasis.word === "n"));
 }
 function phraseHasTopLevelEmphasis(phrase: Phrase): boolean {
   switch (phrase.type) {

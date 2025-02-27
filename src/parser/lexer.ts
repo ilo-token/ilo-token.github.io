@@ -75,16 +75,22 @@ const multipleA = sequence(
   count(allAtLeastOnce(specificWord("a"))),
 )
   .map<Token>(([_, count]) => ({ type: "multiple a", count: count + 1 }));
-const longWord = choiceOnlyOne(matchString("a"), matchString("n"))
-  .then((word) =>
-    count(allAtLeastOnce(matchString(word)))
-      .map<Token>((count) => ({
-        type: "long word",
-        word,
-        length: count + 1,
-      }))
-  )
-  .skip(spaces);
+
+const repeatingLetter = match(/[a-zA-Z]/, "latin letter")
+  .then((letter) =>
+    count(allAtLeastOnce(matchString(letter))).map<[string, number]>(
+      (count) => [letter, count + 1],
+    )
+  );
+const longWord = allAtLeastOnce(repeatingLetter)
+  .skip(spaces)
+  .map<Token & { type: "long word" }>((letters) => {
+    const word = letters.map(([letter]) => letter).join("");
+    const length = letters.reduce((rest, [_, count]) => rest + count, 0) -
+      word.length + 1;
+    return { type: "long word", word, length };
+  })
+  .filter(({ length }) => length > 1);
 
 const xAlaX = lazy(() => {
   if (settings.xAlaXPartialParsing) {
@@ -208,10 +214,9 @@ const wordToken = word.map<Token>((word) => ({ type: "word", word }));
 Parser.startCache(cache);
 
 export const token = choiceOnlyOne(
-  longWord,
   xAlaX,
   multipleA,
-  wordToken,
+  choice(longWord, wordToken),
   properWords,
   // UCSUR only
   spaceLongGlyph,
