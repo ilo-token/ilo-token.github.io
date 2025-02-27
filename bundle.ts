@@ -62,7 +62,7 @@ if (import.meta.main) {
         const buildDebounced = debounce((buildDictionary: boolean) => {
           task = task.then(async () => {
             await buildAll({
-              minify: true,
+              minify: false,
               buildDictionary,
               checkDictionary: false,
             });
