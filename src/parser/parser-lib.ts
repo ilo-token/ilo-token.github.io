@@ -17,9 +17,13 @@ export class Parser<T> {
   readonly #parser: (src: string) => ParserResult<T>;
   static cache: null | Cache = null;
   constructor(parser: (src: string) => ParserResult<T>) {
-    const cache = new Map<string, ParserResult<T>>();
-    Parser.addToCache(cache);
-    this.#parser = memoize(parser, { cache });
+    if (Parser.cache != null) {
+      const cache = new Map<string, ParserResult<T>>();
+      Parser.addToCache(cache);
+      this.#parser = memoize(parser, { cache });
+    } else {
+      this.#parser = parser;
+    }
   }
   parser(src: string): ParserResult<T> {
     return ArrayResult.from(() => this.#parser(src));
@@ -140,9 +144,13 @@ export function lookAhead<T>(parser: Parser<T>): Parser<T> {
  */
 export function lazy<T>(parser: () => Parser<T>): Parser<T> {
   const { cache } = Parser;
-  const cachedParser = new Lazy(() => Parser.inContext(parser, cache));
-  Parser.addToCache(cachedParser);
-  return new Parser((src) => cachedParser.getValue().parser(src));
+  if (Parser.cache != null) {
+    const cachedParser = new Lazy(() => Parser.inContext(parser, cache));
+    Parser.addToCache(cachedParser);
+    return new Parser((src) => cachedParser.getValue().parser(src));
+  } else {
+    return new Parser((src) => Parser.inContext(parser, cache).parser(src));
+  }
 }
 /**
  * Evaluates all parsers on the same source string and sums it all on a single
