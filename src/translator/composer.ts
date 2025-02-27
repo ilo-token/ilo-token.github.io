@@ -158,7 +158,7 @@ function clause(ast: English.Clause): string {
 function sentence(sentence: English.Sentence): string {
   return `${sentence.clauses.map(clause).join(", ")}${sentence.punctuation}`
     .replace(
-      /(?<![<&a-zA-Z0-9])[a-zA-Z]/,
+      /(?<![<&\p{Alpha}\p{Nd}\p{Nl}\p{No}])[\p{Alpha}\p{Nd}\p{Nl}\p{No}]/u,
       (character) => character.toUpperCase(),
     );
 }
