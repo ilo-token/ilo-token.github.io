@@ -428,7 +428,7 @@ export const MULTIPLE_SENTENCES_RULE: Array<
 > = [
   // Only allow at most 2 sentences
   (sentences) => {
-    if (sentences.length > 2) {
+    if (sentences.filter((sentence) => sentence.type !== "filler").length > 2) {
       throw new UnrecognizedError("multiple sentences");
     }
     return true;
