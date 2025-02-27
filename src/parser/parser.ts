@@ -735,7 +735,7 @@ const sentence = choice<Sentence>(
     choice(
       punctuation,
       end.map(() => ""),
-      lookAhead(sequence(emphasis, choice(punctuation, end))).map(() => ""),
+      lookAhead(sequence(filler, choice(punctuation, end))).map(() => ""),
     ),
   )
     .sortBy(([_, _1, _2, anuSeme]) => {
