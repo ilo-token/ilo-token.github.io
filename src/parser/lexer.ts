@@ -86,7 +86,8 @@ const word = choiceOnlyOne(latinWord, singleUcsurWord);
 const properWords = allAtLeastOnce(
   match(/[A-Z][a-zA-Z]*/, "proper word").skip(spaces),
 )
-  .map((array) => array.join(" "));
+  .map((array) => array.join(" "))
+  .map<Token>((words) => ({ type: "proper word", words, kind: "latin" }));
 /** Parses a specific word, either UCSUR or latin. */
 function specificWord(thatWord: string): Parser<string> {
   return word.filter((thisWord) => {
@@ -98,13 +99,16 @@ function specificWord(thatWord: string): Parser<string> {
   });
 }
 /** Parses multiple a. */
-const multipleA = sequence(specificWord("a"), allAtLeastOnce(specificWord("a")))
-  .map(([a, as]) => [a, ...as].length);
+const multipleA = sequence(
+  specificWord("a"),
+  count(allAtLeastOnce(specificWord("a"))),
+)
+  .map<Token>(([_, count]) => ({ type: "multiple a", count: count + 1 }));
 /** Parses lengthened words. */
 const longWord = choiceOnlyOne(matchString("a"), matchString("n"))
   .then((word) =>
     count(allAtLeastOnce(matchString(word)))
-      .map<Token & { type: "long word" }>((count) => ({
+      .map<Token>((count) => ({
         type: "long word",
         word,
         length: count + 1,
@@ -124,7 +128,8 @@ const xAlaX = lazy(() => {
         sequence(specificWord("ala"), specificWord(word)).map(() => word)
       );
   }
-});
+})
+  .map<Token>((word) => ({ type: "x ala x", word }));
 
 Parser.endCache();
 
@@ -139,7 +144,8 @@ const punctuation = choiceOnlyOne(
     )
     .skip(spaces),
   newline.map(() => "."),
-);
+)
+  .map<Token>((punctuation) => ({ type: "punctuation", punctuation }));
 /**
  * Parses cartouche element and returns the phonemes or letters it represents.
  */
@@ -181,7 +187,13 @@ const cartouche = sequence(
     return `${word[0].toUpperCase()}${word.slice(1)}`;
   });
 /** Parses multiple cartouches. */
-const cartouches = allAtLeastOnce(cartouche).map((words) => words.join(" "));
+const cartouches = allAtLeastOnce(cartouche)
+  .map((words) => words.join(" "))
+  .map<Token>((words) => ({
+    type: "proper word",
+    words,
+    kind: "cartouche",
+  }));
 /**
  * Parses long glyph container.
  *
@@ -243,32 +255,31 @@ const insideLongGlyph = specificSpecialUcsur(END_OF_REVERSE_LONG_GLYPH)
   .skip(specificSpecialUcsur(START_OF_LONG_GLYPH))
   .skip(spaces)
   .map<Token>((words) => ({ type: "inside long glyph", words }));
+const combinedGlyphsToken = combinedGlyphs
+  .skip(spaces)
+  .map<Token>((words) => ({ type: "combined glyphs", words }));
+const wordToken = word.map<Token>((word) => ({ type: "word", word }));
 
 Parser.startCache(cache);
 
 /** Parses a token. */
-export const token = choiceOnlyOne<Token>(
+export const token = choiceOnlyOne(
+  longWord,
+  xAlaX,
+  multipleA,
+  wordToken,
+  properWords,
+  // UCSUR only
   spaceLongGlyph,
   headedLongGlyphStart,
-  combinedGlyphs
-    .skip(spaces)
-    .map((words) => ({ type: "combined glyphs", words })),
-  properWords.map((words) => ({ type: "proper word", words, kind: "latin" })),
-  longWord,
-  xAlaX.map((word) => ({ type: "x ala x", word })),
-  multipleA.map((count) => ({ type: "multiple a", count })),
-  word.map((word) => ({ type: "word", word })),
+  combinedGlyphsToken,
   // starting with non-words:
-  punctuation.map((punctuation) => ({ type: "punctuation", punctuation })),
+  punctuation,
   headlessLongGlyphEnd,
   headedLongGlyphEnd,
   headlessLongGlyphStart,
   insideLongGlyph,
-  cartouches.map((words) => ({
-    type: "proper word",
-    words,
-    kind: "cartouche",
-  })),
+  cartouches,
 );
 
 Parser.endCache();
