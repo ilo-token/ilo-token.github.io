@@ -25,6 +25,7 @@ function buildOptions(minify: boolean): ESBuild.BuildOptions {
     bundle: true,
     minify,
     sourcemap: "linked",
+    target: [`es${new Date().getFullYear() - 3}`],
     plugins: [...denoPlugins()],
   };
 }
