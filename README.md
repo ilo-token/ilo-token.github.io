@@ -52,5 +52,5 @@ This will run a REPL that you can use to test ilo Token. To stop this command,
 simply press Ctrl + D or Ctrl + C.
 
 ```
-deno task run
+deno task repl
 ```
