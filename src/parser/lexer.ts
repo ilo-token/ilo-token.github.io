@@ -243,6 +243,9 @@ const insideLongGlyph = specificSpecialUcsur(END_OF_REVERSE_LONG_GLYPH)
   .skip(specificSpecialUcsur(START_OF_LONG_GLYPH))
   .skip(spaces)
   .map<Token>((words) => ({ type: "inside long glyph", words }));
+
+Parser.startCache(cache);
+
 /** Parses a token. */
 export const token = choiceOnlyOne<Token>(
   spaceLongGlyph,
@@ -267,3 +270,5 @@ export const token = choiceOnlyOne<Token>(
     kind: "cartouche",
   })),
 );
+
+Parser.endCache();
