@@ -2,6 +2,7 @@ import { sumOf } from "@std/collections/sum-of";
 import { settings } from "../settings.ts";
 import { cache } from "./cache.ts";
 import {
+  all,
   allAtLeastOnce,
   choice,
   choiceOnlyOne,
@@ -79,7 +80,7 @@ const multipleA = sequence(
 
 const repeatingLetter = match(/[a-zA-Z]/, "latin letter")
   .then((letter) =>
-    count(allAtLeastOnce(matchString(letter))).map<[string, number]>(
+    count(all(matchString(letter))).map<[string, number]>(
       (count) => [letter, count + 1],
     )
   );
