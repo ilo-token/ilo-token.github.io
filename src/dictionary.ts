@@ -41,31 +41,30 @@ function update(): void {
       dictionary.set(word, entry);
     }
   }
-  for (
-    const set of [contentWordSet, prepositionSet, preverbSet, tokiPonaWordSet]
-  ) {
-    set.clear();
-  }
-  addSet(
+  redefineSet(
     contentWordSet,
     (definition) =>
       definition.type !== "filler" &&
       definition.type !== "particle definition",
   );
-  addSet(prepositionSet, (definition) => definition.type === "preposition");
-  addSet(
+  redefineSet(
+    prepositionSet,
+    (definition) => definition.type === "preposition",
+  );
+  redefineSet(
     preverbSet,
     (definition) =>
       (definition.type === "verb" && definition.predicateType != null) ||
       definition.type === "modal verb",
   );
-  addSet(fillerSet, (definition) => definition.type === "filler");
-  addSet(tokiPonaWordSet, () => true);
+  redefineSet(fillerSet, (definition) => definition.type === "filler");
+  redefineSet(tokiPonaWordSet, () => true);
 }
-function addSet(
+function redefineSet(
   set: Set<string>,
   filter: (definition: Definition) => boolean,
 ): void {
+  set.clear();
   for (const [word, entry] of dictionary) {
     if (entry.definitions.some(filter)) {
       set.add(word);
