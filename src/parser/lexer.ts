@@ -116,8 +116,6 @@ const longWord = choiceOnlyOne(matchString("a"), matchString("n"))
   )
   .skip(spaces);
 
-Parser.startCache(cache);
-
 /** Parses X ala X constructions if allowed by the settings. */
 const xAlaX = lazy(() => {
   if (settings.xAlaXPartialParsing) {
@@ -130,8 +128,6 @@ const xAlaX = lazy(() => {
   }
 })
   .map<Token>((word) => ({ type: "x ala x", word }));
-
-Parser.endCache();
 
 /** Parses a punctuation. */
 const punctuation = choiceOnlyOne(
