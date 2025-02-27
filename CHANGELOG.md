@@ -16,6 +16,17 @@ NOTE: Before publishing:
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
 
+You can now have custom fillers in custom dictionary:
+
+```
+wa:
+  wow/woow/wooow(f);
+```
+
+With this definition, ilo Token can translate "waaaa" into "woooow". There is no
+repetition pattern to follow for toki pona words. "wwaaa" is just as valid.
+
+- Allow custom fillers.
 - Fix sentence capitalization: If the sentence starts with number, no
   capitalization will occur.
 
