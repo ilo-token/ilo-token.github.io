@@ -1,5 +1,3 @@
-/** Module describing filter rules integrated within AST Parser. */
-
 import { settings } from "../settings.ts";
 import {
   Clause,
@@ -22,7 +20,6 @@ import {
 import { UnrecognizedError } from "./parser-lib.ts";
 import { describe } from "./token.ts";
 
-/** Array of filter rules for a word unit. */
 export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
   // avoid "seme ala seme"
   (wordUnit) => {
@@ -41,7 +38,6 @@ export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
     return true;
   },
 ];
-/** Array of filter rules for a single modifier. */
 export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
   // quotation modifier cannot exist
   (modifier) => {
@@ -173,7 +169,6 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
     return true;
   },
 ];
-/** Array of filter rules for multiple modifiers. */
 export const MULTIPLE_MODIFIERS_RULES: Array<
   (modifier: Array<Modifier>) => boolean
 > = [
@@ -248,7 +243,6 @@ export const MULTIPLE_MODIFIERS_RULES: Array<
     return true;
   },
 ];
-/** Array of filter rules for a single phrase. */
 export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
   // Disallow quotation
   (phrase) => {
@@ -310,7 +304,6 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
     return true;
   },
 ];
-/** Array of filter rules for preposition. */
 export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
   // Disallow preverb modifiers other than "ala"
   (preposition) => {
@@ -357,7 +350,6 @@ export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
     return true;
   },
 ];
-/** Array of filter rules for clauses. */
 export const CLAUSE_RULE: Array<(clause: Clause) => boolean> = [
   // disallow preposition in subject
   (clause) => {
@@ -508,7 +500,6 @@ export const SENTENCE_RULE: Array<(sentence: Sentence) => boolean> = [
     return true;
   },
 ];
-/** Array of filter rules for multiple sentences. */
 export const MULTIPLE_SENTENCES_RULE: Array<
   (sentences: Array<Sentence>) => boolean
 > = [
@@ -520,20 +511,14 @@ export const MULTIPLE_SENTENCES_RULE: Array<
     return true;
   },
 ];
-/** Helper function for generating filter function. */
 export function filter<T>(
   rules: Array<(value: T) => boolean>,
 ): (value: T) => boolean {
   return (value) => rules.every((rule) => rule(value));
 }
-/** Helper function for checking whether a modifier is numeric. */
 function modifierIsNumeric(modifier: Modifier): boolean {
   return modifier.type === "default" && modifier.word.type === "number";
 }
-/**
- * Helper function for checking if the modifiers is exactly just "ala" or
- * nothing.
- */
 function modifiersIsAlaOrNone(modifiers: Array<Modifier>): boolean {
   switch (modifiers.length) {
     case 0:
@@ -547,9 +532,6 @@ function modifiersIsAlaOrNone(modifiers: Array<Modifier>): boolean {
       return false;
   }
 }
-/**
- * Helper function for determining whether the phrase has a preposition inside.
- */
 function hasPrepositionInPhrase(phrase: Phrase): boolean {
   switch (phrase.type) {
     case "default":

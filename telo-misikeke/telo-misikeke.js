@@ -1,5 +1,3 @@
-/** Glue code for telo misikeke */
-
 // @ts-self-types="./telo-misikeke.d.ts"
 
 import {
@@ -12,7 +10,6 @@ import { build_rules, getMessage } from "./rules.js";
 
 const RULES = build_rules(LINKU);
 
-/** Gets all telo misikeke error messages. */
 export function errors(text) {
   return new ParserWithCallbacks(RULES, false)
     .tokenize(text)

@@ -1,5 +1,3 @@
-/** Module for main execution in the browser. */
-
 import { dictionary } from "../dictionary/dictionary.ts";
 import { asComment } from "../dictionary/misc.ts";
 import PROJECT_DATA from "../project-data.json" with { type: "json" };

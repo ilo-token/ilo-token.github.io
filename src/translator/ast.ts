@@ -1,5 +1,3 @@
-/** Module for describing English AST. */
-
 import * as Dictionary from "../../dictionary/type.ts";
 
 export type Word = {

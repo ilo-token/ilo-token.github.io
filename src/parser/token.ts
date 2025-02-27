@@ -1,8 +1,5 @@
-/** Module describing token. */
-
 import { repeatWithSpace } from "../misc.ts";
 
-/** Represents token. */
 export type Token =
   | { type: "word"; word: string }
   | {
@@ -37,7 +34,6 @@ export type Token =
   | { type: "x ala x"; word: string }
   | { type: "proper word"; words: string; kind: "cartouche" | "latin" }
   | { type: "punctuation"; punctuation: string };
-/** Describes a token. Useful for error messages. */
 export function describe(token: Token): string {
   switch (token.type) {
     case "word":

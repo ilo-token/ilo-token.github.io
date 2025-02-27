@@ -12,7 +12,6 @@ export { clearCache } from "./parser/cache.ts";
 export { defaultSettings, settings } from "./settings.ts";
 export type { RedundancySettings, Settings } from "./settings.ts";
 
-/** Translates Toki Pona text into multiple English translations. */
 export function translate(tokiPona: string): Array<string> {
   const arrayResult = rawTranslate(tokiPona);
   if (!arrayResult.isError()) {

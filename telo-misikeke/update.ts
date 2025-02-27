@@ -1,5 +1,3 @@
-/** Codes for updating telo misikeke and Linku data. */
-
 import { retry } from "@std/async/retry";
 import { assertOk } from "../src/misc.ts";
 

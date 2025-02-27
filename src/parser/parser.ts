@@ -1,8 +1,3 @@
-/**
- * Module for AST Parser. It is responsible for turning an array of token tree
- * into AST.
- */
-
 import { ArrayResult } from "../array-result.ts";
 import {
   contentWordSet,
@@ -63,7 +58,6 @@ const spaces = match(/\s*/, "spaces");
 
 Parser.startCache(cache);
 
-/** Parses a specific type of token. */
 function specificToken<T extends Token["type"]>(
   type: T,
 ): Parser<Token & { type: T }> {
@@ -75,21 +69,15 @@ function specificToken<T extends Token["type"]>(
     }
   });
 }
-/** Parses comma. */
 const comma = specificToken("punctuation")
   .map(({ punctuation }) => punctuation)
   .filter((punctuation) => punctuation === ",");
-/** Parses an optional comma. */
 const optionalComma = optional(comma);
-/** Parses a toki pona word. */
 const word = specificToken("word").map(({ word }) => word);
-/** Parses proper words spanning multiple words. */
 const properWords = specificToken("proper word").map(({ words }) => words);
-/** Parses a toki pona */
 const punctuation = specificToken("punctuation").map(({ punctuation }) =>
   punctuation
 );
-/** Parses word only from `set`. */
 function wordFrom(set: Set<string>, description: string): Parser<string> {
   return word.filter((word) => {
     if (set.has(word)) {
@@ -99,7 +87,6 @@ function wordFrom(set: Set<string>, description: string): Parser<string> {
     }
   });
 }
-/** Parses a specific word. */
 function specificWord(thatWord: string): Parser<string> {
   return word.filter((thisWord) => {
     if (thatWord === thisWord) {
@@ -109,7 +96,6 @@ function specificWord(thatWord: string): Parser<string> {
     }
   });
 }
-/** Parses an emphasis particle. */
 const emphasis = choice<Emphasis>(
   specificToken("space long glyph")
     .map((longGlyph) => {
@@ -137,7 +123,6 @@ const emphasis = choice<Emphasis>(
     .map((word) => ({ type: "word", word })),
 );
 const optionalEmphasis = optional(emphasis);
-/** Parses an X ala X construction. */
 function xAlaX(
   useWord: Set<string>,
   description: string,
@@ -196,7 +181,6 @@ function simpleWordUnit(
       .map((word) => ({ type: "default", word })),
   );
 }
-/** Parses word unit except numbers. */
 function wordUnit(
   word: Set<string>,
   description: string,
@@ -211,7 +195,6 @@ function wordUnit(
     }))
     .filter(filter(WORD_UNIT_RULES));
 }
-/** Parses a binary combined glyphs. */
 function binaryWords(
   word: Set<string>,
   description: string,
@@ -230,7 +213,6 @@ function binaryWords(
     }
   });
 }
-/** Parses a word unit or a combined glyphs. */
 function optionalCombined(
   word: Set<string>,
   description: string,
@@ -258,9 +240,6 @@ function wordToNumber(word: string): number {
   }
   return num;
 }
-/** Parses number words in order other than "ale" and "ala". This can parse
- * nothing and return 0.
- */
 const subAleNumber = sequence(
   many(specificWord("mute")),
   many(specificWord("luka")),
@@ -280,9 +259,7 @@ const properSubAleNumber = subAleNumber.filter((number) => {
     return true;
   }
 });
-/** Parses "ale" or "ali". */
 const ale = choice(specificWord("ale"), specificWord("ali"));
-/** Parses number words including "nasin nanpa pona". */
 const number = choice(
   specificWord("ala").map(() => 0),
   sequence(
@@ -325,7 +302,6 @@ const number = choice(
     .map(([ale, sub]) => ale * 100 + sub)
     .filter((number) => number !== 0),
 );
-/** Parses phrases. */
 const phrase: Parser<Phrase> = lazy(() =>
   choice<Phrase>(
     sequence(
@@ -381,7 +357,6 @@ const phrase: Parser<Phrase> = lazy(() =>
   )
     .filter(filter(PHRASE_RULE))
 );
-/** Parses a "pi" construction. */
 const pi = choice(
   sequence(
     specificToken("headed long glyph start")
@@ -403,7 +378,6 @@ const pi = choice(
     .map(([_, phrase]) => phrase),
   specificWord("pi").with(phrase),
 );
-/** Parses multiple modifiers. */
 const modifiers = sequence(
   many(
     choice(
@@ -439,10 +413,6 @@ const modifiers = sequence(
     ...piModifiers,
   ])
   .filter(filter(MULTIPLE_MODIFIERS_RULES));
-/**
- * Parses nested phrases with given nesting rule, only accepting the top level
- * operation.
- */
 function nestedPhrasesOnly(
   nestingRule: Array<"en" | "li" | "o" | "e" | "anu">,
 ): Parser<MultiplePhrases> {
@@ -471,7 +441,6 @@ function nestedPhrasesOnly(
       }));
   }
 }
-/** Parses nested phrases with given nesting rule. */
 function nestedPhrases(
   nestingRule: Array<"en" | "li" | "o" | "e" | "anu">,
 ): Parser<MultiplePhrases> {
@@ -485,13 +454,11 @@ function nestedPhrases(
     );
   }
 }
-/** Parses phrases separated by "en" or "anu". */
 const subjectPhrases = choice(
   nestedPhrasesOnly(["en", "anu"]),
   nestedPhrasesOnly(["anu", "en"]),
   phrase.map<MultiplePhrases>((phrase) => ({ type: "single", phrase })),
 );
-/** Parses prepositional phrase. */
 const preposition = choice<Preposition>(
   sequence(
     specificToken("headless long glyph start"),
@@ -580,9 +547,6 @@ const preposition = choice<Preposition>(
     })),
 )
   .filter(filter(PREPOSITION_RULE));
-/**
- * Parses associated predicates whose predicates only uses top level operator.
- */
 function associatedPredicates(
   nestingRule: Array<"li" | "o" | "anu">,
 ): Parser<Predicate> {
@@ -606,7 +570,6 @@ function associatedPredicates(
       prepositions,
     }));
 }
-/** Parses multiple predicates without "li" nor "o" at the beginning. */
 function multiplePredicates(
   nestingRule: Array<"li" | "o" | "anu">,
 ): Parser<Predicate> {
@@ -649,7 +612,6 @@ function multiplePredicates(
     );
   }
 }
-/** Parses a single clause. */
 const clause = choice<Clause>(
   sequence(
     wordFrom(new Set(["mi", "sina"]), "mi/sina subject"),
@@ -722,7 +684,6 @@ const clause = choice<Clause>(
     })),
 )
   .filter(filter(CLAUSE_RULE));
-/** Parses a single clause including preclause and postclause. */
 const fullClause = choice<FullClause>(
   sequence(
     optional(emphasis.skip(optionalComma)),
@@ -758,13 +719,11 @@ const fullClause = choice<FullClause>(
     .map((emphasis) => ({ type: "filler", emphasis })),
 )
   .filter(filter(FULL_CLAUSE_RULE));
-/** parses "la" with optional comma around. */
 const la = choice(
   comma.with(specificWord("la")),
   specificWord("la").skip(comma),
   specificWord("la"),
 );
-/** Parses a single full sentence with optional punctuations. */
 const sentence = sequence(
   many(fullClause.skip(la)),
   fullClause,
@@ -795,7 +754,6 @@ const sentence = sequence(
     };
   })
   .filter(filter(SENTENCE_RULE));
-/** A multiple sentence parser for final parser. */
 const FULL_PARSER = spaces
   .with(choiceOnlyOne<MultipleSentences>(
     wordFrom(tokiPonaWordSet, "Toki Pona word")
@@ -806,7 +764,6 @@ const FULL_PARSER = spaces
       .filter(filter(MULTIPLE_SENTENCES_RULE))
       .map((sentences) => ({ type: "sentences", sentences })),
   ));
-/** Turns string into Toki Pona AST. */
 export function parse(src: string): ArrayResult<MultipleSentences> {
   return ArrayResult.from(() => {
     if (src.trim().length > 500) {

@@ -1,5 +1,3 @@
-/** Module containing the Array Result data type. */
-
 import { distinctBy } from "@std/collections/distinct-by";
 import { flattenError } from "./misc.ts";
 
@@ -7,9 +5,7 @@ export type ArrayResultOptions = {
   cause: unknown;
   isHtml: boolean;
 };
-/** Represents Error used by Array Result. */
 export class ArrayResultError extends Error {
-  /** Determines whether the error message contains HTML. */
   isHtml: boolean;
   constructor(message: string, options: Partial<ArrayResultOptions> = {}) {
     super(message, { cause: options.cause });
@@ -17,18 +13,14 @@ export class ArrayResultError extends Error {
     this.name = "ArrayResultError";
   }
 }
-/** Represents Error due to things not implemented yet. */
 export class TodoError extends ArrayResultError {
   constructor(functionality: string) {
     super(`${functionality} is not yet implemented`);
     this.name = "TodoError";
   }
 }
-/** Represents possibilities and error. */
 export class ArrayResult<T> {
-  /** Represents possibilities, considered error when the array is empty. */
   readonly array: ReadonlyArray<T>;
-  /** A list of all aggregated errors. */
   readonly errors: ReadonlyArray<ArrayResultError>;
   constructor(array?: ReadonlyArray<T> | ArrayResultError);
   constructor(array: undefined, errors: ReadonlyArray<ArrayResultError>);
@@ -54,13 +46,9 @@ export class ArrayResult<T> {
   static errors(errors: ReadonlyArray<ArrayResultError>): ArrayResult<never> {
     return new ArrayResult(undefined, errors);
   }
-  /** Returns true when the array is empty */
   isError(): boolean {
     return this.array.length === 0;
   }
-  /** Filters array. For convenience, the mapper function can throw
-   * ArrayResultError; Other kinds of errors will be ignored.
-   */
   filter(mapper: (value: T) => boolean): ArrayResult<T> {
     return this.flatMap((value) => {
       if (mapper(value)) {
@@ -70,19 +58,9 @@ export class ArrayResult<T> {
       }
     });
   }
-  /**
-   * Maps all values and returns new ArrayResult. For convenience, the mapper
-   * function can throw ArrayResultError; Other kinds of errors will be ignored.
-   */
   map<U>(mapper: (value: T) => U): ArrayResult<U> {
     return this.flatMap((value) => new ArrayResult([mapper(value)]));
   }
-  /**
-   * Accepts mapper function that returns another ArrayResult. flatMap takes all
-   * values and flattens them into single array for ArrayResult. For convenience,
-   * the mapper function can throw ArrayResultError; Other kinds of errors will be
-   * ignored.
-   */
   flatMap<U>(mapper: (value: T) => ArrayResult<U>): ArrayResult<U> {
     if (this.isError()) {
       return this as unknown as ArrayResult<U>;
@@ -130,7 +108,6 @@ export class ArrayResult<T> {
       return this;
     }
   }
-  /** Combines all ArrayResult. */
   static concat<T>(...arrayResults: Array<ArrayResult<T>>): ArrayResult<T> {
     return arrayResults.reduce(
       (left, right) => {
@@ -143,10 +120,6 @@ export class ArrayResult<T> {
       new ArrayResult<T>(),
     );
   }
-  /**
-   * Combines all permutations of all ArrayResult into an ArrayResult of a single tuple
-   * or array. If some of the ArrayResult is an error, all errors are aggregated.
-   */
   static combine<T extends Array<unknown>>(
     ...arrayResults: { [I in keyof T]: ArrayResult<T[I]> } & {
       length: T["length"];

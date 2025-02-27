@@ -13,14 +13,12 @@ export const tokiPonaWordSet: Set<string> = new Set();
 
 update();
 
-/** Represents Error due to missing dictionary entry */
 export class MissingEntryError extends ArrayResultError {
   constructor(kind: string, word: string) {
     super(`${kind} definition for the word "${word}" is missing`);
     this.name = "MissingEntryError";
   }
 }
-/** Updates custom dictionary. */
 export function loadCustomDictionary(dictionaryText: string): void {
   const dictionary = parseDictionary(dictionaryText);
   customDictionary.clear();
