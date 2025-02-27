@@ -6,19 +6,17 @@ export type ValueRest<T> = Readonly<{ rest: string; value: T }>;
 export type ParserResult<T> = ArrayResult<ValueRest<T>>;
 
 export class Parser<T> {
-  readonly #parser: (src: string) => ParserResult<T>;
+  readonly parser: (src: string) => ParserResult<T>;
   static cache: null | Cache = null;
   constructor(parser: (src: string) => ParserResult<T>) {
+    const useParser = (src: string) => ArrayResult.from(() => parser(src));
     if (Parser.cache != null) {
       const cache = new Map<string, ParserResult<T>>();
       Parser.addToCache(cache);
-      this.#parser = memoize(parser, { cache });
+      this.parser = memoize(useParser, { cache });
     } else {
-      this.#parser = parser;
+      this.parser = useParser;
     }
-  }
-  parser(src: string): ParserResult<T> {
-    return ArrayResult.from(() => this.#parser(src));
   }
   map<U>(mapper: (value: T) => U): Parser<U> {
     return new Parser((src) =>
