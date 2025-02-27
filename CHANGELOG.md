@@ -17,12 +17,16 @@ On this on-development version, things can be broken.
 
 ## 0.4.1
 
+Released 27 Feb 2025
+
 ilo Token is now a lot faster.
 
 - Fix custom dictionary error messages.
 - Fix custom dictionary not loading when ilo Token is newly loaded.
 
 ## 0.4.0
+
+Released 19 Feb 2025
 
 ilo Token can now translate into verbs! This means it can translate sentences!
 It still can't do the following however:
