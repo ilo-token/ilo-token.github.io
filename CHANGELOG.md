@@ -7,13 +7,19 @@ NOTE: Before publishing:
 - Remove details
 -->
 
-<!--
 <details>
+
 <summary>On development changelog</summary>
+
+# 0.4.2
+
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
+
+- Fix sentence capitalization: If the sentence starts with number, no
+  capitalization will occur.
+
 </details>
--->
 
 ## 0.4.1
 
