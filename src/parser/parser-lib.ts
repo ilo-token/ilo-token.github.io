@@ -17,9 +17,13 @@ export class Parser<T> {
   readonly #parser: (src: string) => ParserResult<T>;
   static cache: null | Cache = null;
   constructor(parser: (src: string) => ParserResult<T>) {
-    const cache = new Map<string, ParserResult<T>>();
-    Parser.addToCache(cache);
-    this.#parser = memoize(parser, { cache });
+    if (Parser.cache != null) {
+      const cache = new Map<string, ParserResult<T>>();
+      Parser.addToCache(cache);
+      this.#parser = memoize(parser, { cache });
+    } else {
+      this.#parser = parser;
+    }
   }
   parser(src: string): ParserResult<T> {
     return ArrayResult.from(() => this.#parser(src));
