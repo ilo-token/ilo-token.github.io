@@ -19,7 +19,7 @@ On this on-development version, things can be broken.
 
 Released 27 Feb 2025
 
-ilo Token is now a lot faster.
+ilo Token is now a lot faster. In exchange, it now uses more memory.
 
 - Fix custom dictionary error messages.
 - Fix custom dictionary not loading when ilo Token is newly loaded.
