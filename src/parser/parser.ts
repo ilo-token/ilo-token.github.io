@@ -125,8 +125,7 @@ const emphasis = choice<Emphasis>(
     // TODO: error message
     .filter(({ word }) => word === "a")
     .map(({ word, length }) => ({ type: "long word", word, length })),
-  wordFrom(new Set(["a"]), '"a"')
-    .map((word) => ({ type: "word", word })),
+  specificWord("a").map((word) => ({ type: "word", word })),
 );
 const optionalEmphasis = optional(emphasis);
 function xAlaX(
