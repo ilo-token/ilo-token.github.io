@@ -1,3 +1,4 @@
+import { sumOf } from "@std/collections/sum-of";
 import { settings } from "../settings.ts";
 import { cache } from "./cache.ts";
 import {
@@ -86,8 +87,7 @@ const longWord = allAtLeastOnce(repeatingLetter)
   .skip(spaces)
   .map<Token & { type: "long word" }>((letters) => {
     const word = letters.map(([letter]) => letter).join("");
-    const length = letters.reduce((rest, [_, count]) => rest + count, 0) -
-      word.length + 1;
+    const length = sumOf(letters, ([_, count]) => count) - word.length + 1;
     return { type: "long word", word, length };
   })
   .filter(({ length }) => length > 1);

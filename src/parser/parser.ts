@@ -1,3 +1,4 @@
+import { sumOf } from "@std/collections/sum-of";
 import { ArrayResult } from "../array-result.ts";
 import {
   contentWordSet,
@@ -252,9 +253,7 @@ const subAleNumber = sequence(
   many(specificWord("wan")),
 )
   .map((array) => array.flat())
-  .map((array) =>
-    array.reduce((number, word) => number + wordToNumber(word), 0)
-  );
+  .map((array) => sumOf(array, wordToNumber));
 const properSubAleNumber = subAleNumber.filter((number) => {
   if (number > 100) {
     throw new UnrecognizedError(
@@ -297,9 +296,7 @@ const number = choice(
         );
       }
     })
-    .map((numbers) =>
-      numbers.reduce((result, [sub, ale]) => result + sub * 100 ** ale, 0)
-    ),
+    .map((numbers) => sumOf(numbers, ([sub, ale]) => sub * 100 ** ale)),
   sequence(
     count(many(ale)),
     subAleNumber,
