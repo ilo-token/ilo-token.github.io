@@ -90,6 +90,7 @@ const longWord = allAtLeastOnce(repeatingLetter)
     const length = sumOf(letters, ([_, count]) => count) - word.length + 1;
     return { type: "long word", word, length };
   })
+  .filter(({ word }) => /^[a-z]/.test(word))
   .filter(({ length }) => length > 1);
 
 const xAlaX = lazy(() => {
