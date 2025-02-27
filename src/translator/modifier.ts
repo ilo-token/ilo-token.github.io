@@ -1,5 +1,5 @@
-import { dictionary } from "../dictionary.ts";
 import { ArrayResult } from "../array-result.ts";
+import { dictionary } from "../dictionary.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as Composer from "../parser/composer.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";

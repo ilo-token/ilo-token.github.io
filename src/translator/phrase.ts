@@ -1,5 +1,5 @@
-import { nullableAsArray } from "../misc.ts";
 import { ArrayResult } from "../array-result.ts";
+import { nullableAsArray } from "../misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as Composer from "../parser/composer.ts";
 import { AdjectiveWithInWay, fixAdjective } from "./adjective.ts";

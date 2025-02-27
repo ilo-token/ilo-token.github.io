@@ -1,18 +1,18 @@
-import { forObject, PartialCompoundVerb } from "./verb.ts";
-import * as English from "./ast.ts";
-import { AdjectiveWithInWay } from "./adjective.ts";
+import { ArrayResult } from "../array-result.ts";
 import { nullableAsArray } from "../misc.ts";
 import * as TokiPona from "../parser/ast.ts";
+import { AdjectiveWithInWay } from "./adjective.ts";
+import * as English from "./ast.ts";
+import { FilteredOutError, UntranslatableError } from "./error.ts";
+import { CONJUNCTION } from "./misc.ts";
 import {
   multiplePhrases,
   phrase,
   phraseAsVerb,
   PhraseTranslation,
 } from "./phrase.ts";
-import { ArrayResult } from "../array-result.ts";
-import { FilteredOutError, UntranslatableError } from "./error.ts";
 import { nounAsPreposition, preposition } from "./preposition.ts";
-import { CONJUNCTION } from "./misc.ts";
+import { forObject, PartialCompoundVerb } from "./verb.ts";
 
 function verbObject(
   verb: PartialCompoundVerb,

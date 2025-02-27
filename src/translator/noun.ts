@@ -1,6 +1,6 @@
 import * as Dictionary from "../../dictionary/type.ts";
-import { nullableAsArray } from "../misc.ts";
 import { ArrayResult } from "../array-result.ts";
+import { nullableAsArray } from "../misc.ts";
 import { settings } from "../settings.ts";
 import { adjective } from "./adjective.ts";
 import * as English from "./ast.ts";

@@ -1,6 +1,6 @@
 import * as Dictionary from "../../dictionary/type.ts";
-import { filterSet } from "../misc.ts";
 import { ArrayResult } from "../array-result.ts";
+import { filterSet } from "../misc.ts";
 import * as English from "./ast.ts";
 import { FilteredOutError } from "./error.ts";
 import { simpleNounForms } from "./noun.ts";
