@@ -1,5 +1,5 @@
 import * as Dictionary from "../../dictionary/type.ts";
-import { Output } from "../output.ts";
+import { ArrayResult } from "../array-result.ts";
 import * as English from "./ast.ts";
 import { fromNounForms, PartialNoun } from "./noun.ts";
 import { word } from "./word.ts";
@@ -44,7 +44,7 @@ export function pronoun(
   reduplicationCount: number,
   emphasis: boolean,
   place: Place,
-): Output<English.NounPhrase> {
+): ArrayResult<English.NounPhrase> {
   return fromNounForms(pronounForms(definition, place), "both")
     .map(({ noun, quantity }) => ({
       type: "simple",

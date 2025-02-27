@@ -4,20 +4,30 @@
 NOTE: Before publishing:
 - run `deno task update` to update all dependencies including telo misikeke
 - set parameters on `project-data.json`
+- Remove details
 -->
 
+<!--
 <details>
-
 <summary>On development changelog</summary>
-
-## 0.4.0 (On development)
-
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
+</details>
+-->
+
+## 0.4.1
+
+ilo Token is now a lot faster.
+
+- Fix custom dictionary error messages.
+- Fix custom dictionary not loading when ilo Token is newly loaded.
+
+## 0.4.0
 
 ilo Token can now translate into verbs! This means it can translate sentences!
 It still can't do the following however:
 
+- X ala X construction
 - Preverb
 - Preposition
 - "o" imperative sentence
@@ -51,8 +61,6 @@ settings after refactoring to make the code easier to work with.
 - Fixed ordering issue in Firefox. Thanks akesi Ale!
 - Implement advanced parsing settings.
 - Long texts (>500) are no longer recognized.
-
-</details>
 
 ## 0.3.0
 

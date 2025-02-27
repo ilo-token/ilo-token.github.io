@@ -1,5 +1,5 @@
 import { nullableAsArray } from "../misc.ts";
-import { Output } from "../output.ts";
+import { ArrayResult } from "../array-result.ts";
 import { parse } from "../parser/parser.ts";
 import * as English from "./ast.ts";
 import { multipleSentences } from "./sentence.ts";
@@ -162,7 +162,7 @@ function sentence(sentence: English.Sentence): string {
       (character) => character.toUpperCase(),
     );
 }
-export function translate(src: string): Output<string> {
+export function translate(src: string): ArrayResult<string> {
   return parse(src)
     .flatMap(multipleSentences)
     .map((sentences) => sentences.map(sentence).join(" "));

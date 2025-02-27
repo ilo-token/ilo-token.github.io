@@ -1,5 +1,5 @@
 import { dictionary } from "../dictionary.ts";
-import { Output } from "../output.ts";
+import { ArrayResult } from "../array-result.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as Composer from "../parser/composer.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";
@@ -59,13 +59,13 @@ function numberModifier(
 }
 export function defaultModifier(
   wordUnit: TokiPona.WordUnit,
-): Output<ModifierTranslation> {
+): ArrayResult<ModifierTranslation> {
   const emphasis = wordUnit.emphasis != null;
   switch (wordUnit.type) {
     case "number":
-      return new Output([numberModifier(wordUnit.number, emphasis)]);
+      return new ArrayResult([numberModifier(wordUnit.number, emphasis)]);
     case "x ala x":
-      return new Output(new TranslationTodoError("x ala x"));
+      return new ArrayResult(new TranslationTodoError("x ala x"));
     case "default":
     case "reduplication": {
       let reduplicationCount: number;
@@ -77,7 +77,7 @@ export function defaultModifier(
           reduplicationCount = wordUnit.count;
           break;
       }
-      return new Output(dictionary[wordUnit.word].definitions)
+      return new ArrayResult(dictionary.get(wordUnit.word)!.definitions)
         .flatMap((definition) => {
           switch (definition.type) {
             case "noun":
@@ -127,12 +127,12 @@ export function defaultModifier(
                   adjective,
                 }));
             case "adverb":
-              return new Output<ModifierTranslation>([{
+              return new ArrayResult<ModifierTranslation>([{
                 type: "adverb",
                 adverb: word(definition.adverb, reduplicationCount, emphasis),
               }]);
             default:
-              return new Output();
+              return new ArrayResult();
           }
         });
     }
@@ -140,7 +140,7 @@ export function defaultModifier(
 }
 export function piModifier(
   insidePhrase: TokiPona.Phrase,
-): Output<ModifierTranslation> {
+): ArrayResult<ModifierTranslation> {
   return phrase(insidePhrase, "object", true, false)
     .filter((modifier) =>
       modifier.type !== "noun" || modifier.noun.type !== "simple" ||
@@ -148,11 +148,11 @@ export function piModifier(
     )
     .filter((modifier) =>
       modifier.type != "adjective" || modifier.inWayPhrase == null
-    ) as Output<ModifierTranslation>;
+    ) as ArrayResult<ModifierTranslation>;
 }
 function nanpaModifier(
   nanpa: TokiPona.Modifier & { type: "nanpa" },
-): Output<ModifierTranslation> {
+): ArrayResult<ModifierTranslation> {
   return phrase(nanpa.phrase, "object", true, false).map((phrase) => {
     if (phrase.type !== "noun") {
       throw new FilteredOutError(`${phrase.type} within "in position" phrase`);
@@ -185,24 +185,24 @@ function nanpaModifier(
 }
 function modifier(
   modifier: TokiPona.Modifier,
-): Output<ModifierTranslation> {
+): ArrayResult<ModifierTranslation> {
   switch (modifier.type) {
     case "default":
       return defaultModifier(modifier.word);
     case "proper words":
-      return new Output([{ type: "name", name: modifier.words }]);
+      return new ArrayResult([{ type: "name", name: modifier.words }]);
     case "pi":
       return piModifier(modifier.phrase);
     case "nanpa":
       return nanpaModifier(modifier);
     case "quotation":
-      return new Output(new TranslationTodoError(modifier.type));
+      return new ArrayResult(new TranslationTodoError(modifier.type));
   }
 }
 export function multipleModifiers(
   modifiers: Array<TokiPona.Modifier>,
-): Output<MultipleModifierTranslation> {
-  return Output.combine(...modifiers.map(modifier))
+): ArrayResult<MultipleModifierTranslation> {
+  return ArrayResult.combine(...modifiers.map(modifier))
     .flatMap((modifiers) => {
       const noun = modifiers
         .filter((modifier) => modifier.type === "noun")
@@ -224,7 +224,7 @@ export function multipleModifiers(
       const inPositionPhrase = modifiers
         .filter((modifier) => modifier.type === "in position phrase")
         .map((modifier) => modifier.noun);
-      let adjectival: Output<MultipleModifierTranslation>;
+      let adjectival: ArrayResult<MultipleModifierTranslation>;
       if (
         noun.length <= 1 &&
         nounPreposition.length <= 1 &&
@@ -233,7 +233,7 @@ export function multipleModifiers(
         inPositionPhrase.length <= 1 &&
         (noun.length === 0 || inPositionPhrase.length === 0)
       ) {
-        adjectival = new Output<MultipleModifierTranslation>([{
+        adjectival = new ArrayResult<MultipleModifierTranslation>([{
           type: "adjectival",
           nounPreposition: nounPreposition[0] ?? null,
           determiner,
@@ -243,9 +243,9 @@ export function multipleModifiers(
           inPositionPhrase: inPositionPhrase[0] ?? null,
         }]);
       } else {
-        adjectival = new Output();
+        adjectival = new ArrayResult();
       }
-      let adverbial: Output<MultipleModifierTranslation>;
+      let adverbial: ArrayResult<MultipleModifierTranslation>;
       if (
         noun.length === 0 &&
         nounPreposition.length === 0 &&
@@ -270,15 +270,15 @@ export function multipleModifiers(
         } else {
           inWayPhrase = null;
         }
-        adverbial = new Output<MultipleModifierTranslation>([{
+        adverbial = new ArrayResult<MultipleModifierTranslation>([{
           type: "adverbial",
           adverb,
           inWayPhrase,
         }]);
       } else {
-        adverbial = new Output();
+        adverbial = new ArrayResult();
       }
-      return Output.concat(adjectival, adverbial);
+      return ArrayResult.concat(adjectival, adverbial);
     })
     .addErrorWhenNone(() =>
       new ExhaustedError(modifiers.map(Composer.modifier).join(" "))

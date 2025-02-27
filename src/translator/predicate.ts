@@ -9,7 +9,7 @@ import {
   phraseAsVerb,
   PhraseTranslation,
 } from "./phrase.ts";
-import { Output } from "../output.ts";
+import { ArrayResult } from "../array-result.ts";
 import { FilteredOutError, UntranslatableError } from "./error.ts";
 import { nounAsPreposition, preposition } from "./preposition.ts";
 import { CONJUNCTION } from "./misc.ts";
@@ -101,18 +101,18 @@ function make(
 function predicateVerb(
   predicate: PhraseTranslation,
   object: English.NounPhrase,
-): Output<PartialCompoundVerb> {
+): ArrayResult<PartialCompoundVerb> {
   switch (predicate.type) {
     case "noun":
-      return new Output([
+      return new ArrayResult([
         applyTo(predicate.noun, object),
         turnInto(predicate.noun, object),
       ]);
     case "adjective":
-      return new Output([make(predicate, object)]);
+      return new ArrayResult([make(predicate, object)]);
     case "verb":
-      return Output.from(() =>
-        new Output([verbObject(predicate.verb, object)])
+      return ArrayResult.from(() =>
+        new ArrayResult([verbObject(predicate.verb, object)])
       );
   }
 }
@@ -120,11 +120,11 @@ function associatedPredicate(
   predicate: PhraseTranslation,
   object: null | PhraseTranslation,
   preposition: Array<English.Preposition>,
-): Output<PartialCompoundVerb> {
-  return Output.from(() => {
-    let verbObject: Output<PartialCompoundVerb>;
+): ArrayResult<PartialCompoundVerb> {
+  return ArrayResult.from(() => {
+    let verbObject: ArrayResult<PartialCompoundVerb>;
     if (object == null) {
-      verbObject = new Output([phraseAsVerb(predicate)]);
+      verbObject = new ArrayResult([phraseAsVerb(predicate)]);
     } else if (object.type === "noun") {
       verbObject = predicateVerb(predicate, object.noun);
     } else {
@@ -139,7 +139,7 @@ function associatedPredicate(
 export function predicate(
   tokiPonaPredicate: TokiPona.Predicate,
   andParticle: string,
-): Output<PartialCompoundVerb> {
+): ArrayResult<PartialCompoundVerb> {
   switch (tokiPonaPredicate.type) {
     case "single":
       return phrase(tokiPonaPredicate.predicate, "object", false, true)
@@ -152,19 +152,19 @@ export function predicate(
         andParticle,
         true,
       );
-      const object = new Output([tokiPonaPredicate.objects]).flatMap(
+      const object = new ArrayResult([tokiPonaPredicate.objects]).flatMap(
         (object) => {
           if (object != null) {
             return multiplePhrases(object, "object", true, "e", false);
           } else {
-            return new Output([null]);
+            return new ArrayResult([null]);
           }
         },
       );
-      const prepositionPhrase = Output.combine(
+      const prepositionPhrase = ArrayResult.combine(
         ...tokiPonaPredicate.prepositions.map(preposition),
       );
-      return Output.combine(predicatePhrase, object, prepositionPhrase)
+      return ArrayResult.combine(predicatePhrase, object, prepositionPhrase)
         .flatMap(
           ([predicate, object, preposition]) =>
             associatedPredicate(predicate, object, preposition),
@@ -173,7 +173,7 @@ export function predicate(
     // TODO: combine adjectives and nouns
     case "and conjunction":
     case "anu":
-      return Output.combine(
+      return ArrayResult.combine(
         ...tokiPonaPredicate.predicates
           .map((predicates) => predicate(predicates, andParticle)),
       )

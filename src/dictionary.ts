@@ -1,10 +1,10 @@
 import { dictionary as globalDictionary } from "../dictionary/dictionary.ts";
 import { parseDictionary } from "../dictionary/parser.ts";
 import { Definition, Dictionary } from "../dictionary/type.ts";
-import { OutputError } from "./output.ts";
+import { ArrayResultError } from "./array-result.ts";
 
-const customDictionary: Dictionary = {};
-export const dictionary: Dictionary = {};
+const customDictionary: Dictionary = new Map();
+export const dictionary: Dictionary = new Map();
 
 export const contentWordSet: Set<string> = new Set();
 export const prepositionSet: Set<string> = new Set();
@@ -14,7 +14,7 @@ export const tokiPonaWordSet: Set<string> = new Set();
 update();
 
 /** Represents Error due to missing dictionary entry */
-export class MissingEntryError extends OutputError {
+export class MissingEntryError extends ArrayResultError {
   constructor(kind: string, word: string) {
     super(`${kind} definition for the word "${word}" is missing`);
     this.name = "MissingEntryError";
@@ -23,27 +23,23 @@ export class MissingEntryError extends OutputError {
 /** Updates custom dictionary. */
 export function loadCustomDictionary(dictionaryText: string): void {
   const dictionary = parseDictionary(dictionaryText);
-  for (const key of Object.keys(customDictionary)) {
-    delete customDictionary[key];
-  }
-  for (const [key, value] of Object.entries(dictionary)) {
-    customDictionary[key] = value;
+  customDictionary.clear();
+  for (const [key, value] of dictionary) {
+    customDictionary.set(key, value);
   }
   update();
 }
 function update(): void {
-  for (const key of Object.keys(dictionary)) {
-    delete dictionary[key];
-  }
+  dictionary.clear();
   for (
     const word of new Set([
-      ...Object.keys(globalDictionary),
-      ...Object.keys(customDictionary),
+      ...globalDictionary.keys(),
+      ...customDictionary.keys(),
     ])
   ) {
-    const entry = customDictionary[word] ?? globalDictionary[word];
+    const entry = customDictionary.get(word) ?? globalDictionary.get(word)!;
     if (entry.definitions.length > 0) {
-      dictionary[word] = entry;
+      dictionary.set(word, entry);
     }
   }
   for (
@@ -70,11 +66,9 @@ function addSet(
   set: Set<string>,
   filter: (definition: Definition) => boolean,
 ): void {
-  const array = Object
-    .entries(dictionary)
-    .filter(([_, entry]) => entry.definitions.some(filter))
-    .map(([word]) => word);
-  for (const word of array) {
-    set.add(word);
+  for (const [word, entry] of dictionary) {
+    if (entry.definitions.some(filter)) {
+      set.add(word);
+    }
   }
 }

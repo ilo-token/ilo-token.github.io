@@ -1,5 +1,5 @@
 import * as Dictionary from "../../dictionary/type.ts";
-import { Output } from "../output.ts";
+import { ArrayResult } from "../array-result.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";
 import * as EnglishComposer from "./composer.ts";
 import { nounAsPlainString, simpleNounForms } from "./noun.ts";
@@ -8,12 +8,12 @@ import { partialVerb, verb } from "./verb.ts";
 
 export function definitionAsPlainString(
   definition: Dictionary.Definition,
-): Output<string> {
+): ArrayResult<string> {
   switch (definition.type) {
     case "noun":
       return nounAsPlainString(definition);
     case "personal pronoun":
-      return Output.concat(
+      return ArrayResult.concat(
         pronoun(definition, 1, false, "subject"),
         pronoun(definition, 1, false, "object"),
       )
@@ -31,9 +31,9 @@ export function definitionAsPlainString(
         plural: definition.plural,
       });
     case "adverb":
-      return new Output([definition.adverb]);
+      return new ArrayResult([definition.adverb]);
     case "interjection":
-      return new Output([definition.interjection]);
+      return new ArrayResult([definition.interjection]);
     case "verb": {
       return partialVerb(definition, 1, false)
         .flatMap((partialVerb) =>
@@ -42,19 +42,19 @@ export function definitionAsPlainString(
         .map((verb) => EnglishComposer.verb(verb, 0));
     }
     case "filler":
-      return new Output([
+      return new ArrayResult([
         `${definition.before}${definition.repeat}${definition.after}`,
       ]);
     case "particle definition":
-      return new Output([definition.definition]);
+      return new ArrayResult([definition.definition]);
     case "noun preposition":
       return nounAsPlainString(definition.noun)
         .map((noun) => `${noun} ${definition.preposition}`);
     case "numeral":
-      return new Output([`${definition.numeral}`]);
+      return new ArrayResult([`${definition.numeral}`]);
     case "preposition":
-      return new Output([definition.preposition]);
+      return new ArrayResult([definition.preposition]);
     case "modal verb":
-      return new Output([definition.verb]);
+      return new ArrayResult([definition.verb]);
   }
 }

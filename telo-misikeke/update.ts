@@ -1,6 +1,7 @@
 /** Codes for updating telo misikeke and Linku data. */
 
-import { fetchOk } from "../src/misc.ts";
+import { retry } from "@std/async/retry";
+import { assertOk } from "../src/misc.ts";
 
 const TELO_MISIKEKE_URL =
   "https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/-/raw/main/";
@@ -31,7 +32,7 @@ async function buildCode(
   destination: URL,
   exportItems: Array<string>,
 ): Promise<void> {
-  const response = await fetchOk(source);
+  const response = assertOk(await retry(() => fetch(source)));
   const rawCode = await response.text();
   const withoutCjs = rawCode.replaceAll(COMMONJS_EXPORT, "");
   if (withoutCjs.includes("module.exports")) {
@@ -54,7 +55,7 @@ export { ${exports} };
   await Deno.writeTextFile(destination, code);
 }
 async function buildSonaLinku(): Promise<void> {
-  const response = await fetchOk(LINKU_URL);
+  const response = assertOk(await retry(() => fetch(LINKU_URL)));
   const json = await response.json();
   const processedJson = parseLipuLinku(json);
   await Deno.writeTextFile(
@@ -65,8 +66,8 @@ async function buildSonaLinku(): Promise<void> {
 function parseLipuLinku(
   data: { [word: string]: { usage_category: string } },
 ): [string, string][] {
-  return Object.keys(data)
-    .map<[string, string]>((word) => [word, data[word].usage_category])
+  return Object.entries(data)
+    .map<[string, string]>(([word, data]) => [word, data.usage_category])
     .filter(([_, category]) => category !== "sandbox");
 }
 if (import.meta.main) {

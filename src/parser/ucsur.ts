@@ -18,23 +18,25 @@ export const END_OF_REVERSE_LONG_GLYPH = "\u{F199B}";
 export const MIDDLE_DOT = "\u{F199C}";
 export const COLON = "\u{F199D}";
 
-export const SPECIAL_UCSUR_DESCRIPTIONS: { [character: string]: string } = {
-  [START_OF_CARTOUCHE]: "start of cartouche",
-  [END_OF_CARTOUCHE]: "end of cartouche",
-  [COMBINING_CARTOUCHE_EXTENSION]: "combining cartouche extension",
-  [START_OF_LONG_PI]: "start of long pi",
-  [COMBINING_LONG_PI_EXTENSION]: "combining long pi extension",
-  [STACKING_JOINER]: "stacking joiner",
-  [SCALING_JOINER]: "scaling joiner",
-  [START_OF_LONG_GLYPH]: "start of long glyph",
-  [END_OF_LONG_GLYPH]: "end of long glyph",
-  [COMBINING_LONG_GLYPH_EXTENSION]: "combining long glyph extension",
-  [START_OF_REVERSE_LONG_GLYPH]: "start of reverse long glyph",
-  [END_OF_REVERSE_LONG_GLYPH]: "end of reverse long glyph",
-  [MIDDLE_DOT]: "middle dot",
-  [COLON]: "colon",
-};
-export const UCSUR_TO_LATIN: { [ucsur: string]: string } = {
+export const SPECIAL_UCSUR_DESCRIPTIONS: Map<string, string> = new Map(
+  Object.entries({
+    [START_OF_CARTOUCHE]: "start of cartouche",
+    [END_OF_CARTOUCHE]: "end of cartouche",
+    [COMBINING_CARTOUCHE_EXTENSION]: "combining cartouche extension",
+    [START_OF_LONG_PI]: "start of long pi",
+    [COMBINING_LONG_PI_EXTENSION]: "combining long pi extension",
+    [STACKING_JOINER]: "stacking joiner",
+    [SCALING_JOINER]: "scaling joiner",
+    [START_OF_LONG_GLYPH]: "start of long glyph",
+    [END_OF_LONG_GLYPH]: "end of long glyph",
+    [COMBINING_LONG_GLYPH_EXTENSION]: "combining long glyph extension",
+    [START_OF_REVERSE_LONG_GLYPH]: "start of reverse long glyph",
+    [END_OF_REVERSE_LONG_GLYPH]: "end of reverse long glyph",
+    [MIDDLE_DOT]: "middle dot",
+    [COLON]: "colon",
+  }),
+);
+export const UCSUR_TO_LATIN: Map<string, string> = new Map(Object.entries({
   "\u{F1900}": "a",
   "\u{F1901}": "akesi",
   "\u{F1902}": "ala",
@@ -176,6 +178,6 @@ export const UCSUR_TO_LATIN: { [ucsur: string]: string } = {
   "\u{F19A1}": "apeja",
   "\u{F19A2}": "majuna",
   "\u{F19A3}": "powe",
-};
+}));
 export const UCSUR_CHARACTER_REGEX =
   /[\u{F1900}-\u{F1988}\u{F19A0}-\u{F19A3}]/u;
