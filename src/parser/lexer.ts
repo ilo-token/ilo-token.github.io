@@ -226,11 +226,11 @@ export const token = choiceOnlyOne(
   combinedGlyphsToken,
   // starting with non-words:
   punctuation,
+  cartouches,
   headlessLongGlyphEnd,
   headedLongGlyphEnd,
   headlessLongGlyphStart,
   insideLongGlyph,
-  cartouches,
 );
 
 Parser.endCache();
