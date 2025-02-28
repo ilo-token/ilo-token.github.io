@@ -176,7 +176,7 @@ function longContainer<T>(
 const longSpaceContainer = longContainer(
   START_OF_LONG_GLYPH,
   END_OF_LONG_GLYPH,
-  spacesWithoutNewline.map((space) => space.length),
+  count(spacesWithoutNewline).filter((length) => length > 0),
 )
   .skip(spaces);
 const longGlyphHead = choiceOnlyOne(
