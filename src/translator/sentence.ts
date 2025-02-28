@@ -1,5 +1,5 @@
 import { ArrayResult } from "../array-result.ts";
-import { dictionary, MissingEntryError } from "../dictionary.ts";
+import { dictionary } from "../dictionary.ts";
 import { nullableAsArray, repeatWithSpace } from "../misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { definitionAsPlainString } from "./as-string.ts";
