@@ -31,7 +31,8 @@ function compound(
     const lastIndex = elements.length - 1;
     const init = elements.slice(0, lastIndex);
     const last = elements[lastIndex];
-    return `${init.map((item) => `${item},`).join(" ")} ${conjunction} ${last}`;
+    const initText = init.map((item) => `${item},`).join(" ");
+    return `${initText} ${conjunction} ${last}`;
   }
 }
 export function noun(phrases: English.NounPhrase, depth: number): string {

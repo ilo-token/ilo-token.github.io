@@ -53,8 +53,9 @@ export function setIgnoreError(key: string, value: string): void {
 }
 export function assertOk(response: Response): Response {
   if (!response.ok) {
+    const { url, status, statusText } = response;
     throw new Error(
-      `unable to fetch ${response.url} (${response.status} ${response.statusText})`,
+      `unable to fetch ${url} (${status} ${statusText})`,
     );
   }
   return response;
