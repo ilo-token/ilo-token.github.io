@@ -130,7 +130,7 @@ export function fromVerbForms(
         if (quantity === "condensed") {
           verb = new ArrayResult([{
             modal: null,
-            infinite: `is/are/was/were/will be`,
+            infinite: "is/are/was/were/will be",
           }]);
         } else {
           verb = new ArrayResult([{
