@@ -1,15 +1,5 @@
-/**
- * Options for determining how to show different forms or conjugations of nouns
- * or verbs. See
- * https://github.com/ilo-token/ilo-token.github.io/wiki/Settings-Help#singular-and-plural-forms--verb-tenses
- * for more info
- */
 export type RedundancySettings = "both" | "condensed" | "default only";
-/**
- * Interface for configuring translation. See
- * https://github.com/ilo-token/ilo-token.github.io/wiki/Settings-Help for more
- * info.
- */
+
 // may be extended but existing properties must stay unchanged
 export type Settings = {
   teloMisikeke: boolean;
