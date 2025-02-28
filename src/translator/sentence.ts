@@ -21,8 +21,7 @@ function filler(filler: TokiPona.Filler): ArrayResult<string> {
           length = filler.length;
           break;
       }
-      return new ArrayResult(nullableAsArray(dictionary.get(filler.word)!))
-        .flatMap((entry) => new ArrayResult(entry.definitions))
+      return new ArrayResult(dictionary.get(filler.word)!.definitions)
         .filterMap((definition) => {
           if (definition.type === "filler") {
             const { before, repeat, after } = definition;
