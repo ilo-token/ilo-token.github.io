@@ -169,7 +169,7 @@ function main(): void {
   resizeTextarea();
   function resizeTextarea(): void {
     inputTextBox.style.height = "auto";
-    inputTextBox.style.height = `${`${inputTextBox.scrollHeight + 14}`}px`;
+    inputTextBox.style.height = `${inputTextBox.scrollHeight + 14}px`;
   }
 
   // initialize button label
