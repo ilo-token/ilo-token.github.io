@@ -30,8 +30,7 @@ function filler(filler: TokiPona.Filler): ArrayResult<string> {
           } else {
             return null;
           }
-        })
-        .addErrorWhenNone(() => new MissingEntryError("filler", filler.word));
+        });
     }
     case "multiple a":
       return new ArrayResult(["ha".repeat(filler.count)]);
