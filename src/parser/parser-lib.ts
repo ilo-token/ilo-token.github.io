@@ -6,40 +6,44 @@ export type ValueRest<T> = Readonly<{ rest: string; value: T }>;
 export type ParserResult<T> = ArrayResult<ValueRest<T>>;
 
 export class Parser<T> {
+  readonly unmemoizedParser: (src: string) => ParserResult<T>;
   readonly parser: (src: string) => ParserResult<T>;
   static cache: null | Cache = null;
   constructor(parser: (src: string) => ParserResult<T>) {
-    const useParser = (src: string) => ArrayResult.from(() => parser(src));
+    this.unmemoizedParser = (src: string) =>
+      ArrayResult.from(() => parser(src));
     if (Parser.cache != null) {
       const cache = new Map<string, ParserResult<T>>();
       Parser.addToCache(cache);
-      this.parser = memoize(useParser, { cache });
+      this.parser = memoize(this.unmemoizedParser, { cache });
     } else {
-      this.parser = useParser;
+      this.parser = this.unmemoizedParser;
     }
   }
   map<U>(mapper: (value: T) => U): Parser<U> {
     return new Parser((src) =>
       this
-        .parser(src)
+        .unmemoizedParser(src)
         .map(({ value, rest }) => ({ value: mapper(value), rest }))
     );
   }
   filter(mapper: (value: T) => boolean): Parser<T> {
     return new Parser((src) =>
-      this.parser(src).filter(({ value }) => mapper(value))
+      this.unmemoizedParser(src).filter(({ value }) => mapper(value))
     );
   }
   then<U>(mapper: (value: T) => Parser<U>): Parser<U> {
     const { cache } = Parser;
     return new Parser((src) => {
-      const parser = Parser.inContext(() => this.parser(src), cache);
+      const parser = Parser.inContext(() => this.unmemoizedParser(src), cache);
       return parser.flatMap(({ value, rest }) => mapper(value).parser(rest));
     });
   }
   sort(comparer: (left: T, right: T) => number): Parser<T> {
     return new Parser((src) =>
-      this.parser(src).sort((left, right) => comparer(left.value, right.value))
+      this.unmemoizedParser(src).sort((left, right) =>
+        comparer(left.value, right.value)
+      )
     );
   }
   sortBy(mapper: (value: T) => number): Parser<T> {
@@ -98,7 +102,7 @@ export const nothing = new Parser((src) =>
 export const emptyArray = nothing.map(() => []);
 export function lookAhead<T>(parser: Parser<T>): Parser<T> {
   return new Parser((src) =>
-    parser.parser(src).map(({ value }) => ({ value, rest: src }))
+    parser.unmemoizedParser(src).map(({ value }) => ({ value, rest: src }))
   );
 }
 export function lazy<T>(parser: () => Parser<T>): Parser<T> {
@@ -106,9 +110,11 @@ export function lazy<T>(parser: () => Parser<T>): Parser<T> {
   if (Parser.cache != null) {
     const cachedParser = new Lazy(() => Parser.inContext(parser, cache));
     Parser.addToCache(cachedParser);
-    return new Parser((src) => cachedParser.getValue().parser(src));
+    return new Parser((src) => cachedParser.getValue().unmemoizedParser(src));
   } else {
-    return new Parser((src) => Parser.inContext(parser, cache).parser(src));
+    return new Parser((src) =>
+      Parser.inContext(parser, cache).unmemoizedParser(src)
+    );
   }
 }
 export function choice<T>(...choices: Array<Parser<T>>): Parser<T> {
@@ -241,7 +247,7 @@ export function withSource<T>(
   parser: Parser<T>,
 ): Parser<[value: T, source: string]> {
   return new Parser((src) =>
-    parser.parser(src).map((value) => ({
+    parser.unmemoizedParser(src).map((value) => ({
       value: [value.value, src.slice(0, src.length - value.rest.length)],
       rest: value.rest,
     }))
