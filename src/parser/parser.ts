@@ -789,7 +789,7 @@ const sentence = choice<Sentence>(
     })),
 )
   .filter(filter(SENTENCE_RULE));
-const FULL_PARSER = spaces
+const fullParser = spaces
   .with(choiceOnlyOne<MultipleSentences>(
     wordFrom(tokiPonaWordSet, "Toki Pona word")
       .skip(end)
@@ -804,7 +804,7 @@ export function parse(src: string): ArrayResult<MultipleSentences> {
     if (src.trim().length > 500) {
       throw new UnrecognizedError("long text");
     } else {
-      return FULL_PARSER.parse(src);
+      return fullParser.parse(src);
     }
   });
 }
