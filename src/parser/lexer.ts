@@ -93,9 +93,6 @@ const longWord = allAtLeastOnce(repeatingLetter)
   })
   .filter(({ word }) => /^[a-z]/.test(word))
   .filter(({ length }) => length > 1);
-
-Parser.startCache(cache);
-
 const xAlaX = lazy(() => {
   if (settings.xAlaXPartialParsing) {
     return empty;
@@ -107,9 +104,6 @@ const xAlaX = lazy(() => {
   }
 })
   .map<Token>((word) => ({ type: "x ala x", word }));
-
-Parser.endCache();
-
 const punctuation = choiceOnlyOne(
   match(/[.,:;?!…·。｡︒\u{F199C}\u{F199D}]+/u, "punctuation")
     .map((punctuation) =>
