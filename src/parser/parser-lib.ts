@@ -61,7 +61,7 @@ export class Parser<T> {
   static addToCache(cache: Clearable): void {
     Parser.cache?.add(cache);
   }
-  static startCache(cache: Cache): void {
+  static startCache(cache: Cache = new Cache()): void {
     Parser.cache = cache;
   }
   static endCache(): void {

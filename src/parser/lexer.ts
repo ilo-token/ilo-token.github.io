@@ -34,6 +34,8 @@ import {
   UCSUR_TO_LATIN,
 } from "./ucsur.ts";
 
+Parser.startCache(cache);
+
 const spacesWithoutNewline = match(/[^\S\n\r]*/, "spaces");
 const newline = match(/[\n\r]\s*/, "newline");
 const spaces = sourceOnly(
@@ -212,8 +214,6 @@ const combinedGlyphsToken = combinedGlyphs
   .skip(spaces)
   .map<Token>((words) => ({ type: "combined glyphs", words }));
 const wordToken = word.map<Token>((word) => ({ type: "word", word }));
-
-Parser.startCache(cache);
 
 export const token = choiceOnlyOne(
   xAlaX,
