@@ -11,7 +11,7 @@ NOTE: Before publishing:
 
 <summary>On development changelog</summary>
 
-## 0.4.2
+## 0.4.2 (On development)
 
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
