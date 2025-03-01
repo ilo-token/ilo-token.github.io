@@ -38,8 +38,7 @@ async function buildCode(
   }
   const exports = exportItems.join(", ");
   const code = `\
-// This code is from
-// ${source}
+// This code is from ${source}
 //
 // Repository: https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/
 // Copyright (c) 2023 Nicolas Hurtubise

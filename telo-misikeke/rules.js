@@ -1,5 +1,4 @@
-// This code is from
-// https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/-/raw/main/public/rules.js
+// This code is from https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/-/raw/main/public/rules.js
 //
 // Repository: https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/
 // Copyright (c) 2023 Nicolas Hurtubise
