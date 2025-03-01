@@ -34,8 +34,6 @@ import {
   UCSUR_TO_LATIN,
 } from "./ucsur.ts";
 
-Parser.startCache(cache);
-
 const spacesWithoutNewline = match(/[^\S\n\r]*/, "spaces");
 const newline = match(/[\n\r]\s*/, "newline");
 const spaces = sourceOnly(
@@ -96,6 +94,8 @@ const longWord = allAtLeastOnce(repeatingLetter)
   .filter(({ word }) => /^[a-z]/.test(word))
   .filter(({ length }) => length > 1);
 
+Parser.startCache(cache);
+
 const xAlaX = lazy(() => {
   if (settings.xAlaXPartialParsing) {
     return empty;
@@ -107,6 +107,8 @@ const xAlaX = lazy(() => {
   }
 })
   .map<Token>((word) => ({ type: "x ala x", word }));
+
+Parser.endCache();
 
 const punctuation = choiceOnlyOne(
   match(/[.,:;?!…·。｡︒\u{F199C}\u{F199D}]+/u, "punctuation")
@@ -214,6 +216,8 @@ const combinedGlyphsToken = combinedGlyphs
   .skip(spaces)
   .map<Token>((words) => ({ type: "combined glyphs", words }));
 const wordToken = word.map<Token>((word) => ({ type: "word", word }));
+
+Parser.startCache(cache);
 
 export const token = choiceOnlyOne(
   xAlaX,

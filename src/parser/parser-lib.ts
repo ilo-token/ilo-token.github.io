@@ -12,13 +12,9 @@ export class Parser<T> {
   constructor(parser: (src: string) => ParserResult<T>) {
     this.unmemoizedParser = (src: string) =>
       ArrayResult.from(() => parser(src));
-    if (Parser.cache != null) {
-      const cache = new Map<string, ParserResult<T>>();
-      Parser.addToCache(cache);
-      this.parser = memoize(this.unmemoizedParser, { cache });
-    } else {
-      this.parser = this.unmemoizedParser;
-    }
+    const cache = new Map<string, ParserResult<T>>();
+    Parser.addToCache(cache);
+    this.parser = memoize(this.unmemoizedParser, { cache });
   }
   map<U>(mapper: (value: T) => U): Parser<U> {
     return new Parser((src) =>

@@ -26,8 +26,6 @@ import {
   VerbForms,
 } from "./type.ts";
 
-Parser.startCache();
-
 const comment = match(/#[^\n\r]*/, "comment");
 const spaces = sourceOnly(all(choiceOnlyOne(match(/\s/, "space"), comment)));
 function lex<T>(parser: Parser<T>): Parser<T> {
@@ -507,5 +505,3 @@ export function parseDictionary(sourceText: string): Dictionary {
     throw new AggregateError(errors.deduplicateErrors().errors);
   }
 }
-
-Parser.endCache();
