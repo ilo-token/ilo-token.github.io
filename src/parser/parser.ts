@@ -1,3 +1,4 @@
+import { memoize } from "@std/cache/memoize";
 import { sumOf } from "@std/collections/sum-of";
 import { ArrayResult } from "../array-result.ts";
 import {
@@ -60,7 +61,6 @@ import {
   UnrecognizedError,
 } from "./parser-lib.ts";
 import { describe, Token } from "./token.ts";
-import { memoize } from "@std/cache/memoize";
 
 const spaces = match(/\s*/, "spaces");
 
