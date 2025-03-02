@@ -1,3 +1,4 @@
+import { zip } from "@std/collections/zip";
 import * as Dictionary from "../../dictionary/type.ts";
 import { ArrayResult } from "../array-result.ts";
 import { filterSet } from "../misc.ts";
@@ -146,10 +147,8 @@ function encodeDeterminer(
   strings: TemplateStringsArray,
   ...determiners: Array<Array<English.Determiner>>
 ): () => string {
-  return () => {
-    const determinerStrings = determiners.map(prettyPrintDeterminers);
-    return strings
-      .map((string, i) => `${string}${determinerStrings[i] ?? ""}`)
+  return () =>
+    zip(strings, [...determiners.map(prettyPrintDeterminers), ""])
+      .flat()
       .join("");
-  };
 }
