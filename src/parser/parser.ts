@@ -75,10 +75,12 @@ function specificToken<T extends Token["type"]>(
     }
   });
 }
-const comma = specificToken("punctuation")
-  .map(({ punctuation }) => {
+const punctuation = specificToken("punctuation")
+  .map(({ punctuation }) => punctuation);
+const comma = punctuation
+  .filter((punctuation) => {
     if (punctuation === ",") {
-      return ",";
+      return true;
     } else {
       throw new UnexpectedError(`"${punctuation}"`, "comma");
     }
@@ -86,9 +88,6 @@ const comma = specificToken("punctuation")
 const optionalComma = optional(comma);
 const word = specificToken("word").map(({ word }) => word);
 const properWords = specificToken("proper word").map(({ words }) => words);
-const punctuation = specificToken("punctuation").map(({ punctuation }) =>
-  punctuation
-);
 function wordFrom(set: Set<string>, description: string): Parser<string> {
   return word.filter((word) => {
     if (set.has(word)) {
