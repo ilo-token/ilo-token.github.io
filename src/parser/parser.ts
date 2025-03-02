@@ -738,6 +738,16 @@ const filler = choice<Filler>(
   wordFrom(fillerSet, "filler")
     .map((word) => ({ type: "word", word })),
 );
+const seme = wordUnit(new Set(["seme"]), '"seme"');
+const anuSeme = choice(
+  specificToken("headed long glyph start")
+    .filter(({ words }) => filterCombinedGlyphs(words, "anu"))
+    .with(seme)
+    .skip(specificToken("headless long glyph end")),
+  optionalComma
+    .with(specificWord("anu"))
+    .with(seme),
+);
 const sentence = choice<Sentence>(
   sequence(
     optional(
@@ -745,11 +755,7 @@ const sentence = choice<Sentence>(
     ),
     many(contextClause.skip(la)),
     clause,
-    optional(
-      optionalComma
-        .with(specificWord("anu"))
-        .with(wordUnit(new Set(["seme"]), '"seme"')),
-    ),
+    optional(anuSeme),
     optionalEmphasis,
     choice(
       punctuation,
