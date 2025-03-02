@@ -649,7 +649,6 @@ const clause = choice<Clause>(
             word: subject,
             emphasis: null,
           },
-          alaQuestion: false,
           modifiers: [],
           emphasis: null,
         },
