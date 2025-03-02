@@ -20,6 +20,10 @@ export class Parser<T> {
       this.parser = this.unmemoizedParser;
     }
   }
+  get parse(): (src: string) => ArrayResult<T> {
+    const { parser } = this;
+    return (src) => parser(src).map(({ value }) => value);
+  }
   map<U>(mapper: (value: T) => U): Parser<U> {
     const { unmemoizedParser } = this;
     return new Parser((src) =>
@@ -57,9 +61,6 @@ export class Parser<T> {
   }
   skip<U>(parser: Parser<U>): Parser<T> {
     return sequence(this, parser).map(([arrayResult]) => arrayResult);
-  }
-  parse(src: string): ArrayResult<T> {
-    return this.parser(src).map(({ value }) => value);
   }
   static addToCache(cache: Clearable): void {
     Parser.cache?.add(cache);
