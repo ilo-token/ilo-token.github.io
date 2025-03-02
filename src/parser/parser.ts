@@ -76,8 +76,13 @@ function specificToken<T extends Token["type"]>(
   });
 }
 const comma = specificToken("punctuation")
-  .map(({ punctuation }) => punctuation)
-  .filter((punctuation) => punctuation === ",");
+  .map(({ punctuation }) => {
+    if (punctuation === ",") {
+      return ",";
+    } else {
+      throw new UnexpectedError(`"${punctuation}"`, "comma");
+    }
+  });
 const optionalComma = optional(comma);
 const word = specificToken("word").map(({ word }) => word);
 const properWords = specificToken("proper word").map(({ words }) => words);
@@ -122,9 +127,12 @@ const emphasis = choice<Emphasis>(
       };
     }),
   specificToken("long word")
-    // TODO: error message
-    .filter(({ word }) => word === "a")
-    .map(({ word, length }) => ({ type: "long word", word, length })),
+    .map(({ word, length }) => {
+      if (word !== "a") {
+        throw new UnexpectedError(`"${word}"`, '"a"');
+      }
+      return { type: "long word", word, length };
+    }),
   specificWord("a").map((word) => ({ type: "word", word })),
 );
 const optionalEmphasis = optional(emphasis);
@@ -711,9 +719,12 @@ const filler = choice<Filler>(
   specificToken("multiple a")
     .map(({ count }) => ({ type: "multiple a", count })),
   specificToken("long word")
-    // TODO: error message
-    .filter(({ word }) => fillerSet.has(word))
-    .map(({ word, length }) => ({ type: "long word", word, length })),
+    .map(({ word, length }) => {
+      if (!fillerSet.has(word)) {
+        throw new UnrecognizedError(`"${word}" as filler`);
+      }
+      return { type: "long word", word, length };
+    }),
   wordFrom(fillerSet, "filler")
     .map((word) => ({ type: "word", word })),
 );
