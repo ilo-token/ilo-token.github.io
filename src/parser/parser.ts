@@ -99,15 +99,15 @@ function wordFrom(set: Set<string>, description: string): Parser<string> {
     }
   });
 }
-function specificWord(thatWord: string): Parser<string> {
-  return word.filter((thisWord) => {
+const specificWord = memoize((thatWord: string) =>
+  word.filter((thisWord) => {
     if (thatWord === thisWord) {
       return true;
     } else {
       throw new UnexpectedError(`"${thisWord}"`, `"${thatWord}"`);
     }
-  });
-}
+  })
+);
 function filterCombinedGlyphs(words: Array<string>, expected: string): boolean {
   const description = `"${expected}"`;
   if (words.length !== 1) {
