@@ -20,7 +20,7 @@ export class Parser<T> {
       this.rawParser = this.unmemoizedParser;
     }
   }
-  get parser(): (src: string) => ArrayResult<T> {
+  parser(): (src: string) => ArrayResult<T> {
     const { rawParser } = this;
     return (src) => rawParser(src).map(({ value }) => value);
   }

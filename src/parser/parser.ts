@@ -837,6 +837,6 @@ export const parse = spaces
       .filter(filter(MULTIPLE_SENTENCES_RULE))
       .map((sentences) => ({ type: "sentences", sentences })),
   ))
-  .parser;
+  .parser();
 
 Parser.endCache();

@@ -479,12 +479,12 @@ const dictionaryParser = spaces
       ),
     )
   )
-  .parser;
+  .parser();
 const definitionExtractor = spaces
   .with(all(optionalAll(lex(head)).with(lex(match(/[^;]*;/, "definition")))))
   .skip(end)
-  .parser;
-const definitionParser = spaces.with(definition).skip(end).parser;
+  .parser();
+const definitionParser = spaces.with(definition).skip(end).parser();
 
 export function parseDictionary(sourceText: string): Dictionary {
   const arrayResult = dictionaryParser(sourceText);
