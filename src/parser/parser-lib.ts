@@ -7,7 +7,7 @@ export type ParserResult<T> = ArrayResult<ValueRest<T>>;
 
 export class Parser<T> {
   readonly unmemoizedParser: (src: string) => ParserResult<T>;
-  readonly parser: (src: string) => ParserResult<T>;
+  readonly rawParser: (src: string) => ParserResult<T>;
   static cache: null | Cache = null;
   constructor(parser: (src: string) => ParserResult<T>) {
     this.unmemoizedParser = (src: string) =>
@@ -15,14 +15,14 @@ export class Parser<T> {
     if (Parser.cache != null) {
       const cache = new Map<string, ParserResult<T>>();
       Parser.addToCache(cache);
-      this.parser = memoize(this.unmemoizedParser, { cache });
+      this.rawParser = memoize(this.unmemoizedParser, { cache });
     } else {
-      this.parser = this.unmemoizedParser;
+      this.rawParser = this.unmemoizedParser;
     }
   }
-  get parse(): (src: string) => ArrayResult<T> {
-    const { parser } = this;
-    return (src) => parser(src).map(({ value }) => value);
+  get parser(): (src: string) => ArrayResult<T> {
+    const { rawParser } = this;
+    return (src) => rawParser(src).map(({ value }) => value);
   }
   map<U>(mapper: (value: T) => U): Parser<U> {
     const { unmemoizedParser } = this;
@@ -42,7 +42,7 @@ export class Parser<T> {
     const { unmemoizedParser } = this;
     return new Parser((src) => {
       const parser = Parser.inContext(() => unmemoizedParser(src), cache);
-      return parser.flatMap(({ value, rest }) => mapper(value).parser(rest));
+      return parser.flatMap(({ value, rest }) => mapper(value).rawParser(rest));
     });
   }
   sort(comparer: (left: T, right: T) => number): Parser<T> {
@@ -123,7 +123,7 @@ export function lazy<T>(parser: () => Parser<T>): Parser<T> {
 }
 export function choice<T>(...choices: Array<Parser<T>>): Parser<T> {
   return new Parser((src) =>
-    new ArrayResult(choices).flatMap((parser) => parser.parser(src))
+    new ArrayResult(choices).flatMap((parser) => parser.rawParser(src))
   );
 }
 export function choiceOnlyOne<T>(
@@ -132,9 +132,9 @@ export function choiceOnlyOne<T>(
   return choices.reduceRight(
     (right, left) =>
       new Parser((src) => {
-        const arrayResult = left.parser(src);
+        const arrayResult = left.rawParser(src);
         if (arrayResult.isError()) {
-          return ArrayResult.concat(arrayResult, right.parser(src));
+          return ArrayResult.concat(arrayResult, right.rawParser(src));
         } else {
           return arrayResult;
         }

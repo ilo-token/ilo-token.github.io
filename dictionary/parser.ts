@@ -469,7 +469,7 @@ const head = sequence(
   .map(([init, last]) => [...init, last]);
 const entry = withSource(spaces.with(all(definition)))
   .map(([definitions, src]) => ({ definitions, src: src.trimEnd() }));
-const dictionary = spaces
+const dictionaryParser = spaces
   .with(all(sequence(head, entry)))
   .skip(end)
   .map((entries) =>
@@ -478,24 +478,26 @@ const dictionary = spaces
         words.map((word) => [word, definition])
       ),
     )
-  );
-const definitionExtract = spaces
+  )
+  .parser;
+const definitionExtractor = spaces
   .with(all(optionalAll(lex(head)).with(lex(match(/[^;]*;/, "definition")))))
-  .skip(end);
-const definitionAlone = spaces.with(definition).skip(end);
+  .skip(end)
+  .parser;
+const definitionParser = spaces.with(definition).skip(end).parser;
 
 export function parseDictionary(sourceText: string): Dictionary {
-  const arrayResult = dictionary.parse(sourceText);
+  const arrayResult = dictionaryParser(sourceText);
   if (!arrayResult.isError()) {
     return arrayResult.array[0];
   } else {
-    const definitions = definitionExtract.parse(sourceText);
+    const definitions = definitionExtractor(sourceText);
     let errors: ArrayResult<never>;
     if (!definitions.isError()) {
       errors = ArrayResult.errors(
         definitions.array[0]
           .flatMap((definition) =>
-            definitionAlone.parse(definition).errors.map((error) =>
+            definitionParser(definition).errors.map((error) =>
               new ArrayResultError(`${error.message} at ${definition.trim()}`, {
                 cause: error,
               })

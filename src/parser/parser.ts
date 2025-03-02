@@ -820,7 +820,7 @@ const sentence = choice<Sentence>(
     })),
 )
   .filter(filter(SENTENCE_RULE));
-export const parser = spaces
+export const parse = spaces
   .with(lookAhead(everything.filter((src) => {
     if (src.trimEnd().length > 500) {
       throw new UnrecognizedError("long text");
@@ -837,6 +837,6 @@ export const parser = spaces
       .filter(filter(MULTIPLE_SENTENCES_RULE))
       .map((sentences) => ({ type: "sentences", sentences })),
   ))
-  .parse;
+  .parser;
 
 Parser.endCache();
