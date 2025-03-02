@@ -236,6 +236,9 @@ export function matchString(
     throw new UnexpectedError(describeSource(src), description);
   });
 }
+export const everything = new Parser((src) =>
+  new ArrayResult([{ value: src, rest: "" }])
+);
 export const character = match(/./us, "character");
 export const end = new Parser((src) => {
   if (src === "") {

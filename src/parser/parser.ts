@@ -49,6 +49,7 @@ import {
   count,
   empty,
   end,
+  everything,
   lazy,
   lookAhead,
   many,
@@ -821,6 +822,13 @@ const sentence = choice<Sentence>(
 )
   .filter(filter(SENTENCE_RULE));
 const fullParser = spaces
+  .with(lookAhead(everything.filter((src) => {
+    if (src.trimEnd().length > 500) {
+      throw new UnrecognizedError("long text");
+    } else {
+      return true;
+    }
+  })))
   .with(choiceOnlyOne<MultipleSentences>(
     wordFrom(tokiPonaWordSet, "Toki Pona word")
       .skip(end)
@@ -830,14 +838,9 @@ const fullParser = spaces
       .filter(filter(MULTIPLE_SENTENCES_RULE))
       .map((sentences) => ({ type: "sentences", sentences })),
   ));
-export function parse(src: string): ArrayResult<MultipleSentences> {
-  return ArrayResult.from(() => {
-    if (src.trim().length > 500) {
-      throw new UnrecognizedError("long text");
-    } else {
-      return fullParser.parse(src);
-    }
-  });
-}
 
 Parser.endCache();
+
+export function parse(src: string): ArrayResult<MultipleSentences> {
+  return fullParser.parse(src);
+}
