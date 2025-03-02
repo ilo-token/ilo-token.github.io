@@ -107,25 +107,27 @@ function specificWord(thatWord: string): Parser<string> {
     }
   });
 }
+function filterCombinedGlyphs(words: Array<string>, expected: string): boolean {
+  const description = `"${expected}"`;
+  if (words.length !== 1) {
+    throw new UnexpectedError(
+      describe({ type: "combined glyphs", words }),
+      description,
+    );
+  } else if (words[0] !== "a") {
+    throw new UnexpectedError(`"${word}"`, description);
+  } else {
+    return true;
+  }
+}
 const emphasis = choice<Emphasis>(
   specificToken("space long glyph")
-    .map((longGlyph) => {
-      if (longGlyph.words.length !== 1) {
-        throw new UnexpectedError(
-          describe({ type: "combined glyphs", words: longGlyph.words }),
-          '"a"',
-        );
-      }
-      const word = longGlyph.words[0];
-      if (word !== "a") {
-        throw new UnexpectedError(`"${word}"`, '"a"');
-      }
-      return {
-        type: "long word",
-        word,
-        length: longGlyph.spaceLength,
-      };
-    }),
+    .filter(({ words }) => filterCombinedGlyphs(words, "a"))
+    .map<Emphasis>(({ spaceLength }) => ({
+      type: "long word",
+      word: "a",
+      length: spaceLength,
+    })),
   specificToken("long word")
     .map(({ word, length }) => {
       if (word !== "a") {
@@ -145,18 +147,7 @@ function xAlaX(
       .with(wordFrom(useWord, description))
       .skip(
         specificToken("inside long glyph")
-          .filter((words) => {
-            if (words.words.length !== 1) {
-              throw new UnexpectedError(
-                describe({ type: "combined glyphs", words: words.words }),
-                '"ala"',
-              );
-            }
-            if (words.words[0] !== "ala") {
-              throw new UnexpectedError(`"${words.words[0]}"`, '"ala"');
-            }
-            return true;
-          }),
+          .filter(({ words }) => filterCombinedGlyphs(words, "ala")),
       )
       .then((word) =>
         specificWord(word)
@@ -371,18 +362,7 @@ const nanpa = sequence(wordUnit(new Set(["nanpa"]), '"nanpa"'), phrase)
   .filter(filter(NANPA_RULES));
 const pi = choice(
   specificToken("headed long glyph start")
-    .filter((words) => {
-      if (words.words.length !== 1) {
-        throw new UnexpectedError(
-          describe({ type: "combined glyphs", words: words.words }),
-          "pi",
-        );
-      }
-      if (words.words[0] !== "pi") {
-        throw new UnexpectedError(`"${words.words[0]}"`, "pi");
-      }
-      return true;
-    })
+    .filter(({ words }) => filterCombinedGlyphs(words, "pi"))
     .with(phrase)
     .skip(specificToken("headless long glyph end"))
     .map((phrase) => phrase),
@@ -425,18 +405,7 @@ const longAnu = sequence(
   specificToken("headless long glyph start").with(phrase),
   manyAtLeastOnce(
     specificToken("inside long glyph")
-      .filter((words) => {
-        if (words.words.length !== 1) {
-          throw new UnexpectedError(
-            describe({ type: "combined glyphs", words: words.words }),
-            "pi",
-          );
-        }
-        if (words.words[0] !== "anu") {
-          throw new UnexpectedError(`"${words.words[0]}"`, "anu");
-        }
-        return true;
-      })
+      .filter(({ words }) => filterCombinedGlyphs(words, "anu"))
       .with(phrase),
   ),
 )
@@ -748,7 +717,7 @@ const filler = choice<Filler>(
       if (longGlyph.words.length !== 1) {
         throw new UnexpectedError(
           describe({ type: "combined glyphs", words: longGlyph.words }),
-          '"a"',
+          "simple glyph",
         );
       }
       return {
