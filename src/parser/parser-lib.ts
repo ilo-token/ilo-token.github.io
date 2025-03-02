@@ -21,27 +21,30 @@ export class Parser<T> {
     }
   }
   map<U>(mapper: (value: T) => U): Parser<U> {
+    const { unmemoizedParser } = this;
     return new Parser((src) =>
-      this
-        .unmemoizedParser(src)
+      unmemoizedParser(src)
         .map(({ value, rest }) => ({ value: mapper(value), rest }))
     );
   }
   filter(mapper: (value: T) => boolean): Parser<T> {
+    const { unmemoizedParser } = this;
     return new Parser((src) =>
-      this.unmemoizedParser(src).filter(({ value }) => mapper(value))
+      unmemoizedParser(src).filter(({ value }) => mapper(value))
     );
   }
   then<U>(mapper: (value: T) => Parser<U>): Parser<U> {
     const { cache } = Parser;
+    const { unmemoizedParser } = this;
     return new Parser((src) => {
-      const parser = Parser.inContext(() => this.unmemoizedParser(src), cache);
+      const parser = Parser.inContext(() => unmemoizedParser(src), cache);
       return parser.flatMap(({ value, rest }) => mapper(value).parser(rest));
     });
   }
   sort(comparer: (left: T, right: T) => number): Parser<T> {
+    const { unmemoizedParser } = this;
     return new Parser((src) =>
-      this.unmemoizedParser(src).sort((left, right) =>
+      unmemoizedParser(src).sort((left, right) =>
         comparer(left.value, right.value)
       )
     );
