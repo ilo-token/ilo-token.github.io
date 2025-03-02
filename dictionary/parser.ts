@@ -35,8 +35,10 @@ const backtick = matchString("`", "backtick");
 const word = allAtLeastOnce(
   choiceOnlyOne(
     match(/[^():;#/`]/, "word"),
-    sequence(backtick, character, backtick)
-      .map(([_, character]) => character),
+    backtick
+      .with(character)
+      .skip(backtick)
+      .map((character) => character),
     comment.map(() => ""),
   ),
 )
@@ -192,7 +194,7 @@ const adjectiveKind = choiceOnlyOne(
   keyword("opinion"),
   keyword("size"),
   sequence(keyword("physical"), keyword("quality"))
-    .map(() => "physical quality" as const),
+    .map<"physical quality">(() => "physical quality"),
   keyword("age"),
   keyword("color"),
   keyword("origin"),
@@ -234,8 +236,9 @@ function verbOnly(tagInside: Parser<unknown>): Parser<VerbForms> {
     sequence(
       word.skip(slash),
       word.skip(slash),
-      word.skip(tag(tagInside)),
+      word,
     )
+      .skip(tag(tagInside))
       .filter(([presentPlural, presentSingular, past]) => {
         const [_, ...pluralParticles] = presentPlural.split(" ");
         const [_1, ...singularParticles] = presentSingular.split(" ");

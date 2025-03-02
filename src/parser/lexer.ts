@@ -72,12 +72,9 @@ function specificWord(thatWord: string): Parser<string> {
     }
   });
 }
-const multipleA = sequence(
-  specificWord("a"),
-  count(allAtLeastOnce(specificWord("a"))),
-)
-  .map<Token>(([_, count]) => ({ type: "multiple a", count: count + 1 }));
-
+const multipleA = specificWord("a")
+  .with(count(allAtLeastOnce(specificWord("a"))))
+  .map<Token>((count) => ({ type: "multiple a", count: count + 1 }));
 const repeatingLetter = match(/[a-zA-Z]/, "latin letter")
   .then((letter) =>
     count(all(matchString(letter))).map<[string, number]>(
@@ -143,12 +140,12 @@ const cartoucheElement = choiceOnlyOne(
     .map((letter) => letter.toLowerCase())
     .skip(spaces),
 );
-const cartouche = sequence(
-  specificSpecialUcsur(START_OF_CARTOUCHE).skip(spaces),
-  allAtLeastOnce(cartoucheElement),
-  specificSpecialUcsur(END_OF_CARTOUCHE).skip(spaces),
-)
-  .map(([_, words]) => {
+const cartouche = specificSpecialUcsur(START_OF_CARTOUCHE)
+  .skip(spaces)
+  .with(allAtLeastOnce(cartoucheElement))
+  .skip(specificSpecialUcsur(END_OF_CARTOUCHE))
+  .skip(spaces)
+  .map((words) => {
     const word = words.join("");
     return `${word[0].toUpperCase()}${word.slice(1)}`;
   });
@@ -164,12 +161,10 @@ function longContainer<T>(
   right: string,
   inside: Parser<T>,
 ): Parser<T> {
-  return sequence(
-    specificSpecialUcsur(left),
-    inside,
-    specificSpecialUcsur(right),
-  )
-    .map(([_, inside]) => inside);
+  return specificSpecialUcsur(left)
+    .with(inside)
+    .skip(specificSpecialUcsur(right))
+    .map((inside) => inside);
 }
 const longSpaceContainer = longContainer(
   START_OF_LONG_GLYPH,

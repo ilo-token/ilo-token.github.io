@@ -141,24 +141,24 @@ function xAlaX(
   description: string,
 ): Parser<SimpleWordUnit & { type: "x ala x" }> {
   return choice<SimpleWordUnit & { type: "x ala x" }>(
-    sequence(
-      specificToken("headless long glyph start"),
-      wordFrom(useWord, description),
-      specificToken("inside long glyph")
-        .filter((words) => {
-          if (words.words.length !== 1) {
-            throw new UnexpectedError(
-              describe({ type: "combined glyphs", words: words.words }),
-              '"ala"',
-            );
-          }
-          if (words.words[0] !== "ala") {
-            throw new UnexpectedError(`"${words.words[0]}"`, '"ala"');
-          }
-          return true;
-        }),
-    )
-      .then(([_, word]) =>
+    specificToken("headless long glyph start")
+      .with(wordFrom(useWord, description))
+      .skip(
+        specificToken("inside long glyph")
+          .filter((words) => {
+            if (words.words.length !== 1) {
+              throw new UnexpectedError(
+                describe({ type: "combined glyphs", words: words.words }),
+                '"ala"',
+              );
+            }
+            if (words.words[0] !== "ala") {
+              throw new UnexpectedError(`"${words.words[0]}"`, '"ala"');
+            }
+            return true;
+          }),
+      )
+      .then((word) =>
         specificWord(word)
           .skip(specificToken("headless long glyph end"))
           .map(() => ({ type: "x ala x", word }))
@@ -370,24 +370,22 @@ const nanpa = sequence(wordUnit(new Set(["nanpa"]), '"nanpa"'), phrase)
   .map<Nanpa>(([nanpa, phrase]) => ({ nanpa, phrase }))
   .filter(filter(NANPA_RULES));
 const pi = choice(
-  sequence(
-    specificToken("headed long glyph start")
-      .filter((words) => {
-        if (words.words.length !== 1) {
-          throw new UnexpectedError(
-            describe({ type: "combined glyphs", words: words.words }),
-            "pi",
-          );
-        }
-        if (words.words[0] !== "pi") {
-          throw new UnexpectedError(`"${words.words[0]}"`, "pi");
-        }
-        return true;
-      }),
-    phrase,
-    specificToken("headless long glyph end"),
-  )
-    .map(([_, phrase]) => phrase),
+  specificToken("headed long glyph start")
+    .filter((words) => {
+      if (words.words.length !== 1) {
+        throw new UnexpectedError(
+          describe({ type: "combined glyphs", words: words.words }),
+          "pi",
+        );
+      }
+      if (words.words[0] !== "pi") {
+        throw new UnexpectedError(`"${words.words[0]}"`, "pi");
+      }
+      return true;
+    })
+    .with(phrase)
+    .skip(specificToken("headless long glyph end"))
+    .map((phrase) => phrase),
   specificWord("pi").with(phrase),
 );
 const modifiers = sequence(
@@ -501,12 +499,10 @@ const subjectPhrases = choice(
   singlePhrase,
 );
 const preposition = choice<Preposition>(
-  sequence(
-    specificToken("headless long glyph start"),
-    phrase,
-    specificToken("headless long glyph end"),
-  )
-    .map(([_, phrase]) => ({
+  specificToken("headless long glyph start")
+    .with(phrase)
+    .skip(specificToken("headless long glyph end"))
+    .map((phrase) => ({
       preposition: {
         type: "default",
         word: "lon",
@@ -600,16 +596,18 @@ function associatedPredicates(
     ),
     many(optionalComma.with(preposition)),
   )
-    .filter(([_, objects, prepositions]) =>
-      objects != null || prepositions.length > 0
-    )
-    .sortBy(([_, _1, prepositions]) => -prepositions.length)
-    .map(([predicates, objects, prepositions]) => ({
+    .map<Predicate & { type: "associated" }>((
+      [predicates, objects, prepositions],
+    ) => ({
       type: "associated",
       predicates,
       objects,
       prepositions,
-    }));
+    }))
+    .filter(({ objects, prepositions }) =>
+      objects != null || prepositions.length > 0
+    )
+    .sortBy(({ prepositions }) => -prepositions.length);
 }
 function multiplePredicates(
   nestingRule: Array<"li" | "o" | "anu">,
@@ -790,14 +788,7 @@ const sentence = choice<Sentence>(
       lookAhead(sequence(filler, choice(punctuation, end))).map(() => ""),
     ),
   )
-    .sortBy(([_, _1, _2, anuSeme]) => {
-      if (anuSeme == null) {
-        return 1;
-      } else {
-        return 0;
-      }
-    })
-    .map<Sentence>(
+    .map<Sentence & { type: "default" }>(
       (
         [
           kinOrTaso,
@@ -808,8 +799,8 @@ const sentence = choice<Sentence>(
           punctuation,
         ],
       ) => {
-        const sentence = {
-          type: "default" as const,
+        const sentence: Sentence & { type: "default" } = {
+          type: "default",
           kinOrTaso,
           laClauses,
           finalClause,
@@ -833,7 +824,14 @@ const sentence = choice<Sentence>(
         }
         return { ...sentence, interrogative };
       },
-    ),
+    )
+    .sortBy(({ anuSeme }) => {
+      if (anuSeme == null) {
+        return 1;
+      } else {
+        return 0;
+      }
+    }),
   sequence(filler, optional(punctuation))
     .map(([filler, punctuation]) => ({
       type: "filler",
