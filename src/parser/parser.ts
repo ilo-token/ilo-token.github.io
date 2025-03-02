@@ -785,7 +785,8 @@ const sentence = choice<Sentence>(
     choice(
       punctuation,
       end.map(() => ""),
-      lookAhead(sequence(filler, choice(punctuation, end))).map(() => ""),
+      lookAhead(sequence(manyAtLeastOnce(filler), choice(punctuation, end)))
+        .map(() => ""),
     ),
   )
     .map<Sentence & { type: "default" }>(
