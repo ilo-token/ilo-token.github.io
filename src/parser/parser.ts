@@ -420,10 +420,8 @@ const modifiers = sequence(
     ...piModifiers,
   ])
   .filter(filter(MULTIPLE_MODIFIERS_RULES));
-const singlePhrase = phrase.map<MultiplePhrases>((phrase) => ({
-  type: "single",
-  phrase,
-}));
+const singlePhrase = phrase
+  .map<MultiplePhrases>((phrase) => ({ type: "single", phrase }));
 function nestedPhrasesOnly(
   nestingRule: Array<"en" | "li" | "o" | "e" | "anu">,
 ): Parser<MultiplePhrases> {
