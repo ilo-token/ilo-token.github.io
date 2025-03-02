@@ -60,22 +60,23 @@ import {
   UnrecognizedError,
 } from "./parser-lib.ts";
 import { describe, Token } from "./token.ts";
+import { memoize } from "@std/cache/memoize";
 
 const spaces = match(/\s*/, "spaces");
 
 Parser.startCache(cache);
 
-function specificToken<T extends Token["type"]>(
-  type: T,
-): Parser<Token & { type: T }> {
-  return token.map((token) => {
-    if (token.type === type) {
-      return token as Token & { type: T };
-    } else {
-      throw new UnexpectedError(describe(token), type);
-    }
-  });
-}
+const specificToken = memoize(
+  <T extends Token["type"]>(type: T): Parser<Token & { type: T }> => {
+    return token.map((token) => {
+      if (token.type === type) {
+        return token as Token & { type: T };
+      } else {
+        throw new UnexpectedError(describe(token), type);
+      }
+    });
+  },
+);
 const punctuation = specificToken("punctuation")
   .map(({ punctuation }) => punctuation);
 const comma = punctuation
