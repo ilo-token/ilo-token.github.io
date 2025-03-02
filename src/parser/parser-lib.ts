@@ -151,7 +151,7 @@ export function sequence<T extends Array<unknown>>(
   return sequence.reduceRight(
     (right: Parser<any>, left) =>
       left.then((value) => right.map((newValue) => [value, ...newValue])),
-    nothing.map(() => []),
+    emptyArray,
   ) as Parser<any>;
 }
 export const many = memoize(<T>(parser: Parser<T>): Parser<Array<T>> =>
