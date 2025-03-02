@@ -438,14 +438,11 @@ export const MULTIPLE_SENTENCES_RULE: Array<
 export function filter<T>(
   rules: Array<(value: T) => boolean>,
 ): (value: T) => boolean {
-  return (value) => {
-    const result = new ArrayResult(rules).map((rule) => rule(value));
-    if (result.isError()) {
-      throw new AggregateError(result.errors);
-    } else {
-      return result.array.every((result) => result);
-    }
-  };
+  return (value) =>
+    new ArrayResult(rules)
+      .map((rule) => rule(value))
+      .unwrap()
+      .every((result) => result);
 }
 function modifierIsNumeric(modifier: Modifier): boolean {
   return modifier.type === "default" && modifier.word.type === "number";

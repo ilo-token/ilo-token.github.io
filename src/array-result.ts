@@ -1,4 +1,3 @@
-import { distinctBy } from "@std/collections/distinct-by";
 import { flattenError } from "./misc.ts";
 
 export type ArrayResultOptions = {
@@ -49,6 +48,13 @@ export class ArrayResult<T> {
   isError(): boolean {
     return this.array.length === 0;
   }
+  unwrap(): ReadonlyArray<T> {
+    if (this.isError()) {
+      throw new AggregateError(this.errors);
+    } else {
+      return this.array;
+    }
+  }
   filter(mapper: (value: T) => boolean): ArrayResult<T> {
     return this.flatMap((value) => {
       if (mapper(value)) {
@@ -91,15 +97,6 @@ export class ArrayResult<T> {
   }
   sortBy(mapper: (value: T) => number): ArrayResult<T> {
     return this.sort((left, right) => mapper(left) - mapper(right));
-  }
-  deduplicateErrors(): ArrayResult<T> {
-    if (this.isError()) {
-      return ArrayResult.errors(
-        distinctBy(this.errors, ({ message }) => message),
-      );
-    } else {
-      return this;
-    }
   }
   addErrorWhenNone(error: () => ArrayResultError): ArrayResult<T> {
     if (this.isError() && this.errors.length === 0) {

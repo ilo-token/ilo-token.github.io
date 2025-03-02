@@ -2,6 +2,7 @@ import { distinct } from "@std/collections/distinct";
 import { shuffle } from "@std/random/shuffle";
 import { errors } from "../telo-misikeke/telo-misikeke.js";
 import { ArrayResultError } from "./array-result.ts";
+import { deduplicateErrors } from "./misc.ts";
 import { settings } from "./settings.ts";
 import { translate as rawTranslate } from "./translator/composer.ts";
 
@@ -28,7 +29,7 @@ export function translate(tokiPona: string): Array<string> {
         .map((message) => new ArrayResultError(message, { isHtml: true }));
     }
     if (error.length == 0) {
-      error = arrayResult.deduplicateErrors().errors;
+      error = deduplicateErrors(arrayResult.errors);
     }
     throw new AggregateError(error);
   }

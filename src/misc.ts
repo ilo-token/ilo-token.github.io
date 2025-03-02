@@ -1,3 +1,4 @@
+import { distinctBy } from "@std/collections/distinct-by";
 import { escape } from "@std/html/entities";
 import { Lazy } from "./cache.ts";
 
@@ -82,4 +83,9 @@ export function flattenError(error: unknown): Array<unknown> {
 export function lazy<T>(fn: () => T): () => T {
   const cache = new Lazy(fn);
   return () => cache.getValue();
+}
+export function deduplicateErrors<T extends Error>(
+  errors: ReadonlyArray<T>,
+): ReadonlyArray<T> {
+  return distinctBy(errors, ({ message }) => message);
 }
