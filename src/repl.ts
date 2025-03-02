@@ -16,9 +16,10 @@ if (import.meta.main) {
       const arrayResult = translate(input);
       for (const translation of arrayResult) {
         const count = translation.match(/<strong>/g)?.length ?? 0;
-        const text = unescape(translation.replaceAll(/<\/?strong>/g, "%c"), {
-          entityList,
-        });
+        const text = unescape(
+          translation.replaceAll(/<\/?strong>/g, "%c"),
+          { entityList },
+        );
         console.log(
           `  - ${text}`,
           ...repeatArray(["font-weight: bold", ""], count).flat(),
