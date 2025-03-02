@@ -420,12 +420,15 @@ const modifiers = sequence(
     ...piModifiers,
   ])
   .filter(filter(MULTIPLE_MODIFIERS_RULES));
+const singlePhrase = phrase.map<MultiplePhrases>((phrase) => ({
+  type: "single",
+  phrase,
+}));
 function nestedPhrasesOnly(
   nestingRule: Array<"en" | "li" | "o" | "e" | "anu">,
 ): Parser<MultiplePhrases> {
   if (nestingRule.length === 0) {
-    return phrase
-      .map((phrase) => ({ type: "single", phrase }));
+    return singlePhrase;
   } else {
     const [first, ...rest] = nestingRule;
     let type: "and conjunction" | "anu";
@@ -452,8 +455,7 @@ function nestedPhrases(
   nestingRule: Array<"en" | "li" | "o" | "e" | "anu">,
 ): Parser<MultiplePhrases> {
   if (nestingRule.length === 0) {
-    return phrase
-      .map((phrase) => ({ type: "single", phrase }));
+    return singlePhrase;
   } else {
     return choice(
       nestedPhrasesOnly(nestingRule),
@@ -464,7 +466,7 @@ function nestedPhrases(
 const subjectPhrases = choice(
   nestedPhrasesOnly(["en", "anu"]),
   nestedPhrasesOnly(["anu", "en"]),
-  phrase.map<MultiplePhrases>((phrase) => ({ type: "single", phrase })),
+  singlePhrase,
 );
 const preposition = choice<Preposition>(
   sequence(
