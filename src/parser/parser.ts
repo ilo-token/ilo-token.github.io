@@ -46,6 +46,7 @@ import {
   choice,
   choiceOnlyOne,
   count,
+  empty,
   end,
   lazy,
   lookAhead,
@@ -422,6 +423,27 @@ const modifiers = sequence(
   .filter(filter(MULTIPLE_MODIFIERS_RULES));
 const singlePhrase = phrase
   .map<MultiplePhrases>((phrase) => ({ type: "single", phrase }));
+const longAnu = sequence(
+  specificToken("headless long glyph start").with(phrase),
+  manyAtLeastOnce(
+    specificToken("inside long glyph")
+      .filter((words) => {
+        if (words.words.length !== 1) {
+          throw new UnexpectedError(
+            describe({ type: "combined glyphs", words: words.words }),
+            "pi",
+          );
+        }
+        if (words.words[0] !== "anu") {
+          throw new UnexpectedError(`"${words.words[0]}"`, "anu");
+        }
+        return true;
+      })
+      .with(phrase),
+  ),
+)
+  .skip(specificToken("headless long glyph end"))
+  .map(([phrase, morePhrase]) => [phrase, ...morePhrase]);
 function nestedPhrasesOnly(
   nestingRule: Array<"en" | "li" | "o" | "e" | "anu">,
 ): Parser<MultiplePhrases> {
@@ -435,18 +457,30 @@ function nestedPhrasesOnly(
     } else {
       type = "anu";
     }
-    return sequence(
-      nestedPhrases(rest),
-      manyAtLeastOnce(
-        optionalComma
-          .with(specificWord(first))
-          .with(nestedPhrases(rest)),
-      ),
-    )
-      .map(([group, moreGroups]) => ({
-        type,
-        phrases: [group, ...moreGroups],
+    let longAnuParser: Parser<MultiplePhrases>;
+    if (first === "anu") {
+      longAnuParser = longAnu.map((phrases) => ({
+        type: "anu",
+        phrases: phrases.map((phrase) => ({ type: "single", phrase })),
       }));
+    } else {
+      longAnuParser = empty;
+    }
+    return choice(
+      longAnuParser,
+      sequence(
+        nestedPhrases(rest),
+        manyAtLeastOnce(
+          optionalComma
+            .with(specificWord(first))
+            .with(nestedPhrases(rest)),
+        ),
+      )
+        .map(([group, moreGroups]) => ({
+          type,
+          phrases: [group, ...moreGroups],
+        })),
+    );
   }
 }
 function nestedPhrases(
@@ -593,7 +627,17 @@ function multiplePredicates(
     } else {
       type = "anu";
     }
+    let longAnuParser: Parser<Predicate>;
+    if (first === "anu") {
+      longAnuParser = longAnu.map((phrases) => ({
+        type: "anu",
+        predicates: phrases.map((predicate) => ({ type: "single", predicate })),
+      }));
+    } else {
+      longAnuParser = empty;
+    }
     return choice<Predicate>(
+      longAnuParser,
       associatedPredicates(nestingRule),
       sequence(
         choice(
