@@ -27,6 +27,7 @@ With this definition, ilo Token can translate "waaaa" into "woooow". There is no
 repetition pattern to follow for toki pona words. "wwaaa" is just as valid.
 
 - Allow custom fillers.
+- Support for long "anu" glyph.
 - Fix sentence capitalization: If the sentence starts with number, no
   capitalization will occur.
 
