@@ -93,7 +93,6 @@ export function fixDeterminer(
     [article.length > 1, encodeDeterminer`multiple articles ${article}`],
     [
       demonstrative.length > 1,
-
       encodeDeterminer`multiple demonstrative determiners ${demonstrative}`,
     ],
     [
