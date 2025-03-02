@@ -631,10 +631,12 @@ function multiplePredicates(
     );
   }
 }
+const liPredicates = multiplePredicates(["li", "anu"]);
+const oPredicates = multiplePredicates(["o", "anu"]);
 const clause = choice<Clause>(
   sequence(
     wordFrom(new Set(["mi", "sina"]), "mi/sina subject"),
-    multiplePredicates(["li", "anu"]),
+    liPredicates,
   )
     .map(([subject, predicates]) => ({
       type: "li clause",
@@ -679,7 +681,7 @@ const clause = choice<Clause>(
     subjectPhrases,
     optionalComma
       .with(specificWord("li"))
-      .with(multiplePredicates(["li", "anu"])),
+      .with(liPredicates),
   )
     .map(([subjects, predicates]) => ({
       type: "li clause",
@@ -688,13 +690,13 @@ const clause = choice<Clause>(
       explicitLi: true,
     })),
   specificWord("o")
-    .with(multiplePredicates(["o", "anu"]))
+    .with(oPredicates)
     .map((predicates) => ({ type: "o clause", subjects: null, predicates })),
   sequence(
     subjectPhrases,
     optionalComma
       .with(specificWord("o"))
-      .with(multiplePredicates(["o", "anu"])),
+      .with(oPredicates),
   )
     .map(([subjects, predicates]) => ({
       type: "o clause",
