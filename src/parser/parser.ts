@@ -1,6 +1,5 @@
 import { memoize } from "@std/cache/memoize";
 import { sumOf } from "@std/collections/sum-of";
-import { ArrayResult } from "../array-result.ts";
 import {
   contentWordSet,
   dictionary,
@@ -821,7 +820,7 @@ const sentence = choice<Sentence>(
     })),
 )
   .filter(filter(SENTENCE_RULE));
-const fullParser = spaces
+export const parser = spaces
   .with(lookAhead(everything.filter((src) => {
     if (src.trimEnd().length > 500) {
       throw new UnrecognizedError("long text");
@@ -837,10 +836,7 @@ const fullParser = spaces
       .skip(end)
       .filter(filter(MULTIPLE_SENTENCES_RULE))
       .map((sentences) => ({ type: "sentences", sentences })),
-  ));
+  ))
+  .parse;
 
 Parser.endCache();
-
-export function parse(src: string): ArrayResult<MultipleSentences> {
-  return fullParser.parse(src);
-}
