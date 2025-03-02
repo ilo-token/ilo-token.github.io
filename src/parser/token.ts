@@ -55,6 +55,8 @@ export function describe(token: Token): string {
       return `"${token.word.repeat(token.length)}"`;
     case "x ala x":
       return `"${token.word} ala ${token.word}"`;
+    case "punctuation":
+      return `punctuation mark "${token.punctuation}"`;
     case "proper word":
       switch (token.kind) {
         case "cartouche":
@@ -62,9 +64,5 @@ export function describe(token: Token): string {
         case "latin":
           return `proper word "${token.words}"`;
       }
-      // this is unreachable
-      // fallthrough
-    case "punctuation":
-      return `punctuation mark "${token.punctuation}"`;
   }
 }

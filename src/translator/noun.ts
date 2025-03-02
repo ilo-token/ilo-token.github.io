@@ -48,6 +48,10 @@ export function fromNounForms(
 ): ArrayResult<{ noun: string; quantity: English.Quantity }> {
   const { singular, plural } = nounForms;
   switch (determinerNumber) {
+    case "singular":
+    case "plural":
+      return new ArrayResult(nullableAsArray(singular))
+        .map((noun) => ({ noun, quantity: determinerNumber }));
     case "both":
       switch (settings.quantity) {
         case "both":
@@ -72,14 +76,6 @@ export function fromNounForms(
             return new ArrayResult([{ noun: plural!, quantity: "plural" }]);
           }
       }
-      // unreachable
-      // fallthrough
-    case "singular":
-      return new ArrayResult(nullableAsArray(singular))
-        .map((noun) => ({ noun, quantity: "singular" as const }));
-    case "plural":
-      return new ArrayResult(nullableAsArray(plural))
-        .map((noun) => ({ noun, quantity: "plural" as const }));
   }
 }
 export function simpleNounForms(
