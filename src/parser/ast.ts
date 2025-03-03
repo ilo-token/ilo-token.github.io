@@ -10,7 +10,7 @@ export type SimpleHeadedWordUnit =
   | { type: "reduplication"; word: string; count: number };
 export type SimpleWordUnit =
   | SimpleHeadedWordUnit
-  | { type: "number"; number: number };
+  | { type: "number"; words: Array<string> };
 export type HeadedWordUnit =
   & SimpleHeadedWordUnit
   & { emphasis: null | Emphasis };

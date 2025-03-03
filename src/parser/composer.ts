@@ -39,7 +39,7 @@ function emphasisAsArray(value: null | Emphasis): Array<string> {
 export function simpleWordUnit(wordUnit: SimpleWordUnit): string {
   switch (wordUnit.type) {
     case "number":
-      return `${wordUnit.number}`;
+      return wordUnit.words.join(" ");
     case "default":
       return wordUnit.word;
     case "x ala x":

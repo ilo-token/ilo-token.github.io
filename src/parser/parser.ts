@@ -1,10 +1,8 @@
 import { memoize } from "@std/cache/memoize";
-import { sumOf } from "@std/collections/sum-of";
 import {
   contentWordSet,
-  dictionary,
   fillerSet,
-  MissingEntryError,
+  numeralSet,
   prepositionSet,
   preverbSet,
   tokiPonaWordSet,
@@ -235,74 +233,7 @@ function optionalCombined(
       ]),
   );
 }
-function wordToNumber(word: string): number {
-  const num = dictionary.get(word)
-    ?.definitions
-    .filter((definition) => definition.type === "numeral")[0]
-    ?.numeral;
-  if (num == null) {
-    throw new MissingEntryError("numeral", word);
-  }
-  return num;
-}
-const subAleNumber = sequence(
-  many(specificWord("mute")),
-  many(specificWord("luka")),
-  many(specificWord("tu")),
-  many(specificWord("wan")),
-)
-  .map((array) => array.flat())
-  .map((array) => sumOf(array, wordToNumber));
-const properSubAleNumber = subAleNumber.filter((number) => {
-  if (number > 100) {
-    throw new UnrecognizedError(
-      'numbers after "ale" exceeding 100 in nasin nanpa pona',
-    );
-  } else {
-    return true;
-  }
-});
-const ale = choice(specificWord("ale"), specificWord("ali"));
-const number = choice(
-  specificWord("ala").map(() => 0),
-  sequence(
-    manyAtLeastOnce(
-      sequence(
-        properSubAleNumber
-          .filter((number) => number !== 0),
-        count(manyAtLeastOnce(ale)),
-      ),
-    ),
-    properSubAleNumber
-  )
-    .map<Array<[number, number]>>(([rest, last]) => [...rest, [last, 0]])
-    // Ensure the ale is in decreasing order
-    .filter((numbers) => {
-      const sorted = numbers.every((number, i) => {
-        if (i === numbers.length - 1) {
-          return true;
-        } else {
-          const [_, firstAle] = number;
-          const [_1, secondAle] = numbers[i + 1];
-          return firstAle > secondAle;
-        }
-      });
-      if (sorted) {
-        return true;
-      } else {
-        throw new UnrecognizedError(
-          'unordered "ale" places in nasin nanpa pona',
-        );
-      }
-    })
-    .map((numbers) => sumOf(numbers, ([sub, ale]) => sub * 100 ** ale)),
-  sequence(
-    count(many(ale)),
-    subAleNumber,
-  )
-    .map(([ale, sub]) => ale * 100 + sub)
-    .filter((number) => number !== 0),
-);
+const number = manyAtLeastOnce(wordFrom(numeralSet, "numeral"));
 const phrase: Parser<Phrase> = lazy(() =>
   choice<Phrase>(
     sequence(
@@ -311,9 +242,9 @@ const phrase: Parser<Phrase> = lazy(() =>
       modifiers,
       optionalEmphasis,
     )
-      .map(([number, wordModifier, modifiers, phraseModifier]) => ({
+      .map(([words, wordModifier, modifiers, phraseModifier]) => ({
         type: "default",
-        headWord: { type: "number", number, emphasis: wordModifier },
+        headWord: { type: "number", words, emphasis: wordModifier },
         modifiers,
         emphasis: phraseModifier,
       })),
@@ -373,9 +304,9 @@ const modifiers = sequence(
   many(
     choice(
       sequence(number, optionalEmphasis)
-        .map<Modifier>(([number, emphasis]) => ({
+        .map<Modifier>(([words, emphasis]) => ({
           type: "default",
-          word: { type: "number", number, emphasis },
+          word: { type: "number", words, emphasis },
         }))
         .filter(filter(MODIFIER_RULES)),
       wordUnit(contentWordSet, "modifier")

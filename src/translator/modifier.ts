@@ -38,32 +38,13 @@ export type AdverbialModifier = {
 export type MultipleModifierTranslation =
   | ({ type: "adjectival" } & AdjectivalModifier)
   | ({ type: "adverbial" } & AdverbialModifier);
-function numberModifier(
-  word: number,
-  emphasis: boolean,
-): ModifierTranslation {
-  let quantity: English.Quantity;
-  if (word === 1) {
-    quantity = "singular";
-  } else {
-    quantity = "plural";
-  }
-  return {
-    type: "determiner",
-    determiner: {
-      determiner: { word: `${word}`, emphasis },
-      kind: "numeral",
-      quantity,
-    },
-  };
-}
 export function defaultModifier(
   wordUnit: TokiPona.WordUnit,
 ): ArrayResult<ModifierTranslation> {
   const emphasis = wordUnit.emphasis != null;
   switch (wordUnit.type) {
     case "number":
-      return new ArrayResult([numberModifier(wordUnit.number, emphasis)]);
+      return new ArrayResult(new TranslationTodoError("numeral"));
     case "x ala x":
       return new ArrayResult(new TranslationTodoError("x ala x"));
     case "default":

@@ -12,22 +12,6 @@ export type WordUnitTranslation =
   | ({ type: "noun" } & PartialNoun)
   | { type: "adjective"; adjective: English.AdjectivePhrase }
   | ({ type: "verb" } & PartialVerb);
-function numberWordUnit(
-  word: number,
-  emphasis: boolean,
-): WordUnitTranslation {
-  return {
-    type: "noun",
-    determiner: [],
-    adjective: [],
-    singular: `${word}`,
-    plural: null,
-    emphasis,
-    reduplicationCount: 1,
-    perspective: "third",
-    postAdjective: null,
-  };
-}
 function defaultWordUnit(
   word: string,
   reduplicationCount: number,
@@ -90,9 +74,7 @@ export function wordUnit(
 ): ArrayResult<WordUnitTranslation> {
   switch (wordUnit.type) {
     case "number":
-      return new ArrayResult([
-        numberWordUnit(wordUnit.number, wordUnit.emphasis != null),
-      ]);
+      return new ArrayResult(new TranslationTodoError("numeral"));
     case "x ala x":
       return new ArrayResult(new TranslationTodoError("x ala x"));
     case "default":
