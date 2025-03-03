@@ -28,7 +28,7 @@ function regularNumber(number: Array<number>): number {
 function subHundred(number: Array<number>): number {
   const total = regularNumber(number);
   if (total >= 100) {
-    throw new FilteredOutError("ale position exceeding 99");
+    throw new FilteredOutError('"ale" position exceeding 99');
   } else {
     return total;
   }
@@ -51,7 +51,7 @@ function unfilteredNasinNanpaPona(
         hundredCount = number.length - aleStart;
       }
       if (previousHundredCount <= hundredCount) {
-        throw new FilteredOutError("unsorted ale");
+        throw new FilteredOutError('unsorted "ale"');
       }
       return subHundred(number.slice(0, aleStart)) * 100 ** hundredCount +
         unfilteredNasinNanpaPona(
