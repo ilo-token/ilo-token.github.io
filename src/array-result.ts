@@ -143,15 +143,17 @@ export class ArrayResult<T> {
     try {
       return arrayResult();
     } catch (error) {
-      return ArrayResult.errors(extractArrayResultError(error));
+      return ArrayResult.errors(extractArrayResultError(flattenError(error)));
     }
   }
 }
 type Errors =
   | { type: "array result"; errors: Array<ArrayResultError> }
   | { type: "outside"; errors: Array<unknown> };
-function extractArrayResultError(error: unknown): Array<ArrayResultError> {
-  const errors = flattenError(error).reduce<Errors>(
+export function extractArrayResultError(
+  errors: ReadonlyArray<unknown>,
+): ReadonlyArray<ArrayResultError> {
+  const aggregate = errors.reduce<Errors>(
     (errors, error) => {
       switch (errors.type) {
         case "array result":
@@ -176,14 +178,14 @@ function extractArrayResultError(error: unknown): Array<ArrayResultError> {
       errors: [],
     },
   );
-  switch (errors.type) {
+  switch (aggregate.type) {
     case "array result":
-      return errors.errors;
+      return aggregate.errors;
     case "outside":
-      if (errors.errors.length === 1) {
-        throw errors.errors[0];
+      if (aggregate.errors.length === 1) {
+        throw aggregate.errors[0];
       } else {
-        throw new AggregateError(errors.errors);
+        throw new AggregateError(aggregate.errors);
       }
   }
 }

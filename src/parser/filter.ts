@@ -1,4 +1,5 @@
-import { ArrayResult } from "../array-result.ts";
+import { extractArrayResultError } from "../array-result.ts";
+import { flattenError } from "../misc.ts";
 import { settings } from "../settings.ts";
 import {
   Clause,
@@ -19,7 +20,7 @@ import {
 } from "./extract.ts";
 import { UnrecognizedError } from "./parser-lib.ts";
 
-export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
+export const WORD_UNIT_RULES: ReadonlyArray<(wordUnit: WordUnit) => boolean> = [
   // avoid "seme ala seme"
   (wordUnit) => {
     if (wordUnit.type === "x ala x" && wordUnit.word === "seme") {
@@ -28,7 +29,7 @@ export const WORD_UNIT_RULES: Array<(wordUnit: WordUnit) => boolean> = [
     return true;
   },
 ];
-export const NANPA_RULES: Array<(nanpa: Nanpa) => boolean> = [
+export const NANPA_RULES: ReadonlyArray<(nanpa: Nanpa) => boolean> = [
   // disallow _nanpa ala nanpa_
   (modifier) => {
     if (modifier.nanpa.type === "x ala x") {
@@ -93,7 +94,7 @@ export const NANPA_RULES: Array<(nanpa: Nanpa) => boolean> = [
     return true;
   },
 ];
-export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
+export const MODIFIER_RULES: ReadonlyArray<(modifier: Modifier) => boolean> = [
   // quotation modifier cannot exist
   (modifier) => {
     if (modifier.type === "quotation") {
@@ -157,8 +158,8 @@ export const MODIFIER_RULES: Array<(modifier: Modifier) => boolean> = [
     return true;
   },
 ];
-export const MULTIPLE_MODIFIERS_RULES: Array<
-  (modifier: Array<Modifier>) => boolean
+export const MULTIPLE_MODIFIERS_RULES: ReadonlyArray<
+  (modifier: ReadonlyArray<Modifier>) => boolean
 > = [
   // // no multiple pi
   // (modifiers) => {
@@ -231,7 +232,7 @@ export const MULTIPLE_MODIFIERS_RULES: Array<
     return true;
   },
 ];
-export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
+export const PHRASE_RULE: ReadonlyArray<(phrase: Phrase) => boolean> = [
   // Disallow quotation
   (phrase) => {
     if (phrase.type === "quotation") {
@@ -280,44 +281,45 @@ export const PHRASE_RULE: Array<(phrase: Phrase) => boolean> = [
     return true;
   },
 ];
-export const PREPOSITION_RULE: Array<(phrase: Preposition) => boolean> = [
-  // Disallow preverb modifiers other than "ala"
-  (preposition) => {
-    if (!modifiersIsAlaOrNone(preposition.modifiers)) {
-      throw new UnrecognizedError('preverb with modifiers other than "ala"');
-    }
-    return true;
-  },
-  // Disallow nested preposition
-  (preposition) => {
-    if (
-      everyPhraseInMultiplePhrases(preposition.phrases)
-        .some(hasPrepositionInPhrase)
-    ) {
-      throw new UnrecognizedError("preposition inside preposition");
-    }
-    return true;
-  },
-  // Preposition with "anu" must not have emphasis particle
-  (preposition) =>
-    preposition.emphasis == null || preposition.phrases.type !== "anu",
-  // Inner phrase must not have emphasis particle
-  (preposition) =>
-    preposition.phrases.type !== "single" ||
-    !phraseHasTopLevelEmphasis(preposition.phrases.phrase),
-  // Emphasis must not be nested
-  (preposition) => {
-    if (
-      preposition.emphasis != null &&
-      everyWordUnitInPreposition(preposition)
-        .some((wordUnit) => wordUnit.emphasis != null)
-    ) {
-      throw new UnrecognizedError("nested emphasis");
-    }
-    return true;
-  },
-];
-export const CLAUSE_RULE: Array<(clause: Clause) => boolean> = [
+export const PREPOSITION_RULE: ReadonlyArray<(phrase: Preposition) => boolean> =
+  [
+    // Disallow preverb modifiers other than "ala"
+    (preposition) => {
+      if (!modifiersIsAlaOrNone(preposition.modifiers)) {
+        throw new UnrecognizedError('preverb with modifiers other than "ala"');
+      }
+      return true;
+    },
+    // Disallow nested preposition
+    (preposition) => {
+      if (
+        everyPhraseInMultiplePhrases(preposition.phrases)
+          .some(hasPrepositionInPhrase)
+      ) {
+        throw new UnrecognizedError("preposition inside preposition");
+      }
+      return true;
+    },
+    // Preposition with "anu" must not have emphasis particle
+    (preposition) =>
+      preposition.emphasis == null || preposition.phrases.type !== "anu",
+    // Inner phrase must not have emphasis particle
+    (preposition) =>
+      preposition.phrases.type !== "single" ||
+      !phraseHasTopLevelEmphasis(preposition.phrases.phrase),
+    // Emphasis must not be nested
+    (preposition) => {
+      if (
+        preposition.emphasis != null &&
+        everyWordUnitInPreposition(preposition)
+          .some((wordUnit) => wordUnit.emphasis != null)
+      ) {
+        throw new UnrecognizedError("nested emphasis");
+      }
+      return true;
+    },
+  ];
+export const CLAUSE_RULE: ReadonlyArray<(clause: Clause) => boolean> = [
   // disallow preposition in subject
   (clause) => {
     let phrases: MultiplePhrases;
@@ -380,7 +382,7 @@ export const CLAUSE_RULE: Array<(clause: Clause) => boolean> = [
     return true;
   },
 ];
-export const SENTENCE_RULE: Array<(sentence: Sentence) => boolean> = [
+export const SENTENCE_RULE: ReadonlyArray<(sentence: Sentence) => boolean> = [
   // Prevent "taso ala taso" or "kin ala kin"
   (sentence) => {
     if (sentence.type === "default") {
@@ -424,8 +426,8 @@ export const SENTENCE_RULE: Array<(sentence: Sentence) => boolean> = [
     return true;
   },
 ];
-export const MULTIPLE_SENTENCES_RULE: Array<
-  (sentences: Array<Sentence>) => boolean
+export const MULTIPLE_SENTENCES_RULE: ReadonlyArray<
+  (sentences: ReadonlyArray<Sentence>) => boolean
 > = [
   // Only allow at most 2 sentences
   (sentences) => {
@@ -436,18 +438,43 @@ export const MULTIPLE_SENTENCES_RULE: Array<
   },
 ];
 export function filter<T>(
-  rules: Array<(value: T) => boolean>,
+  rules: ReadonlyArray<(value: T) => boolean>,
 ): (value: T) => boolean {
-  return (value) =>
-    new ArrayResult(rules)
-      .map((rule) => rule(value))
-      .unwrap()
-      .every((result) => result);
+  return (value) => {
+    const result: ReadonlyArray<null | ReadonlyArray<unknown>> = rules.map(
+      (rule) => {
+        try {
+          if (rule(value)) {
+            return null;
+          } else {
+            return [];
+          }
+        } catch (error) {
+          return flattenError(error);
+        }
+      },
+    );
+    if (result.every((result) => result == null)) {
+      return true;
+    } else {
+      const errors = extractArrayResultError(
+        result.flatMap((result) => result ?? []),
+      );
+      switch (errors.length) {
+        case 0:
+          return false;
+        case 1:
+          throw errors[0];
+        default:
+          throw new AggregateError(errors);
+      }
+    }
+  };
 }
 function modifierIsNumeric(modifier: Modifier): boolean {
   return modifier.type === "default" && modifier.word.type === "number";
 }
-function modifiersIsAlaOrNone(modifiers: Array<Modifier>): boolean {
+function modifiersIsAlaOrNone(modifiers: ReadonlyArray<Modifier>): boolean {
   switch (modifiers.length) {
     case 0:
       return true;
