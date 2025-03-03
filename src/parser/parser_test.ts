@@ -2,6 +2,7 @@ import { assertNotEquals } from "@std/assert";
 import { parse } from "./parser.ts";
 
 // Examples gathered from https://github.com/kilipan/nasin-toki
+// CC-BY-SA 4.0 https://github.com/kilipan/nasin-toki/blob/main/LICENSE.txt
 const EXAMPLE_SENTENCES = [
   // "anu seme",
   // "toki [ni] li pona",
