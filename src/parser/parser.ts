@@ -273,7 +273,7 @@ const number = choice(
         count(manyAtLeastOnce(ale)),
       ),
     ),
-    properSubAleNumber,
+    properSubAleNumber.filter((number) => number !== 0),
   )
     .map<Array<[number, number]>>(([rest, last]) => [...rest, [last, 0]])
     // Ensure the ale is in decreasing order
