@@ -5,6 +5,7 @@ import { adjective, compoundAdjective } from "./adjective.ts";
 import * as English from "./ast.ts";
 import { TranslationTodoError } from "./error.ts";
 import { PartialNoun, partialNoun } from "./noun.ts";
+import { number } from "./number.ts";
 import { partialPronoun, Place } from "./pronoun.ts";
 import { PartialVerb, partialVerb } from "./verb.ts";
 
@@ -74,7 +75,18 @@ export function wordUnit(
 ): ArrayResult<WordUnitTranslation> {
   switch (wordUnit.type) {
     case "number":
-      return new ArrayResult(new TranslationTodoError("numeral"));
+      return number(wordUnit.words)
+        .map<WordUnitTranslation>((number) => ({
+          type: "noun",
+          determiner: [],
+          adjective: [],
+          singular: `${number}`,
+          plural: null,
+          reduplicationCount: 1,
+          emphasis: wordUnit.emphasis != null,
+          perspective: "third",
+          postAdjective: null,
+        }));
     case "x ala x":
       return new ArrayResult(new TranslationTodoError("x ala x"));
     case "default":

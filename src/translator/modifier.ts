@@ -11,6 +11,7 @@ import {
   TranslationTodoError,
 } from "./error.ts";
 import { noun } from "./noun.ts";
+import { number } from "./number.ts";
 import { phrase } from "./phrase.ts";
 import { pronoun } from "./pronoun.ts";
 import { unemphasized, word } from "./word.ts";
@@ -44,7 +45,22 @@ export function defaultModifier(
   const emphasis = wordUnit.emphasis != null;
   switch (wordUnit.type) {
     case "number":
-      return new ArrayResult(new TranslationTodoError("numeral"));
+      return number(wordUnit.words).map<ModifierTranslation>((number) => {
+        let quantity: English.Quantity;
+        if (number === 1) {
+          quantity = "singular";
+        } else {
+          quantity = "plural";
+        }
+        return {
+          type: "determiner" as const,
+          determiner: {
+            determiner: word(`${number}`, 1, emphasis),
+            kind: "numeral",
+            quantity,
+          },
+        };
+      });
     case "x ala x":
       return new ArrayResult(new TranslationTodoError("x ala x"));
     case "default":
