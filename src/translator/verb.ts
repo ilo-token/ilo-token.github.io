@@ -1,5 +1,5 @@
 import * as Dictionary from "../../dictionary/type.ts";
-import { ArrayResult } from "../array-result.ts";
+import { ArrayResult } from "../array_result.ts";
 import { settings } from "../settings.ts";
 import * as English from "./ast.ts";
 import { Word } from "./ast.ts";

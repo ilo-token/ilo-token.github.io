@@ -1,4 +1,4 @@
-import { ArrayResult } from "../array-result.ts";
+import { ArrayResult } from "../array_result.ts";
 import { dictionary } from "../dictionary.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as Composer from "../parser/composer.ts";

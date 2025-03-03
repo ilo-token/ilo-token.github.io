@@ -57,7 +57,7 @@ import {
   sequence,
   UnexpectedError,
   UnrecognizedError,
-} from "./parser-lib.ts";
+} from "./parser_lib.ts";
 import { describe, Token } from "./token.ts";
 
 const spaces = match(/\s*/, "spaces");

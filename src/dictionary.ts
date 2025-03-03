@@ -1,7 +1,7 @@
 import { dictionary as globalDictionary } from "../dictionary/dictionary.ts";
 import { parseDictionary } from "../dictionary/parser.ts";
 import { Definition, Dictionary } from "../dictionary/type.ts";
-import { ArrayResultError } from "./array-result.ts";
+import { ArrayResultError } from "./array_result.ts";
 
 const customDictionary: Dictionary = new Map();
 export const dictionary: Dictionary = new Map();

@@ -1,8 +1,8 @@
-import { ArrayResult } from "../array-result.ts";
+import { ArrayResult } from "../array_result.ts";
 import { dictionary } from "../dictionary.ts";
 import { repeatWithSpace } from "../misc.ts";
 import * as TokiPona from "../parser/ast.ts";
-import { definitionAsPlainString } from "./as-string.ts";
+import { definitionAsPlainString } from "./as_string.ts";
 import * as English from "./ast.ts";
 import { clause, contextClause } from "./clause.ts";
 import { TranslationTodoError } from "./error.ts";

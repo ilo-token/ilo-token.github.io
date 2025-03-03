@@ -1,4 +1,4 @@
-import { ArrayResult } from "../array-result.ts";
+import { ArrayResult } from "../array_result.ts";
 import { nullableAsArray } from "../misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { AdjectiveWithInWay } from "./adjective.ts";

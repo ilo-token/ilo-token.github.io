@@ -1,6 +1,6 @@
 import { escape } from "@std/html/entities";
 import nlp from "compromise/three";
-import { ArrayResultError } from "../src/array-result.ts";
+import { ArrayResultError } from "../src/array_result.ts";
 import { deduplicateErrors, nullableAsArray } from "../src/misc.ts";
 import {
   all,
@@ -16,7 +16,7 @@ import {
   sourceOnly,
   UnexpectedError,
   withSource,
-} from "../src/parser/parser-lib.ts";
+} from "../src/parser/parser_lib.ts";
 import {
   Definition,
   Determiner,

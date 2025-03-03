@@ -1,4 +1,4 @@
-import { extractArrayResultError } from "../array-result.ts";
+import { extractArrayResultError } from "../array_result.ts";
 import { flattenError } from "../misc.ts";
 import { settings } from "../settings.ts";
 import {
@@ -18,7 +18,7 @@ import {
   everyWordUnitInPreposition,
   everyWordUnitInSentence,
 } from "./extract.ts";
-import { UnrecognizedError } from "./parser-lib.ts";
+import { UnrecognizedError } from "./parser_lib.ts";
 
 export const WORD_UNIT_RULES: ReadonlyArray<(wordUnit: WordUnit) => boolean> = [
   // avoid "seme ala seme"

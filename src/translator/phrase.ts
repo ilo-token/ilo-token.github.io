@@ -1,4 +1,4 @@
-import { ArrayResult } from "../array-result.ts";
+import { ArrayResult } from "../array_result.ts";
 import { nullableAsArray } from "../misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as Composer from "../parser/composer.ts";
@@ -21,7 +21,7 @@ import { fromNounForms, PartialNoun } from "./noun.ts";
 import { nounAsPreposition } from "./preposition.ts";
 import { Place } from "./pronoun.ts";
 import { PartialCompoundVerb, PartialVerb } from "./verb.ts";
-import { wordUnit } from "./word-unit.ts";
+import { wordUnit } from "./word_unit.ts";
 import { word } from "./word.ts";
 
 export type PhraseTranslation =

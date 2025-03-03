@@ -1,13 +1,13 @@
 import { distinct } from "@std/collections/distinct";
 import { shuffle } from "@std/random/shuffle";
-import { errors } from "../telo-misikeke/telo-misikeke.js";
-import { ArrayResultError } from "./array-result.ts";
+import { errors } from "../telo-misikeke/telo_misikeke.js";
+import { ArrayResultError } from "./array_result.ts";
 import { deduplicateErrors } from "./misc.ts";
 import { settings } from "./settings.ts";
 import { translate as rawTranslate } from "./translator/composer.ts";
 
-export { ArrayResultError } from "./array-result.ts";
-export type { ArrayResultOptions } from "./array-result.ts";
+export { ArrayResultError } from "./array_result.ts";
+export type { ArrayResultOptions } from "./array_result.ts";
 export { loadCustomDictionary } from "./dictionary.ts";
 export { clearCache } from "./parser/cache.ts";
 export { defaultSettings, settings } from "./settings.ts";

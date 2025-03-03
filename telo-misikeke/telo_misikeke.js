@@ -1,10 +1,10 @@
-// @ts-self-types="./telo-misikeke.d.ts"
+// @ts-self-types="./telo_misikeke.d.ts"
 
 import {
   escapeHtmlWithLineBreak,
   newlineAsHtmlLineBreak,
 } from "../src/misc.ts";
-import LINKU from "./linku-data.json" with { type: "json" };
+import LINKU from "./linku_data.json" with { type: "json" };
 import { ParserWithCallbacks } from "./Parser.js";
 import { build_rules, getMessage } from "./rules.js";
 

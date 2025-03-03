@@ -1,6 +1,6 @@
 import { zip } from "@std/collections/zip";
 import * as Dictionary from "../../dictionary/type.ts";
-import { ArrayResult } from "../array-result.ts";
+import { ArrayResult } from "../array_result.ts";
 import { filterSet } from "../misc.ts";
 import * as English from "./ast.ts";
 import { FilteredOutError } from "./error.ts";

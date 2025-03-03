@@ -18,7 +18,7 @@ import {
   sourceOnly,
   UnexpectedError,
   UnrecognizedError,
-} from "./parser-lib.ts";
+} from "./parser_lib.ts";
 import { Token } from "./token.ts";
 import {
   END_OF_CARTOUCHE,

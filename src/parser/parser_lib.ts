@@ -1,5 +1,5 @@
 import { memoize } from "@std/cache/memoize";
-import { ArrayResult, ArrayResultError } from "../array-result.ts";
+import { ArrayResult, ArrayResultError } from "../array_result.ts";
 import { Cache, Clearable, Lazy } from "../cache.ts";
 
 export type ValueRest<T> = Readonly<{ rest: string; value: T }>;

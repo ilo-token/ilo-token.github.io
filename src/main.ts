@@ -1,7 +1,7 @@
 import { dictionary } from "../dictionary/dictionary.ts";
 import { asComment } from "../dictionary/misc.ts";
-import PROJECT_DATA from "../project-data.json" with { type: "json" };
-import { ArrayResultError } from "./array-result.ts";
+import PROJECT_DATA from "../project_data.json" with { type: "json" };
+import { ArrayResultError } from "./array_result.ts";
 import { loadCustomDictionary } from "./dictionary.ts";
 import {
   checkLocalStorage,
@@ -18,7 +18,7 @@ import {
   loadFromLocalStorage,
   resetElementsToCurrent,
   resetElementsToDefault,
-} from "./settings-frontend.ts";
+} from "./settings_frontend.ts";
 import { settings } from "./settings.ts";
 
 const TRANSLATE_LABEL = "Translate";
