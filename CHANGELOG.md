@@ -26,7 +26,16 @@ wa:
 With this definition, ilo Token can translate "waaaa" into "woooow". There is no
 repetition pattern to follow for toki pona words. "wwaaa" is just as valid.
 
+You can also now have custom numerals:
+
+```
+san:
+  3(num);
+```
+
 - Allow custom fillers.
+- Allow custom numerals.
+- Numerals are now very permissive. Something like "wan tu" is now allowed.
 - Support for long "anu" glyph.
 - Fix sentence capitalization: If the sentence starts with number, no
   capitalization will occur.
