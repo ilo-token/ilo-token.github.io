@@ -35,7 +35,7 @@ san:
 
 - Allow custom fillers.
 - Allow custom numerals.
-- Numerals are now very permissive. Something like "wan tu" is now allowed. It is also possible for ilo Token to output both numbers using pu extended system and nasin nanpa pona: "tu ale wan" will be translated into 103 (pu extended system) _and_ 201 (nasin nanpa pona).
+- Numerals are now very permissive. Something like "wan tu" is now allowed. It is also possible for ilo Token to output both numbers using pu system and nasin nanpa pona: "tu ale wan" will be translated into 103 (pu system) _and_ 201 (nasin nanpa pona).
 - Support for long "anu" glyph.
 - Fix sentence capitalization: If the sentence starts with number, no
   capitalization will occur.
