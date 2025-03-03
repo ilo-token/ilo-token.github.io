@@ -27,8 +27,8 @@ function regularNumber(number: Array<number>): number {
 }
 function subHundred(number: Array<number>): number {
   const total = regularNumber(number);
-  if (total > 100) {
-    throw new FilteredOutError("ale position exceeding 100");
+  if (total >= 100) {
+    throw new FilteredOutError("ale position exceeding 99");
   } else {
     return total;
   }
