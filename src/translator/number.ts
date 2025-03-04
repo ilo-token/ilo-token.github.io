@@ -28,7 +28,7 @@ function regularNumber(number: ReadonlyArray<number>): number {
 function subHundred(number: ReadonlyArray<number>): number {
   const total = regularNumber(number);
   if (total >= 100) {
-    throw new FilteredOutError('"ale" position exceeding 99');
+    throw new FilteredOutError("nasin nanpa pona position exceeding 99");
   } else {
     return total;
   }
