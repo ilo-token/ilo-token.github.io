@@ -2,7 +2,7 @@ export interface Clearable {
   clear(): void;
 }
 export class Cache {
-  #caches: Set<WeakRef<Clearable>> = new Set();
+  readonly #caches: Set<WeakRef<Clearable>> = new Set();
   add(cache: Clearable): void {
     this.#caches.add(new WeakRef(cache));
   }
@@ -20,7 +20,7 @@ export class Cache {
 export class Lazy<T> implements Clearable {
   #evaluated = false;
   #value: undefined | T;
-  #fn: () => T;
+  readonly #fn: () => T;
   constructor(fn: () => T) {
     this.#fn = fn;
   }
