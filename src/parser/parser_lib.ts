@@ -149,7 +149,9 @@ export function optionalAll<T>(parser: Parser<T>): Parser<null | T> {
   return choiceOnlyOne(parser, nothing);
 }
 export function sequence<T extends ReadonlyArray<unknown>>(
-  ...sequence: { [I in keyof T]: Parser<T[I]> } & { length: T["length"] }
+  ...sequence:
+    & Readonly<{ [I in keyof T]: Parser<T[I]> }>
+    & Readonly<{ length: T["length"] }>
 ): Parser<T> {
   // We resorted to using `any` types here, make sure it works properly
   return sequence.reduceRight(

@@ -120,9 +120,9 @@ export class ArrayResult<T> {
     );
   }
   static combine<T extends ReadonlyArray<unknown>>(
-    ...arrayResults: { [I in keyof T]: ArrayResult<T[I]> } & {
-      length: T["length"];
-    }
+    ...arrayResults:
+      & Readonly<{ [I in keyof T]: ArrayResult<T[I]> }>
+      & Readonly<{ length: T["length"] }>
   ): ArrayResult<T> {
     // We resorted to using `any` types here, make sure it works properly
     return arrayResults.reduce(
