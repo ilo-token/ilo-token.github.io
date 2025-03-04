@@ -27,6 +27,6 @@ const TESTS = new Map(Object.entries({
 Deno.test("numeral translation", () => {
   for (const [tokiPona, expected] of TESTS) {
     const numbers = number(tokiPona.trim().split(" ")).unwrap();
-    assert(numbers.includes(expected), `Error at ${tokiPona}`);
+    assert(numbers.includes(expected), `Error at "${tokiPona}"`);
   }
 });
