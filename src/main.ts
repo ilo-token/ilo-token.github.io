@@ -5,7 +5,6 @@ import { ArrayResultError } from "./array_result.ts";
 import { loadCustomDictionary } from "./dictionary.ts";
 import {
   checkLocalStorage,
-  escapeHtmlWithLineBreak,
   extractErrorMessage,
   flattenError,
   NEWLINES,
@@ -145,13 +144,11 @@ function main(): void {
     try {
       loadCustomDictionary(customDictionary);
     } catch (error) {
-      let message: string;
       if (errorsFixable(flattenError(error))) {
-        message = DICTIONARY_LOADING_FAILED_FIXABLE_MESSAGE;
+        errorDisplay.innerText = DICTIONARY_LOADING_FAILED_FIXABLE_MESSAGE;
       } else {
-        message = DICTIONARY_LOADING_FAILED_UNFIXABLE_MESSAGE;
+        errorDisplay.innerText = DICTIONARY_LOADING_FAILED_UNFIXABLE_MESSAGE;
       }
-      errorDisplay.innerHTML = escapeHtmlWithLineBreak(message);
       console.error(error);
     }
   }
@@ -207,19 +204,17 @@ function main(): void {
       }
     } catch (error) {
       const errors = flattenError(error);
-      let message: string;
       switch (errors.length) {
         case 0:
-          message = UNKNOWN_ERROR_MESSAGE;
+          errorDisplay.innerText = UNKNOWN_ERROR_MESSAGE;
           break;
         case 1:
-          message = SINGULAR_ERROR_MESSAGE;
+          errorDisplay.innerText = SINGULAR_ERROR_MESSAGE;
           break;
         default:
-          message = MULTIPLE_ERROR_MESSAGE;
+          errorDisplay.innerText = MULTIPLE_ERROR_MESSAGE;
           break;
       }
-      errorDisplay.innerHTML = escapeHtmlWithLineBreak(message);
       for (const item of errors) {
         let property: "innerHTML" | "innerText";
         if (item instanceof ArrayResultError && item.isHtml) {
