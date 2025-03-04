@@ -66,7 +66,7 @@ function main(): void {
     "input",
   ) as HTMLTextAreaElement;
 
-  const outputDisplay = document.getElementById("output") as HTMLUListElement;
+  const outputList = document.getElementById("output") as HTMLUListElement;
   const errorDisplay = document.getElementById(
     "error",
   ) as HTMLParagraphElement;
@@ -193,14 +193,14 @@ function main(): void {
     }
   });
   function updateOutput(): void {
-    outputDisplay.innerHTML = "";
+    outputList.innerHTML = "";
     errorList.innerHTML = "";
     errorDisplay.innerText = "";
     try {
       for (const translation of translate(inputTextBox.value)) {
         const list = document.createElement("li");
         list.innerHTML = translation;
-        outputDisplay.appendChild(list);
+        outputList.appendChild(list);
       }
     } catch (error) {
       const errors = flattenError(error);
