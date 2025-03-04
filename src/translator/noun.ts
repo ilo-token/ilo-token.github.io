@@ -9,14 +9,16 @@ import { determiner } from "./determiner.ts";
 import { condense } from "./misc.ts";
 import { word } from "./word.ts";
 
-export type PartialNoun = Dictionary.NounForms & {
-  determiner: ReadonlyArray<English.Determiner>;
-  adjective: ReadonlyArray<English.AdjectivePhrase>;
-  reduplicationCount: number;
-  emphasis: boolean;
-  perspective: Dictionary.Perspective;
-  postAdjective: null | { adjective: string; name: string };
-};
+export type PartialNoun =
+  & Dictionary.NounForms
+  & Readonly<{
+    determiner: ReadonlyArray<English.Determiner>;
+    adjective: ReadonlyArray<English.AdjectivePhrase>;
+    reduplicationCount: number;
+    emphasis: boolean;
+    perspective: Dictionary.Perspective;
+    postAdjective: null | { adjective: string; name: string };
+  }>;
 export function partialNoun(
   definition: Dictionary.Noun,
   reduplicationCount: number,

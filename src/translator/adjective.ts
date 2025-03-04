@@ -6,10 +6,10 @@ import * as English from "./ast.ts";
 import { UntranslatableError } from "./error.ts";
 import { unemphasized, word } from "./word.ts";
 
-export type AdjectiveWithInWay = {
+export type AdjectiveWithInWay = Readonly<{
   adjective: English.AdjectivePhrase;
   inWayPhrase: null | English.NounPhrase;
-};
+}>;
 function so(emphasis: null | TokiPona.Emphasis): string {
   if (emphasis == null) {
     throw new UntranslatableError("missing emphasis", "adverb");

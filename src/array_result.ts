@@ -150,8 +150,8 @@ export class ArrayResult<T> {
   }
 }
 type Errors =
-  | { type: "array result"; errors: ReadonlyArray<ArrayResultError> }
-  | { type: "outside"; errors: ReadonlyArray<unknown> };
+  | Readonly<{ type: "array result"; errors: ReadonlyArray<ArrayResultError> }>
+  | Readonly<{ type: "outside"; errors: ReadonlyArray<unknown> }>;
 export function extractArrayResultError(
   errors: ReadonlyArray<unknown>,
 ): ReadonlyArray<ArrayResultError> {

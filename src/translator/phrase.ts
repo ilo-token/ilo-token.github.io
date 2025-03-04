@@ -25,9 +25,9 @@ import { wordUnit } from "./word_unit.ts";
 import { word } from "./word.ts";
 
 export type PhraseTranslation =
-  | { type: "noun"; noun: English.NounPhrase }
-  | ({ type: "adjective" } & AdjectiveWithInWay)
-  | { type: "verb"; verb: PartialCompoundVerb };
+  | Readonly<{ type: "noun"; noun: English.NounPhrase }>
+  | (Readonly<{ type: "adjective" }> & AdjectiveWithInWay)
+  | Readonly<{ type: "verb"; verb: PartialCompoundVerb }>;
 function nounPhrase(
   emphasis: boolean,
   partialNoun: PartialNoun,

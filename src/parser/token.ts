@@ -1,39 +1,43 @@
 import { repeatWithSpace } from "../misc.ts";
 
 export type Token =
-  | { type: "word"; word: string }
-  | {
+  | Readonly<{ type: "word"; word: string }>
+  | Readonly<{
     type: "combined glyphs";
     words: ReadonlyArray<string>;
-  }
-  | {
+  }>
+  | Readonly<{
     type: "space long glyph";
     words: ReadonlyArray<string>;
     spaceLength: number;
-  }
-  | {
+  }>
+  | Readonly<{
     type: "headed long glyph start";
     words: ReadonlyArray<string>;
-  }
-  | {
+  }>
+  | Readonly<{
     type: "headless long glyph end";
-  }
-  | {
+  }>
+  | Readonly<{
     type: "headless long glyph start";
-  }
-  | {
+  }>
+  | Readonly<{
     type: "headed long glyph end";
     words: ReadonlyArray<string>;
-  }
-  | {
+  }>
+  | Readonly<{
     type: "inside long glyph";
     words: ReadonlyArray<string>;
-  }
-  | { type: "multiple a"; count: number }
-  | { type: "long word"; word: string; length: number }
-  | { type: "x ala x"; word: string }
-  | { type: "proper word"; words: string; kind: "cartouche" | "latin" }
-  | { type: "punctuation"; punctuation: string };
+  }>
+  | Readonly<{ type: "multiple a"; count: number }>
+  | Readonly<{ type: "long word"; word: string; length: number }>
+  | Readonly<{ type: "x ala x"; word: string }>
+  | Readonly<{
+    type: "proper word";
+    words: string;
+    kind: "cartouche" | "latin";
+  }>
+  | Readonly<{ type: "punctuation"; punctuation: string }>;
 export function describe(token: Token): string {
   switch (token.type) {
     case "word":

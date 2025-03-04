@@ -7,12 +7,12 @@ import {
   settings,
 } from "./settings.ts";
 
-type Updater<T> = {
-  readonly parse: (value: string) => null | T;
-  readonly stringify: (value: T) => string;
-  readonly load: (input: HTMLInputElement | HTMLSelectElement) => T;
-  readonly set: (input: HTMLInputElement | HTMLSelectElement, value: T) => void;
-};
+type Updater<T> = Readonly<{
+  parse: (value: string) => null | T;
+  stringify: (value: T) => string;
+  load: (input: HTMLInputElement | HTMLSelectElement) => T;
+  set: (input: HTMLInputElement | HTMLSelectElement, value: T) => void;
+}>;
 const BOOL_UPDATER: Updater<boolean> = {
   parse: (value) => {
     switch (value) {

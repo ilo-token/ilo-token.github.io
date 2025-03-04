@@ -17,28 +17,34 @@ import { pronoun } from "./pronoun.ts";
 import { unemphasized, word } from "./word.ts";
 
 export type ModifierTranslation =
-  | { type: "noun"; noun: English.NounPhrase }
-  | { type: "noun preposition"; noun: English.NounPhrase; preposition: string }
-  | { type: "adjective"; adjective: English.AdjectivePhrase }
-  | { type: "determiner"; determiner: English.Determiner }
-  | { type: "adverb"; adverb: English.Word }
-  | { type: "name"; name: string }
-  | { type: "in position phrase"; noun: English.NounPhrase };
-export type AdjectivalModifier = {
-  nounPreposition: null | { noun: English.NounPhrase; preposition: string };
+  | Readonly<{ type: "noun"; noun: English.NounPhrase }>
+  | Readonly<{
+    type: "noun preposition";
+    noun: English.NounPhrase;
+    preposition: string;
+  }>
+  | Readonly<{ type: "adjective"; adjective: English.AdjectivePhrase }>
+  | Readonly<{ type: "determiner"; determiner: English.Determiner }>
+  | Readonly<{ type: "adverb"; adverb: English.Word }>
+  | Readonly<{ type: "name"; name: string }>
+  | Readonly<{ type: "in position phrase"; noun: English.NounPhrase }>;
+export type AdjectivalModifier = Readonly<{
+  nounPreposition:
+    | null
+    | Readonly<{ noun: English.NounPhrase; preposition: string }>;
   determiner: ReadonlyArray<English.Determiner>;
   adjective: ReadonlyArray<English.AdjectivePhrase>;
   name: null | string;
   ofPhrase: null | English.NounPhrase;
   inPositionPhrase: null | English.NounPhrase;
-};
-export type AdverbialModifier = {
+}>;
+export type AdverbialModifier = Readonly<{
   adverb: ReadonlyArray<English.Word>;
   inWayPhrase: null | English.NounPhrase;
-};
+}>;
 export type MultipleModifierTranslation =
-  | ({ type: "adjectival" } & AdjectivalModifier)
-  | ({ type: "adverbial" } & AdverbialModifier);
+  | (Readonly<{ type: "adjectival" }> & AdjectivalModifier)
+  | (Readonly<{ type: "adverbial" }> & AdverbialModifier);
 export function defaultModifier(
   wordUnit: TokiPona.WordUnit,
 ): ArrayResult<ModifierTranslation> {

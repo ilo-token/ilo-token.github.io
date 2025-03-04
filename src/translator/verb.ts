@@ -8,28 +8,31 @@ import { noun } from "./noun.ts";
 import { nounAsPreposition } from "./preposition.ts";
 import { unemphasized, word } from "./word.ts";
 
-export type VerbObjects = {
+export type VerbObjects = Readonly<{
   object: null | English.NounPhrase;
   objectComplement: null | English.Complement;
   preposition: ReadonlyArray<English.Preposition>;
-};
-export type PartialVerb = Dictionary.VerbForms & VerbObjects & {
-  adverb: ReadonlyArray<English.Word>;
-  reduplicationCount: number;
-  wordEmphasis: boolean;
-  subjectComplement: null | English.Complement;
-  forObject: boolean | string;
-  predicateType: null | "verb" | "noun adjective";
-  phraseEmphasis: boolean;
-};
+}>;
+export type PartialVerb =
+  & Dictionary.VerbForms
+  & VerbObjects
+  & Readonly<{
+    adverb: ReadonlyArray<English.Word>;
+    reduplicationCount: number;
+    wordEmphasis: boolean;
+    subjectComplement: null | English.Complement;
+    forObject: boolean | string;
+    predicateType: null | "verb" | "noun adjective";
+    phraseEmphasis: boolean;
+  }>;
 export type PartialCompoundVerb =
-  | ({ type: "simple" } & PartialVerb)
+  | (Readonly<{ type: "simple" }> & PartialVerb)
   | (
-    & {
+    & Readonly<{
       type: "compound";
       conjunction: string;
       verb: ReadonlyArray<PartialCompoundVerb>;
-    }
+    }>
     & VerbObjects
   );
 export function condenseVerb(present: string, past: string): string {

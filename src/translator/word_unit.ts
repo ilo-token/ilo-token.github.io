@@ -10,9 +10,9 @@ import { partialPronoun, Place } from "./pronoun.ts";
 import { PartialVerb, partialVerb } from "./verb.ts";
 
 export type WordUnitTranslation =
-  | ({ type: "noun" } & PartialNoun)
-  | { type: "adjective"; adjective: English.AdjectivePhrase }
-  | ({ type: "verb" } & PartialVerb);
+  | (Readonly<{ type: "noun" }> & PartialNoun)
+  | Readonly<{ type: "adjective"; adjective: English.AdjectivePhrase }>
+  | (Readonly<{ type: "verb" }> & PartialVerb);
 function defaultWordUnit(
   word: string,
   reduplicationCount: number,
