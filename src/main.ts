@@ -122,13 +122,14 @@ function main(): void {
   ) as HTMLAnchorElement;
 
   // set version
+  let displayDate: string;
   if (PROJECT_DATA.onDevelopment) {
-    versionDisplay.innerText = `${PROJECT_DATA.version} (On development)`;
+    displayDate = "On development";
   } else {
-    const date = new Date(PROJECT_DATA.releaseDate)
-      .toLocaleDateString(undefined);
-    versionDisplay.innerText = `${PROJECT_DATA.version} - Released ${date}`;
+    const date = new Date(PROJECT_DATA.releaseDate).toLocaleDateString();
+    displayDate = `- Released ${date}`;
   }
+  versionDisplay.innerText = `${PROJECT_DATA.version} ${displayDate}`;
 
   // load settings
   loadFromLocalStorage();
