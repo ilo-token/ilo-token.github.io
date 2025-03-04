@@ -1,4 +1,4 @@
-import { assertNotEquals } from "@std/assert";
+import { assertNotEquals } from "@std/assert/not-equals";
 import { parse } from "./parser.ts";
 
 // Examples gathered from https://github.com/kilipan/nasin-toki
