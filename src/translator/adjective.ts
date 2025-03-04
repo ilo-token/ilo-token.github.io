@@ -41,7 +41,7 @@ export function adjective(
     }));
 }
 export function compoundAdjective(
-  adjectives: Array<Dictionary.Adjective>,
+  adjectives: ReadonlyArray<Dictionary.Adjective>,
   reduplicationCount: number,
   emphasis: null | TokiPona.Emphasis,
 ): ArrayResult<English.AdjectivePhrase & { type: "compound" }> {
@@ -79,15 +79,15 @@ export function rankAdjective(kind: Dictionary.AdjectiveType): number {
     .indexOf(kind);
 }
 export function fixAdjective(
-  adjective: Array<English.AdjectivePhrase>,
-): Array<English.AdjectivePhrase> {
+  adjective: ReadonlyArray<English.AdjectivePhrase>,
+): ReadonlyArray<English.AdjectivePhrase> {
   return adjective
     .flatMap<English.AdjectivePhrase & { type: "simple" }>((adjective) => {
       switch (adjective.type) {
         case "simple":
           return [adjective];
         case "compound":
-          return adjective.adjective as Array<
+          return adjective.adjective as ReadonlyArray<
             English.AdjectivePhrase & { type: "simple" }
           >;
       }

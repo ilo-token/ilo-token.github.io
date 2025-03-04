@@ -21,7 +21,7 @@ function word(word: English.Word): string {
   }
 }
 function compound(
-  elements: Array<string>,
+  elements: ReadonlyArray<string>,
   conjunction: string,
   depth: number,
 ): string {
@@ -93,7 +93,7 @@ export function verb(phrase: English.VerbPhrase, depth: number): string {
   let text: string;
   switch (phrase.type) {
     case "default": {
-      let verbText: Array<string>;
+      let verbText: ReadonlyArray<string>;
       if (phrase.hideVerb) {
         verbText = [];
       } else {
@@ -128,7 +128,7 @@ export function verb(phrase: English.VerbPhrase, depth: number): string {
     .join(" ");
 }
 function defaultClause(clause: English.Clause & { type: "default" }): string {
-  let subject: Array<string>;
+  let subject: ReadonlyArray<string>;
   if (clause.hideSubject) {
     subject = [];
   } else {

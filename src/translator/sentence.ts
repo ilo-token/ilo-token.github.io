@@ -150,7 +150,7 @@ function sentence(
         );
       }
       const lastEngClause = clause(sentence.finalClause);
-      let right: Array<English.Clause>;
+      let right: ReadonlyArray<English.Clause>;
       if (sentence.anuSeme == null) {
         right = [];
       } else {
@@ -197,7 +197,7 @@ function sentence(
 }
 export function multipleSentences(
   sentences: TokiPona.MultipleSentences,
-): ArrayResult<Array<English.Sentence>> {
+): ArrayResult<ReadonlyArray<English.Sentence>> {
   switch (sentences.type) {
     case "single word": {
       const { word } = sentences;

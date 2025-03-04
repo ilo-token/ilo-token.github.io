@@ -13,7 +13,7 @@ export { clearCache } from "./parser/cache.ts";
 export { defaultSettings, settings } from "./settings.ts";
 export type { RedundancySettings, Settings } from "./settings.ts";
 
-export function translate(tokiPona: string): Array<string> {
+export function translate(tokiPona: string): ReadonlyArray<string> {
   const arrayResult = rawTranslate(tokiPona);
   if (!arrayResult.isError()) {
     const values = distinct(arrayResult.array);

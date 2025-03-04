@@ -11,10 +11,10 @@ import { unemphasized, word } from "./word.ts";
 export type VerbObjects = {
   object: null | English.NounPhrase;
   objectComplement: null | English.Complement;
-  preposition: Array<English.Preposition>;
+  preposition: ReadonlyArray<English.Preposition>;
 };
 export type PartialVerb = Dictionary.VerbForms & VerbObjects & {
-  adverb: Array<English.Word>;
+  adverb: ReadonlyArray<English.Word>;
   reduplicationCount: number;
   wordEmphasis: boolean;
   subjectComplement: null | English.Complement;
@@ -28,7 +28,7 @@ export type PartialCompoundVerb =
     & {
       type: "compound";
       conjunction: string;
-      verb: Array<PartialCompoundVerb>;
+      verb: ReadonlyArray<PartialCompoundVerb>;
     }
     & VerbObjects
   );
@@ -74,7 +74,7 @@ export function partialVerb(
 }
 export function everyPartialVerb(
   verb: PartialCompoundVerb,
-): Array<PartialVerb> {
+): ReadonlyArray<PartialVerb> {
   switch (verb.type) {
     case "simple":
       return [verb];

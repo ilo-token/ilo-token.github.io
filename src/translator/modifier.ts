@@ -26,14 +26,14 @@ export type ModifierTranslation =
   | { type: "in position phrase"; noun: English.NounPhrase };
 export type AdjectivalModifier = {
   nounPreposition: null | { noun: English.NounPhrase; preposition: string };
-  determiner: Array<English.Determiner>;
-  adjective: Array<English.AdjectivePhrase>;
+  determiner: ReadonlyArray<English.Determiner>;
+  adjective: ReadonlyArray<English.AdjectivePhrase>;
   name: null | string;
   ofPhrase: null | English.NounPhrase;
   inPositionPhrase: null | English.NounPhrase;
 };
 export type AdverbialModifier = {
-  adverb: Array<English.Word>;
+  adverb: ReadonlyArray<English.Word>;
   inWayPhrase: null | English.NounPhrase;
 };
 export type MultipleModifierTranslation =
@@ -197,7 +197,7 @@ function modifier(
   }
 }
 export function multipleModifiers(
-  modifiers: Array<TokiPona.Modifier>,
+  modifiers: ReadonlyArray<TokiPona.Modifier>,
 ): ArrayResult<MultipleModifierTranslation> {
   return ArrayResult.combine(...modifiers.map(modifier))
     .flatMap((modifiers) => {

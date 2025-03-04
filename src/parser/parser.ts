@@ -106,7 +106,10 @@ const specificWord = memoize((thatWord: string) =>
     }
   })
 );
-function filterCombinedGlyphs(words: Array<string>, expected: string): boolean {
+function filterCombinedGlyphs(
+  words: ReadonlyArray<string>,
+  expected: string,
+): boolean {
   const description = `"${expected}"`;
   if (words.length !== 1) {
     throw new UnexpectedError(
@@ -171,7 +174,7 @@ function simpleWordUnit(
       wordFrom(word, description)
         .then((word) =>
           count(manyAtLeastOnce(specificWord(word)))
-            .map<[string, number]>((count) => [word, count + 1])
+            .map<readonly [string, number]>((count) => [word, count + 1])
         ),
     )
       .map(([[word, count]]) => ({
@@ -201,7 +204,7 @@ function wordUnit(
 function binaryWords(
   word: Set<string>,
   description: string,
-): Parser<[string, string]> {
+): Parser<readonly [string, string]> {
   return specificToken("combined glyphs").map(({ words }) => {
     if (words.length > 2) {
       throw new UnrecognizedError(
@@ -219,12 +222,12 @@ function binaryWords(
 function optionalCombined(
   word: Set<string>,
   description: string,
-): Parser<[HeadedWordUnit, null | Modifier]> {
-  return choice<[HeadedWordUnit, null | Modifier]>(
+): Parser<readonly [HeadedWordUnit, null | Modifier]> {
+  return choice<readonly [HeadedWordUnit, null | Modifier]>(
     wordUnit(word, description)
       .map((wordUnit) => [wordUnit, null]),
     binaryWords(word, description)
-      .map<[HeadedWordUnit, null | Modifier]>(([first, second]) => [
+      .map<readonly [HeadedWordUnit, null | Modifier]>(([first, second]) => [
         { type: "default", word: first, emphasis: null },
         {
           type: "default",
@@ -344,7 +347,7 @@ const longAnu = sequence(
   .skip(specificToken("headless long glyph end"))
   .map(([phrase, morePhrase]) => [phrase, ...morePhrase]);
 function nestedPhrasesOnly(
-  nestingRule: Array<"en" | "li" | "o" | "e" | "anu">,
+  nestingRule: ReadonlyArray<"en" | "li" | "o" | "e" | "anu">,
 ): Parser<MultiplePhrases> {
   if (nestingRule.length === 0) {
     return singlePhrase;
@@ -383,7 +386,7 @@ function nestedPhrasesOnly(
   }
 }
 function nestedPhrases(
-  nestingRule: Array<"en" | "li" | "o" | "e" | "anu">,
+  nestingRule: ReadonlyArray<"en" | "li" | "o" | "e" | "anu">,
 ): Parser<MultiplePhrases> {
   if (nestingRule.length === 0) {
     return singlePhrase;
@@ -486,7 +489,7 @@ const preposition = choice<Preposition>(
 )
   .filter(filter(PREPOSITION_RULE));
 function associatedPredicates(
-  nestingRule: Array<"li" | "o" | "anu">,
+  nestingRule: ReadonlyArray<"li" | "o" | "anu">,
 ): Parser<Predicate> {
   return sequence(
     nestedPhrasesOnly(nestingRule),
@@ -511,7 +514,7 @@ function associatedPredicates(
     .sortBy(({ prepositions }) => -prepositions.length);
 }
 function multiplePredicates(
-  nestingRule: Array<"li" | "o" | "anu">,
+  nestingRule: ReadonlyArray<"li" | "o" | "anu">,
 ): Parser<Predicate> {
   if (nestingRule.length === 0) {
     return choice<Predicate>(

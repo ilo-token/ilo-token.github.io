@@ -12,10 +12,12 @@ import {
   WordUnit,
 } from "./ast.ts";
 
-export function everyWordUnitInNanpa(nanpa: Nanpa): Array<WordUnit> {
+export function everyWordUnitInNanpa(nanpa: Nanpa): ReadonlyArray<WordUnit> {
   return [nanpa.nanpa, ...everyWordUnitInPhrase(nanpa.phrase)];
 }
-export function everyWordUnitInModifier(modifier: Modifier): Array<WordUnit> {
+export function everyWordUnitInModifier(
+  modifier: Modifier,
+): ReadonlyArray<WordUnit> {
   switch (modifier.type) {
     case "default":
       return [modifier.word];
@@ -28,7 +30,7 @@ export function everyWordUnitInModifier(modifier: Modifier): Array<WordUnit> {
       return [];
   }
 }
-export function everyWordUnitInPhrase(phrase: Phrase): Array<WordUnit> {
+export function everyWordUnitInPhrase(phrase: Phrase): ReadonlyArray<WordUnit> {
   switch (phrase.type) {
     case "default":
       return [
@@ -49,12 +51,12 @@ export function everyWordUnitInPhrase(phrase: Phrase): Array<WordUnit> {
 }
 export function everyWordUnitInMultiplePhrases(
   phrase: MultiplePhrases,
-): Array<WordUnit> {
+): ReadonlyArray<WordUnit> {
   return everyPhraseInMultiplePhrases(phrase).flatMap(everyWordUnitInPhrase);
 }
 export function everyWordUnitInPreposition(
   preposition: Preposition,
-): Array<WordUnit> {
+): ReadonlyArray<WordUnit> {
   return [
     preposition.preposition,
     ...preposition.modifiers.flatMap(everyWordUnitInModifier),
@@ -63,7 +65,7 @@ export function everyWordUnitInPreposition(
 }
 export function everyWordUnitInMultiplePredicates(
   predicate: Predicate,
-): Array<WordUnit> {
+): ReadonlyArray<WordUnit> {
   switch (predicate.type) {
     case "single":
       return everyWordUnitInPhrase(predicate.predicate);
@@ -79,7 +81,7 @@ export function everyWordUnitInMultiplePredicates(
       return predicate.predicates.flatMap(everyWordUnitInMultiplePredicates);
   }
 }
-export function everyWordUnitInClause(clause: Clause): Array<WordUnit> {
+export function everyWordUnitInClause(clause: Clause): ReadonlyArray<WordUnit> {
   switch (clause.type) {
     case "phrases":
     case "o vocative":
@@ -103,7 +105,7 @@ export function everyWordUnitInClause(clause: Clause): Array<WordUnit> {
 }
 export function everyWordUnitInContextClause(
   contextClause: ContextClause,
-): Array<WordUnit> {
+): ReadonlyArray<WordUnit> {
   switch (contextClause.type) {
     case "nanpa":
       return everyWordUnitInNanpa(contextClause);
@@ -111,7 +113,9 @@ export function everyWordUnitInContextClause(
       return everyWordUnitInClause(contextClause);
   }
 }
-export function everyWordUnitInSentence(sentence: Sentence): Array<WordUnit> {
+export function everyWordUnitInSentence(
+  sentence: Sentence,
+): ReadonlyArray<WordUnit> {
   switch (sentence.type) {
     case "default":
       return [
@@ -124,7 +128,7 @@ export function everyWordUnitInSentence(sentence: Sentence): Array<WordUnit> {
       return [];
   }
 }
-export function everyModifierInPhrase(phrase: Phrase): Array<Modifier> {
+export function everyModifierInPhrase(phrase: Phrase): ReadonlyArray<Modifier> {
   switch (phrase.type) {
     case "default":
       return phrase.modifiers;
@@ -144,12 +148,12 @@ export function everyModifierInPhrase(phrase: Phrase): Array<Modifier> {
 }
 export function everyModifierInMultiplePhrases(
   phrases: MultiplePhrases,
-): Array<Modifier> {
+): ReadonlyArray<Modifier> {
   return everyPhraseInMultiplePhrases(phrases).flatMap(everyModifierInPhrase);
 }
 export function everyPhraseInMultiplePhrases(
   phrases: MultiplePhrases,
-): Array<Phrase> {
+): ReadonlyArray<Phrase> {
   switch (phrases.type) {
     case "single":
       return [phrases.phrase];
@@ -160,7 +164,7 @@ export function everyPhraseInMultiplePhrases(
 }
 export function everyObjectInMultiplePredicates(
   predicates: Predicate,
-): Array<Phrase> {
+): ReadonlyArray<Phrase> {
   switch (predicates.type) {
     case "single":
       return [];

@@ -105,7 +105,9 @@ export class ArrayResult<T> {
       return this;
     }
   }
-  static concat<T>(...arrayResults: Array<ArrayResult<T>>): ArrayResult<T> {
+  static concat<T>(
+    ...arrayResults: ReadonlyArray<ArrayResult<T>>
+  ): ArrayResult<T> {
     return arrayResults.reduce(
       (left, right) => {
         if (left.isError() && right.isError()) {
@@ -117,7 +119,7 @@ export class ArrayResult<T> {
       new ArrayResult<T>(),
     );
   }
-  static combine<T extends Array<unknown>>(
+  static combine<T extends ReadonlyArray<unknown>>(
     ...arrayResults: { [I in keyof T]: ArrayResult<T[I]> } & {
       length: T["length"];
     }
@@ -148,8 +150,8 @@ export class ArrayResult<T> {
   }
 }
 type Errors =
-  | { type: "array result"; errors: Array<ArrayResultError> }
-  | { type: "outside"; errors: Array<unknown> };
+  | { type: "array result"; errors: ReadonlyArray<ArrayResultError> }
+  | { type: "outside"; errors: ReadonlyArray<unknown> };
 export function extractArrayResultError(
   errors: ReadonlyArray<unknown>,
 ): ReadonlyArray<ArrayResultError> {
@@ -163,7 +165,7 @@ export function extractArrayResultError(
             return { type: "outside", errors: [error] };
           }
         case "outside": {
-          let moreError: Array<unknown>;
+          let moreError: ReadonlyArray<unknown>;
           if (error instanceof ArrayResultError) {
             moreError = [];
           } else {

@@ -33,7 +33,7 @@ export function filler(filler: Filler): string {
       return emphasis(filler);
   }
 }
-function emphasisAsArray(value: null | Emphasis): Array<string> {
+function emphasisAsArray(value: null | Emphasis): ReadonlyArray<string> {
   return nullableAsArray(value).map(emphasis);
 }
 export function simpleWordUnit(wordUnit: SimpleWordUnit): string {
@@ -157,7 +157,7 @@ export function clause(clause: Clause): string {
     case "o vocative":
       return `${multiplePhrases(clause.phrases, "en")} o`;
     case "li clause": {
-      let li: Array<string>;
+      let li: ReadonlyArray<string>;
       if (clause.explicitLi) {
         li = ["li"];
       } else {

@@ -59,7 +59,7 @@ const UPDATERS: Readonly<{ [K in keyof Settings]: Updater<Settings[K]> }> = {
   xAlaXPartialParsing: BOOL_UPDATER,
   separateRepeatedModifiers: BOOL_UPDATER,
 };
-const KEYS = Object.keys(UPDATERS) as Array<keyof Settings>;
+const KEYS = Object.keys(UPDATERS) as ReadonlyArray<keyof Settings>;
 function loadOneFromLocalStorage<T extends keyof Settings>(key: T): void {
   const src = localStorage.getItem(key);
   if (src != null) {

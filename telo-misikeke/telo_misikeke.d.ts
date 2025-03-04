@@ -1,1 +1,1 @@
-export function errors(text: string): Array<string>;
+export function errors(text: string): ReadonlyArray<string>;

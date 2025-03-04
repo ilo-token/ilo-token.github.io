@@ -14,7 +14,7 @@ function singleNumber(word: string): ArrayResult<number> {
       }
     });
 }
-function regularNumber(number: Array<number>): number {
+function regularNumber(number: ReadonlyArray<number>): number {
   const duplicate = number.some((a, i) =>
     i < number.length - 1 && number[i + 1] !== a &&
     number.slice(i + 2).some((b) => a === b)
@@ -25,7 +25,7 @@ function regularNumber(number: Array<number>): number {
     return sumOf(number, (number) => number);
   }
 }
-function subHundred(number: Array<number>): number {
+function subHundred(number: ReadonlyArray<number>): number {
   const total = regularNumber(number);
   if (total >= 100) {
     throw new FilteredOutError('"ale" position exceeding 99');
@@ -34,7 +34,7 @@ function subHundred(number: Array<number>): number {
   }
 }
 function unfilteredNasinNanpaPona(
-  number: Array<number>,
+  number: ReadonlyArray<number>,
   previousHundredCount: number,
 ): number {
   if (number.length === 0) {
@@ -61,14 +61,14 @@ function unfilteredNasinNanpaPona(
     }
   }
 }
-function nasinNanpaPona(number: Array<number>): null | number {
+function nasinNanpaPona(number: ReadonlyArray<number>): null | number {
   if (number.includes(0) || !number.includes(100) || number[0] === 100) {
     return null;
   } else {
     return unfilteredNasinNanpaPona(number, Infinity);
   }
 }
-function combineNumbers(numbers: Array<number>): ArrayResult<number> {
+function combineNumbers(numbers: ReadonlyArray<number>): ArrayResult<number> {
   return ArrayResult.from(() => {
     if (numbers.length !== 1 && numbers.includes(0)) {
       throw new FilteredOutError('"ala" along with other numeral');
@@ -81,7 +81,7 @@ function combineNumbers(numbers: Array<number>): ArrayResult<number> {
     );
   });
 }
-export function number(number: Array<string>): ArrayResult<number> {
+export function number(number: ReadonlyArray<string>): ArrayResult<number> {
   return ArrayResult.combine(...number.map(singleNumber))
     .flatMap(combineNumbers);
 }

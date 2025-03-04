@@ -10,7 +10,7 @@ export type SimpleHeadedWordUnit =
   | { type: "reduplication"; word: string; count: number };
 export type SimpleWordUnit =
   | SimpleHeadedWordUnit
-  | { type: "number"; words: Array<string> };
+  | { type: "number"; words: ReadonlyArray<string> };
 export type HeadedWordUnit =
   & SimpleHeadedWordUnit
   & { emphasis: null | Emphasis };
@@ -28,13 +28,13 @@ export type Phrase =
   | {
     type: "default";
     headWord: WordUnit;
-    modifiers: Array<Modifier>;
+    modifiers: ReadonlyArray<Modifier>;
     emphasis: null | Emphasis;
   }
   | {
     type: "preverb";
     preverb: HeadedWordUnit;
-    modifiers: Array<Modifier>;
+    modifiers: ReadonlyArray<Modifier>;
     phrase: Phrase;
     emphasis: null | Emphasis;
   }
@@ -42,11 +42,11 @@ export type Phrase =
   | ({ type: "quotation" } & Quotation);
 export type MultiplePhrases =
   | { type: "single"; phrase: Phrase }
-  | { type: "and conjunction"; phrases: Array<MultiplePhrases> }
-  | { type: "anu"; phrases: Array<MultiplePhrases> };
+  | { type: "and conjunction"; phrases: ReadonlyArray<MultiplePhrases> }
+  | { type: "anu"; phrases: ReadonlyArray<MultiplePhrases> };
 export type Preposition = {
   preposition: HeadedWordUnit;
-  modifiers: Array<Modifier>;
+  modifiers: ReadonlyArray<Modifier>;
   phrases: MultiplePhrases & { type: "single" | "anu" };
   emphasis: null | Emphasis;
 };
@@ -56,10 +56,10 @@ export type Predicate =
     type: "associated";
     predicates: MultiplePhrases;
     objects: null | MultiplePhrases;
-    prepositions: Array<Preposition>;
+    prepositions: ReadonlyArray<Preposition>;
   }
-  | { type: "and conjunction"; predicates: Array<Predicate> }
-  | { type: "anu"; predicates: Array<Predicate> };
+  | { type: "and conjunction"; predicates: ReadonlyArray<Predicate> }
+  | { type: "anu"; predicates: ReadonlyArray<Predicate> };
 export type Clause =
   | { type: "phrases"; phrases: MultiplePhrases }
   | { type: "o vocative"; phrases: MultiplePhrases }
@@ -74,7 +74,7 @@ export type Clause =
     subjects: null | MultiplePhrases;
     predicates: Predicate;
   }
-  | { type: "prepositions"; prepositions: Array<Preposition> }
+  | { type: "prepositions"; prepositions: ReadonlyArray<Preposition> }
   | ({ type: "quotation" } & Quotation);
 export type ContextClause =
   | Clause
@@ -83,7 +83,7 @@ export type Sentence =
   | {
     type: "default";
     kinOrTaso: null | HeadedWordUnit;
-    laClauses: Array<ContextClause>;
+    laClauses: ReadonlyArray<ContextClause>;
     finalClause: Clause;
     anuSeme: null | HeadedWordUnit;
     emphasis: null | Emphasis;
@@ -97,10 +97,10 @@ export type Sentence =
     interrogative: null | "seme" | "x ala x";
   };
 export type Quotation = {
-  sentences: Array<Sentence>;
+  sentences: ReadonlyArray<Sentence>;
   leftMark: string;
   rightMark: string;
 };
 export type MultipleSentences =
   | { type: "single word"; word: string }
-  | { type: "sentences"; sentences: Array<Sentence> };
+  | { type: "sentences"; sentences: ReadonlyArray<Sentence> };

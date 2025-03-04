@@ -10,8 +10,8 @@ import { condense } from "./misc.ts";
 import { word } from "./word.ts";
 
 export type PartialNoun = Dictionary.NounForms & {
-  determiner: Array<English.Determiner>;
-  adjective: Array<English.AdjectivePhrase>;
+  determiner: ReadonlyArray<English.Determiner>;
+  adjective: ReadonlyArray<English.AdjectivePhrase>;
   reduplicationCount: number;
   emphasis: boolean;
   perspective: Dictionary.Perspective;

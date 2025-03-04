@@ -8,19 +8,19 @@ export type Quantity = "singular" | "plural" | "condensed";
 export type NounPhrase =
   | {
     type: "simple";
-    determiner: Array<Determiner>;
-    adjective: Array<AdjectivePhrase>;
+    determiner: ReadonlyArray<Determiner>;
+    adjective: ReadonlyArray<AdjectivePhrase>;
     noun: Word;
     quantity: Quantity;
     perspective: Dictionary.Perspective;
     postAdjective: null | { adjective: string; name: string };
-    preposition: Array<Preposition>;
+    preposition: ReadonlyArray<Preposition>;
     emphasis: boolean;
   }
   | {
     type: "compound";
     conjunction: string;
-    nouns: Array<NounPhrase>;
+    nouns: ReadonlyArray<NounPhrase>;
     quantity: Quantity;
   };
 export type Determiner = {
@@ -32,14 +32,14 @@ export type AdjectivePhrase =
   | {
     type: "simple";
     kind: Dictionary.AdjectiveType;
-    adverb: Array<Word>;
+    adverb: ReadonlyArray<Word>;
     adjective: Word;
     emphasis: boolean;
   }
   | {
     type: "compound";
     conjunction: string;
-    adjective: Array<AdjectivePhrase>;
+    adjective: ReadonlyArray<AdjectivePhrase>;
     emphasis: boolean;
   };
 export type Complement =
@@ -47,27 +47,27 @@ export type Complement =
   | { type: "adjective"; adjective: AdjectivePhrase };
 export type Verb = {
   modal: null | Word;
-  finite: Array<Word>;
+  finite: ReadonlyArray<Word>;
   infinite: Word;
 };
 export type VerbPhrase =
   | {
     type: "default";
-    adverb: Array<Word>;
+    adverb: ReadonlyArray<Word>;
     verb: Verb;
     subjectComplement: null | Complement;
     object: null | NounPhrase;
     objectComplement: null | Complement;
-    preposition: Array<Preposition>;
+    preposition: ReadonlyArray<Preposition>;
     hideVerb: boolean;
   }
   | {
     type: "compound";
     conjunction: string;
-    verbs: Array<VerbPhrase>;
+    verbs: ReadonlyArray<VerbPhrase>;
     object: null | NounPhrase;
     objectComplement: null | Complement;
-    preposition: Array<Preposition>;
+    preposition: ReadonlyArray<Preposition>;
   };
 export type Clause =
   | { type: "free form"; text: string }
@@ -82,11 +82,11 @@ export type Clause =
   | { type: "vocative"; call: string; addressee: NounPhrase }
   | { type: "dependent"; conjunction: Word; clause: Clause };
 export type Preposition = {
-  adverb: Array<Word>;
+  adverb: ReadonlyArray<Word>;
   preposition: Word;
   object: NounPhrase;
 };
 export type Sentence = {
-  clauses: Array<Clause>;
+  clauses: ReadonlyArray<Clause>;
   punctuation: string;
 };

@@ -4,16 +4,16 @@ export type Token =
   | { type: "word"; word: string }
   | {
     type: "combined glyphs";
-    words: Array<string>;
+    words: ReadonlyArray<string>;
   }
   | {
     type: "space long glyph";
-    words: Array<string>;
+    words: ReadonlyArray<string>;
     spaceLength: number;
   }
   | {
     type: "headed long glyph start";
-    words: Array<string>;
+    words: ReadonlyArray<string>;
   }
   | {
     type: "headless long glyph end";
@@ -23,11 +23,11 @@ export type Token =
   }
   | {
     type: "headed long glyph end";
-    words: Array<string>;
+    words: ReadonlyArray<string>;
   }
   | {
     type: "inside long glyph";
-    words: Array<string>;
+    words: ReadonlyArray<string>;
   }
   | { type: "multiple a"; count: number }
   | { type: "long word"; word: string; length: number }

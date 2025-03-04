@@ -8,26 +8,26 @@ import { simpleNounForms } from "./noun.ts";
 import { word } from "./word.ts";
 
 function prettyPrintDeterminers(
-  determiners: Array<English.Determiner>,
+  determiners: ReadonlyArray<English.Determiner>,
 ): string {
   return `(${
     determiners.map((determiner) => determiner.determiner).join(` `)
   })`;
 }
 function filterKind(
-  determiners: Array<English.Determiner>,
-  kinds: Array<Dictionary.DeterminerType>,
-): Array<English.Determiner> {
+  determiners: ReadonlyArray<English.Determiner>,
+  kinds: ReadonlyArray<Dictionary.DeterminerType>,
+): ReadonlyArray<English.Determiner> {
   return determiners.filter((determiner) => kinds.includes(determiner.kind));
 }
 function filterQuantity(
-  determiners: Array<English.Determiner>,
+  determiners: ReadonlyArray<English.Determiner>,
   quantity: Dictionary.Quantity,
-): Array<English.Determiner> {
+): ReadonlyArray<English.Determiner> {
   return determiners.filter((determiner) => determiner.quantity === quantity);
 }
 function check(
-  quantities: Array<Dictionary.Quantity>,
+  quantities: ReadonlyArray<Dictionary.Quantity>,
   some: Dictionary.Quantity,
   not: Dictionary.Quantity,
 ): boolean {
@@ -35,7 +35,7 @@ function check(
     quantities.every((quantity) => quantity !== not);
 }
 export function findNumber(
-  determiners: Array<English.Determiner>,
+  determiners: ReadonlyArray<English.Determiner>,
 ): Dictionary.Quantity {
   const quantities = determiners.map((determiner) => determiner.quantity);
   if (quantities.every((quantity) => quantity === `both`)) {
@@ -72,8 +72,8 @@ export function determiner(
     }));
 }
 export function fixDeterminer(
-  determiner: Array<English.Determiner>,
-): Array<English.Determiner> {
+  determiner: ReadonlyArray<English.Determiner>,
+): ReadonlyArray<English.Determiner> {
   const negative = filterKind(determiner, [`negative`]);
   const first = filterKind(determiner, [
     `article`,
@@ -145,7 +145,7 @@ export function fixDeterminer(
 }
 function encodeDeterminer(
   strings: TemplateStringsArray,
-  ...determiners: Array<Array<English.Determiner>>
+  ...determiners: ReadonlyArray<ReadonlyArray<English.Determiner>>
 ): () => string {
   return () =>
     zip(strings, [...determiners.map(prettyPrintDeterminers), ""])

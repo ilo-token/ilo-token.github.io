@@ -28,7 +28,7 @@ const COMMONJS_EXPORT =
 async function buildCode(
   source: URL,
   destination: URL,
-  exportItems: Array<string>,
+  exportItems: ReadonlyArray<string>,
 ): Promise<void> {
   const response = assertOk(await retry(() => fetch(source)));
   const rawCode = await response.text();
@@ -62,9 +62,11 @@ async function buildSonaLinku(): Promise<void> {
 }
 function parseLipuLinku(
   data: { [word: string]: { usage_category: string } },
-): [string, string][] {
+): ReadonlyArray<readonly [string, string]> {
   return Object.entries(data)
-    .map<[string, string]>(([word, data]) => [word, data.usage_category])
+    .map<readonly [string, string]>(
+      ([word, data]) => [word, data.usage_category],
+    )
     .filter(([_, category]) => category !== "sandbox");
 }
 if (import.meta.main) {

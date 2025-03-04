@@ -77,7 +77,7 @@ const multipleA = specificWord("a")
   .map<Token>((count) => ({ type: "multiple a", count: count + 1 }));
 const repeatingLetter = match(/[a-zA-Z]/, "latin letter")
   .then((letter) =>
-    count(all(matchString(letter))).map<[string, number]>(
+    count(all(matchString(letter))).map<readonly [string, number]>(
       (count) => [letter, count + 1],
     )
   );

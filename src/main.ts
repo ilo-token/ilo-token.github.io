@@ -320,7 +320,7 @@ function main(): void {
     }
   });
 }
-function errorsFixable(errors: Array<unknown>): boolean {
+function errorsFixable(errors: ReadonlyArray<unknown>): boolean {
   return errors.length > 0 &&
     errors.every((error) => error instanceof ArrayResultError);
 }

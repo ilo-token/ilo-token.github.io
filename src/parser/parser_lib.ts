@@ -121,13 +121,13 @@ export function lazy<T>(parser: () => Parser<T>): Parser<T> {
     );
   }
 }
-export function choice<T>(...choices: Array<Parser<T>>): Parser<T> {
+export function choice<T>(...choices: ReadonlyArray<Parser<T>>): Parser<T> {
   return new Parser((src) =>
     new ArrayResult(choices).flatMap((parser) => parser.rawParser(src))
   );
 }
 export function choiceOnlyOne<T>(
-  ...choices: Array<Parser<T>>
+  ...choices: ReadonlyArray<Parser<T>>
 ): Parser<T> {
   return choices.reduceRight(
     (right, left) =>
@@ -148,7 +148,7 @@ export function optional<T>(parser: Parser<T>): Parser<null | T> {
 export function optionalAll<T>(parser: Parser<T>): Parser<null | T> {
   return choiceOnlyOne(parser, nothing);
 }
-export function sequence<T extends Array<unknown>>(
+export function sequence<T extends ReadonlyArray<unknown>>(
   ...sequence: { [I in keyof T]: Parser<T[I]> } & { length: T["length"] }
 ): Parser<T> {
   // We resorted to using `any` types here, make sure it works properly
@@ -158,25 +158,27 @@ export function sequence<T extends Array<unknown>>(
     emptyArray,
   ) as Parser<any>;
 }
-export const many = memoize(<T>(parser: Parser<T>): Parser<Array<T>> =>
+export const many = memoize(<T>(parser: Parser<T>): Parser<ReadonlyArray<T>> =>
   choice(
     sequence(parser, lazy(() => many(parser)))
       .map(([first, rest]) => [first, ...rest]),
     emptyArray,
   )
 );
-export function manyAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
+export function manyAtLeastOnce<T>(
+  parser: Parser<T>,
+): Parser<ReadonlyArray<T>> {
   return sequence(parser, many(parser))
     .map(([first, rest]) => [first, ...rest]);
 }
-export const all = memoize(<T>(parser: Parser<T>): Parser<Array<T>> =>
+export const all = memoize(<T>(parser: Parser<T>): Parser<ReadonlyArray<T>> =>
   choiceOnlyOne(
     sequence(parser, lazy(() => all(parser)))
       .map(([first, rest]) => [first, ...rest]),
     emptyArray,
   )
 );
-export function allAtLeastOnce<T>(parser: Parser<T>): Parser<Array<T>> {
+export function allAtLeastOnce<T>(parser: Parser<T>): Parser<ReadonlyArray<T>> {
   return sequence(parser, all(parser))
     .map(([first, rest]) => [first, ...rest]);
 }
@@ -252,7 +254,7 @@ export const end = new Parser((src) => {
 });
 export function withSource<T>(
   parser: Parser<T>,
-): Parser<[value: T, source: string]> {
+): Parser<readonly [value: T, source: string]> {
   return new Parser((src) =>
     parser.unmemoizedParser(src).map((value) => ({
       value: [value.value, src.slice(0, src.length - value.rest.length)],

@@ -4,14 +4,14 @@ import { Lazy } from "./cache.ts";
 
 export const NEWLINES = /\r\n|\n|\r/g;
 
-export function nullableAsArray<T>(value?: T): Array<NonNullable<T>> {
+export function nullableAsArray<T>(value?: T): ReadonlyArray<NonNullable<T>> {
   if (value == null) {
     return [];
   } else {
     return [value];
   }
 }
-export function repeatArray<T>(element: T, count: number): Array<T> {
+export function repeatArray<T>(element: T, count: number): ReadonlyArray<T> {
   return new Array(count).fill(element);
 }
 export function repeatWithSpace(text: string, count: number): string {
@@ -69,11 +69,11 @@ export function extractErrorMessage(error: unknown): string {
   }
 }
 export function filterSet<T>(
-  set: Array<[condition: boolean, value: T]>,
-): Array<T> {
+  set: ReadonlyArray<readonly [condition: boolean, value: T]>,
+): ReadonlyArray<T> {
   return set.filter(([condition]) => condition).map(([_, value]) => value);
 }
-export function flattenError(error: unknown): Array<unknown> {
+export function flattenError(error: unknown): ReadonlyArray<unknown> {
   if (error instanceof AggregateError) {
     return error.errors.flatMap(flattenError);
   } else {

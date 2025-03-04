@@ -23,7 +23,7 @@ function verbObject(
     throw new FilteredOutError("intransitive verb with object");
   } else {
     let englishObject: null | English.NounPhrase;
-    let preposition: Array<English.Preposition>;
+    let preposition: ReadonlyArray<English.Preposition>;
     if (useForObject === true) {
       englishObject = object;
       preposition = [];
@@ -119,7 +119,7 @@ function predicateVerb(
 function associatedPredicate(
   predicate: PhraseTranslation,
   object: null | PhraseTranslation,
-  preposition: Array<English.Preposition>,
+  preposition: ReadonlyArray<English.Preposition>,
 ): ArrayResult<PartialCompoundVerb> {
   return ArrayResult.from(() => {
     let verbObject: ArrayResult<PartialCompoundVerb>;

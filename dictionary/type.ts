@@ -3,8 +3,8 @@ export type NounForms = {
   plural: null | string;
 };
 export type Noun = NounForms & {
-  determiner: Array<Determiner>;
-  adjective: Array<Adjective>;
+  determiner: ReadonlyArray<Determiner>;
+  adjective: ReadonlyArray<Adjective>;
   gerund: boolean;
   postAdjective: null | {
     adjective: string;
@@ -43,7 +43,7 @@ export type AdjectiveType =
   | "material"
   | "qualifier";
 export type Adjective = {
-  adverb: Array<string>;
+  adverb: ReadonlyArray<string>;
   adjective: string;
   kind: AdjectiveType;
 };
@@ -54,7 +54,7 @@ export type VerbForms = {
 };
 export type Verb = VerbForms & {
   directObject: null | Noun;
-  indirectObject: Array<{
+  indirectObject: ReadonlyArray<{
     preposition: string;
     object: Noun;
   }>;
@@ -74,11 +74,11 @@ export type Definition =
   | ({ type: "determiner" } & Determiner)
   | { type: "numeral"; numeral: number }
   | ({ type: "adjective" } & Adjective)
-  | { type: "compound adjective"; adjective: Array<Adjective> }
+  | { type: "compound adjective"; adjective: ReadonlyArray<Adjective> }
   | { type: "adverb"; adverb: string }
   | ({ type: "verb" } & Verb)
   | { type: "modal verb"; verb: string }
   | { type: "preposition"; preposition: string }
   | { type: "interjection"; interjection: string };
-export type Entry = { definitions: Array<Definition>; src: string };
+export type Entry = { definitions: ReadonlyArray<Definition>; src: string };
 export type Dictionary = Map<string, Entry>;

@@ -207,7 +207,7 @@ export function phrase(
 }
 function compoundNoun(
   conjunction: "and" | "or",
-  phrase: Array<English.NounPhrase>,
+  phrase: ReadonlyArray<English.NounPhrase>,
 ): English.NounPhrase {
   const nouns = phrase
     .flatMap((noun) => {
@@ -238,7 +238,7 @@ function compoundNoun(
 }
 function compoundAdjective(
   conjunction: "and" | "or",
-  phrase: Array<English.AdjectivePhrase>,
+  phrase: ReadonlyArray<English.AdjectivePhrase>,
 ): English.AdjectivePhrase {
   return {
     type: "compound",
