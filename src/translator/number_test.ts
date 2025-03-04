@@ -22,6 +22,7 @@ const TESTS = new Map(Object.entries({
   "tu wan ale": 300,
   "luka luka ale": 1000,
   "wan ale ale": 10000,
+  "mute ale mute tu tu": 2024,
 }));
 Deno.test("numeral translation", () => {
   for (const [tokiPona, expected] of TESTS) {
