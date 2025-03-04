@@ -34,13 +34,11 @@ export function partialNoun(
   );
   return ArrayResult.combine(engDeterminer, engAdjective)
     .map(([determiner, adjective]) => ({
+      ...definition,
       determiner,
       adjective,
-      singular: definition.singular,
-      plural: definition.plural,
       perspective: "third",
       reduplicationCount,
-      postAdjective: definition.postAdjective,
       emphasis,
     }));
 }

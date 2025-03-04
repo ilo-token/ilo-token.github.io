@@ -66,9 +66,8 @@ export function determiner(
     plural: definition.plural,
   })
     .map((determiner) => ({
-      kind: definition.kind,
+      ...definition,
       determiner: word(determiner, reduplicationCount, emphasis),
-      quantity: definition.quantity,
     }));
 }
 export function fixDeterminer(
