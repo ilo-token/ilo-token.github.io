@@ -260,11 +260,15 @@ function main(): void {
     }
   });
   function displayToCustomDictionary(message: string): void {
-    let original = customDictionaryTextBox.value.trimEnd();
+    const original = customDictionaryTextBox.value.trimEnd();
+    let append: string;
     if (original !== "") {
-      original += "\n\n";
+      append = "\n\n";
+    } else {
+      append = "";
     }
-    customDictionaryTextBox.value = `${original}${message.trimEnd()}\n`;
+    customDictionaryTextBox.value =
+      `${original}${append}${message.trimEnd()}\n`;
     customDictionaryTextBox.scrollTo(0, customDictionaryTextBox.scrollHeight);
   }
   function addWord(): void {

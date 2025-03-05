@@ -181,9 +181,11 @@ export function fromVerbForms(
       break;
   }
   return verb.map((verb) => {
-    let modal: null | Word = null;
+    let modal: null | Word;
     if (verb.modal != null) {
       modal = unemphasized(verb.modal);
+    } else {
+      modal = null;
     }
     return {
       modal,

@@ -130,9 +130,11 @@ const cartoucheElement = choiceOnlyOne(
     ),
   )
     .map(([word, dots]) => {
-      let count = dots;
+      let count: number;
       if (/^[aeiou]/.test(word)) {
-        count++;
+        count = dots + 1;
+      } else {
+        count = dots;
       }
       const morae = word.match(/[aeiou]|[jklmnpstw][aeiou]|n/g)!;
       if (morae.length < count) {

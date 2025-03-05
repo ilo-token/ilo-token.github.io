@@ -44,11 +44,14 @@ function unfilteredNasinNanpaPona(
     if (aleStart === -1) {
       return subHundred(number);
     } else {
-      let hundredCount = number
+      const index = number
         .slice(aleStart)
         .findIndex((number) => number !== 100);
-      if (hundredCount === -1) {
+      let hundredCount: number;
+      if (index === -1) {
         hundredCount = number.length - aleStart;
+      } else {
+        hundredCount = index;
       }
       if (previousHundredCount <= hundredCount) {
         throw new FilteredOutError('unsorted "ale"');

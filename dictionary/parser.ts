@@ -116,8 +116,8 @@ const nounOnly = sequence(
   ),
 )
   .map<NounForms & { gerund: boolean }>(([first, second, [gerund, number]]) => {
-    let singular: null | string = null;
-    let plural: null | string = null;
+    let singular: null | string;
+    let plural: null | string;
     switch (number) {
       case null: {
         if (second == null) {
@@ -160,8 +160,10 @@ const nounOnly = sequence(
         switch (number) {
           case "singular":
             singular = first;
+            plural = null;
             break;
           case "plural":
+            singular = null;
             plural = first;
             break;
         }
