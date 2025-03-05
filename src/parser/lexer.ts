@@ -4,6 +4,7 @@ import { cache } from "./cache.ts";
 import {
   all,
   allAtLeastOnce,
+  character,
   choice,
   choiceOnlyOne,
   count,
@@ -150,11 +151,9 @@ const cartouche = specificSpecialUcsur(START_OF_CARTOUCHE)
   .with(allAtLeastOnce(cartoucheElement))
   .skip(specificSpecialUcsur(END_OF_CARTOUCHE))
   .skip(spaces)
-  .map((words) => {
-    const word = words.join("");
-    const [first] = word;
-    return `${first.toLocaleUpperCase()}${word.slice(first.length)}`;
-  });
+  .map((words) =>
+    words.join("").replace(/^./u, (character) => character.toLocaleUpperCase())
+  );
 const cartouches = allAtLeastOnce(cartouche)
   .map((words) => words.join(" "))
   .map<Token>((words) => ({
