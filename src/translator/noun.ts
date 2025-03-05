@@ -20,26 +20,32 @@ export type PartialNoun =
     postAdjective: null | { adjective: string; name: string };
   }>;
 export function partialNoun(
-  definition: Dictionary.Noun,
-  reduplicationCount: number,
-  emphasis: boolean,
+  options: Readonly<{
+    definition: Dictionary.Noun;
+    reduplicationCount: number;
+    emphasis: boolean;
+  }>,
 ): ArrayResult<PartialNoun> {
+  const { definition } = options;
   const engDeterminer = ArrayResult.combine(
     ...definition.determiner
-      .map((definition) => determiner(definition, 1, false)),
+      .map((definition) =>
+        determiner({ definition, reduplicationCount: 1, emphasis: false })
+      ),
   );
   const engAdjective = ArrayResult.combine(
     ...definition.adjective
-      .map((definition) => adjective(definition, 1, null)),
+      .map((definition) =>
+        adjective({ definition, reduplicationCount: 1, emphasis: null })
+      ),
   );
   return ArrayResult.combine(engDeterminer, engAdjective)
     .map(([determiner, adjective]) => ({
+      ...options,
       ...definition,
       determiner,
       adjective,
       perspective: "third",
-      reduplicationCount,
-      emphasis,
     }));
 }
 export function fromNounForms(
@@ -84,18 +90,21 @@ export function simpleNounForms(
   return fromNounForms(nounForms, "both").map((noun) => noun.noun);
 }
 export function noun(
-  definition: Dictionary.Noun,
-  reduplicationCount: number,
-  emphasis: boolean,
+  options: Readonly<{
+    definition: Dictionary.Noun;
+    reduplicationCount: number;
+    emphasis: boolean;
+  }>,
 ): ArrayResult<English.NounPhrase> {
+  const { definition } = options;
   return ArrayResult.combine(
     fromNounForms(definition, "both"),
-    partialNoun(definition, reduplicationCount, emphasis),
+    partialNoun(options),
   )
     .map(([{ noun, quantity }, partialNoun]) => ({
       ...partialNoun,
       type: "simple",
-      noun: word(noun, reduplicationCount, emphasis),
+      noun: word({ ...options, word: noun }),
       quantity,
       preposition: [],
       emphasis: false,
@@ -104,7 +113,6 @@ export function noun(
 export function nounAsPlainString(
   definition: Dictionary.Noun,
 ): ArrayResult<string> {
-  return noun(definition, 1, false).map((noun) =>
-    EnglishComposer.noun(noun, 0)
-  );
+  return noun({ definition, reduplicationCount: 1, emphasis: false })
+    .map((noun) => EnglishComposer.noun(noun, 0));
 }

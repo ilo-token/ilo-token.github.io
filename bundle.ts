@@ -29,11 +29,13 @@ function buildOptions(minify: boolean): ESBuild.BuildOptions {
     plugins: [...denoPlugins()],
   };
 }
-async function buildAll(options: {
-  minify: boolean;
-  buildDictionary: boolean;
-  checkDictionary?: boolean;
-}): Promise<void> {
+async function buildAll(
+  options: Readonly<{
+    minify: boolean;
+    buildDictionary: boolean;
+    checkDictionary?: boolean;
+  }>,
+): Promise<void> {
   const { minify, buildDictionary, checkDictionary } = options;
   try {
     if (buildDictionary) {

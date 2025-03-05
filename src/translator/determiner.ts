@@ -57,17 +57,20 @@ export function findNumber(
   }
 }
 export function determiner(
-  definition: Dictionary.Determiner,
-  reduplicationCount: number,
-  emphasis: boolean,
+  options: Readonly<{
+    definition: Dictionary.Determiner;
+    reduplicationCount: number;
+    emphasis: boolean;
+  }>,
 ): ArrayResult<English.Determiner> {
+  const { definition } = options;
   return simpleNounForms({
     singular: definition.determiner,
     plural: definition.plural,
   })
     .map((determiner) => ({
       ...definition,
-      determiner: word(determiner, reduplicationCount, emphasis),
+      determiner: word({ ...options, word: determiner }),
     }));
 }
 export function fixDeterminer(

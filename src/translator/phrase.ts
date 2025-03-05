@@ -29,10 +29,13 @@ export type PhraseTranslation =
   | (Readonly<{ type: "adjective" }> & AdjectiveWithInWay)
   | Readonly<{ type: "verb"; verb: PartialCompoundVerb }>;
 function nounPhrase(
-  emphasis: boolean,
-  partialNoun: PartialNoun,
-  modifier: AdjectivalModifier,
+  options: Readonly<{
+    emphasis: boolean;
+    partialNoun: PartialNoun;
+    modifier: AdjectivalModifier;
+  }>,
 ): ArrayResult<English.NounPhrase> {
+  const { emphasis, partialNoun, modifier } = options;
   return ArrayResult.from(() => {
     const determiner = fixDeterminer([
       ...[...modifier.determiner].reverse(),
@@ -73,7 +76,11 @@ function nounPhrase(
         type: "simple" as const,
         determiner,
         adjective,
-        noun: word(noun, partialNoun.reduplicationCount, partialNoun.emphasis),
+        noun: word({
+          word: noun,
+          reduplicationCount: partialNoun.reduplicationCount,
+          emphasis: partialNoun.emphasis,
+        }),
         quantity,
         perspective: partialNoun.perspective,
         postCompound: null,
@@ -104,10 +111,13 @@ function nounPhrase(
   });
 }
 function adjectivePhrase(
-  emphasis: boolean,
-  adjective: English.AdjectivePhrase,
-  modifier: AdverbialModifier,
+  options: Readonly<{
+    emphasis: boolean;
+    adjective: English.AdjectivePhrase;
+    modifier: AdverbialModifier;
+  }>,
 ): AdjectiveWithInWay {
+  const { emphasis, adjective, modifier } = options;
   switch (adjective.type) {
     case "simple": {
       const adverb = fixAdverb([
@@ -135,10 +145,13 @@ function adjectivePhrase(
   }
 }
 function verbPhrase(
-  emphasis: boolean,
-  verb: PartialVerb,
-  modifier: AdverbialModifier,
+  options: Readonly<{
+    emphasis: boolean;
+    verb: PartialVerb;
+    modifier: AdverbialModifier;
+  }>,
 ): PartialVerb {
+  const { emphasis, verb, modifier } = options;
   const adverb = fixAdverb([
     ...[...modifier.adverb].reverse(),
     ...verb.adverb,
@@ -156,25 +169,32 @@ function verbPhrase(
   };
 }
 function defaultPhrase(
-  phrase: TokiPona.Phrase & { type: "default" },
-  place: Place,
-  includeGerund: boolean,
-  includeVerb: boolean,
+  options: Readonly<{
+    phrase: TokiPona.Phrase & { type: "default" };
+    place: Place;
+    includeGerund: boolean;
+    includeVerb: boolean;
+  }>,
 ): ArrayResult<PhraseTranslation> {
+  const { phrase, includeVerb } = options;
   const emphasis = phrase.emphasis != null;
   return ArrayResult.combine(
-    wordUnit(phrase.headWord, place, includeGerund),
+    wordUnit({ ...options, wordUnit: phrase.headWord }),
     multipleModifiers(phrase.modifiers),
   )
     .flatMap<PhraseTranslation>(([headWord, modifier]) => {
       if (headWord.type === "noun" && modifier.type === "adjectival") {
-        return nounPhrase(emphasis, headWord, modifier)
+        return nounPhrase({ emphasis, partialNoun: headWord, modifier })
           .map((noun) => ({ type: "noun", noun }));
       } else if (
         headWord.type === "adjective" && modifier.type === "adverbial"
       ) {
         return new ArrayResult([{
-          ...adjectivePhrase(emphasis, headWord.adjective, modifier),
+          ...adjectivePhrase({
+            emphasis,
+            adjective: headWord.adjective,
+            modifier,
+          }),
           type: "adjective",
         }]);
       } else if (
@@ -182,7 +202,10 @@ function defaultPhrase(
       ) {
         return new ArrayResult<PhraseTranslation>([{
           type: "verb",
-          verb: { ...verbPhrase(emphasis, headWord, modifier), type: "simple" },
+          verb: {
+            ...verbPhrase({ emphasis, verb: headWord, modifier }),
+            type: "simple",
+          },
         }]);
       } else {
         return new ArrayResult();
@@ -191,14 +214,17 @@ function defaultPhrase(
     .addErrorWhenNone(() => new ExhaustedError(Composer.phrase(phrase)));
 }
 export function phrase(
-  phrase: TokiPona.Phrase,
-  place: Place,
-  includeGerund: boolean,
-  includeVerb: boolean,
+  options: Readonly<{
+    phrase: TokiPona.Phrase;
+    place: Place;
+    includeGerund: boolean;
+    includeVerb: boolean;
+  }>,
 ): ArrayResult<PhraseTranslation> {
+  const { phrase } = options;
   switch (phrase.type) {
     case "default":
-      return defaultPhrase(phrase, place, includeGerund, includeVerb);
+      return defaultPhrase({ ...options, phrase });
     case "preverb":
     case "preposition":
     case "quotation":
@@ -300,29 +326,24 @@ export function phraseAsVerb(
   }
 }
 export function multiplePhrases(
-  phrases: TokiPona.MultiplePhrases,
-  place: Place,
-  includeGerund: boolean,
-  andParticle: string,
-  includeVerb: boolean,
+  options: Readonly<{
+    phrases: TokiPona.MultiplePhrases;
+    place: Place;
+    includeGerund: boolean;
+    andParticle: string;
+    includeVerb: boolean;
+  }>,
 ): ArrayResult<PhraseTranslation> {
+  const { phrases, andParticle, includeVerb } = options;
   switch (phrases.type) {
     case "single":
-      return phrase(phrases.phrase, place, includeGerund, includeVerb);
+      return phrase({ ...options, phrase: phrases.phrase });
     case "and conjunction":
     case "anu": {
       const conjunction = CONJUNCTION[phrases.type];
       return ArrayResult.combine(
         ...phrases.phrases
-          .map((phrases) =>
-            multiplePhrases(
-              phrases,
-              place,
-              includeGerund,
-              andParticle,
-              includeVerb,
-            )
-          ),
+          .map((phrases) => multiplePhrases({ ...options, phrases })),
       )
         .filterMap<null | PhraseTranslation>((phrase) => {
           if (
@@ -376,12 +397,14 @@ export function multiplePhrases(
   }
 }
 export function multiplePhrasesAsNoun(
-  phrases: TokiPona.MultiplePhrases,
-  place: Place,
-  includeGerund: boolean,
-  andParticle: string,
+  options: Readonly<{
+    phrases: TokiPona.MultiplePhrases;
+    place: Place;
+    includeGerund: boolean;
+    andParticle: string;
+  }>,
 ): ArrayResult<English.NounPhrase> {
-  return multiplePhrases(phrases, place, includeGerund, andParticle, false)
+  return multiplePhrases({ ...options, includeVerb: false })
     .filterMap((phrase) => {
       if (phrase.type === "noun") {
         return phrase.noun;

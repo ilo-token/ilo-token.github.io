@@ -61,7 +61,11 @@ export function defaultModifier(
         return {
           type: "determiner" as const,
           determiner: {
-            determiner: word(`${number}`, 1, emphasis),
+            determiner: word({
+              word: `${number}`,
+              reduplicationCount: 1,
+              emphasis,
+            }),
             kind: "numeral",
             quantity,
           },
@@ -84,47 +88,56 @@ export function defaultModifier(
         .flatMap((definition) => {
           switch (definition.type) {
             case "noun":
-              return noun(definition, reduplicationCount, emphasis)
+              return noun({ definition, reduplicationCount, emphasis })
                 .map<ModifierTranslation>((noun) => ({
                   type: "noun",
                   noun,
                 }));
             case "noun preposition":
-              return noun(definition.noun, reduplicationCount, emphasis)
+              return noun({
+                definition: definition.noun,
+                reduplicationCount,
+                emphasis,
+              })
                 .map<ModifierTranslation>((noun) => ({
                   type: "noun preposition",
                   noun,
                   preposition: definition.preposition,
                 }));
             case "personal pronoun":
-              return pronoun(definition, reduplicationCount, emphasis, "object")
-                .map((noun) => ({ type: "noun", noun }));
-            case "determiner":
-              return determiner(
+              return pronoun({
                 definition,
                 reduplicationCount,
-                wordUnit.emphasis != null,
-              )
+                emphasis,
+                place: "object",
+              })
+                .map((noun) => ({ type: "noun", noun }));
+            case "determiner":
+              return determiner({
+                definition,
+                reduplicationCount,
+                emphasis: wordUnit.emphasis != null,
+              })
                 .map<ModifierTranslation>((determiner) => ({
                   type: "determiner",
                   determiner,
                 }));
             case "adjective":
-              return adjective(
+              return adjective({
                 definition,
                 reduplicationCount,
-                wordUnit.emphasis,
-              )
+                emphasis: wordUnit.emphasis,
+              })
                 .map<ModifierTranslation>((adjective) => ({
                   type: "adjective",
                   adjective,
                 }));
             case "compound adjective":
-              return compoundAdjective(
-                definition.adjective,
+              return compoundAdjective({
+                adjectives: definition.adjective,
                 reduplicationCount,
-                wordUnit.emphasis,
-              )
+                emphasis: wordUnit.emphasis,
+              })
                 .map<ModifierTranslation>((adjective) => ({
                   type: "adjective",
                   adjective,
@@ -132,7 +145,11 @@ export function defaultModifier(
             case "adverb":
               return new ArrayResult<ModifierTranslation>([{
                 type: "adverb",
-                adverb: word(definition.adverb, reduplicationCount, emphasis),
+                adverb: word({
+                  word: definition.adverb,
+                  reduplicationCount,
+                  emphasis,
+                }),
               }]);
             default:
               return new ArrayResult();
@@ -144,7 +161,12 @@ export function defaultModifier(
 export function piModifier(
   insidePhrase: TokiPona.Phrase,
 ): ArrayResult<ModifierTranslation> {
-  return phrase(insidePhrase, "object", true, false)
+  return phrase({
+    phrase: insidePhrase,
+    place: "object",
+    includeGerund: true,
+    includeVerb: false,
+  })
     .filter((modifier) =>
       modifier.type !== "noun" || modifier.noun.type !== "simple" ||
       modifier.noun.preposition.length === 0
@@ -156,35 +178,43 @@ export function piModifier(
 function nanpaModifier(
   nanpa: TokiPona.Modifier & { type: "nanpa" },
 ): ArrayResult<ModifierTranslation> {
-  return phrase(nanpa.phrase, "object", true, false).map((phrase) => {
-    if (phrase.type !== "noun") {
-      throw new FilteredOutError(`${phrase.type} within "in position" phrase`);
-    } else if (
-      (phrase.noun as English.NounPhrase & { type: "simple" })
-        .preposition.length > 0
-    ) {
-      throw new FilteredOutError('preposition within "in position" phrase');
-    } else {
-      return {
-        type: "in position phrase",
-        noun: {
-          type: "simple",
-          determiner: [],
-          adjective: [],
+  return phrase({
+    phrase: nanpa.phrase,
+    place: "object",
+    includeGerund: true,
+    includeVerb: false,
+  })
+    .map((phrase) => {
+      if (phrase.type !== "noun") {
+        throw new FilteredOutError(
+          `${phrase.type} within "in position" phrase`,
+        );
+      } else if (
+        (phrase.noun as English.NounPhrase & { type: "simple" })
+          .preposition.length > 0
+      ) {
+        throw new FilteredOutError('preposition within "in position" phrase');
+      } else {
+        return {
+          type: "in position phrase",
           noun: {
-            word: "position",
-            emphasis: nanpa.nanpa.emphasis != null,
+            type: "simple",
+            determiner: [],
+            adjective: [],
+            noun: {
+              word: "position",
+              emphasis: nanpa.nanpa.emphasis != null,
+            },
+            quantity: "singular",
+            perspective: "third",
+            postCompound: phrase.noun,
+            postAdjective: null,
+            preposition: [],
+            emphasis: false,
           },
-          quantity: "singular",
-          perspective: "third",
-          postCompound: phrase.noun,
-          postAdjective: null,
-          preposition: [],
-          emphasis: false,
-        },
-      };
-    }
-  });
+        };
+      }
+    });
 }
 function modifier(
   modifier: TokiPona.Modifier,

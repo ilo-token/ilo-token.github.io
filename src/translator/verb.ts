@@ -41,14 +41,21 @@ export function condenseVerb(present: string, past: string): string {
   return [condense(first, second), ...rest].join(" ");
 }
 export function partialVerb(
-  definition: Dictionary.Verb,
-  reduplicationCount: number,
-  emphasis: boolean,
+  options: Readonly<{
+    definition: Dictionary.Verb;
+    reduplicationCount: number;
+    emphasis: boolean;
+  }>,
 ): ArrayResult<PartialVerb> {
+  const { definition, reduplicationCount, emphasis } = options;
   const object = new ArrayResult([definition.directObject])
     .flatMap((object) => {
       if (object != null) {
-        return noun(object, 1, false);
+        return noun({
+          definition: object,
+          reduplicationCount: 1,
+          emphasis: false,
+        });
       } else {
         return new ArrayResult([null]);
       }
@@ -56,7 +63,11 @@ export function partialVerb(
   const preposition = ArrayResult.combine(
     ...definition.indirectObject
       .flatMap((indirectObject) =>
-        noun(indirectObject.object, 1, false)
+        noun({
+          definition: indirectObject.object,
+          reduplicationCount: 1,
+          emphasis: false,
+        })
           .map((object) =>
             nounAsPreposition(object, indirectObject.preposition)
           )
@@ -96,12 +107,15 @@ export function forObject(verb: PartialCompoundVerb): boolean | string {
   return forObject;
 }
 export function fromVerbForms(
-  verbForms: Dictionary.VerbForms,
-  perspective: Dictionary.Perspective,
-  quantity: English.Quantity,
-  reduplicationCount: number,
-  emphasis: boolean,
+  options: Readonly<{
+    verbForms: Dictionary.VerbForms;
+    perspective: Dictionary.Perspective;
+    quantity: English.Quantity;
+    reduplicationCount: number;
+    emphasis: boolean;
+  }>,
 ): ArrayResult<English.Verb> {
+  const { verbForms, perspective, quantity } = options;
   const is = verbForms.presentSingular === "is";
   let presentSingular: string;
   if (is && perspective === "first") {
@@ -174,7 +188,7 @@ export function fromVerbForms(
     return {
       modal,
       finite: [],
-      infinite: word(verb.infinite, reduplicationCount, emphasis),
+      infinite: word({ ...options, word: verb.infinite }),
     };
   });
 }
@@ -185,13 +199,13 @@ export function verb(
 ): ArrayResult<English.VerbPhrase> {
   switch (partialVerb.type) {
     case "simple": {
-      return fromVerbForms(
-        partialVerb,
+      return fromVerbForms({
+        verbForms: partialVerb,
         perspective,
         quantity,
-        partialVerb.reduplicationCount,
-        partialVerb.wordEmphasis,
-      )
+        reduplicationCount: partialVerb.reduplicationCount,
+        emphasis: partialVerb.wordEmphasis,
+      })
         .map<English.VerbPhrase>((verb) => ({
           ...partialVerb,
           type: "default",

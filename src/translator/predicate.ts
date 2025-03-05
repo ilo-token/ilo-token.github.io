@@ -142,20 +142,31 @@ export function predicate(
 ): ArrayResult<PartialCompoundVerb> {
   switch (tokiPonaPredicate.type) {
     case "single":
-      return phrase(tokiPonaPredicate.predicate, "object", false, true)
+      return phrase({
+        phrase: tokiPonaPredicate.predicate,
+        place: "object",
+        includeGerund: false,
+        includeVerb: true,
+      })
         .map(phraseAsVerb);
     case "associated": {
-      const predicatePhrase = multiplePhrases(
-        tokiPonaPredicate.predicates,
-        "object",
-        false,
+      const predicatePhrase = multiplePhrases({
+        phrases: tokiPonaPredicate.predicates,
+        place: "object",
+        includeGerund: false,
         andParticle,
-        true,
-      );
+        includeVerb: true,
+      });
       const object = new ArrayResult([tokiPonaPredicate.objects]).flatMap(
         (object) => {
           if (object != null) {
-            return multiplePhrases(object, "object", true, "e", false);
+            return multiplePhrases({
+              phrases: object,
+              place: "object",
+              includeGerund: true,
+              andParticle: "e",
+              includeVerb: false,
+            });
           } else {
             return new ArrayResult([null]);
           }

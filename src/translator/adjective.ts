@@ -23,10 +23,13 @@ function so(emphasis: null | TokiPona.Emphasis): string {
   }
 }
 export function adjective(
-  definition: Dictionary.Adjective,
-  reduplicationCount: number,
-  emphasis: null | TokiPona.Emphasis,
+  options: Readonly<{
+    definition: Dictionary.Adjective;
+    reduplicationCount: number;
+    emphasis: null | TokiPona.Emphasis;
+  }>,
 ): ArrayResult<English.AdjectivePhrase & { type: "simple" }> {
+  const { definition, reduplicationCount, emphasis } = options;
   return ArrayResult.concat<{ emphasis: boolean; so: null | string }>(
     ArrayResult.from(() => new ArrayResult([so(emphasis)]))
       .map((so) => ({ emphasis: false, so })),
@@ -36,20 +39,29 @@ export function adjective(
       type: "simple",
       kind: definition.kind,
       adverb: [...definition.adverb, ...nullableAsArray(so)].map(unemphasized),
-      adjective: word(definition.adjective, reduplicationCount, emphasis),
+      adjective: word({
+        word: definition.adjective,
+        reduplicationCount,
+        emphasis,
+      }),
       emphasis: false,
     }));
 }
 export function compoundAdjective(
-  adjectives: ReadonlyArray<Dictionary.Adjective>,
-  reduplicationCount: number,
-  emphasis: null | TokiPona.Emphasis,
+  options: Readonly<{
+    adjectives: ReadonlyArray<Dictionary.Adjective>;
+    reduplicationCount: number;
+    emphasis: null | TokiPona.Emphasis;
+  }>,
 ): ArrayResult<English.AdjectivePhrase & { type: "compound" }> {
+  const { adjectives, reduplicationCount, emphasis } = options;
   return ArrayResult.from(() => {
     if (reduplicationCount === 1) {
       return ArrayResult.combine(
         ...adjectives
-          .map((definition) => adjective(definition, 1, emphasis)),
+          .map((definition) =>
+            adjective({ definition, reduplicationCount: 1, emphasis })
+          ),
       )
         .map((adjective) => ({
           type: "compound",

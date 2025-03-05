@@ -14,12 +14,15 @@ export type WordUnitTranslation =
   | Readonly<{ type: "adjective"; adjective: English.AdjectivePhrase }>
   | (Readonly<{ type: "verb" }> & PartialVerb);
 function defaultWordUnit(
-  word: string,
-  reduplicationCount: number,
-  emphasis: null | TokiPona.Emphasis,
-  place: Place,
-  includeGerund: boolean,
+  options: Readonly<{
+    word: string;
+    reduplicationCount: number;
+    emphasis: null | TokiPona.Emphasis;
+    place: Place;
+    includeGerund: boolean;
+  }>,
 ): ArrayResult<WordUnitTranslation> {
+  const { word, emphasis, includeGerund } = options;
   return new ArrayResult(dictionary.get(word)!.definitions)
     .flatMap((definition) => {
       switch (definition.type) {
@@ -27,41 +30,43 @@ function defaultWordUnit(
           if (!includeGerund && definition.gerund) {
             return new ArrayResult();
           } else {
-            return partialNoun(definition, reduplicationCount, emphasis != null)
+            return partialNoun({
+              ...options,
+              definition,
+              emphasis: emphasis != null,
+            })
               .map<WordUnitTranslation>((noun) => ({ ...noun, type: "noun" }));
           }
         case "personal pronoun":
           return new ArrayResult<WordUnitTranslation>([{
-            ...partialPronoun(
-              definition,
-              reduplicationCount,
-              emphasis != null,
-              place,
-            ),
+            ...partialPronoun({
+              ...options,
+              pronoun: definition,
+              emphasis: emphasis != null,
+            }),
             type: "noun",
           }]);
         case "adjective":
-          return adjective(
-            definition,
-            reduplicationCount,
-            emphasis,
-          )
+          return adjective({ ...options, definition })
             .map<WordUnitTranslation>((adjective) => ({
               type: "adjective",
               adjective,
             }));
         case "compound adjective":
-          return compoundAdjective(
-            definition.adjective,
-            reduplicationCount,
-            emphasis,
-          )
+          return compoundAdjective({
+            ...options,
+            adjectives: definition.adjective,
+          })
             .map<WordUnitTranslation>((adjective) => ({
               type: "adjective",
               adjective,
             }));
         case "verb":
-          return partialVerb(definition, reduplicationCount, emphasis != null)
+          return partialVerb({
+            ...options,
+            definition,
+            emphasis: emphasis != null,
+          })
             .map<WordUnitTranslation>((verb) => ({ ...verb, type: "verb" }));
         default:
           return new ArrayResult();
@@ -69,10 +74,13 @@ function defaultWordUnit(
     });
 }
 export function wordUnit(
-  wordUnit: TokiPona.WordUnit,
-  place: Place,
-  includeGerund: boolean,
+  options: Readonly<{
+    wordUnit: TokiPona.WordUnit;
+    place: Place;
+    includeGerund: boolean;
+  }>,
 ): ArrayResult<WordUnitTranslation> {
+  const { wordUnit } = options;
   switch (wordUnit.type) {
     case "number":
       return number(wordUnit.words)
@@ -100,13 +108,12 @@ export function wordUnit(
           reduplicationCount = wordUnit.count;
           break;
       }
-      return defaultWordUnit(
-        wordUnit.word,
+      return defaultWordUnit({
+        ...options,
+        word: wordUnit.word,
         reduplicationCount,
-        wordUnit.emphasis,
-        place,
-        includeGerund,
-      );
+        emphasis: wordUnit.emphasis,
+      });
     }
   }
 }

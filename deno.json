@@ -30,6 +30,22 @@
       "./telo-misikeke/Parser.js"
     ],
     "rules": {
+      "tags": ["recommended"],
+      "include": [
+        "camelcase",
+        "explicit-function-return-type",
+        "explicit-module-boundary-types",
+        "no-boolean-literal-for-arguments",
+        "no-eval",
+        "no-inferrable-types",
+        "no-non-null-asserted-optional-chain",
+        "no-self-compare",
+        "no-sparse-arrays",
+        "no-sync-fn-in-async-fn",
+        "no-throw-literal",
+        "no-useless-rename",
+        "single-var-declarator"
+      ],
       "exclude": ["no-explicit-any"]
     }
   },

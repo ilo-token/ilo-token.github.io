@@ -13,7 +13,13 @@ import { unemphasized } from "./word.ts";
 function phraseClause(
   phrases: TokiPona.MultiplePhrases,
 ): ArrayResult<English.Clause> {
-  return multiplePhrases(phrases, "object", true, "en", false)
+  return multiplePhrases({
+    phrases,
+    place: "object",
+    includeGerund: true,
+    andParticle: "en",
+    includeVerb: false,
+  })
     .map<English.Clause>(
       (phrase) => {
         switch (phrase.type) {
@@ -70,7 +76,12 @@ function liClause(
   clause: TokiPona.Clause & { type: "li clause" },
 ): ArrayResult<English.Clause> {
   return ArrayResult.combine(
-    multiplePhrasesAsNoun(clause.subjects, "subject", true, "en"),
+    multiplePhrasesAsNoun({
+      phrases: clause.subjects,
+      place: "subject",
+      includeGerund: true,
+      andParticle: "en",
+    }),
     predicate(clause.predicates, "li"),
   )
     .flatMap(([subject, predicate]) => {
@@ -94,7 +105,13 @@ export function clause(clause: TokiPona.Clause): ArrayResult<English.Clause> {
     case "phrases":
       return phraseClause(clause.phrases);
     case "o vocative":
-      return multiplePhrases(clause.phrases, "object", true, "en", false)
+      return multiplePhrases({
+        phrases: clause.phrases,
+        place: "object",
+        includeGerund: true,
+        andParticle: "en",
+        includeVerb: false,
+      })
         .map((phrase) => {
           if (phrase.type === "noun") {
             return { type: "vocative", call: "hey", addressee: phrase.noun };

@@ -55,5 +55,6 @@ export const original = ${original};
   await Deno.writeTextFile(DESTINATION, code);
 }
 if (import.meta.main) {
-  await build(true);
+  const checkFile = true;
+  await build(checkFile);
 }

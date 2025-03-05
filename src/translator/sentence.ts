@@ -36,10 +36,13 @@ function filler(filler: TokiPona.Filler): ArrayResult<string> {
   }
 }
 function emphasisAsPunctuation(
-  emphasis: null | TokiPona.Emphasis,
-  interrogative: boolean,
-  originalPunctuation: string,
+  options: Readonly<{
+    emphasis: null | TokiPona.Emphasis;
+    interrogative: boolean;
+    originalPunctuation: string;
+  }>,
 ): string {
+  const { emphasis, interrogative, originalPunctuation } = options;
   if (emphasis == null) {
     if (interrogative) {
       return "?";
@@ -174,11 +177,11 @@ function sentence(
           lastClause,
           ...right,
         ]);
-      const usePunctuation = emphasisAsPunctuation(
-        sentence.emphasis,
-        sentence.interrogative != null,
-        punctuation,
-      );
+      const usePunctuation = emphasisAsPunctuation({
+        emphasis: sentence.emphasis,
+        interrogative: sentence.interrogative != null,
+        originalPunctuation: punctuation,
+      });
       return engClauses.map((clauses) => ({
         clauses,
         punctuation: usePunctuation,

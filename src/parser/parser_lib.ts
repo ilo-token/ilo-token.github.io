@@ -235,7 +235,7 @@ export function slice(length: number, description: string): Parser<string> {
 }
 export function matchString(
   match: string,
-  description: string = `"${match}"`,
+  description = `"${match}"`,
 ): Parser<string> {
   return new Parser((src) => {
     if (src.length >= match.length && src.slice(0, match.length) === match) {
