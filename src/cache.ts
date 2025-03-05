@@ -19,7 +19,7 @@ export class Cache {
 }
 export class Lazy<T> implements Clearable {
   #evaluated = false;
-  #value: undefined | T;
+  #value: null | T = null;
   readonly #fn: () => T;
   constructor(fn: () => T) {
     this.#fn = fn;
@@ -33,6 +33,6 @@ export class Lazy<T> implements Clearable {
   }
   clear(): void {
     this.#evaluated = false;
-    this.#value = undefined;
+    this.#value = null;
   }
 }
