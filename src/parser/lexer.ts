@@ -151,7 +151,7 @@ const cartouche = specificSpecialUcsur(START_OF_CARTOUCHE)
   .skip(specificSpecialUcsur(END_OF_CARTOUCHE))
   .skip(spaces)
   .map((words) =>
-    words.join("").replace(/^./u, (character) => character.toUpperCase())
+    words.join("").replace(/^./, (character) => character.toUpperCase())
   );
 const cartouches = allAtLeastOnce(cartouche)
   .map((words) => words.join(" "))
