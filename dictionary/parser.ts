@@ -1,7 +1,11 @@
 import { escape } from "@std/html/entities";
 import nlp from "compromise/three";
 import { ArrayResultError } from "../src/array_result.ts";
-import { deduplicateErrors, nullableAsArray } from "../src/misc.ts";
+import {
+  deduplicateErrors,
+  mapNullable,
+  nullableAsArray,
+} from "../src/misc.ts";
 import {
   all,
   allAtLeastOnce,
@@ -219,18 +223,14 @@ const noun = sequence(
   ),
 )
   .map<Noun>(([determiner, adjective, noun, post]) => {
-    let postAdjective: null | { adjective: string; name: string };
-    if (post == null) {
-      postAdjective = null;
-    } else {
-      const [adjective, name] = post;
-      postAdjective = { adjective, name };
-    }
     return {
       ...noun,
       determiner,
       adjective,
-      postAdjective,
+      postAdjective: mapNullable(
+        post,
+        ([adjective, name]) => ({ adjective, name }),
+      ),
     };
   });
 function verbOnly(tagInside: Parser<unknown>): Parser<VerbForms> {

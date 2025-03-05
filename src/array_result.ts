@@ -1,4 +1,4 @@
-import { flattenError } from "./misc.ts";
+import { flattenError, nullableAsArray } from "./misc.ts";
 
 export type ArrayResultOptions = {
   cause: unknown;
@@ -79,14 +79,9 @@ export class ArrayResult<T> {
     }
   }
   filterMap<U>(mapper: (value: T) => U): ArrayResult<NonNullable<U>> {
-    return this.flatMap((value) => {
-      const arrayResult = mapper(value);
-      if (arrayResult == null) {
-        return new ArrayResult();
-      } else {
-        return new ArrayResult([arrayResult]);
-      }
-    });
+    return this.flatMap((value) =>
+      new ArrayResult(nullableAsArray(mapper(value)))
+    );
   }
   sort(comparer: (left: T, right: T) => number): ArrayResult<T> {
     if (this.isError()) {

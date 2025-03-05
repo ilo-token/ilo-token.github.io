@@ -12,6 +12,16 @@ export function nullableAsArray<T>(value?: T): ReadonlyArray<NonNullable<T>> {
     return [value];
   }
 }
+export function mapNullable<T, U>(
+  value: null | T,
+  mapper: (value: NonNullable<T>) => U,
+): null | U {
+  if (value == null) {
+    return null;
+  } else {
+    return mapper(value);
+  }
+}
 export function repeatArray<T>(element: T, count: number): ReadonlyArray<T> {
   return new Array(count).fill(element);
 }

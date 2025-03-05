@@ -1,8 +1,8 @@
 import * as Dictionary from "../../dictionary/type.ts";
 import { ArrayResult } from "../array_result.ts";
+import { mapNullable } from "../misc.ts";
 import { settings } from "../settings.ts";
 import * as English from "./ast.ts";
-import { Word } from "./ast.ts";
 import { condense } from "./misc.ts";
 import { noun } from "./noun.ts";
 import { nounAsPreposition } from "./preposition.ts";
@@ -181,14 +181,8 @@ export function fromVerbForms(
       break;
   }
   return verb.map((verb) => {
-    let modal: null | Word;
-    if (verb.modal != null) {
-      modal = unemphasized(verb.modal);
-    } else {
-      modal = null;
-    }
     return {
-      modal,
+      modal: mapNullable(verb.modal, unemphasized),
       finite: [],
       infinite: word({ ...options, word: verb.infinite }),
     };

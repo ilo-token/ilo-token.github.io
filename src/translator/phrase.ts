@@ -1,5 +1,5 @@
 import { ArrayResult } from "../array_result.ts";
-import { nullableAsArray } from "../misc.ts";
+import { mapNullable, nullableAsArray } from "../misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as Composer from "../parser/composer.ts";
 import { AdjectiveWithInWay, fixAdjective } from "./adjective.ts";
@@ -54,10 +54,11 @@ function nounPhrase(
       throw new FilteredOutError("double name");
     } else if (partialNoun.postAdjective != null) {
       postAdjective = partialNoun.postAdjective;
-    } else if (modifier.name != null) {
-      postAdjective = { adjective: "named", name: modifier.name };
     } else {
-      postAdjective = null;
+      postAdjective = mapNullable(
+        modifier.name,
+        (name) => ({ adjective: "named", name }),
+      );
     }
     const preposition = [
       ...nullableAsArray(modifier.inPositionPhrase)
