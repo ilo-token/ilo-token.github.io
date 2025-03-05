@@ -31,12 +31,11 @@ export function loadCustomDictionary(dictionaryText: string): void {
 }
 function update(): void {
   dictionary.clear();
-  for (
-    const word of new Set([
-      ...globalDictionary.keys(),
-      ...customDictionary.keys(),
-    ])
-  ) {
+  const words = new Set([
+    ...globalDictionary.keys(),
+    ...customDictionary.keys(),
+  ]);
+  for (const word of words) {
     const entry = customDictionary.get(word) ?? globalDictionary.get(word)!;
     if (entry.definitions.length > 0) {
       dictionary.set(word, entry);
