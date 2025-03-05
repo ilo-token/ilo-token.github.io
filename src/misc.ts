@@ -91,5 +91,5 @@ export function deduplicateErrors<T extends Error>(
   return distinctBy(errors, ({ message }) => message);
 }
 export function characterClass(characters: Iterable<string>): RegExp {
-  return new RegExp(`[${[...characters].map(escapeRegex).join("")}]`, "u");
+  return new RegExp(`[${escapeRegex([...characters].join(""))}]`, "u");
 }
