@@ -10,8 +10,7 @@ export class Parser<T> {
   readonly rawParser: (src: string) => ParserResult<T>;
   static cache: null | Cache = null;
   constructor(parser: (src: string) => ParserResult<T>) {
-    this.unmemoizedParser = (src: string) =>
-      ArrayResult.from(() => parser(src));
+    this.unmemoizedParser = parser;
     if (Parser.cache != null) {
       const cache = new Map<string, ParserResult<T>>();
       Parser.addToCache(cache);
@@ -95,9 +94,7 @@ export class UnrecognizedError extends ArrayResultError {
   }
 }
 export function error(error: ArrayResultError): Parser<never> {
-  return new Parser(() => {
-    throw error;
-  });
+  return new Parser(() => new ArrayResult(error));
 }
 export const empty = new Parser<never>(() => new ArrayResult());
 export const nothing = new Parser((src) =>
@@ -208,52 +205,63 @@ export function matchCapture(
   description: string,
 ): Parser<RegExpMatchArray> {
   const newRegex = new RegExp(`^${regex.source}`, regex.flags);
-  return new Parser((src) => {
-    const match = src.match(newRegex);
-    if (match != null) {
-      return new ArrayResult([{
-        value: match,
-        rest: src.slice(match[0].length),
-      }]);
-    }
-    throw new UnexpectedError(describeSource(src), description);
-  });
+  return new Parser((src) =>
+    ArrayResult.from(() => {
+      const match = src.match(newRegex);
+      if (match != null) {
+        return new ArrayResult([{
+          value: match,
+          rest: src.slice(match[0].length),
+        }]);
+      }
+      throw new UnexpectedError(describeSource(src), description);
+    })
+  );
 }
 export function match(regex: RegExp, description: string): Parser<string> {
   return matchCapture(regex, description).map(([matched]) => matched);
 }
 export function slice(length: number, description: string): Parser<string> {
-  return new Parser((src) => {
-    if (src.length >= length) {
-      return new ArrayResult([{
-        rest: src.slice(length),
-        value: src.slice(0, length),
-      }]);
-    }
-    throw new UnexpectedError(describeSource(src), description);
-  });
+  return new Parser((src) =>
+    ArrayResult.from(() => {
+      if (src.length >= length) {
+        return new ArrayResult([{
+          rest: src.slice(length),
+          value: src.slice(0, length),
+        }]);
+      }
+      throw new UnexpectedError(describeSource(src), description);
+    })
+  );
 }
 export function matchString(
   match: string,
   description = `"${match}"`,
 ): Parser<string> {
-  return new Parser((src) => {
-    if (src.length >= match.length && src.slice(0, match.length) === match) {
-      return new ArrayResult([{ rest: src.slice(match.length), value: match }]);
-    }
-    throw new UnexpectedError(describeSource(src), description);
-  });
+  return new Parser((src) =>
+    ArrayResult.from(() => {
+      if (src.length >= match.length && src.slice(0, match.length) === match) {
+        return new ArrayResult([{
+          rest: src.slice(match.length),
+          value: match,
+        }]);
+      }
+      throw new UnexpectedError(describeSource(src), description);
+    })
+  );
 }
 export const everything = new Parser((src) =>
   new ArrayResult([{ value: src, rest: "" }])
 );
 export const character = match(/./us, "character");
-export const end = new Parser((src) => {
-  if (src === "") {
-    return new ArrayResult([{ value: null, rest: "" }]);
-  }
-  throw new UnexpectedError(describeSource(src), "end of text");
-});
+export const end = new Parser((src) =>
+  ArrayResult.from(() => {
+    if (src === "") {
+      return new ArrayResult([{ value: null, rest: "" }]);
+    }
+    throw new UnexpectedError(describeSource(src), "end of text");
+  })
+);
 export function withSource<T>(
   parser: Parser<T>,
 ): Parser<readonly [value: T, source: string]> {
