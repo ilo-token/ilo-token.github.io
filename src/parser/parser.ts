@@ -170,18 +170,15 @@ function simpleWordUnit(
   description: string,
 ): Parser<SimpleHeadedWordUnit> {
   return choice<SimpleHeadedWordUnit>(
-    sequence(
-      wordFrom(word, description)
-        .then((word) =>
-          count(manyAtLeastOnce(specificWord(word)))
-            .map<readonly [string, number]>((count) => [word, count + 1])
-        ),
-    )
-      .map(([[word, count]]) => ({
-        type: "reduplication",
-        word,
-        count,
-      })),
+    wordFrom(word, description)
+      .then((word) =>
+        count(manyAtLeastOnce(specificWord(word)))
+          .map((count) => ({
+            type: "reduplication",
+            word,
+            count: count + 1,
+          }))
+      ),
     xAlaX(word, description),
     wordFrom(word, description)
       .map((word) => ({ type: "default", word })),
