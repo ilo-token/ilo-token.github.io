@@ -70,9 +70,9 @@ export function extractErrorMessage(error: unknown): string {
   }
 }
 export function filterSet<T>(
-  set: ReadonlyArray<readonly [condition: boolean, value: T]>,
+  set: Iterable<readonly [condition: boolean, value: T]>,
 ): ReadonlyArray<T> {
-  return set.filter(([condition]) => condition).map(([_, value]) => value);
+  return [...set].filter(([condition]) => condition).map(([_, value]) => value);
 }
 export function flattenError(error: unknown): ReadonlyArray<unknown> {
   if (error instanceof AggregateError) {
@@ -86,7 +86,7 @@ export function lazy<T>(fn: () => T): () => T {
   return () => cache.getValue();
 }
 export function deduplicateErrors<T extends Error>(
-  errors: ReadonlyArray<T>,
+  errors: Iterable<T>,
 ): ReadonlyArray<T> {
   return distinctBy(errors, ({ message }) => message);
 }
