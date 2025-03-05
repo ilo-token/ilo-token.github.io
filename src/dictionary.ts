@@ -47,18 +47,15 @@ function update(): void {
       definition.type !== "filler" &&
       definition.type !== "particle definition",
   );
-  redefineSet(
-    prepositionSet,
-    (definition) => definition.type === "preposition",
-  );
+  redefineSetWithTypes(prepositionSet, "preposition");
   redefineSet(
     preverbSet,
     (definition) =>
       (definition.type === "verb" && definition.predicateType != null) ||
       definition.type === "modal verb",
   );
-  redefineSet(fillerSet, (definition) => definition.type === "filler");
-  redefineSet(numeralSet, (definition) => definition.type === "numeral");
+  redefineSetWithTypes(fillerSet, "filler");
+  redefineSetWithTypes(numeralSet, "numeral");
   redefineSet(tokiPonaWordSet, () => true);
 }
 function redefineSet(
@@ -71,4 +68,10 @@ function redefineSet(
       set.add(word);
     }
   }
+}
+function redefineSetWithTypes(
+  set: Set<string>,
+  type: Definition["type"],
+): void {
+  redefineSet(set, (definition) => definition.type === type);
 }
