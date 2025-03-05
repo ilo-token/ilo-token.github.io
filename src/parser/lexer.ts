@@ -141,8 +141,8 @@ const cartoucheElement = choiceOnlyOne(
       return morae.slice(0, count).join("");
     }),
   singleUcsurWord.map((word) => word[0]),
-  match(/[a-zA-Z]+/, "Latin letter")
-    .map((letter) => letter.toLowerCase())
+  match(/[a-zA-Z]/, "Latin letter")
+    .map((letter) => letter.toLocaleLowerCase())
     .skip(spaces),
 );
 const cartouche = specificSpecialUcsur(START_OF_CARTOUCHE)
