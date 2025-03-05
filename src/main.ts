@@ -155,12 +155,11 @@ function main(): void {
 
   // remove unused local storage data
   const used = [DICTIONARY_KEY, ...Object.keys(settings)];
-  const allKeys = [...new Array(localStorage.length).keys()]
-    .map((i) => localStorage.key(i)!);
-  for (const key of allKeys) {
-    if (!used.includes(key)) {
-      localStorage.removeItem(key);
-    }
+  const unused = [...new Array(localStorage.length).keys()]
+    .map((i) => localStorage.key(i)!)
+    .filter((key) => !used.includes(key));
+  for (const key of unused) {
+    localStorage.removeItem(key);
   }
 
   // initial text area size
