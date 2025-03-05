@@ -28,7 +28,7 @@ export function translate(tokiPona: string): ReadonlyArray<string> {
       error = errors(tokiPona)
         .map((message) => new ArrayResultError(message, { isHtml: true }));
     }
-    if (error.length == 0) {
+    if (error.length === 0) {
       error = deduplicateErrors(arrayResult.errors);
     }
     throw new AggregateError(error);

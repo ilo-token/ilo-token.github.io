@@ -150,7 +150,7 @@ export function piModifier(
       modifier.noun.preposition.length === 0
     )
     .filter((modifier) =>
-      modifier.type != "adjective" || modifier.inWayPhrase == null
+      modifier.type !== "adjective" || modifier.inWayPhrase == null
     ) as ArrayResult<ModifierTranslation>;
 }
 function nanpaModifier(
