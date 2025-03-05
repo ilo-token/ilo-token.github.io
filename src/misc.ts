@@ -13,7 +13,7 @@ export function nullableAsArray<T>(value?: T): ReadonlyArray<NonNullable<T>> {
   }
 }
 export function mapNullable<T, U>(
-  value: null | T,
+  value: T,
   mapper: (value: NonNullable<T>) => U,
 ): null | U {
   if (value == null) {
