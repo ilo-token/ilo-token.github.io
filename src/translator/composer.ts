@@ -1,8 +1,5 @@
-import { ArrayResult } from "../array_result.ts";
 import { nullableAsArray } from "../misc.ts";
-import { parse } from "../parser/parser.ts";
 import * as English from "./ast.ts";
-import { multipleSentences } from "./sentence.ts";
 
 const EMPHASIS_STARTING_TAG = "<strong>";
 const EMPHASIS_ENDING_TAG = "</strong>";
@@ -163,8 +160,8 @@ function sentence(sentence: English.Sentence): string {
       (character) => character.toLocaleUpperCase(),
     );
 }
-export function translate(src: string): ArrayResult<string> {
-  return parse(src)
-    .flatMap(multipleSentences)
-    .map((sentences) => sentences.map(sentence).join(" "));
+export function multipleSentences(
+  sentences: ReadonlyArray<English.Sentence>,
+): string {
+  return sentences.map(sentence).join(" ");
 }
