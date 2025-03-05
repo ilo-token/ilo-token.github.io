@@ -4,7 +4,6 @@ import { cache } from "./cache.ts";
 import {
   all,
   allAtLeastOnce,
-  character,
   choice,
   choiceOnlyOne,
   count,
