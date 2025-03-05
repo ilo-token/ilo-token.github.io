@@ -52,12 +52,7 @@ export function defaultModifier(
   switch (wordUnit.type) {
     case "number":
       return number(wordUnit.words).map<ModifierTranslation>((number) => {
-        let quantity: English.Quantity;
-        if (number === 1) {
-          quantity = "singular";
-        } else {
-          quantity = "plural";
-        }
+        const quantity = number === 1 ? "singular" : "plural";
         return {
           type: "determiner" as const,
           determiner: {
@@ -287,9 +282,8 @@ export function multipleModifiers(
         name.length === 0 &&
         inPositionPhrase.length === 0
       ) {
-        let inWayPhrase: null | English.NounPhrase;
-        if (adjective.length > 0) {
-          inWayPhrase = {
+        const inWayPhrase: null | English.NounPhrase = adjective.length > 0
+          ? {
             type: "simple",
             determiner: [],
             adjective,
@@ -299,10 +293,8 @@ export function multipleModifiers(
             postAdjective: null,
             preposition: [],
             emphasis: false,
-          };
-        } else {
-          inWayPhrase = null;
-        }
+          }
+          : null;
         adverbial = new ArrayResult<MultipleModifierTranslation>([{
           type: "adverbial",
           adverb,

@@ -90,17 +90,14 @@ export function verb(phrase: English.VerbPhrase, depth: number): string {
   let text: string;
   switch (phrase.type) {
     case "default": {
-      let verbText: ReadonlyArray<string>;
-      if (phrase.hideVerb) {
-        verbText = [];
-      } else {
-        const { modal, finite, infinite } = phrase.verb;
-        verbText = [
+      const { modal, finite, infinite } = phrase.verb;
+      const verbText = !phrase.hideVerb
+        ? [
           ...nullableAsArray(modal).map(word),
           ...finite.map(word),
           word(infinite),
-        ];
-      }
+        ]
+        : [];
       text = [
         ...phrase.adverb.map(word),
         ...verbText,
@@ -125,12 +122,7 @@ export function verb(phrase: English.VerbPhrase, depth: number): string {
     .join(" ");
 }
 function defaultClause(clause: English.Clause & { type: "default" }): string {
-  let subject: ReadonlyArray<string>;
-  if (clause.hideSubject) {
-    subject = [];
-  } else {
-    subject = [noun(clause.subject, 0)];
-  }
+  const subject = !clause.hideSubject ? [noun(clause.subject, 0)] : [];
   return [
     ...subject,
     verb(clause.verb, 0),

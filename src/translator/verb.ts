@@ -117,29 +117,16 @@ export function fromVerbForms(
 ): ArrayResult<English.Verb> {
   const { verbForms, perspective, quantity } = options;
   const is = verbForms.presentSingular === "is";
-  let presentSingular: string;
-  if (is && perspective === "first") {
-    presentSingular = "am";
-  } else {
-    presentSingular = verbForms.presentSingular;
-  }
-  let pastPlural: string;
-  let pastSingular: string;
-  if (is) {
-    pastPlural = "were";
-    pastSingular = "was";
-  } else {
-    pastPlural = pastSingular = verbForms.past;
-  }
-  let past: string;
-  let present: string;
-  if (quantity !== "singular" || (!is && perspective !== "third")) {
-    past = pastPlural;
-    present = verbForms.presentPlural;
-  } else {
-    past = pastSingular;
-    present = presentSingular;
-  }
+  const presentSingular = is && perspective === "first"
+    ? "am"
+    : verbForms.presentSingular;
+  const [pastPlural, pastSingular] = is
+    ? ["were", "was"]
+    : [verbForms.past, verbForms.past];
+  const [past, present] =
+    quantity !== "singular" || (!is && perspective !== "third")
+      ? [pastPlural, verbForms.presentPlural]
+      : [pastSingular, presentSingular];
   let verb: ArrayResult<{ modal: null | string; infinite: string }>;
   switch (settings.tense) {
     case "condensed":
@@ -163,12 +150,7 @@ export function fromVerbForms(
       }
       break;
     case "both": {
-      let future: string;
-      if (is) {
-        future = "be";
-      } else {
-        future = verbForms.presentPlural;
-      }
+      const future = is ? "be" : verbForms.presentPlural;
       verb = new ArrayResult([
         { modal: null, infinite: present },
         { modal: null, infinite: past },

@@ -23,19 +23,13 @@ export function translate(tokiPona: string): ReadonlyArray<string> {
       return values;
     }
   } else {
-    let teloMisikekeErrors: ReadonlyArray<ArrayResultError>;
-    if (settings.teloMisikeke) {
-      teloMisikekeErrors = errors(tokiPona)
-        .map((message) => new ArrayResultError(message, { isHtml: true }));
-    } else {
-      teloMisikekeErrors = [];
-    }
-    let error: ReadonlyArray<ArrayResultError>;
-    if (teloMisikekeErrors.length === 0) {
-      error = deduplicateErrors(arrayResult.errors);
-    } else {
-      error = teloMisikekeErrors;
-    }
+    const teloMisikekeErrors = settings.teloMisikeke
+      ? errors(tokiPona)
+        .map((message) => new ArrayResultError(message, { isHtml: true }))
+      : [];
+    const error = teloMisikekeErrors.length === 0
+      ? deduplicateErrors(arrayResult.errors)
+      : teloMisikekeErrors;
     throw new AggregateError(error);
   }
 }

@@ -130,12 +130,7 @@ const cartoucheElement = choiceOnlyOne(
     ),
   )
     .map(([word, dots]) => {
-      let count: number;
-      if (/^[aeiou]/.test(word)) {
-        count = dots + 1;
-      } else {
-        count = dots;
-      }
+      const count = /^[aeiou]/.test(word) ? dots + 1 : dots;
       const morae = word.match(/[aeiou]|[jklmnpstw][aeiou]|n/g)!;
       if (morae.length < count) {
         throw new UnrecognizedError("excess dots");

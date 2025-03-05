@@ -47,12 +47,7 @@ function unfilteredNasinNanpaPona(
       const index = number
         .slice(aleStart)
         .findIndex((number) => number !== 100);
-      let hundredCount: number;
-      if (index === -1) {
-        hundredCount = number.length - aleStart;
-      } else {
-        hundredCount = index;
-      }
+      const hundredCount = index !== -1 ? index : number.length - aleStart;
       if (previousHundredCount <= hundredCount) {
         throw new FilteredOutError('unsorted "ale"');
       }

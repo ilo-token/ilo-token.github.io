@@ -160,12 +160,7 @@ export function extractArrayResultError(
             return { type: "outside", errors: [error] };
           }
         case "outside": {
-          let moreError: ReadonlyArray<unknown>;
-          if (error instanceof ArrayResultError) {
-            moreError = [];
-          } else {
-            moreError = [error];
-          }
+          const moreError = error instanceof ArrayResultError ? [] : [error];
           return { type: "outside", errors: [...errors.errors, ...moreError] };
         }
       }

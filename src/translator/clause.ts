@@ -1,4 +1,3 @@
-import * as Dictionary from "../../dictionary/type.ts";
 import { ArrayResult } from "../array_result.ts";
 import { nullableAsArray } from "../misc.ts";
 import * as TokiPona from "../parser/ast.ts";
@@ -85,12 +84,9 @@ function liClause(
     predicate(clause.predicates, "li"),
   )
     .flatMap(([subject, predicate]) => {
-      let perspective: Dictionary.Perspective;
-      if (subject.type === "simple") {
-        perspective = subject.perspective;
-      } else {
-        perspective = "third";
-      }
+      const perspective = subject.type === "simple"
+        ? subject.perspective
+        : "third";
       return verb(predicate, perspective, subject.quantity)
         .map((verb) => ({
           type: "default",

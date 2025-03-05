@@ -350,21 +350,13 @@ function nestedPhrasesOnly(
     return singlePhrase;
   } else {
     const [first, ...rest] = nestingRule;
-    let type: "and conjunction" | "anu";
-    if (["en", "li", "o", "e"].includes(first)) {
-      type = "and conjunction";
-    } else {
-      type = "anu";
-    }
-    let longAnuParser: Parser<MultiplePhrases>;
-    if (first === "anu") {
-      longAnuParser = longAnu.map((phrases) => ({
+    const type = first === "anu" ? "anu" : "and conjunction";
+    const longAnuParser = type === "anu"
+      ? longAnu.map<MultiplePhrases>((phrases) => ({
         type: "anu",
         phrases: phrases.map((phrase) => ({ type: "single", phrase })),
-      }));
-    } else {
-      longAnuParser = empty;
-    }
+      }))
+      : empty;
     return choice(
       longAnuParser,
       sequence(
@@ -520,21 +512,13 @@ function multiplePredicates(
     );
   } else {
     const [first, ...rest] = nestingRule;
-    let type: "and conjunction" | "anu";
-    if (first === "li" || first === "o") {
-      type = "and conjunction";
-    } else {
-      type = "anu";
-    }
-    let longAnuParser: Parser<Predicate>;
-    if (first === "anu") {
-      longAnuParser = longAnu.map((phrases) => ({
+    const type = first === "anu" ? "anu" : "and conjunction";
+    const longAnuParser = type === "anu"
+      ? longAnu.map<Predicate>((phrases) => ({
         type: "anu",
         predicates: phrases.map((predicate) => ({ type: "single", predicate })),
-      }));
-    } else {
-      longAnuParser = empty;
-    }
+      }))
+      : empty;
     return choice<Predicate>(
       longAnuParser,
       associatedPredicates(nestingRule),
@@ -719,18 +703,16 @@ const sentence = choice<Sentence>(
           interrogative: null,
         };
         const wordUnits = everyWordUnitInSentence(sentence);
-        let interrogative: null | "x ala x" | "seme" = null;
-        if (wordUnits.some((wordUnit) => wordUnit.type === "x ala x")) {
-          interrogative = "x ala x";
-        } else if (
-          wordUnits.some((wordUnit) =>
-            (wordUnit.type === "default" ||
-              wordUnit.type === "reduplication") &&
-            wordUnit.word === "seme"
-          )
-        ) {
-          interrogative = "seme";
-        }
+        const interrogative =
+          wordUnits.some((wordUnit) => wordUnit.type === "x ala x")
+            ? "x ala x"
+            : wordUnits.some((wordUnit) =>
+                (wordUnit.type === "default" ||
+                  wordUnit.type === "reduplication") &&
+                wordUnit.word === "seme"
+              )
+            ? "seme"
+            : null;
         return { ...sentence, interrogative };
       },
     )

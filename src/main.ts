@@ -121,25 +121,19 @@ function main(): void {
   ) as HTMLAnchorElement;
 
   // set version
-  let displayDate: string;
-  if (PROJECT_DATA.onDevelopment) {
-    displayDate = "On development";
-  } else {
-    const date = new Date(PROJECT_DATA.releaseDate).toLocaleDateString();
-    displayDate = `- Released ${date}`;
-  }
+  const displayDate = PROJECT_DATA.onDevelopment
+    ? "On development"
+    : `- Released ${new Date(PROJECT_DATA.releaseDate).toLocaleDateString()}`;
+
   versionDisplay.innerText = `${PROJECT_DATA.version} ${displayDate}`;
 
   // load settings
   loadFromLocalStorage();
 
   // load custom dictionary
-  let customDictionary: string;
-  if (checkLocalStorage()) {
-    customDictionary = localStorage.getItem(DICTIONARY_KEY) ?? "";
-  } else {
-    customDictionary = customDictionaryTextBox.value;
-  }
+  const customDictionary = checkLocalStorage()
+    ? localStorage.getItem(DICTIONARY_KEY) ?? ""
+    : customDictionaryTextBox.value;
   if (customDictionary.trim() !== "") {
     try {
       loadCustomDictionary(customDictionary);
@@ -215,12 +209,9 @@ function main(): void {
           break;
       }
       for (const item of errors) {
-        let property: "innerHTML" | "innerText";
-        if (item instanceof ArrayResultError && item.isHtml) {
-          property = "innerHTML";
-        } else {
-          property = "innerText";
-        }
+        const property = item instanceof ArrayResultError && item.isHtml
+          ? "innerHTML"
+          : "innerText";
         const list = document.createElement("li");
         list[property] = extractErrorMessage(item);
         errorList.appendChild(list);
@@ -260,12 +251,7 @@ function main(): void {
   });
   function displayToCustomDictionary(message: string): void {
     const original = customDictionaryTextBox.value.trimEnd();
-    let append: string;
-    if (original !== "") {
-      append = "\n\n";
-    } else {
-      append = "";
-    }
+    const append = original === "" ? "" : "\n\n";
     customDictionaryTextBox.value =
       `${original}${append}${message.trimEnd()}\n`;
     customDictionaryTextBox.scrollTo(0, customDictionaryTextBox.scrollHeight);
@@ -273,16 +259,13 @@ function main(): void {
   function addWord(): void {
     const word = addWordTextBox.value.trim();
     if (/^[a-z][a-zA-Z]*$/.test(word)) {
-      let definitions: string;
       const dictionaryEntry = dictionary.get(word);
-      if (dictionaryEntry != null) {
-        definitions = dictionaryEntry.src;
-      } else {
-        definitions = `\n${
+      const definitions = dictionaryEntry != null
+        ? dictionaryEntry.src
+        : `\n${
           asComment(EMPTY_DEFINITION_PLACEHOLDER)
             .replaceAll(/^/gm, "  ")
         }`;
-      }
       displayToCustomDictionary(`${word}:${definitions}`);
     } else {
       displayToCustomDictionary(asComment(INVALID_WORD_ERROR));
@@ -300,12 +283,9 @@ function main(): void {
       customDictionaryDialogBox.close();
     } catch (error) {
       const errors = flattenError(error);
-      let message: string;
-      if (errorsFixable(errors)) {
-        message = DICTIONARY_ERROR_FIXABLE_MESSAGE;
-      } else {
-        message = DICTIONARY_ERROR_UNFIXABLE_MESSAGE;
-      }
+      const message = errorsFixable(errors)
+        ? DICTIONARY_ERROR_FIXABLE_MESSAGE
+        : DICTIONARY_ERROR_UNFIXABLE_MESSAGE;
       const errorListMessage = errors
         .map(extractErrorMessage)
         .map((message) => `\n- ${message.replaceAll(NEWLINES, "$&  ")}`);

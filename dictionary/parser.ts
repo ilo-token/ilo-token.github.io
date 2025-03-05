@@ -494,19 +494,16 @@ export function parseDictionary(sourceText: string): Dictionary {
     return arrayResult.array[0];
   } else {
     const definitions = definitionExtractor(sourceText);
-    let errors: ReadonlyArray<ArrayResultError>;
-    if (!definitions.isError()) {
-      errors = definitions.array[0].flatMap((definition) =>
+    const errors = !definitions.isError()
+      ? definitions.array[0].flatMap((definition) =>
         definitionParser(definition).errors.map((error) =>
           new ArrayResultError(
             `${error.message} at ${definition.trim()}`,
             { cause: error },
           )
         )
-      );
-    } else {
-      errors = arrayResult.errors;
-    }
+      )
+      : arrayResult.errors;
     throw new AggregateError(deduplicateErrors(errors));
   }
 }

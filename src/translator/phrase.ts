@@ -46,20 +46,15 @@ function nounPhrase(
       ...[...modifier.adjective].reverse(),
       ...partialNoun.adjective,
     ]);
-    let postAdjective: null | {
-      adjective: string;
-      name: string;
-    };
     if (partialNoun.postAdjective != null && modifier.name != null) {
       throw new FilteredOutError("double name");
-    } else if (partialNoun.postAdjective != null) {
-      postAdjective = partialNoun.postAdjective;
-    } else {
-      postAdjective = mapNullable(
+    }
+    const postAdjective = partialNoun.postAdjective != null
+      ? partialNoun.postAdjective
+      : mapNullable(
         modifier.name,
         (name) => ({ adjective: "named", name }),
       );
-    }
     const preposition = [
       ...nullableAsArray(modifier.inPositionPhrase)
         .map((object) => nounAsPreposition(object, "in")),

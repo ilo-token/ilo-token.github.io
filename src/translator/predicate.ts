@@ -22,15 +22,9 @@ function verbObject(
   if (useForObject === false) {
     throw new FilteredOutError("intransitive verb with object");
   } else {
-    let englishObject: null | English.NounPhrase;
-    let preposition: ReadonlyArray<English.Preposition>;
-    if (useForObject === true) {
-      englishObject = object;
-      preposition = [];
-    } else {
-      englishObject = verb.object;
-      preposition = [nounAsPreposition(object, useForObject)];
-    }
+    const [englishObject, preposition] = useForObject === true
+      ? [object, []]
+      : [verb.object, [nounAsPreposition(object, useForObject)]];
     return { ...verb, object: englishObject, preposition };
   }
 }

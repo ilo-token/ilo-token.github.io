@@ -157,12 +157,7 @@ export function clause(clause: Clause): string {
     case "o vocative":
       return `${multiplePhrases(clause.phrases, "en")} o`;
     case "li clause": {
-      let li: ReadonlyArray<string>;
-      if (clause.explicitLi) {
-        li = ["li"];
-      } else {
-        li = [];
-      }
+      const li = clause.explicitLi ? ["li"] : [];
       return [
         multiplePhrases(clause.subjects, "en"),
         ...li,

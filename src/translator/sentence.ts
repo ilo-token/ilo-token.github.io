@@ -1,6 +1,6 @@
 import { ArrayResult } from "../array_result.ts";
 import { dictionary } from "../dictionary.ts";
-import { repeatWithSpace } from "../misc.ts";
+import { nullableAsArray, repeatWithSpace } from "../misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { definitionAsPlainString } from "./as_string.ts";
 import * as English from "./ast.ts";
@@ -50,12 +50,7 @@ function emphasisAsPunctuation(
       return originalPunctuation;
     }
   }
-  let questionMark: string;
-  if (interrogative) {
-    questionMark = "?";
-  } else {
-    questionMark = "";
-  }
+  const questionMark = interrogative ? "?" : "";
   let exclamationMark: string;
   switch (emphasis.type) {
     case "word":
@@ -128,12 +123,9 @@ function sentence(
   if (sentence.interrogative === "x ala x") {
     return new ArrayResult(new TranslationTodoError("x ala x"));
   }
-  let punctuation: string;
-  if (!isFinal && sentence.punctuation === "") {
-    punctuation = ",";
-  } else {
-    punctuation = sentence.punctuation;
-  }
+  const punctuation = !isFinal && sentence.punctuation === ""
+    ? ","
+    : sentence.punctuation;
   switch (sentence.type) {
     case "default": {
       const laClauses = sentence.laClauses;
@@ -156,21 +148,12 @@ function sentence(
         );
       }
       const lastEngClause = clause(sentence.finalClause);
-      let right: ReadonlyArray<English.Clause>;
-      if (sentence.anuSeme == null) {
-        right = [];
-      } else {
-        right = [anuSeme(sentence.anuSeme)];
-      }
-      let interjectionClause: ArrayResult<English.Clause>;
-      if (
+      const right = nullableAsArray(sentence.anuSeme).map(anuSeme);
+      const interjectionClause =
         sentence.laClauses.length === 0 && sentence.kinOrTaso == null &&
-        sentence.kinOrTaso == null
-      ) {
-        interjectionClause = interjection(sentence.finalClause);
-      } else {
-        interjectionClause = new ArrayResult();
-      }
+          sentence.kinOrTaso == null
+          ? interjection(sentence.finalClause)
+          : new ArrayResult<English.Clause>();
       const engClauses = ArrayResult.combine(
         givenClauses,
         ArrayResult.concat(interjectionClause, lastEngClause),
