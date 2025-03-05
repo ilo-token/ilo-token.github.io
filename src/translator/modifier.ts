@@ -15,6 +15,7 @@ import { number } from "./number.ts";
 import { phrase } from "./phrase.ts";
 import { pronoun } from "./pronoun.ts";
 import { unemphasized, word } from "./word.ts";
+import { getReduplicationCount } from "./word_unit.ts";
 
 export type ModifierTranslation =
   | Readonly<{ type: "noun"; noun: English.NounPhrase }>
@@ -70,15 +71,7 @@ export function defaultModifier(
       return new ArrayResult(new TranslationTodoError("x ala x"));
     case "default":
     case "reduplication": {
-      let reduplicationCount: number;
-      switch (wordUnit.type) {
-        case "default":
-          reduplicationCount = 1;
-          break;
-        case "reduplication":
-          reduplicationCount = wordUnit.count;
-          break;
-      }
+      const reduplicationCount = getReduplicationCount(wordUnit);
       return new ArrayResult(dictionary.get(wordUnit.word)!.definitions)
         .flatMap((definition) => {
           switch (definition.type) {

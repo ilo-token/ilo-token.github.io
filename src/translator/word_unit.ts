@@ -99,15 +99,7 @@ export function wordUnit(
       return new ArrayResult(new TranslationTodoError("x ala x"));
     case "default":
     case "reduplication": {
-      let reduplicationCount: number;
-      switch (wordUnit.type) {
-        case "default":
-          reduplicationCount = 1;
-          break;
-        case "reduplication":
-          reduplicationCount = wordUnit.count;
-          break;
-      }
+      const reduplicationCount = getReduplicationCount(wordUnit);
       return defaultWordUnit({
         ...options,
         word: wordUnit.word,
@@ -115,5 +107,15 @@ export function wordUnit(
         emphasis: wordUnit.emphasis,
       });
     }
+  }
+}
+export function getReduplicationCount(wordUnit: TokiPona.WordUnit): number {
+  switch (wordUnit.type) {
+    case "number":
+    case "default":
+    case "x ala x":
+      return 1;
+    case "reduplication":
+      return wordUnit.count;
   }
 }
