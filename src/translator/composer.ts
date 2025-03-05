@@ -160,7 +160,7 @@ function sentence(sentence: English.Sentence): string {
   return `${sentence.clauses.map(clause).join(", ")}${sentence.punctuation}`
     .replace(
       /(?<![<&\p{Alpha}\p{Nd}\p{Nl}\p{No}])[\p{Alpha}\p{Nd}\p{Nl}\p{No}]/u,
-      (character) => character.toUpperCase(),
+      (character) => character.toLocaleUpperCase(),
     );
 }
 export function translate(src: string): ArrayResult<string> {
