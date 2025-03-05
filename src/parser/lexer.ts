@@ -113,6 +113,7 @@ const punctuation = choiceOnlyOne(
     match(SENTENCE_TERMINATOR, "punctuation")
       .map((punctuation) => SENTENCE_TERMINATOR_TO_ASCII.get(punctuation)!),
   )
+    .skip(spaces)
     .map((punctuation) => punctuation.join("").replaceAll("...", ELLIPSIS)),
   newline.map(() => "."),
 )
