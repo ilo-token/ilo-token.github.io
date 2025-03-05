@@ -44,6 +44,7 @@
         "no-sync-fn-in-async-fn",
         "no-throw-literal",
         "no-useless-rename",
+        "prefer-ascii",
         "single-var-declarator"
       ],
       "exclude": ["no-explicit-any"]
@@ -57,6 +58,7 @@
     "@std/collections": "jsr:@std/collections@^1.0.10",
     "@std/html": "jsr:@std/html@^1.0.3",
     "@std/random": "jsr:@std/random@^0.1.0",
+    "@std/regexp": "jsr:@std/regexp@^1.0.1",
     "@std/text": "jsr:@std/text@^1.0.10",
     "compromise": "npm:compromise@^14.14.3",
     "esbuild": "npm:esbuild@^0.25.0"

@@ -19,6 +19,13 @@ import {
   UnexpectedError,
   UnrecognizedError,
 } from "./parser_lib.ts";
+import {
+  ELLIPSIS,
+  NSK_COLON,
+  NSK_PERIOD,
+  SENTENCE_TERMINATOR,
+  SENTENCE_TERMINATOR_TO_ASCII,
+} from "./punctuation.ts";
 import { Token } from "./token.ts";
 import {
   END_OF_CARTOUCHE,
@@ -102,25 +109,22 @@ const xAlaX = lazy(() => {
 })
   .map<Token>((word) => ({ type: "x ala x", word }));
 const punctuation = choiceOnlyOne(
-  match(/[.,:;?!…·。｡︒\u{F199C}\u{F199D}]+/u, "punctuation")
-    .map((punctuation) =>
-      punctuation
-        .replaceAll(/[·。｡︒\u{F199C}]/gu, ".")
-        .replaceAll("\u{F199D}", ":")
-        .replaceAll("...", "…")
-    )
-    .skip(spaces),
+  allAtLeastOnce(
+    match(SENTENCE_TERMINATOR, "punctuation")
+      .map((punctuation) => SENTENCE_TERMINATOR_TO_ASCII.get(punctuation)!),
+  )
+    .map((punctuation) => punctuation.join("").replaceAll("...", ELLIPSIS)),
   newline.map(() => "."),
 )
   .map<Token>((punctuation) => ({ type: "punctuation", punctuation }));
 const cartoucheElement = choiceOnlyOne(
   singleUcsurWord
-    .skip(match(/[\uFF1A\u{F199D}]/u, "full width colon").skip(spaces)),
+    .skip(match(NSK_COLON, "full width colon").skip(spaces)),
   sequence(
     singleUcsurWord,
     count(
       allAtLeastOnce(
-        match(/[・。／\u{F199C}]/u, "full width dot").skip(spaces),
+        match(NSK_PERIOD, "full width dot").skip(spaces),
       ),
     ),
   )

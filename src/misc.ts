@@ -1,5 +1,6 @@
 import { distinctBy } from "@std/collections/distinct-by";
-import { escape } from "@std/html/entities";
+import { escape as escapeHtml } from "@std/html/entities";
+import { escape as escapeRegex } from "@std/regexp/escape";
 import { Lazy } from "./cache.ts";
 
 export const NEWLINES = /\r\n|\n|\r/g;
@@ -36,7 +37,7 @@ export function newlineAsHtmlLineBreak(text: string): string {
   return text.replaceAll(NEWLINES, "<br/>");
 }
 export function escapeHtmlWithLineBreak(text: string): string {
-  return newlineAsHtmlLineBreak(escape(text));
+  return newlineAsHtmlLineBreak(escapeHtml(text));
 }
 export function setIgnoreError(key: string, value: string): void {
   if (!checkLocalStorage()) {
@@ -88,4 +89,7 @@ export function deduplicateErrors<T extends Error>(
   errors: ReadonlyArray<T>,
 ): ReadonlyArray<T> {
   return distinctBy(errors, ({ message }) => message);
+}
+export function characterClass(characters: Iterable<string>): RegExp {
+  return new RegExp(`[${[...characters].map(escapeRegex).join("")}]`, "u");
 }

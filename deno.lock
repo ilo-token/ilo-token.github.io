@@ -12,6 +12,7 @@
     "jsr:@std/internal@^1.0.5": "1.0.5",
     "jsr:@std/path@^1.0.6": "1.0.8",
     "jsr:@std/random@0.1": "0.1.0",
+    "jsr:@std/regexp@^1.0.1": "1.0.1",
     "jsr:@std/text@^1.0.10": "1.0.10",
     "npm:compromise@^14.14.3": "14.14.4",
     "npm:esbuild@0.25": "0.25.0"
@@ -57,6 +58,9 @@
     },
     "@std/random@0.1.0": {
       "integrity": "70a006be0ffb77d036bab54aa8ae6bd0119ba77ace0f2f56f63273d4262a5667"
+    },
+    "@std/regexp@1.0.1": {
+      "integrity": "5179d823465085c5480dafb44438466e83c424fadc61ba31f744050ecc0f596d"
     },
     "@std/text@1.0.10": {
       "integrity": "9dcab377450253c0efa9a9a0c731040bfd4e1c03f8303b5934381467b7954338"
@@ -195,6 +199,7 @@
       "jsr:@std/collections@^1.0.10",
       "jsr:@std/html@^1.0.3",
       "jsr:@std/random@0.1",
+      "jsr:@std/regexp@^1.0.1",
       "jsr:@std/text@^1.0.10",
       "npm:compromise@^14.14.3",
       "npm:esbuild@0.25"
