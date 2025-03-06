@@ -201,7 +201,7 @@ function wordUnit(
 function binaryWords(
   word: Set<string>,
   description: string,
-): Parser<readonly [string, string]> {
+): Parser<readonly [bottom: string, top: string]> {
   return specificToken("combined glyphs").map(({ words }) => {
     if (words.length > 2) {
       throw new UnrecognizedError(
@@ -219,7 +219,7 @@ function binaryWords(
 function optionalCombined(
   word: Set<string>,
   description: string,
-): Parser<readonly [HeadedWordUnit, null | Modifier]> {
+): Parser<readonly [headWord: HeadedWordUnit, modifier: null | Modifier]> {
   return choice<readonly [HeadedWordUnit, null | Modifier]>(
     wordUnit(word, description)
       .map((wordUnit) => [wordUnit, null]),
