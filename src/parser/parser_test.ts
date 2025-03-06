@@ -1,4 +1,5 @@
 import { assertNotEquals } from "@std/assert/not-equals";
+import { uniquePairs } from "../misc.ts";
 import { parse } from "./parser.ts";
 
 // Examples gathered from https://github.com/kilipan/nasin-toki
@@ -195,11 +196,9 @@ const EXAMPLE_SENTENCES = [
 
 Deno.test("AST all distinct", () => {
   for (const sentence of EXAMPLE_SENTENCES) {
-    const ast = parse(sentence).unwrap();
-    for (const [i, a] of ast.entries()) {
-      for (const b of ast.slice(i + 1)) {
-        assertNotEquals(a, b, `Error at "${sentence}"`);
-      }
+    const pairs = uniquePairs(parse(sentence).unwrap());
+    for (const [a, b] of pairs) {
+      assertNotEquals(a, b, `Error at "${sentence}"`);
     }
   }
 });

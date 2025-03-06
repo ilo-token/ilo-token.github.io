@@ -1,5 +1,5 @@
 import { extractArrayResultError } from "../array_result.ts";
-import { flattenError } from "../misc.ts";
+import { flattenError, uniquePairs } from "../misc.ts";
 import { settings } from "../settings.ts";
 import {
   Clause,
@@ -220,11 +220,9 @@ export const MULTIPLE_MODIFIERS_RULES: ReadonlyArray<
           return [];
       }
     });
-    for (const [i, a] of words.entries()) {
-      for (const b of words.slice(i + 1)) {
-        if (a === b) {
-          throw new UnrecognizedError(`duplicate "${a}" in modifier`);
-        }
+    for (const [a, b] of uniquePairs(words)) {
+      if (a === b) {
+        throw new UnrecognizedError(`duplicate "${a}" in modifier`);
       }
     }
     return true;

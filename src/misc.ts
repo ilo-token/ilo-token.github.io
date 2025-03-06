@@ -102,3 +102,8 @@ export function deduplicateErrors<T extends Error>(
 export function characterClass(characters: Iterable<string>): RegExp {
   return new RegExp(`[${escapeRegex([...characters].join(""))}]`, "u");
 }
+export function uniquePairs<T>(
+  array: ReadonlyArray<T>,
+): ReadonlyArray<readonly [T, T]> {
+  return array.flatMap((a, i) => array.slice(i + 1).map((b) => [a, b]));
+}
