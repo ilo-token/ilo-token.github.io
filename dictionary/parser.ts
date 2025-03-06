@@ -1,6 +1,7 @@
-import { escape } from "@std/html/entities";
+import { escape as escapeHtml } from "@std/html/entities";
 import nlp from "compromise/three";
 import { ArrayResultError } from "../src/array_result.ts";
+import { escape as escapeRegex } from "jsr:@std/regexp/escape";
 import {
   deduplicateErrors,
   mapNullable,
@@ -30,6 +31,31 @@ import {
   VerbForms,
 } from "./type.ts";
 
+const RESERVED_SYMBOLS = [
+  "#",
+  "(",
+  ")",
+  "*",
+  "+",
+  "/",
+  ":",
+  ";",
+  "<",
+  "=",
+  ">",
+  "@",
+  "[",
+  "\\",
+  "]",
+  "^",
+  "`",
+  "{",
+  "|",
+  "}",
+  "~",
+];
+const WORDS = new RegExp(`[^${escapeRegex(RESERVED_SYMBOLS.join(""))}]`);
+
 const comment = match(/#[^\n\r]*/, "comment");
 const spaces = sourceOnly(all(choiceOnlyOne(match(/\s/, "space"), comment)));
 function lex<T>(parser: Parser<T>): Parser<T> {
@@ -38,7 +64,7 @@ function lex<T>(parser: Parser<T>): Parser<T> {
 const backtick = matchString("`", "backtick");
 const word = allAtLeastOnce(
   choiceOnlyOne(
-    match(/[^():;#/`]/, "word"),
+    match(WORDS, "word"),
     backtick
       .with(character)
       .skip(backtick)
@@ -54,7 +80,7 @@ const word = allAtLeastOnce(
       return true;
     }
   })
-  .map(escape);
+  .map(escapeHtml);
 const slash = lex(matchString("/", "slash"));
 const forms = sequence(word, all(slash.with(word)))
   .map(([first, rest]) => [first, ...rest]);
