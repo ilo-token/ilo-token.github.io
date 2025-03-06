@@ -197,36 +197,34 @@ export const MULTIPLE_MODIFIERS_RULES: ReadonlyArray<
     if (settings.separateRepeatedModifiers) {
       return true;
     }
-    const set = new Set<string>();
-    for (const modifier of modifiers) {
-      let word: string;
+    const words = modifiers.flatMap((modifier) => {
       switch (modifier.type) {
         case "default":
           if (modifier.word.type !== "number") {
-            word = modifier.word.word;
-            break;
+            return [modifier.word.word];
           } else {
-            continue;
+            return [];
           }
         case "pi":
           if (
             modifier.phrase.type === "default" &&
             modifier.phrase.headWord.type !== "number"
           ) {
-            word = modifier.phrase.headWord.word;
-            break;
+            return [modifier.phrase.headWord.word];
           } else {
-            continue;
+            return [];
           }
         case "quotation":
         case "proper words":
         case "nanpa":
-          continue;
+          return [];
       }
-      if (set.has(word)) {
-        throw new UnrecognizedError(`duplicate "${word}" in modifier`);
-      } else {
-        set.add(word);
+    });
+    for (const [i, a] of words.entries()) {
+      for (const b of words.slice(i + 1)) {
+        if (a === b) {
+          throw new UnrecognizedError(`duplicate "${a}" in modifier`);
+        }
       }
     }
     return true;
