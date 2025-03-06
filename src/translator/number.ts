@@ -6,13 +6,9 @@ import { FilteredOutError } from "./error.ts";
 
 function singleNumber(word: string): ArrayResult<number> {
   return new ArrayResult(dictionary.get(word)!.definitions)
-    .filterMap((definition) => {
-      if (definition.type === "numeral") {
-        return definition.numeral;
-      } else {
-        return null;
-      }
-    });
+    .filterMap((definition) =>
+      definition.type === "numeral" ? definition.numeral : null
+    );
 }
 function regularNumber(number: ReadonlyArray<number>): number {
   const duplicate = number.some((a, i) =>

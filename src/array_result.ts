@@ -56,13 +56,9 @@ export class ArrayResult<T> {
     }
   }
   filter(mapper: (value: T) => boolean): ArrayResult<T> {
-    return this.flatMap((value) => {
-      if (mapper(value)) {
-        return new ArrayResult([value]);
-      } else {
-        return new ArrayResult();
-      }
-    });
+    return this.flatMap((value) =>
+      mapper(value) ? new ArrayResult([value]) : new ArrayResult()
+    );
   }
   map<U>(mapper: (value: T) => U): ArrayResult<U> {
     return this.flatMap((value) => new ArrayResult([mapper(value)]));
@@ -104,13 +100,10 @@ export class ArrayResult<T> {
     ...arrayResults: ReadonlyArray<ArrayResult<T>>
   ): ArrayResult<T> {
     return arrayResults.reduce(
-      (left, right) => {
-        if (left.isError() && right.isError()) {
-          return ArrayResult.errors([...left.errors, ...right.errors]);
-        } else {
-          return new ArrayResult([...left.array, ...right.array]);
-        }
-      },
+      (left, right) =>
+        left.isError() && right.isError()
+          ? ArrayResult.errors([...left.errors, ...right.errors])
+          : new ArrayResult([...left.array, ...right.array]),
       new ArrayResult<T>(),
     );
   }
@@ -121,18 +114,14 @@ export class ArrayResult<T> {
   ): ArrayResult<T> {
     // We resorted to using `any` types here, make sure it works properly
     return arrayResults.reduce(
-      (left: ArrayResult<any>, right) => {
-        if (left.isError() && right.isError()) {
-          return ArrayResult.concat(left, right);
-        } else if (left.isError()) {
-          return ArrayResult.errors(left.errors);
-        } else if (right.isError()) {
-          return ArrayResult.errors(right.errors);
-        } else {
-          return left
-            .flatMap((left) => right.map((right) => [...left, right]));
-        }
-      },
+      (left: ArrayResult<any>, right) =>
+        left.isError() && right.isError()
+          ? ArrayResult.concat(left, right)
+          : left.isError()
+          ? left
+          : right.isError()
+          ? right
+          : left.flatMap((left) => right.map((right) => [...left, right])),
       new ArrayResult<any>([[]]),
     ) as ArrayResult<T>;
   }

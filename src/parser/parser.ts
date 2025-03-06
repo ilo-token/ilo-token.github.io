@@ -716,13 +716,7 @@ const sentence = choice<Sentence>(
         return { ...sentence, interrogative };
       },
     )
-    .sortBy(({ anuSeme }) => {
-      if (anuSeme == null) {
-        return 1;
-      } else {
-        return 0;
-      }
-    }),
+    .sortBy(({ anuSeme }) => anuSeme == null ? 1 : 0),
   sequence(filler, optional(punctuation))
     .map(([filler, punctuation]) => ({
       type: "filler",

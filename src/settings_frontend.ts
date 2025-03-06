@@ -24,26 +24,17 @@ const BOOL_UPDATER: Updater<boolean> = {
         return null;
     }
   },
-  stringify: (value) => {
-    if (value) {
-      return "T";
-    } else {
-      return "F";
-    }
-  },
+  stringify: (value) => value ? "T" : "F",
   load: (input) => (input as HTMLInputElement).checked,
   set: (input, value) => {
     (input as HTMLInputElement).checked = value;
   },
 };
 const REDUNDANCY_UPDATER: Updater<RedundancySettings> = {
-  parse: (value) => {
-    if (["both", "condensed", "default only"].includes(value)) {
-      return value as RedundancySettings;
-    } else {
-      return null;
-    }
-  },
+  parse: (value) =>
+    ["both", "condensed", "default only"].includes(value)
+      ? value as RedundancySettings
+      : null,
   stringify: (value) => value,
   load: (input) => input.value as RedundancySettings,
   set: (input, value) => {

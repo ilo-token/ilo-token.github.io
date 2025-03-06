@@ -49,12 +49,8 @@ function nounPhrase(
     if (partialNoun.postAdjective != null && modifier.name != null) {
       throw new FilteredOutError("double name");
     }
-    const postAdjective = partialNoun.postAdjective != null
-      ? partialNoun.postAdjective
-      : mapNullable(
-        modifier.name,
-        (name) => ({ adjective: "named", name }),
-      );
+    const postAdjective = partialNoun.postAdjective ??
+      mapNullable(modifier.name, (name) => ({ adjective: "named", name }));
     const preposition = [
       ...nullableAsArray(modifier.inPositionPhrase)
         .map((object) => nounAsPreposition(object, "in")),
@@ -401,11 +397,5 @@ export function multiplePhrasesAsNoun(
   }>,
 ): ArrayResult<English.NounPhrase> {
   return multiplePhrases({ ...options, includeVerb: false })
-    .filterMap((phrase) => {
-      if (phrase.type === "noun") {
-        return phrase.noun;
-      } else {
-        return null;
-      }
-    });
+    .filterMap((phrase) => phrase.type === "noun" ? phrase.noun : null);
 }

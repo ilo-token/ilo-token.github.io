@@ -256,9 +256,8 @@ function main(): void {
     const word = addWordTextBox.value.trim();
     if (/^[a-z][a-zA-Z]*$/.test(word)) {
       const dictionaryEntry = dictionary.get(word);
-      const definitions = dictionaryEntry != null
-        ? dictionaryEntry.src
-        : `\n${
+      const definitions = dictionaryEntry?.src ??
+        `\n${
           asComment(EMPTY_DEFINITION_PLACEHOLDER)
             .replaceAll(/^/gm, "  ")
         }`;
