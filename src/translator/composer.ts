@@ -4,12 +4,6 @@ import * as English from "./ast.ts";
 const EMPHASIS_STARTING_TAG = "<strong>";
 const EMPHASIS_ENDING_TAG = "</strong>";
 
-// class ComposingTodoError extends TodoError {
-//   constructor(type: string) {
-//     super(`composing ${type}`);
-//     this.name = "ComposingTodoError";
-//   }
-// }
 function word(word: English.Word): string {
   if (word.emphasis) {
     return `${EMPHASIS_STARTING_TAG}${word.word}${EMPHASIS_ENDING_TAG}`;

@@ -1,7 +1,6 @@
 import { dictionary as globalDictionary } from "../dictionary/dictionary.ts";
 import { parseDictionary } from "../dictionary/parser.ts";
 import { Definition, Dictionary } from "../dictionary/type.ts";
-import { ArrayResultError } from "./array_result.ts";
 
 const customDictionary: Dictionary = new Map();
 export const dictionary: Dictionary = new Map();
@@ -15,12 +14,6 @@ export const tokiPonaWordSet: Set<string> = new Set();
 
 update();
 
-export class MissingEntryError extends ArrayResultError {
-  constructor(kind: string, word: string) {
-    super(`${kind} definition for the word "${word}" is missing`);
-    this.name = "MissingEntryError";
-  }
-}
 export function loadCustomDictionary(dictionaryText: string): void {
   const dictionary = parseDictionary(dictionaryText);
   customDictionary.clear();
