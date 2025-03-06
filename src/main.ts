@@ -138,11 +138,9 @@ function main(): void {
     try {
       loadCustomDictionary(customDictionary);
     } catch (error) {
-      if (errorsFixable(flattenError(error))) {
-        errorDisplay.innerText = DICTIONARY_LOADING_FAILED_FIXABLE_MESSAGE;
-      } else {
-        errorDisplay.innerText = DICTIONARY_LOADING_FAILED_UNFIXABLE_MESSAGE;
-      }
+      errorDisplay.innerText = errorsFixable(flattenError(error))
+        ? DICTIONARY_LOADING_FAILED_FIXABLE_MESSAGE
+        : DICTIONARY_LOADING_FAILED_UNFIXABLE_MESSAGE;
       console.error(error);
     }
   }
@@ -166,11 +164,9 @@ function main(): void {
   // initialize button label
   updateLabel();
   function updateLabel(): void {
-    if (settings.multiline) {
-      translateButton.innerText = TRANSLATE_LABEL_MULTILINE;
-    } else {
-      translateButton.innerText = TRANSLATE_LABEL;
-    }
+    translateButton.innerText = settings.multiline
+      ? TRANSLATE_LABEL_MULTILINE
+      : TRANSLATE_LABEL;
   }
 
   // add all event listener
