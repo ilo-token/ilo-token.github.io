@@ -59,30 +59,25 @@ if (import.meta.main) {
       console.log("Press ctrl+c to exit.");
       const watcher = Deno.watchFs(WATCH);
       let task = Promise.resolve();
-      try {
-        await buildAll({ minify: false, buildDictionary: true });
-        let dictionaryChanged = false;
-        const buildDebounced = debounce((buildDictionary: boolean) => {
-          task = task.then(async () => {
-            await buildAll({
-              minify: false,
-              buildDictionary,
-              checkDictionary: false,
-            });
-            dictionaryChanged = false;
+      await buildAll({ minify: false, buildDictionary: true });
+      let dictionaryChanged = false;
+      const buildDebounced = debounce((buildDictionary: boolean) => {
+        task = task.then(async () => {
+          await buildAll({
+            minify: false,
+            buildDictionary,
+            checkDictionary: false,
           });
-        }, 500);
-        for await (const event of watcher) {
-          if (event.paths.some((path) => DICTIONARY.test(path))) {
-            dictionaryChanged = true;
-          }
-          buildDebounced(dictionaryChanged);
+          dictionaryChanged = false;
+        });
+      }, 500);
+      for await (const event of watcher) {
+        if (event.paths.some((path) => DICTIONARY.test(path))) {
+          dictionaryChanged = true;
         }
-        throw new Error("unreachable");
-      } finally {
-        watcher.close();
-        await task;
+        buildDebounced(dictionaryChanged);
       }
+      throw new Error("unreachable");
     }
     default:
       throw new Error(`unrecognized build option: ${Deno.args[0]}`);
