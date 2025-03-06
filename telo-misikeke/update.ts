@@ -61,9 +61,9 @@ async function buildSonaLinku(): Promise<void> {
 }
 function parseLipuLinku(
   data: { [word: string]: { usage_category: string } },
-): ReadonlyArray<readonly [word: string, usage: string]> {
+): ReadonlyArray<readonly [word: string, usageCategory: string]> {
   return Object.entries(data)
-    .map<readonly [word: string, usage: string]>(
+    .map<readonly [word: string, usageCategory: string]>(
       ([word, data]) => [word, data.usage_category],
     )
     .filter(([_, category]) => category !== "sandbox");
