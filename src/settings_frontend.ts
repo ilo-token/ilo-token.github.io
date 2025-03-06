@@ -94,11 +94,10 @@ function setElement<T extends keyof Settings>(
   );
 }
 export function loadFromLocalStorage(): void {
-  if (!checkLocalStorage()) {
-    return;
-  }
-  for (const key of KEYS) {
-    loadOneFromLocalStorage(key);
+  if (checkLocalStorage()) {
+    for (const key of KEYS) {
+      loadOneFromLocalStorage(key);
+    }
   }
 }
 export function loadFromElements(): void {

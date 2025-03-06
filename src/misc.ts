@@ -50,16 +50,15 @@ export function escapeHtmlWithLineBreak(text: string): string {
   return newlineAsHtmlLineBreak(escapeHtml(text));
 }
 export function setIgnoreError(key: string, value: string): void {
-  if (!checkLocalStorage()) {
-    return;
-  }
-  try {
-    localStorage.setItem(key, value);
-  } catch (error) {
-    if (
-      !(error instanceof DOMException) || error.name !== "QuotaExceededError"
-    ) {
-      throw error;
+  if (checkLocalStorage()) {
+    try {
+      localStorage.setItem(key, value);
+    } catch (error) {
+      if (
+        !(error instanceof DOMException) || error.name !== "QuotaExceededError"
+      ) {
+        throw error;
+      }
     }
   }
 }
