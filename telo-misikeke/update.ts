@@ -54,10 +54,9 @@ export { ${exports} };
 async function buildSonaLinku(): Promise<void> {
   const response = assertOk(await retry(() => fetch(LINKU_URL)));
   const json = await response.json();
-  const processedJson = parseLipuLinku(json);
   await Deno.writeTextFile(
     LINKU_DESTINATION,
-    `${JSON.stringify(processedJson, undefined, 2)}\n`,
+    `${JSON.stringify(parseLipuLinku(json), undefined, 2)}\n`,
   );
 }
 function parseLipuLinku(
