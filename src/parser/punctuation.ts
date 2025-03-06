@@ -10,7 +10,6 @@ const FULL_WIDTH_PERIOD = [
   "\uFF61",
   "\uFE12",
   "\u30FB",
-  "\u3002",
   UCSUR_MIDDLE_DOT,
 ];
 const FULL_WIDTH_COLON = ["\uFF1A", UCSUR_COLON];
