@@ -12,6 +12,7 @@
     "jsr:@std/internal@^1.0.5": "1.0.5",
     "jsr:@std/path@^1.0.6": "1.0.8",
     "jsr:@std/random@0.1": "0.1.0",
+    "jsr:@std/regexp@*": "1.0.1",
     "jsr:@std/regexp@^1.0.1": "1.0.1",
     "jsr:@std/text@^1.0.10": "1.0.10",
     "npm:compromise@^14.14.3": "14.14.4",
