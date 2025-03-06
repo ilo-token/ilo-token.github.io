@@ -1,6 +1,6 @@
 import { escape as escapeHtml } from "@std/html/entities";
+import { escape as escapeRegex } from "@std/regexp/escape";
 import nlp from "compromise/three";
-import { escape as escapeRegex } from "jsr:@std/regexp/escape";
 import { ArrayResultError } from "../src/array_result.ts";
 import {
   deduplicateErrors,
