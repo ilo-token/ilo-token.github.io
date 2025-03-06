@@ -4,7 +4,7 @@ import { assertOk } from "../src/misc.ts";
 const TELO_MISIKEKE_URL =
   "https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/-/raw/main/";
 const LINKU_URL = "https://api.linku.la/v1/words";
-const LINKU_DESTINATION = new URL("./linku-data.json", import.meta.url);
+const LINKU_DESTINATION = new URL("./linku_data.json", import.meta.url);
 const SOURCE = [
   {
     source: new URL("./public/rules.js", TELO_MISIKEKE_URL),
