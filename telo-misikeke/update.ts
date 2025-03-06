@@ -57,7 +57,7 @@ async function buildSonaLinku(): Promise<void> {
   const processedJson = parseLipuLinku(json);
   await Deno.writeTextFile(
     LINKU_DESTINATION,
-    JSON.stringify(processedJson, undefined, 2),
+    `${JSON.stringify(processedJson, undefined, 2)}\n`,
   );
 }
 function parseLipuLinku(
