@@ -98,11 +98,6 @@ export type Sentence =
     punctuation: string;
     interrogative: null | "seme" | "x ala x";
   }>;
-export type Quotation = Readonly<{
-  sentences: ReadonlyArray<Sentence>;
-  leftMark: string;
-  rightMark: string;
-}>;
 export type MultipleSentences =
   | Readonly<{ type: "single word"; word: string }>
   | Readonly<{ type: "sentences"; sentences: ReadonlyArray<Sentence> }>;
