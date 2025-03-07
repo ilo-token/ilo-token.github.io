@@ -63,7 +63,7 @@ function lex<T>(parser: Parser<T>): Parser<T> {
   return parser.skip(spaces);
 }
 const backtick = matchString("`", "backtick");
-const word = allAtLeastOnce(
+const unescapedWord = allAtLeastOnce(
   choiceOnlyOne(
     match(WORDS, "word"),
     backtick
@@ -76,8 +76,8 @@ const word = allAtLeastOnce(
   .map((word) => word.join("").replaceAll(/\s+/g, " ").trim())
   .filter((word) =>
     word !== "" || throwError(new ArrayResultError("missing word"))
-  )
-  .map(escapeHtml);
+  );
+const word = unescapedWord.map(escapeHtml);
 const slash = lex(matchString("/", "slash"));
 const forms = sequence(word, all(slash.with(word)))
   .map(([first, rest]) => [first, ...rest]);
@@ -131,70 +131,90 @@ function detectRepetition(
     `"${source.join("/")}" has no repetition pattern found`,
   );
 }
-const nounOnly = sequence(
-  word,
-  optionalAll(slash.with(word)),
-  tag(
-    keyword("n")
-      .with(sequence(optionalAll(keyword("gerund")), optionalNumber)),
-  ),
-)
-  .map<NounForms & { gerund: boolean }>(([first, second, [gerund, number]]) => {
-    let singular: null | string;
-    let plural: null | string;
-    switch (number) {
-      case null: {
-        if (second == null) {
-          const sentence = nlp(first);
-          sentence.tag("Noun");
-          singular = sentence
-            .nouns()
-            .toSingular()
-            .text();
-          plural = sentence
-            .nouns()
-            .toPlural()
-            .text();
-          if (singular === "" || plural === "") {
-            throw new ArrayResultError(
-              `no singular or plural form found for "${first}". consider ` +
-                "providing both singular and plural forms instead",
-            );
-          }
-          if (first !== singular) {
-            throw new ArrayResultError(
-              `conjugation error: "${first}" is not "${singular}". ` +
-                "consider providing both singular and plural forms instead",
-            );
-          }
-        } else {
-          singular = first;
-          plural = second;
-        }
-        break;
-      }
-      case "singular":
-      case "plural":
-        if (second != null) {
+const nounOnly = choiceOnlyOne(
+  sequence(
+    unescapedWord,
+    tag(
+      keyword("n")
+        .with(optionalAll(keyword("gerund"))),
+    ),
+  )
+    .map<NounForms & { gerund: boolean }>(
+      ([noun, gerund]) => {
+        const sentence = nlp(noun);
+        sentence.tag("Noun");
+        const singular = sentence
+          .nouns()
+          .toSingular()
+          .text();
+        const plural = sentence
+          .nouns()
+          .toPlural()
+          .text();
+        if (singular === "" || plural === "") {
           throw new ArrayResultError(
-            "number inside tag may not be provided when two forms of noun " +
-              "are already provided",
+            `no singular or plural form found for "${noun}". consider ` +
+              "providing both singular and plural forms instead",
           );
         }
+        if (noun !== singular) {
+          throw new ArrayResultError(
+            `conjugation error: "${noun}" is not "${singular}". ` +
+              "consider providing both singular and plural forms instead",
+          );
+        }
+        return {
+          singular: escapeHtml(singular),
+          plural: escapeHtml(plural),
+          gerund: gerund != null,
+        };
+      },
+    ),
+  sequence(
+    word,
+    tag(
+      keyword("n")
+        .with(sequence(optionalAll(keyword("gerund")), number)),
+    ),
+  )
+    .map<NounForms & { gerund: boolean }>(
+      ([noun, [gerund, number]]) => {
+        let singular: null | string;
+        let plural: null | string;
         switch (number) {
           case "singular":
-            singular = first;
-            plural = null;
-            break;
           case "plural":
-            singular = null;
-            plural = first;
+            switch (number) {
+              case "singular":
+                singular = noun;
+                plural = null;
+                break;
+              case "plural":
+                singular = null;
+                plural = noun;
+                break;
+            }
             break;
         }
-        break;
-    }
-    return { singular, plural, gerund: gerund != null };
-  });
+        return { singular, plural, gerund: gerund != null };
+      },
+    ),
+  sequence(
+    word,
+    optionalAll(slash.with(word)),
+    tag(
+      keyword("n")
+        .with(optionalAll(keyword("gerund"))),
+    ),
+  )
+    .map<NounForms & { gerund: boolean }>(
+      ([singular, plural, gerund]) => ({
+        singular,
+        plural,
+        gerund: gerund != null,
+      }),
+    ),
+);
 const determinerType = choiceOnlyOne(
   keyword("article"),
   keyword("demonstrative"),
@@ -285,7 +305,7 @@ function verbOnly(tagInside: Parser<unknown>): Parser<VerbForms> {
         presentSingular,
         past,
       })),
-    word
+    unescapedWord
       .skip(tag(tagInside))
       .map((verb) => {
         const sentence = nlp(verb);
@@ -308,9 +328,9 @@ function verbOnly(tagInside: Parser<unknown>): Parser<VerbForms> {
           );
         }
         return {
-          presentPlural: conjugations.Infinitive,
-          presentSingular: conjugations.PresentTense,
-          past: conjugations.PastTense,
+          presentPlural: escapeHtml(conjugations.Infinitive),
+          presentSingular: escapeHtml(conjugations.PresentTense),
+          past: escapeHtml(conjugations.PastTense),
         };
       }),
   );
