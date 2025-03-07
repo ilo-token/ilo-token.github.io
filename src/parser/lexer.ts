@@ -40,6 +40,7 @@ import {
   UCSUR_CHARACTER_REGEX,
   UCSUR_TO_LATIN,
 } from "./ucsur.ts";
+import { throwError } from "../misc.ts";
 
 const spacesWithoutNewline = match(/[^\S\n\r]*/, "spaces");
 const newline = match(/[\n\r]\s*/, "newline");
@@ -71,13 +72,10 @@ const properWords = allAtLeastOnce(
   .map((array) => array.join(" "))
   .map<Token>((words) => ({ type: "proper word", words, kind: "latin" }));
 function specificWord(thatWord: string): Parser<string> {
-  return word.filter((thisWord) => {
-    if (thatWord === thisWord) {
-      return true;
-    } else {
-      throw new UnexpectedError(`"${thisWord}"`, `"${thatWord}"`);
-    }
-  });
+  return word.filter((thisWord) =>
+    thatWord === thisWord ||
+    throwError(new UnexpectedError(`"${thisWord}"`, `"${thatWord}"`))
+  );
 }
 const multipleA = specificWord("a")
   .with(count(allAtLeastOnce(specificWord("a"))))
@@ -129,10 +127,11 @@ const cartoucheElement = choiceOnlyOne(
     .map(([word, dots]) => {
       const count = /^[aeiou]/.test(word) ? dots + 1 : dots;
       const morae = word.match(/[aeiou]|[jklmnpstw][aeiou]|n/g)!;
-      if (morae.length < count) {
+      if (count < morae.length) {
+        return morae.slice(0, count).join("");
+      } else {
         throw new UnrecognizedError("excess dots");
       }
-      return morae.slice(0, count).join("");
     }),
   singleUcsurWord.map((word) => word[0]),
   match(/[a-zA-Z]/, "Latin letter")

@@ -1,5 +1,5 @@
 import { ArrayResult } from "../array_result.ts";
-import { nullableAsArray } from "../misc.ts";
+import { nullableAsArray, throwError } from "../misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
 import { FilteredOutError, TranslationTodoError } from "./error.ts";
@@ -108,13 +108,13 @@ export function clause(clause: TokiPona.Clause): ArrayResult<English.Clause> {
         andParticle: "en",
         includeVerb: false,
       })
-        .map((phrase) => {
-          if (phrase.type === "noun") {
-            return { type: "vocative", call: "hey", addressee: phrase.noun };
-          } else {
-            throw new FilteredOutError(`${phrase.type} within o vocative`);
-          }
-        });
+        .map((phrase) =>
+          phrase.type === "noun"
+            ? { type: "vocative", call: "hey", addressee: phrase.noun }
+            : throwError(
+              new FilteredOutError(`${phrase.type} within o vocative`),
+            )
+        );
     case "li clause":
       return liClause(clause);
     case "prepositions":

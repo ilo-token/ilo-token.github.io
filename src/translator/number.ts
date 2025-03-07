@@ -1,7 +1,7 @@
 import { sumOf } from "@std/collections/sum-of";
 import { ArrayResult } from "../array_result.ts";
 import { dictionary } from "../dictionary.ts";
-import { nullableAsArray } from "../misc.ts";
+import { nullableAsArray, throwError } from "../misc.ts";
 import { FilteredOutError } from "./error.ts";
 
 function singleNumber(word: string): ArrayResult<number> {
@@ -46,12 +46,13 @@ function unfilteredNasinNanpaPona(
       const hundredCount = index !== -1 ? index : number.length - aleStart;
       if (previousHundredCount <= hundredCount) {
         throw new FilteredOutError('unsorted "ale"');
+      } else {
+        return subHundred(number.slice(0, aleStart)) * 100 ** hundredCount +
+          unfilteredNasinNanpaPona(
+            number.slice(aleStart + hundredCount),
+            hundredCount,
+          );
       }
-      return subHundred(number.slice(0, aleStart)) * 100 ** hundredCount +
-        unfilteredNasinNanpaPona(
-          number.slice(aleStart + hundredCount),
-          hundredCount,
-        );
     }
   }
 }
@@ -63,17 +64,16 @@ function nasinNanpaPona(number: ReadonlyArray<number>): null | number {
   }
 }
 function combineNumbers(numbers: ReadonlyArray<number>): ArrayResult<number> {
-  return ArrayResult.from(() => {
-    if (numbers.length !== 1 && numbers.includes(0)) {
-      throw new FilteredOutError('"ala" along with other numeral');
-    }
-    return ArrayResult.concat(
-      ArrayResult.from(() =>
-        new ArrayResult(nullableAsArray(nasinNanpaPona(numbers)))
-      ),
-      ArrayResult.from(() => new ArrayResult([regularNumber(numbers)])),
-    );
-  });
+  return ArrayResult.from(() =>
+    numbers.length === 1 || numbers.includes(0)
+      ? ArrayResult.concat(
+        ArrayResult.from(() =>
+          new ArrayResult(nullableAsArray(nasinNanpaPona(numbers)))
+        ),
+        ArrayResult.from(() => new ArrayResult([regularNumber(numbers)])),
+      )
+      : throwError(new FilteredOutError('"ala" along with other numeral'))
+  );
 }
 export function number(number: ReadonlyArray<string>): ArrayResult<number> {
   return ArrayResult.combine(...number.map(singleNumber))

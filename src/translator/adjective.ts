@@ -1,6 +1,6 @@
 import * as Dictionary from "../../dictionary/type.ts";
 import { ArrayResult } from "../array_result.ts";
-import { nullableAsArray } from "../misc.ts";
+import { nullableAsArray, throwError } from "../misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
 import { UntranslatableError } from "./error.ts";
@@ -55,9 +55,9 @@ export function compoundAdjective(
   }>,
 ): ArrayResult<English.AdjectivePhrase & { type: "compound" }> {
   const { adjectives, reduplicationCount, emphasis } = options;
-  return ArrayResult.from(() => {
-    if (reduplicationCount === 1) {
-      return ArrayResult.combine(
+  return ArrayResult.from(() =>
+    reduplicationCount === 1
+      ? ArrayResult.combine(
         ...adjectives
           .map((definition) =>
             adjective({ definition, reduplicationCount: 1, emphasis })
@@ -68,14 +68,14 @@ export function compoundAdjective(
           conjunction: "and",
           adjective,
           emphasis: false,
-        }));
-    } else {
-      throw new UntranslatableError(
-        "reduplication",
-        "compound adjective",
-      );
-    }
-  });
+        }))
+      : throwError(
+        new UntranslatableError(
+          "reduplication",
+          "compound adjective",
+        ),
+      )
+  );
 }
 export function rankAdjective(kind: Dictionary.AdjectiveType): number {
   return [

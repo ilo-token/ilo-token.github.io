@@ -7,7 +7,7 @@ import {
   preverbSet,
   tokiPonaWordSet,
 } from "../dictionary.ts";
-import { nullableAsArray } from "../misc.ts";
+import { nullableAsArray, throwError } from "../misc.ts";
 import {
   Clause,
   ContextClause,
@@ -66,45 +66,34 @@ Parser.startCache(cache);
 
 const specificToken = memoize(
   <T extends Token["type"]>(type: T): Parser<Token & { type: T }> => {
-    return token.map((token) => {
-      if (token.type === type) {
-        return token as Token & { type: T };
-      } else {
-        throw new UnexpectedError(describe(token), type);
-      }
-    });
+    return token.map((token) =>
+      token.type === type
+        ? token as Token & { type: T }
+        : throwError(new UnexpectedError(describe(token), type))
+    );
   },
 );
 const punctuation = specificToken("punctuation")
   .map(({ punctuation }) => punctuation);
 const comma = punctuation
-  .filter((punctuation) => {
-    if (punctuation === ",") {
-      return true;
-    } else {
-      throw new UnexpectedError(`"${punctuation}"`, "comma");
-    }
-  });
+  .filter((punctuation) =>
+    punctuation === "," ||
+    throwError(new UnexpectedError(`"${punctuation}"`, "comma"))
+  );
 const optionalComma = optional(comma);
 const word = specificToken("word").map(({ word }) => word);
 const properWords = specificToken("proper word").map(({ words }) => words);
 function wordFrom(set: Set<string>, description: string): Parser<string> {
-  return word.filter((word) => {
-    if (set.has(word)) {
-      return true;
-    } else {
-      throw new UnrecognizedError(`"${word}" as ${description}`);
-    }
-  });
+  return word.filter((word) =>
+    set.has(word) ||
+    throwError(new UnrecognizedError(`"${word}" as ${description}`))
+  );
 }
 const specificWord = memoize((thatWord: string) =>
-  word.filter((thisWord) => {
-    if (thatWord === thisWord) {
-      return true;
-    } else {
-      throw new UnexpectedError(`"${thisWord}"`, `"${thatWord}"`);
-    }
-  })
+  word.filter((thisWord) =>
+    thatWord === thisWord ||
+    throwError(new UnexpectedError(`"${thisWord}"`, `"${thatWord}"`))
+  )
 );
 function filterCombinedGlyphs(
   words: ReadonlyArray<string>,
@@ -131,12 +120,11 @@ const emphasis = choice<Emphasis>(
       length: spaceLength,
     })),
   specificToken("long word")
-    .map(({ word, length }) => {
-      if (word !== "a") {
-        throw new UnexpectedError(`"${word}"`, '"a"');
-      }
-      return { type: "long word", word, length };
-    }),
+    .map(({ word, length }) =>
+      word === "a"
+        ? { type: "long word", word, length }
+        : throwError(new UnexpectedError(`"${word}"`, '"a"'))
+    ),
   specificWord("a").map((word) => ({ type: "word", word })),
 );
 const optionalEmphasis = optional(emphasis);
@@ -202,19 +190,19 @@ function binaryWords(
   word: Set<string>,
   description: string,
 ): Parser<readonly [bottom: string, top: string]> {
-  return specificToken("combined glyphs").map(({ words }) => {
-    if (words.length > 2) {
-      throw new UnrecognizedError(
-        `combined glyphs of ${words.length} words`,
-      );
-    } else if (!word.has(words[0])) {
-      throw new UnrecognizedError(`"${words[0]}" as ${description}`);
-    } else if (!contentWordSet.has(words[1])) {
-      throw new UnrecognizedError(`"${words[1]}" as content word`);
-    } else {
-      return words as [string, string];
-    }
-  });
+  return specificToken("combined glyphs").map(({ words }) =>
+    words.length > 2
+      ? throwError(
+        new UnrecognizedError(
+          `combined glyphs of ${words.length} words`,
+        ),
+      )
+      : !word.has(words[0])
+      ? throwError(new UnrecognizedError(`"${words[0]}" as ${description}`))
+      : !contentWordSet.has(words[1])
+      ? throwError(new UnrecognizedError(`"${words[1]}" as content word`))
+      : words as [string, string]
+  );
 }
 function optionalCombined(
   word: Set<string>,
@@ -412,12 +400,14 @@ const preposition = choice<Preposition>(
           throw new UnrecognizedError(
             `combined glyphs of ${words.words.length} words`,
           );
+        } else {
+          const word = words.words[0];
+          if (!prepositionSet.has(word)) {
+            throw new UnrecognizedError(`"${word}" as preposition`);
+          } else {
+            return words.words;
+          }
         }
-        const word = words.words[0];
-        if (!prepositionSet.has(word)) {
-          throw new UnrecognizedError(`"${word}" as preposition`);
-        }
-        return words.words;
       }),
     phrase,
     specificToken("headless long glyph end"),
@@ -630,28 +620,28 @@ const la = choice(
 );
 const filler = choice<Filler>(
   specificToken("space long glyph")
-    .map((longGlyph) => {
-      if (longGlyph.words.length !== 1) {
-        throw new UnexpectedError(
-          describe({ type: "combined glyphs", words: longGlyph.words }),
-          "simple glyph",
-        );
-      }
-      return {
-        type: "long word",
-        word: longGlyph.words[0],
-        length: longGlyph.spaceLength,
-      };
-    }),
+    .map((longGlyph) =>
+      longGlyph.words.length === 1
+        ? {
+          type: "long word",
+          word: longGlyph.words[0],
+          length: longGlyph.spaceLength,
+        }
+        : throwError(
+          new UnexpectedError(
+            describe({ type: "combined glyphs", words: longGlyph.words }),
+            "simple glyph",
+          ),
+        )
+    ),
   specificToken("multiple a")
     .map(({ count }) => ({ type: "multiple a", count })),
   specificToken("long word")
-    .map(({ word, length }) => {
-      if (!fillerSet.has(word)) {
-        throw new UnrecognizedError(`"${word}" as filler`);
-      }
-      return { type: "long word", word, length };
-    }),
+    .map(({ word, length }) =>
+      fillerSet.has(word)
+        ? { type: "long word", word, length }
+        : throwError(new UnrecognizedError(`"${word}" as filler`))
+    ),
   wordFrom(fillerSet, "filler")
     .map((word) => ({ type: "word", word })),
 );
@@ -727,13 +717,12 @@ const sentence = choice<Sentence>(
 )
   .filter(filter(SENTENCE_RULE));
 export const parse = spaces
-  .with(lookAhead(everything.filter((src) => {
-    if (src.trimEnd().length > 500) {
-      throw new UnrecognizedError("long text");
-    } else {
-      return true;
-    }
-  })))
+  .with(
+    lookAhead(everything.filter((src) =>
+      src.trimEnd().length <= 500 ||
+      throwError(new UnrecognizedError("long text"))
+    )),
+  )
   .with(choiceOnlyOne<MultipleSentences>(
     wordFrom(tokiPonaWordSet, "Toki Pona word")
       .skip(end)

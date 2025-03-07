@@ -6,6 +6,7 @@ import {
   deduplicateErrors,
   mapNullable,
   nullableAsArray,
+  throwError,
 } from "../src/misc.ts";
 import {
   all,
@@ -73,26 +74,19 @@ const word = allAtLeastOnce(
   ),
 )
   .map((word) => word.join("").replaceAll(/\s+/g, " ").trim())
-  .filter((word) => {
-    if (word === "") {
-      throw new ArrayResultError("missing word");
-    } else {
-      return true;
-    }
-  })
+  .filter((word) =>
+    word !== "" || throwError(new ArrayResultError("missing word"))
+  )
   .map(escapeHtml);
 const slash = lex(matchString("/", "slash"));
 const forms = sequence(word, all(slash.with(word)))
   .map(([first, rest]) => [first, ...rest]);
 function keyword<T extends string>(keyword: T): Parser<T> {
   return lex(match(/[a-z]+/, keyword))
-    .filter((that) => {
-      if (keyword === that) {
-        return true;
-      } else {
-        throw new UnexpectedError(`"${that}"`, `"${keyword}"`);
-      }
-    }) as Parser<T>;
+    .filter((that) =>
+      keyword === that ||
+      throwError(new UnexpectedError(`"${that}"`, `"${keyword}"`))
+    ) as Parser<T>;
 }
 const number = choiceOnlyOne(keyword("singular"), keyword("plural"));
 const optionalNumber = optionalAll(number);
@@ -271,19 +265,20 @@ function verbOnly(tagInside: Parser<unknown>): Parser<VerbForms> {
         const [_, ...pluralParticles] = presentPlural.split(" ");
         const [_1, ...singularParticles] = presentSingular.split(" ");
         const [_2, ...pastParticles] = past.split(" ");
-        if (
-          pluralParticles.length !== singularParticles.length ||
-          pluralParticles.length !== pastParticles.length ||
-          pluralParticles.some((particle, i) =>
-            particle !== singularParticles[i] || particle !== pastParticles[i]
-          )
-        ) {
+        const allMatched =
+          pluralParticles.length === singularParticles.length &&
+          pluralParticles.length === pastParticles.length &&
+          pluralParticles.every((particle, i) =>
+            particle === singularParticles[i] && particle === pastParticles[i]
+          );
+        if (allMatched) {
+          return true;
+        } else {
           throw new ArrayResultError(
             "mismatched verb particles " +
               `"${presentPlural}/${presentSingular}/${past}"`,
           );
         }
-        return true;
       })
       .map(([presentPlural, presentSingular, past]) => ({
         presentPlural,

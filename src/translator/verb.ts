@@ -100,11 +100,12 @@ export function everyPartialVerb(
 export function forObject(verb: PartialCompoundVerb): boolean | string {
   const [{ forObject }, ...rest] = everyPartialVerb(verb);
   if (
-    forObject === false || rest.some((verb) => forObject !== verb.forObject)
+    forObject !== false && rest.every((verb) => forObject === verb.forObject)
   ) {
+    return forObject;
+  } else {
     return false;
   }
-  return forObject;
 }
 export function fromVerbForms(
   options: Readonly<{

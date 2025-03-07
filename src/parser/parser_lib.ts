@@ -1,6 +1,7 @@
 import { memoize } from "@std/cache/memoize";
 import { ArrayResult, ArrayResultError } from "../array_result.ts";
 import { Cache, Clearable, Lazy } from "../cache.ts";
+import { throwError } from "../misc.ts";
 
 export type ValueRest<T> = Readonly<{ rest: string; value: T }>;
 export type ParserResult<T> = ArrayResult<ValueRest<T>>;
@@ -213,8 +214,9 @@ export function matchCapture(
           value: match,
           rest: src.slice(match[0].length),
         }]);
+      } else {
+        throw new UnexpectedError(describeSource(src), description);
       }
-      throw new UnexpectedError(describeSource(src), description);
     })
   );
 }
@@ -223,15 +225,14 @@ export function match(regex: RegExp, description: string): Parser<string> {
 }
 export function slice(length: number, description: string): Parser<string> {
   return new Parser((src) =>
-    ArrayResult.from(() => {
-      if (src.length >= length) {
-        return new ArrayResult([{
+    ArrayResult.from(() =>
+      src.length >= length
+        ? new ArrayResult([{
           rest: src.slice(length),
           value: src.slice(0, length),
-        }]);
-      }
-      throw new UnexpectedError(describeSource(src), description);
-    })
+        }])
+        : throwError(new UnexpectedError(describeSource(src), description))
+    )
   );
 }
 export function matchString(
@@ -239,15 +240,14 @@ export function matchString(
   description = `"${match}"`,
 ): Parser<string> {
   return new Parser((src) =>
-    ArrayResult.from(() => {
-      if (src.length >= match.length && src.slice(0, match.length) === match) {
-        return new ArrayResult([{
+    ArrayResult.from(() =>
+      src.length >= match.length && src.slice(0, match.length) === match
+        ? new ArrayResult([{
           rest: src.slice(match.length),
           value: match,
-        }]);
-      }
-      throw new UnexpectedError(describeSource(src), description);
-    })
+        }])
+        : throwError(new UnexpectedError(describeSource(src), description))
+    )
   );
 }
 export const everything = new Parser((src) =>
@@ -255,12 +255,11 @@ export const everything = new Parser((src) =>
 );
 export const character = match(/./us, "character");
 export const end = new Parser((src) =>
-  ArrayResult.from(() => {
-    if (src === "") {
-      return new ArrayResult([{ value: null, rest: "" }]);
-    }
-    throw new UnexpectedError(describeSource(src), "end of text");
-  })
+  ArrayResult.from(() =>
+    src === ""
+      ? new ArrayResult([{ value: null, rest: "" }])
+      : throwError(new UnexpectedError(describeSource(src), "end of text"))
+  )
 );
 export function withSource<T>(
   parser: Parser<T>,

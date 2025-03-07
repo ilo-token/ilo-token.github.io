@@ -68,8 +68,9 @@ export function assertOk(response: Response): Response {
     throw new Error(
       `unable to fetch ${url} (${status} ${statusText})`,
     );
+  } else {
+    return response;
   }
-  return response;
 }
 export function extractErrorMessage(error: unknown): string {
   if (error instanceof Error) {
@@ -106,4 +107,7 @@ export function uniquePairs<T>(
   array: ReadonlyArray<T>,
 ): ReadonlyArray<readonly [T, T]> {
   return array.flatMap((a, i) => array.slice(i + 1).map((b) => [a, b]));
+}
+export function throwError(error: unknown): never {
+  throw error;
 }
