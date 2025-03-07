@@ -1,6 +1,6 @@
 import { distinct } from "@std/collections/distinct";
 import { shuffle } from "@std/random/shuffle";
-import { errors } from "../telo-misikeke/telo_misikeke.js";
+import { errors } from "../telo_misikeke/telo_misikeke.js";
 import { ArrayResultError } from "./array_result.ts";
 import { deduplicateErrors } from "./misc.ts";
 import { settings } from "./settings.ts";
