@@ -11,7 +11,6 @@ import {
   Phrase,
   Predicate,
   Preposition,
-  Quotation,
   Sentence,
   SimpleWordUnit,
   WordUnit,
@@ -203,10 +202,6 @@ export function sentence(sentence: Sentence): string {
       break;
   }
   return `${text}${sentence.punctuation}`;
-}
-export function quotation(quotation: Quotation): string {
-  const text = quotation.sentences.map(sentence).join(" ");
-  return `${quotation.leftMark}${text}${quotation.rightMark}`;
 }
 export function multipleSentences(sentences: MultipleSentences): string {
   switch (sentences.type) {
