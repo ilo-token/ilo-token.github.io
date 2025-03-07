@@ -42,11 +42,6 @@ export const NANPA_RULES: ReadonlyArray<(nanpa: Nanpa) => boolean> = [
     modifier.phrase.type !== "preverb" ||
     throwError(new UnrecognizedError("preverb inside nanpa")),
 
-  // nanpa construction cannot contain quotation
-  (modifier) =>
-    modifier.phrase.type !== "quotation" ||
-    throwError(new UnrecognizedError("quotation inside nanpa")),
-
   // nanpa construction cannot contain pi
   (modifier) =>
     modifier.phrase.type !== "default" ||
@@ -60,24 +55,9 @@ export const NANPA_RULES: ReadonlyArray<(nanpa: Nanpa) => boolean> = [
     throwError(new UnrecognizedError("nanpa inside nanpa")),
 
   // nanpa cannot have emphasis particle
-  (modifier) => {
-    const { phrase } = modifier;
-    switch (phrase.type) {
-      case "preposition":
-      case "preverb":
-      case "default":
-        return phrase.emphasis == null;
-      case "quotation":
-        return true;
-    }
-  },
+  (modifier) => modifier.phrase.emphasis == null,
 ];
 export const MODIFIER_RULES: ReadonlyArray<(modifier: Modifier) => boolean> = [
-  // quotation modifier cannot exist
-  (modifier) =>
-    modifier.type !== "quotation" ||
-    throwError(new UnrecognizedError("quotation as modifier")),
-
   // pi cannot contain preposition
   (modifier) =>
     modifier.type !== "pi" || modifier.phrase.type !== "preposition" ||
@@ -99,8 +79,6 @@ export const MODIFIER_RULES: ReadonlyArray<(modifier: Modifier) => boolean> = [
   //     switch (modifier.type) {
   //       case "default":
   //       case "proper words":
-  //       case "quotation":
-  //         return false;
   //       case "nanpa":
   //         return everyModifierInPhrase(modifier.phrase).some(checker);
   //       case "pi":
@@ -116,21 +94,7 @@ export const MODIFIER_RULES: ReadonlyArray<(modifier: Modifier) => boolean> = [
   // },
 
   // pi cannot have emphasis particle
-  (modifier) => {
-    if (modifier.type === "pi") {
-      const { phrase } = modifier;
-      switch (phrase.type) {
-        case "default":
-        case "preposition":
-        case "preverb":
-          return phrase.emphasis == null;
-        case "quotation":
-          return true;
-      }
-    } else {
-      return true;
-    }
-  },
+  (modifier) => modifier.type !== "pi" || modifier.phrase.emphasis == null,
 ];
 export const MULTIPLE_MODIFIERS_RULES: ReadonlyArray<
   (modifier: ReadonlyArray<Modifier>) => boolean
@@ -179,7 +143,6 @@ export const MULTIPLE_MODIFIERS_RULES: ReadonlyArray<
             } else {
               return [];
             }
-          case "quotation":
           case "proper words":
           case "nanpa":
             return [];
@@ -195,11 +158,6 @@ export const MULTIPLE_MODIFIERS_RULES: ReadonlyArray<
   },
 ];
 export const PHRASE_RULE: ReadonlyArray<(phrase: Phrase) => boolean> = [
-  // Disallow quotation
-  (phrase) =>
-    phrase.type !== "quotation" ||
-    throwError(new UnrecognizedError("quotation as phrase")),
-
   // Disallow preverb modifiers other than "ala"
   (phrase) =>
     phrase.type !== "preverb" || modifiersIsAlaOrNone(phrase.modifiers) ||
@@ -227,21 +185,14 @@ export const PHRASE_RULE: ReadonlyArray<(phrase: Phrase) => boolean> = [
 
   // Emphasis must not be nested
   (phrase) => {
-    switch (phrase.type) {
-      case "preposition":
-      case "preverb":
-      case "default":
-        if (
-          phrase.emphasis == null ||
-          everyWordUnitInPhrase(phrase)
-            .every((wordUnit) => wordUnit.emphasis == null)
-        ) {
-          return true;
-        } else {
-          throw new UnrecognizedError("nested emphasis");
-        }
-      case "quotation":
-        return true;
+    if (
+      phrase.emphasis == null ||
+      everyWordUnitInPhrase(phrase)
+        .every((wordUnit) => wordUnit.emphasis == null)
+    ) {
+      return true;
+    } else {
+      throw new UnrecognizedError("nested emphasis");
     }
   },
 ];
@@ -294,7 +245,6 @@ export const CLAUSE_RULE: ReadonlyArray<(clause: Clause) => boolean> = [
         }
         break;
       case "prepositions":
-      case "quotation":
         return true;
     }
     if (
@@ -458,8 +408,6 @@ function hasPrepositionInPhrase(phrase: Phrase): boolean {
       return true;
     case "preverb":
       return hasPrepositionInPhrase(phrase.phrase);
-    case "quotation":
-      return false;
   }
 }
 function phraseHasTopLevelEmphasis(phrase: Phrase): boolean {
@@ -468,7 +416,5 @@ function phraseHasTopLevelEmphasis(phrase: Phrase): boolean {
     case "preverb":
     case "preposition":
       return phrase.emphasis != null;
-    case "quotation":
-      return false;
   }
 }

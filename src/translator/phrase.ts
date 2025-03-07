@@ -219,7 +219,6 @@ export function phrase(
       return defaultPhrase({ ...options, phrase });
     case "preverb":
     case "preposition":
-    case "quotation":
       return new ArrayResult(new TranslationTodoError(phrase.type));
   }
 }

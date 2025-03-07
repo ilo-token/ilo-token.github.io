@@ -119,7 +119,6 @@ export function clause(clause: TokiPona.Clause): ArrayResult<English.Clause> {
       return liClause(clause);
     case "prepositions":
     case "o clause":
-    case "quotation":
       return new ArrayResult(new TranslationTodoError(clause.type));
   }
 }

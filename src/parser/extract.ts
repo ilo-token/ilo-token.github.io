@@ -25,7 +25,6 @@ export function everyWordUnitInModifier(
       return everyWordUnitInPhrase(modifier.phrase);
     case "nanpa":
       return everyWordUnitInNanpa(modifier);
-    case "quotation":
     case "proper words":
       return [];
   }
@@ -45,8 +44,6 @@ export function everyWordUnitInPhrase(phrase: Phrase): ReadonlyArray<WordUnit> {
       ];
     case "preposition":
       return everyWordUnitInPreposition(phrase);
-    case "quotation":
-      return [];
   }
 }
 export function everyWordUnitInMultiplePhrases(
@@ -99,8 +96,6 @@ export function everyWordUnitInClause(clause: Clause): ReadonlyArray<WordUnit> {
       ];
     case "prepositions":
       return clause.prepositions.flatMap(everyWordUnitInPreposition);
-    case "quotation":
-      return [];
   }
 }
 export function everyWordUnitInContextClause(
@@ -142,8 +137,6 @@ export function everyModifierInPhrase(phrase: Phrase): ReadonlyArray<Modifier> {
         ...phrase.modifiers,
         ...everyModifierInMultiplePhrases(phrase.phrases),
       ];
-    case "quotation":
-      return [];
   }
 }
 export function everyModifierInMultiplePhrases(

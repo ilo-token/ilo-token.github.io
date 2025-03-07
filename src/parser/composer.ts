@@ -68,8 +68,6 @@ export function modifier(modifier: Modifier): string {
       return `pi ${phrase(modifier.phrase)}`;
     case "nanpa":
       return nanpa(modifier);
-    case "quotation":
-      return quotation(modifier);
   }
 }
 export function phrase(value: Phrase): string {
@@ -91,8 +89,6 @@ export function phrase(value: Phrase): string {
         .join(" ");
     case "preposition":
       return preposition(value);
-    case "quotation":
-      return quotation(value);
   }
 }
 function particle(type: "and conjunction" | "anu", particle: string): string {
@@ -175,8 +171,6 @@ export function clause(clause: Clause): string {
         .join(" ");
     case "prepositions":
       return clause.prepositions.map(preposition).join(" ");
-    case "quotation":
-      throw new Error();
   }
 }
 export function contextClause(contextClause: ContextClause): string {

@@ -217,8 +217,6 @@ function modifier(
       return piModifier(modifier.phrase);
     case "nanpa":
       return nanpaModifier(modifier);
-    case "quotation":
-      return new ArrayResult(new TranslationTodoError(modifier.type));
   }
 }
 export function multipleModifiers(

@@ -22,8 +22,7 @@ export type Modifier =
   | Readonly<{ type: "default"; word: WordUnit }>
   | Readonly<{ type: "proper words"; words: string }>
   | Readonly<{ type: "pi"; phrase: Phrase }>
-  | (Readonly<{ type: "nanpa" }> & Nanpa)
-  | (Readonly<{ type: "quotation" }> & Quotation);
+  | (Readonly<{ type: "nanpa" }> & Nanpa);
 export type Phrase =
   | Readonly<{
     type: "default";
@@ -38,8 +37,7 @@ export type Phrase =
     phrase: Phrase;
     emphasis: null | Emphasis;
   }>
-  | (Readonly<{ type: "preposition" }> & Preposition)
-  | (Readonly<{ type: "quotation" }> & Quotation);
+  | (Readonly<{ type: "preposition" }> & Preposition);
 export type MultiplePhrases =
   | Readonly<{ type: "single"; phrase: Phrase }>
   | Readonly<{
@@ -77,8 +75,9 @@ export type Clause =
     subjects: null | MultiplePhrases;
     predicates: Predicate;
   }>
-  | Readonly<{ type: "prepositions"; prepositions: ReadonlyArray<Preposition> }>
-  | (Readonly<{ type: "quotation" }> & Quotation);
+  | Readonly<
+    { type: "prepositions"; prepositions: ReadonlyArray<Preposition> }
+  >;
 export type ContextClause =
   | Clause
   | (Readonly<{ type: "nanpa" }> & Nanpa);

@@ -574,9 +574,7 @@ const clause = choice<Clause>(
       prepositions,
     })),
   subjectPhrases
-    .filter((phrases) =>
-      phrases.type !== "single" || phrases.phrase.type !== "quotation"
-    )
+    .filter((phrases) => phrases.type !== "single")
     .map((phrases) => ({ type: "phrases", phrases })),
   subjectPhrases
     .skip(specificWord("o"))
