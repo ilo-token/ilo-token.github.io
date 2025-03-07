@@ -111,3 +111,14 @@ export function uniquePairs<T>(
 export function throwError(error: unknown): never {
   throw error;
 }
+export function findDuplicate<T>(iterable: Iterable<T>): null | T {
+  const set = new Set();
+  for (const value of iterable) {
+    if (set.has(value)) {
+      return value;
+    } else {
+      set.add(value);
+    }
+  }
+  return null;
+}
