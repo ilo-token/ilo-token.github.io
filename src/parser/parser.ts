@@ -732,5 +732,3 @@ export const parse = spaces
   .parser();
 
 Parser.endCache();
-
-console.log(subjectPhrases.parser()("tomo waso").unwrap());
