@@ -141,6 +141,7 @@ function main(): void {
       errorDisplay.innerText = errorsFixable(flattenError(error))
         ? DICTIONARY_LOADING_FAILED_FIXABLE_MESSAGE
         : DICTIONARY_LOADING_FAILED_UNFIXABLE_MESSAGE;
+        // deno-lint-ignore no-console
       console.error(error);
     }
   }
@@ -212,6 +213,7 @@ function main(): void {
         list[property] = extractErrorMessage(item);
         errorList.appendChild(list);
       }
+      // deno-lint-ignore no-console
       console.error(error);
     }
   }
@@ -285,6 +287,7 @@ function main(): void {
         .map(extractErrorMessage)
         .map((message) => `\n- ${message.replaceAll(NEWLINES, "$&  ")}`);
       displayToCustomDictionary(asComment(`${message}${errorListMessage}`));
+      // deno-lint-ignore no-console
       console.error(error);
     }
   });

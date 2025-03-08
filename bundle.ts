@@ -42,10 +42,13 @@ async function buildAll(
       const Dictionary = await import("./dictionary/build.ts");
       await Dictionary.build(checkDictionary ?? true);
     }
+    // deno-lint-ignore no-console
     console.log("Building main.js...");
     await ESBuild.build(buildOptions(minify));
+    // deno-lint-ignore no-console
     console.log("Building done!");
   } catch (error) {
+    // deno-lint-ignore no-console
     console.error(error);
   }
 }
@@ -56,6 +59,7 @@ if (import.meta.main) {
       break;
     }
     case "watch": {
+      // deno-lint-ignore no-console
       console.log("Press ctrl+c to exit.");
       const watcher = Deno.watchFs(WATCH);
       let task = Promise.resolve();

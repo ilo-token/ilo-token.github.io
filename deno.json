@@ -35,6 +35,7 @@
         "camelcase",
         "explicit-function-return-type",
         "explicit-module-boundary-types",
+        "no-console",
         "no-boolean-literal-for-arguments",
         "no-eval",
         "no-inferrable-types",

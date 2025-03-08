@@ -35,6 +35,7 @@ export async function build(checkFile: boolean): Promise<void> {
       }
     }
   }
+  // deno-lint-ignore no-console
   console.log("Building dictionary...");
   const text = await currentPromise;
   const json = JSON.stringify(

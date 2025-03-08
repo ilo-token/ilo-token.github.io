@@ -76,5 +76,6 @@ if (import.meta.main) {
         buildCode(file.source, file.destination, file.exportItems)
       ),
   ]);
+  // deno-lint-ignore no-console
   console.log("Updated telo misikeke.");
 }
