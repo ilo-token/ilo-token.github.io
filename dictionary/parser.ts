@@ -295,7 +295,10 @@ function verbOnly(tagInside: Parser<unknown>): Parser<VerbForms> {
           FutureTense: string;
         };
         if (conjugations == null) {
-          throw new ArrayResultError(`no verb conjugation found for "${verb}"`);
+          throw new ArrayResultError(
+            `no verb conjugation found for "${verb}". consider providing all ` +
+              "conjugations instead",
+          );
         }
         if (verb !== conjugations.Infinitive) {
           throw new ArrayResultError(
