@@ -64,7 +64,7 @@ function redefineSet(
 }
 function redefineSetWithType(
   set: Set<string>,
-  compareType: Definition["type"],
+  type: Definition["type"],
 ): void {
-  redefineSet(set, ({ type }) => type === compareType);
+  redefineSet(set, ({ type: compareType }) => compareType === type);
 }
