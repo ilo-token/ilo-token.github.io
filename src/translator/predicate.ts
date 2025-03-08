@@ -1,5 +1,5 @@
 import { ArrayResult } from "../array_result.ts";
-import { nullableAsArray } from "../misc.ts";
+import { nullableAsArray, throwError } from "../misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { AdjectiveWithInWay } from "./adjective.ts";
 import * as English from "./ast.ts";
@@ -116,14 +116,11 @@ function associatedPredicate(
   preposition: ReadonlyArray<English.Preposition>,
 ): ArrayResult<PartialCompoundVerb> {
   return ArrayResult.from(() => {
-    let verbObject: ArrayResult<PartialCompoundVerb>;
-    if (object == null) {
-      verbObject = new ArrayResult([phraseAsVerb(predicate)]);
-    } else if (object.type === "noun") {
-      verbObject = predicateVerb(predicate, object.noun);
-    } else {
-      throw new UntranslatableError(object.type, "object");
-    }
+    const verbObject = object == null
+      ? new ArrayResult([phraseAsVerb(predicate)])
+      : object.type === "noun"
+      ? predicateVerb(predicate, object.noun)
+      : throwError(new UntranslatableError(object.type, "object"));
     return verbObject.map((verbObject) => ({
       ...verbObject,
       preposition: [...verbObject.preposition, ...preposition],
