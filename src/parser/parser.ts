@@ -284,8 +284,7 @@ const pi = choice(
   specificToken("headed long glyph start")
     .filter(({ words }) => filterCombinedGlyphs(words, "pi"))
     .with(phrase)
-    .skip(specificToken("headless long glyph end"))
-    .map((phrase) => phrase),
+    .skip(specificToken("headless long glyph end")),
   specificWord("pi").with(phrase),
 );
 const modifiers = sequence(
@@ -395,23 +394,23 @@ const preposition = choice<Preposition>(
     })),
   sequence(
     specificToken("headed long glyph start")
-      .map((words) => {
-        if (words.words.length > 2) {
+      .map(({ words }) => {
+        if (words.length > 2) {
           throw new UnrecognizedError(
-            `combined glyphs of ${words.words.length} words`,
+            `combined glyphs of ${words.length} words`,
           );
         } else {
-          const word = words.words[0];
+          const [word] = words;
           if (!prepositionSet.has(word)) {
             throw new UnrecognizedError(`"${word}" as preposition`);
           } else {
-            return words.words;
+            return words;
           }
         }
       }),
     phrase,
-    specificToken("headless long glyph end"),
   )
+    .skip(specificToken("headless long glyph end"))
     .map<Preposition>(([words, phrase]) => {
       const modifiers = words
         .slice(1)
@@ -617,16 +616,16 @@ const la = choice(
 );
 const filler = choice<Filler>(
   specificToken("space long glyph")
-    .map((longGlyph) =>
-      longGlyph.words.length === 1
+    .map(({ words, spaceLength }) =>
+      words.length === 1
         ? {
           type: "long word",
-          word: longGlyph.words[0],
-          length: longGlyph.spaceLength,
+          word: words[0],
+          length: spaceLength,
         }
         : throwError(
           new UnexpectedError(
-            describe({ type: "combined glyphs", words: longGlyph.words }),
+            describe({ type: "combined glyphs", words: words }),
             "simple glyph",
           ),
         )
@@ -690,16 +689,15 @@ const sentence = choice<Sentence>(
           interrogative: null,
         };
         const wordUnits = everyWordUnitInSentence(sentence);
-        const interrogative =
-          wordUnits.some((wordUnit) => wordUnit.type === "x ala x")
-            ? "x ala x"
-            : wordUnits.some((wordUnit) =>
-                (wordUnit.type === "default" ||
-                  wordUnit.type === "reduplication") &&
-                wordUnit.word === "seme"
-              )
-            ? "seme"
-            : null;
+        const interrogative = wordUnits.some(({ type }) => type === "x ala x")
+          ? "x ala x"
+          : wordUnits.some((wordUnit) =>
+              (wordUnit.type === "default" ||
+                wordUnit.type === "reduplication") &&
+              wordUnit.word === "seme"
+            )
+          ? "seme"
+          : null;
         return { ...sentence, interrogative };
       },
     )

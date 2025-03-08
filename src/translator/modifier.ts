@@ -225,25 +225,32 @@ export function multipleModifiers(
   return ArrayResult.combine(...modifiers.map(modifier))
     .flatMap((modifiers) => {
       const noun = modifiers
-        .filter((modifier) => modifier.type === "noun")
-        .map((modifier) => modifier.noun);
+        .flatMap((modifier) => modifier.type === "noun" ? [modifier.noun] : []);
+
       const nounPreposition = modifiers
-        .filter((modifier) => modifier.type === "noun preposition");
-      const determiner = modifiers
-        .filter((modifier) => modifier.type === "determiner")
-        .map((modifier) => modifier.determiner);
-      const adjective = modifiers
-        .filter((modifier) => modifier.type === "adjective")
-        .map((modifier) => modifier.adjective);
-      const adverb = modifiers
-        .filter((modifier) => modifier.type === "adverb")
-        .map((modifier) => modifier.adverb);
+        .filter(({ type }) => type === "noun preposition") as ReadonlyArray<
+          ModifierTranslation & { type: "noun preposition" }
+        >;
+
+      const determiner = modifiers.flatMap((modifier) =>
+        modifier.type === "determiner" ? [modifier.determiner] : []
+      );
+
+      const adjective = modifiers.flatMap((modifier) =>
+        modifier.type === "adjective" ? [modifier.adjective] : []
+      );
+
+      const adverb = modifiers.flatMap((modifier) =>
+        modifier.type === "adverb" ? [modifier.adverb] : []
+      );
+
       const name = modifiers
-        .filter((modifier) => modifier.type === "name")
-        .map((modifier) => modifier.name);
-      const inPositionPhrase = modifiers
-        .filter((modifier) => modifier.type === "in position phrase")
-        .map((modifier) => modifier.noun);
+        .flatMap((modifier) => modifier.type === "name" ? [modifier.name] : []);
+
+      const inPositionPhrase = modifiers.flatMap((modifier) =>
+        modifier.type === "in position phrase" ? [modifier.noun] : []
+      );
+
       let adjectival: ArrayResult<MultipleModifierTranslation>;
       if (
         noun.length <= 1 &&

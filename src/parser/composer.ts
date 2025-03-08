@@ -131,7 +131,7 @@ export function multiplePredicates(
     case "associated": {
       return [
         multiplePhrases(predicates.predicates, andParticle),
-        ...nullableAsArray(predicates.objects).map((_) => "e"),
+        ...nullableAsArray(predicates.objects).map(() => "e"),
         ...nullableAsArray(predicates.objects)
           .map((objects) => multiplePhrases(objects, "e")),
         ...predicates.prepositions.map(preposition),

@@ -30,11 +30,11 @@ export function noun(phrases: English.NounPhrase, depth: number): string {
   switch (phrases.type) {
     case "simple": {
       const text = [
-        ...phrases.determiner.map((determiner) => word(determiner.determiner)),
+        ...phrases.determiner.map(({ determiner }) => word(determiner)),
         ...phrases.adjective.map(adjective),
         word(phrases.noun),
         ...nullableAsArray(phrases.postAdjective)
-          .map((adjective) => `${adjective.adjective} ${adjective.name}`),
+          .map(({ adjective, name }) => `${adjective} ${name}`),
         ...phrases.preposition.map(preposition),
       ]
         .join(" ");

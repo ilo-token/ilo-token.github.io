@@ -87,7 +87,7 @@ export function fromNounForms(
 export function simpleNounForms(
   nounForms: Dictionary.NounForms,
 ): ArrayResult<string> {
-  return fromNounForms(nounForms, "both").map((noun) => noun.noun);
+  return fromNounForms(nounForms, "both").map(({ noun }) => noun);
 }
 export function noun(
   options: Readonly<{

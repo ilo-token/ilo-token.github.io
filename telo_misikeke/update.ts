@@ -72,8 +72,8 @@ if (import.meta.main) {
   await Promise.all([
     buildSonaLinku(),
     ...SOURCE
-      .map((file) =>
-        buildCode(file.source, file.destination, file.exportItems)
+      .map(({ source, destination, exportItems }) =>
+        buildCode(source, destination, exportItems)
       ),
   ]);
   // deno-lint-ignore no-console

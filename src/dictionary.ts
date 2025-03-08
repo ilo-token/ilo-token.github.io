@@ -36,19 +36,19 @@ function update(): void {
   }
   redefineSet(
     contentWordSet,
-    (definition) =>
-      definition.type !== "filler" &&
-      definition.type !== "particle definition",
+    ({ type }) =>
+      type !== "filler" &&
+      type !== "particle definition",
   );
-  redefineSetWithTypes(prepositionSet, "preposition");
+  redefineSetWithType(prepositionSet, "preposition");
   redefineSet(
     preverbSet,
     (definition) =>
       (definition.type === "verb" && definition.predicateType != null) ||
       definition.type === "modal verb",
   );
-  redefineSetWithTypes(fillerSet, "filler");
-  redefineSetWithTypes(numeralSet, "numeral");
+  redefineSetWithType(fillerSet, "filler");
+  redefineSetWithType(numeralSet, "numeral");
   redefineSet(tokiPonaWordSet, () => true);
 }
 function redefineSet(
@@ -62,9 +62,9 @@ function redefineSet(
     }
   }
 }
-function redefineSetWithTypes(
+function redefineSetWithType(
   set: Set<string>,
-  type: Definition["type"],
+  compareType: Definition["type"],
 ): void {
-  redefineSet(set, (definition) => definition.type === type);
+  redefineSet(set, ({ type }) => type === compareType);
 }

@@ -62,15 +62,13 @@ export function partialVerb(
     });
   const preposition = ArrayResult.combine(
     ...definition.indirectObject
-      .flatMap((indirectObject) =>
+      .flatMap(({ object, preposition }) =>
         noun({
-          definition: indirectObject.object,
+          definition: object,
           reduplicationCount: 1,
           emphasis: false,
         })
-          .map((object) =>
-            nounAsPreposition(object, indirectObject.preposition)
-          )
+          .map((object) => nounAsPreposition(object, preposition))
       ),
   );
   return ArrayResult.combine(object, preposition)
@@ -100,7 +98,8 @@ export function everyPartialVerb(
 export function forObject(verb: PartialCompoundVerb): boolean | string {
   const [{ forObject }, ...rest] = everyPartialVerb(verb);
   if (
-    forObject !== false && rest.every((verb) => forObject === verb.forObject)
+    forObject !== false &&
+    rest.every(({ forObject: otherForObject }) => forObject === otherForObject)
   ) {
     return forObject;
   } else {
@@ -163,11 +162,11 @@ export function fromVerbForms(
       verb = new ArrayResult([{ modal: null, infinite: present }]);
       break;
   }
-  return verb.map((verb) => {
+  return verb.map(({ modal, infinite }) => {
     return {
-      modal: mapNullable(verb.modal, unemphasized),
+      modal: mapNullable(modal, unemphasized),
       finite: [],
-      infinite: word({ ...options, word: verb.infinite }),
+      infinite: word({ ...options, word: infinite }),
     };
   });
 }

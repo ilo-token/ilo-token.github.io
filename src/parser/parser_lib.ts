@@ -265,9 +265,9 @@ export function withSource<T>(
   parser: Parser<T>,
 ): Parser<readonly [value: T, source: string]> {
   return new Parser((src) =>
-    parser.unmemoizedParser(src).map((value) => ({
-      value: [value.value, src.slice(0, src.length - value.rest.length)],
-      rest: value.rest,
+    parser.unmemoizedParser(src).map(({ value, rest }) => ({
+      value: [value, src.slice(0, src.length - rest.length)],
+      rest,
     }))
   );
 }

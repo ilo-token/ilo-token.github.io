@@ -36,7 +36,7 @@ const REDUNDANCY_UPDATER: Updater<RedundancySettings> = {
       ? value as RedundancySettings
       : null,
   stringify: (value) => value,
-  load: (input) => input.value as RedundancySettings,
+  load: ({ value }) => value as RedundancySettings,
   set: (input, value) => {
     input.value = value;
   },

@@ -10,8 +10,8 @@ const RULES = build_rules(LINKU);
 export function errors(text) {
   return new ParserWithCallbacks(RULES, false)
     .tokenize(text)
-    .filter((token) => RULES[token.ruleName].category === "error")
-    .map((token) =>
-      `"${escape(token.text)}" ${getMessage(token.ruleName, token.match)}`
+    .filter(({ ruleName }) => RULES[ruleName].category === "error")
+    .map(({ text, match }) =>
+      `"${escape(text)}" ${getMessage(token.ruleName, match)}`
     );
 }

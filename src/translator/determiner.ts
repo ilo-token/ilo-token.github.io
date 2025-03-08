@@ -10,21 +10,19 @@ import { word } from "./word.ts";
 function prettyPrintDeterminers(
   determiners: ReadonlyArray<English.Determiner>,
 ): string {
-  return `(${
-    determiners.map((determiner) => determiner.determiner).join(` `)
-  })`;
+  return `(${determiners.map(({ determiner }) => determiner).join(` `)})`;
 }
 function filterKind(
   determiners: ReadonlyArray<English.Determiner>,
   kinds: ReadonlyArray<Dictionary.DeterminerType>,
 ): ReadonlyArray<English.Determiner> {
-  return determiners.filter((determiner) => kinds.includes(determiner.kind));
+  return determiners.filter(({ kind }) => kinds.includes(kind));
 }
 function filterQuantity(
   determiners: ReadonlyArray<English.Determiner>,
-  quantity: Dictionary.Quantity,
+  targetQuantity: Dictionary.Quantity,
 ): ReadonlyArray<English.Determiner> {
-  return determiners.filter((determiner) => determiner.quantity === quantity);
+  return determiners.filter(({ quantity }) => quantity === targetQuantity);
 }
 function check(
   quantities: ReadonlyArray<Dictionary.Quantity>,
@@ -37,7 +35,7 @@ function check(
 export function findNumber(
   determiners: ReadonlyArray<English.Determiner>,
 ): Dictionary.Quantity {
-  const quantities = determiners.map((determiner) => determiner.quantity);
+  const quantities = determiners.map(({ quantity }) => quantity);
   if (quantities.every((quantity) => quantity === `both`)) {
     return "both";
   } else if (check(quantities, "singular", "plural")) {

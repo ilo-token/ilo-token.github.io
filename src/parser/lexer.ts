@@ -133,7 +133,7 @@ const cartoucheElement = choiceOnlyOne(
         throw new UnrecognizedError("excess dots");
       }
     }),
-  singleUcsurWord.map((word) => word[0]),
+  singleUcsurWord.map(([letter]) => letter),
   match(/[a-zA-Z]/, "Latin letter")
     .map((letter) => letter.toLowerCase())
     .skip(spaces),
@@ -160,8 +160,7 @@ function longContainer<T>(
 ): Parser<T> {
   return specificSpecialUcsur(left)
     .with(inside)
-    .skip(specificSpecialUcsur(right))
-    .map((inside) => inside);
+    .skip(specificSpecialUcsur(right));
 }
 const longSpaceContainer = longContainer(
   START_OF_LONG_GLYPH,

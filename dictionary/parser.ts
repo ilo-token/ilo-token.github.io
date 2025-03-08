@@ -68,8 +68,7 @@ const unescapedWord = allAtLeastOnce(
     match(WORDS, "word"),
     backtick
       .with(character)
-      .skip(backtick)
-      .map((character) => character),
+      .skip(backtick),
     comment.map(() => ""),
   ),
 )

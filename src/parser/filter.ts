@@ -28,34 +28,34 @@ export const WORD_UNIT_RULES: ReadonlyArray<(wordUnit: WordUnit) => boolean> = [
 ];
 export const NANPA_RULES: ReadonlyArray<(nanpa: Nanpa) => boolean> = [
   // disallow "nanpa ala nanpa"
-  (modifier) =>
-    modifier.nanpa.type !== "x ala x" ||
+  ({ nanpa: { type } }) =>
+    type !== "x ala x" ||
     throwError(new UnrecognizedError('"nanpa ala nanpa"')),
 
   // nanpa construction cannot contain preposition
-  (modifier) =>
-    modifier.phrase.type !== "preposition" ||
+  ({ phrase: { type } }) =>
+    type !== "preposition" ||
     throwError(new UnrecognizedError("preposition inside nanpa")),
 
   // nanpa construction cannot contain preverb
-  (modifier) =>
-    modifier.phrase.type !== "preverb" ||
+  ({ phrase: { type } }) =>
+    type !== "preverb" ||
     throwError(new UnrecognizedError("preverb inside nanpa")),
 
   // nanpa construction cannot contain pi
-  (modifier) =>
-    modifier.phrase.type !== "default" ||
-    modifier.phrase.modifiers.every((modifier) => modifier.type !== "pi") ||
+  ({ phrase }) =>
+    phrase.type !== "default" ||
+    phrase.modifiers.every(({ type }) => type !== "pi") ||
     throwError(new UnrecognizedError("pi inside nanpa")),
 
   // nanpa construction cannot contain nanpa
-  (modifier) =>
-    modifier.phrase.type !== "default" ||
-    modifier.phrase.modifiers.every((modifier) => modifier.type !== "nanpa") ||
+  ({ phrase }) =>
+    phrase.type !== "default" ||
+    phrase.modifiers.every(({ type }) => type !== "nanpa") ||
     throwError(new UnrecognizedError("nanpa inside nanpa")),
 
   // nanpa cannot have emphasis particle
-  (modifier) => modifier.phrase.emphasis == null,
+  ({ phrase: { emphasis } }) => emphasis == null,
 ];
 export const MODIFIER_RULES: ReadonlyArray<(modifier: Modifier) => boolean> = [
   // pi cannot contain preposition
@@ -101,18 +101,18 @@ export const MULTIPLE_MODIFIERS_RULES: ReadonlyArray<
 > = [
   // // no multiple pi
   // (modifiers) =>
-  //   modifiers.filter((modifier) => modifier.type === "pi").length <= 1 ||
+  //   modifiers.filter(({type}) => type === "pi").length <= 1 ||
   //   throwError(new UnrecognizedError("multiple pi")),
 
   // no multiple nanpa
   (modifiers) =>
-    modifiers.filter((modifier) => modifier.type === "nanpa").length <= 1 ||
+    modifiers.filter(({ type }) => type === "nanpa").length <= 1 ||
     throwError(new UnrecognizedError("multiple nanpa")),
 
   // no multiple proper words
   (modifiers) =>
     modifiers
-        .filter((modifier) => modifier.type === "proper words")
+        .filter(({ type }) => type === "proper words")
         .length <= 1 ||
     throwError(new UnrecognizedError("multiple proper words")),
 
@@ -188,7 +188,7 @@ export const PHRASE_RULE: ReadonlyArray<(phrase: Phrase) => boolean> = [
     if (
       phrase.emphasis == null ||
       everyWordUnitInPhrase(phrase)
-        .every((wordUnit) => wordUnit.emphasis == null)
+        .every(({ emphasis }) => emphasis == null)
     ) {
       return true;
     } else {
@@ -224,7 +224,7 @@ export const PREPOSITION_RULE: ReadonlyArray<(phrase: Preposition) => boolean> =
     (preposition) =>
       preposition.emphasis == null ||
       everyWordUnitInPreposition(preposition)
-        .every((wordUnit) => wordUnit.emphasis == null) ||
+        .every(({ emphasis }) => emphasis == null) ||
       throwError(new UnrecognizedError("nested emphasis")),
   ];
 export const CLAUSE_RULE: ReadonlyArray<(clause: Clause) => boolean> = [
@@ -320,7 +320,7 @@ export const SENTENCE_RULE: ReadonlyArray<(sentence: Sentence) => boolean> = [
 
   // There can't be more than 1 "x ala x" or "seme"
   (sentence) => {
-    if (sentence.interrogative) {
+    if (sentence.interrogative != null) {
       const interrogative = everyWordUnitInSentence(sentence)
         .filter((wordUnit) => {
           switch (wordUnit.type) {
@@ -347,7 +347,7 @@ export const MULTIPLE_SENTENCES_RULE: ReadonlyArray<
 > = [
   // Only allow at most 2 sentences
   (sentences) =>
-    sentences.filter((sentence) => sentence.type !== "filler").length <= 2 ||
+    sentences.filter(({ type }) => type !== "filler").length <= 2 ||
     throwError(new UnrecognizedError("multiple sentences")),
 ];
 export function filter<T>(
