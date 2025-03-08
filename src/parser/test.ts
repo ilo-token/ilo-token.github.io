@@ -206,7 +206,7 @@ Deno.test("AST all distinct", () => {
 
 // Examples taken from https://telo-misikeke.gitlab.io/
 const MALFORMED_SENTENCES = [
-  "pana e lukin pi ilo ni tawa sini.",
+  "mi jan Nikola, li kama pana e lukin pi ilo ni tawa sini.",
   "mi pona, taso, toki mi li ken pi ike.",
   "pona la, mi li jo e ilo ni a!",
   "Mi pana e ilo ni tawa sina kepeken ilo",
