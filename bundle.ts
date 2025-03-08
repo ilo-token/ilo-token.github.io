@@ -8,10 +8,10 @@ const WATCH = [
   "./dictionary/misc.ts",
   "./dictionary/parser.ts",
   "./dictionary/type.ts",
-  "./telo_misikeke/linku-data.json",
+  "./telo_misikeke/linku_data.json",
   "./telo_misikeke/Parser.js",
   "./telo_misikeke/rules.js",
-  "./telo_misikeke/telo-misikeke.js",
+  "./telo_misikeke/telo_misikeke.js",
   "./src/",
   "./project-data.json",
 ];
