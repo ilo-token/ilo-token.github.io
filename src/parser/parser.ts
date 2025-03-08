@@ -574,7 +574,6 @@ const clause = choice<Clause>(
       prepositions,
     })),
   subjectPhrases
-    .filter((phrases) => phrases.type !== "single")
     .map((phrases) => ({ type: "phrases", phrases })),
   subjectPhrases
     .skip(specificWord("o"))
@@ -733,3 +732,5 @@ export const parse = spaces
   .parser();
 
 Parser.endCache();
+
+console.log(subjectPhrases.parser()("tomo waso").unwrap());
