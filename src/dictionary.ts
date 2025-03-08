@@ -56,8 +56,8 @@ function redefineSet(
   filter: (definition: Definition) => boolean,
 ): void {
   set.clear();
-  for (const [word, entry] of dictionary) {
-    if (entry.definitions.some(filter)) {
+  for (const [word, { definitions }] of dictionary) {
+    if (definitions.some(filter)) {
       set.add(word);
     }
   }
