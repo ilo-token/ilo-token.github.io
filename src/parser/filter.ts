@@ -27,7 +27,7 @@ export const WORD_UNIT_RULES: ReadonlyArray<(wordUnit: WordUnit) => boolean> = [
     throwError(new UnrecognizedError('"seme ala seme"')),
 ];
 export const NANPA_RULES: ReadonlyArray<(nanpa: Nanpa) => boolean> = [
-  // disallow _nanpa ala nanpa_
+  // disallow "nanpa ala nanpa"
   (modifier) =>
     modifier.nanpa.type !== "x ala x" ||
     throwError(new UnrecognizedError('"nanpa ala nanpa"')),
