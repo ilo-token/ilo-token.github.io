@@ -32,30 +32,8 @@ import {
   VerbForms,
 } from "./type.ts";
 
-const RESERVED_SYMBOLS = [
-  "#",
-  "(",
-  ")",
-  "*",
-  "+",
-  "/",
-  ":",
-  ";",
-  "<",
-  "=",
-  ">",
-  "@",
-  "[",
-  "\\",
-  "]",
-  "^",
-  "`",
-  "{",
-  "|",
-  "}",
-  "~",
-];
-const WORDS = new RegExp(`[^${escapeRegex(RESERVED_SYMBOLS.join(""))}]`);
+const RESERVED_SYMBOLS = "#()*+/:;<=>@[\\]^`{|}~";
+const WORDS = new RegExp(`[^${escapeRegex(RESERVED_SYMBOLS)}]`);
 
 const comment = match(/#[^\n\r]*/, "comment");
 const spaces = sourceOnly(all(choiceOnlyOne(match(/\s/, "space"), comment)));
