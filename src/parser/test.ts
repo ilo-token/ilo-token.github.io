@@ -1,4 +1,5 @@
 import { assertNotEquals } from "@std/assert/not-equals";
+import { assertThrows } from "@std/assert/throws";
 import { uniquePairs } from "../misc.ts";
 import { parse } from "./parser.ts";
 
@@ -200,5 +201,28 @@ Deno.test("AST all distinct", () => {
     for (const [a, b] of pairs) {
       assertNotEquals(a, b, `Error at "${sentence}"`);
     }
+  }
+});
+
+// Examples taken from https://telo-misikeke.gitlab.io/
+const MALFORMED_SENTENCES = [
+  "pana e lukin pi ilo ni tawa sini.",
+  "mi pona, taso, toki mi li ken pi ike.",
+  "pona la, mi li jo e ilo ni a!",
+  "Mi pana e ilo ni tawa sina kepeken ilo",
+  "ilo mi pona e toki pi jan ale.",
+  "ni li pi pona mute a!",
+  "pi pona mute.",
+  "lipu sina li pakala en ike la, ilo mi li ken pona e ona.",
+  "mi en sina ken lukin e ilo mi.",
+  "mi wile pona e lipu mi en lipu sina",
+  "jan ale li li ken toki tawa mi.",
+  "jan li o toki tawa mi a!",
+  "toki e mi li pona tawa mi.",
+];
+
+Deno.test("parser all error", () => {
+  for (const sentence of MALFORMED_SENTENCES) {
+    assertThrows(() => parse(sentence).unwrap());
   }
 });
