@@ -1,6 +1,7 @@
 import { denoPlugins } from "@luca/esbuild-deno-loader";
 import { debounce } from "@std/async/debounce";
 import * as ESBuild from "esbuild";
+import * as Dictionary from "./dictionary/build.ts";
 
 const WATCH = [
   "./dictionary/build.ts",
@@ -33,14 +34,12 @@ async function buildAll(
   options: Readonly<{
     minify: boolean;
     buildDictionary: boolean;
-    checkDictionary?: boolean;
   }>,
 ): Promise<void> {
-  const { minify, buildDictionary, checkDictionary } = options;
+  const { minify, buildDictionary } = options;
   try {
     if (buildDictionary) {
-      const Dictionary = await import("./dictionary/build.ts");
-      await Dictionary.build(checkDictionary ?? true);
+      await Dictionary.build();
     }
     // deno-lint-ignore no-console
     console.log("Building main.js...");
@@ -67,11 +66,7 @@ if (import.meta.main) {
       let dictionaryChanged = false;
       const buildDebounced = debounce((buildDictionary: boolean) => {
         task = task.then(async () => {
-          await buildAll({
-            minify: false,
-            buildDictionary,
-            checkDictionary: false,
-          });
+          await buildAll({ minify: false, buildDictionary });
           dictionaryChanged = false;
         });
       }, 500);
