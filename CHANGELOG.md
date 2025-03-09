@@ -7,20 +7,19 @@ NOTE: Before publishing:
 - Remove details
 -->
 
+<!--
 <details>
-
 <summary>On development changelog</summary>
-
-## 0.5.1 (On development)
-
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
+</details>
+-->
+
+## 0.5.1
 
 - Fix adverb placement within verbs: "sina o lape pona" can now translate into
   "You should nicely sleep" instead of "You nicely should sleep".
 - Fix "token is not defined" bug when telo misikeke error messages is turned on.
-
-</details>
 
 ## 0.5.0
 
