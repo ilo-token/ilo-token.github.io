@@ -168,10 +168,10 @@ export function fromVerbForms(
       verb = new ArrayResult([{ modal: null, verb: present }]);
       break;
   }
-  return verb.map(({ modal, verb: infinite }) => {
+  return verb.map(({ modal, verb }) => {
     return {
       modal: mapNullable(modal, unemphasized),
-      first: word({ ...options, word: infinite }),
+      first: word({ ...options, word: verb }),
       rest: [],
     };
   });
