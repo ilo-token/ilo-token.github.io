@@ -1,8 +1,9 @@
 import * as Dictionary from "../../dictionary/type.ts";
 import { ArrayResult } from "../array_result.ts";
-import { mapNullable } from "../misc.ts";
+import { mapNullable, nullableAsArray } from "../misc.ts";
 import { settings } from "../settings.ts";
 import * as English from "./ast.ts";
+import { FilteredOutError } from "./error.ts";
 import { condense } from "./misc.ts";
 import { noun } from "./noun.ts";
 import { nounAsPreposition } from "./preposition.ts";
@@ -42,6 +43,44 @@ export function condenseVerb(present: string, past: string): string {
   const [first, ...rest] = present.split(" ");
   const second = past.split(" ")[0];
   return [condense(first, second), ...rest].join(" ");
+}
+export function addModal(modal: English.Word, verb: PartialVerb): PartialVerb {
+  if (verb.modal == null) {
+    const newRest = nullableAsArray(verb.first)
+      .map(({ presentPlural }) => presentPlural)
+      .map((verb) => verb === "are" ? "be" : verb)
+      .map((newVerb) =>
+        word({
+          word: newVerb,
+          reduplicationCount: verb.reduplicationCount,
+          emphasis: verb.wordEmphasis,
+        })
+      );
+    return {
+      ...verb,
+      modal,
+      first: null,
+      rest: [...newRest, ...verb.rest],
+      reduplicationCount: 1,
+      wordEmphasis: false,
+    };
+  } else {
+    throw new FilteredOutError("nested modal verb");
+  }
+}
+export function addModalToAll(
+  modal: English.Word,
+  verb: PartialCompoundVerb,
+): PartialCompoundVerb {
+  switch (verb.type) {
+    case "simple":
+      return { ...addModal(modal, verb), type: "simple" };
+    case "compound":
+      return {
+        ...verb,
+        verb: verb.verb.map((verb) => addModalToAll(modal, verb)),
+      };
+  }
 }
 export function partialVerb(
   options: Readonly<{

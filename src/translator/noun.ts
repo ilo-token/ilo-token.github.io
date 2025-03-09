@@ -126,3 +126,11 @@ export function nounAsPlainString(
   return noun({ definition, reduplicationCount: 1, emphasis: false })
     .map((noun) => EnglishComposer.noun(noun, 0));
 }
+export function perspective(noun: English.NounPhrase): Dictionary.Perspective {
+  switch (noun.type) {
+    case "simple":
+      return noun.perspective;
+    case "compound":
+      return "third";
+  }
+}
