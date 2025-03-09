@@ -49,8 +49,8 @@ function phraseClause(
                 adverb: [],
                 verb: {
                   modal: null,
-                  finite: [],
-                  infinite: unemphasized("is"),
+                  first: unemphasized("is"),
+                  rest: [],
                 },
                 subjectComplement: {
                   type: "adjective",

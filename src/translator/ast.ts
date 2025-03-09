@@ -47,8 +47,9 @@ export type Complement =
   | Readonly<{ type: "adjective"; adjective: AdjectivePhrase }>;
 export type Verb = Readonly<{
   modal: null | Word;
-  finite: ReadonlyArray<Word>;
-  infinite: Word;
+  // TODO: better name
+  first: null | Word;
+  rest: ReadonlyArray<Word>;
 }>;
 export type VerbPhrase =
   | Readonly<{

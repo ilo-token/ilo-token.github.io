@@ -127,46 +127,46 @@ export function fromVerbForms(
     quantity !== "singular" || (!is && perspective !== "third")
       ? [pastPlural, verbForms.presentPlural]
       : [pastSingular, presentSingular];
-  let verb: ArrayResult<{ modal: null | string; infinite: string }>;
+  let verb: ArrayResult<{ modal: null | string; verb: string }>;
   switch (settings.tense) {
     case "condensed":
       if (is) {
         if (quantity === "condensed") {
           verb = new ArrayResult([{
             modal: null,
-            infinite: "is/are/was/were/will be",
+            verb: "is/are/was/were/will be",
           }]);
         } else {
           verb = new ArrayResult([{
             modal: null,
-            infinite: `${present}/${past}/will be`,
+            verb: `${present}/${past}/will be`,
           }]);
         }
       } else {
         verb = new ArrayResult([{
           modal: "(will)",
-          infinite: condenseVerb(present, past),
+          verb: condenseVerb(present, past),
         }]);
       }
       break;
     case "both": {
       const future = is ? "be" : verbForms.presentPlural;
       verb = new ArrayResult([
-        { modal: null, infinite: present },
-        { modal: null, infinite: past },
-        { modal: "will", infinite: future },
+        { modal: null, verb: present },
+        { modal: null, verb: past },
+        { modal: "will", verb: future },
       ]);
       break;
     }
     case "default only":
-      verb = new ArrayResult([{ modal: null, infinite: present }]);
+      verb = new ArrayResult([{ modal: null, verb: present }]);
       break;
   }
-  return verb.map(({ modal, infinite }) => {
+  return verb.map(({ modal, verb: infinite }) => {
     return {
       modal: mapNullable(modal, unemphasized),
-      finite: [],
-      infinite: word({ ...options, word: infinite }),
+      first: word({ ...options, word: infinite }),
+      rest: [],
     };
   });
 }

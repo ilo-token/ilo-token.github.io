@@ -84,13 +84,14 @@ export function verb(phrase: English.VerbPhrase, depth: number): string {
   let text: string;
   switch (phrase.type) {
     case "default": {
-      const { modal, finite, infinite } = phrase.verb;
+      const { modal, first, rest } = phrase.verb;
       const verbText = !phrase.hideVerb
         ? [
-          ...nullableAsArray(modal).map(word),
-          ...finite.map(word),
-          word(infinite),
+          ...nullableAsArray(modal),
+          ...nullableAsArray(first),
+          ...rest,
         ]
+          .map(word)
         : [];
       text = [
         ...phrase.adverb.map(word),
