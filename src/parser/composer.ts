@@ -1,15 +1,16 @@
 import { nullableAsArray, repeatWithSpace } from "../misc.ts";
 import {
   Clause,
+  ContextClause,
   Emphasis,
-  FullClause,
+  Filler,
   Modifier,
   MultiplePhrases,
   MultipleSentences,
+  Nanpa,
   Phrase,
   Predicate,
   Preposition,
-  Quotation,
   Sentence,
   SimpleWordUnit,
   WordUnit,
@@ -21,17 +22,23 @@ export function emphasis(emphasis: Emphasis): string {
       return emphasis.word;
     case "long word":
       return emphasis.word.repeat(emphasis.length);
-    case "multiple a":
-      return repeatWithSpace("a", emphasis.count);
   }
 }
-function emphasisAsArray(value: null | Emphasis): Array<string> {
+export function filler(filler: Filler): string {
+  switch (filler.type) {
+    case "multiple a":
+      return repeatWithSpace("a", filler.count);
+    default:
+      return emphasis(filler);
+  }
+}
+function emphasisAsArray(value: null | Emphasis): ReadonlyArray<string> {
   return nullableAsArray(value).map(emphasis);
 }
 export function simpleWordUnit(wordUnit: SimpleWordUnit): string {
   switch (wordUnit.type) {
     case "number":
-      return `${wordUnit.number}`;
+      return wordUnit.words.join(" ");
     case "default":
       return wordUnit.word;
     case "x ala x":
@@ -47,6 +54,9 @@ export function wordUnit(wordUnit: WordUnit): string {
   ]
     .join(" ");
 }
+export function nanpa(nanpa: Nanpa): string {
+  return `${wordUnit(nanpa.nanpa)} ${phrase(nanpa.phrase)}`;
+}
 export function modifier(modifier: Modifier): string {
   switch (modifier.type) {
     case "default":
@@ -56,9 +66,7 @@ export function modifier(modifier: Modifier): string {
     case "pi":
       return `pi ${phrase(modifier.phrase)}`;
     case "nanpa":
-      return `${wordUnit(modifier.nanpa)} ${phrase(modifier.phrase)}`;
-    case "quotation":
-      return quotation(modifier);
+      return nanpa(modifier);
   }
 }
 export function phrase(value: Phrase): string {
@@ -80,8 +88,6 @@ export function phrase(value: Phrase): string {
         .join(" ");
     case "preposition":
       return preposition(value);
-    case "quotation":
-      return quotation(value);
   }
 }
 function particle(type: "and conjunction" | "anu", particle: string): string {
@@ -125,7 +131,7 @@ export function multiplePredicates(
     case "associated": {
       return [
         multiplePhrases(predicates.predicates, andParticle),
-        ...nullableAsArray(predicates.objects).map((_) => "e"),
+        ...nullableAsArray(predicates.objects).map(() => "e"),
         ...nullableAsArray(predicates.objects)
           .map((objects) => multiplePhrases(objects, "e")),
         ...predicates.prepositions.map(preposition),
@@ -146,12 +152,7 @@ export function clause(clause: Clause): string {
     case "o vocative":
       return `${multiplePhrases(clause.phrases, "en")} o`;
     case "li clause": {
-      let li: Array<string>;
-      if (clause.explicitLi) {
-        li = ["li"];
-      } else {
-        li = [];
-      }
+      const li = clause.explicitLi ? ["li"] : [];
       return [
         multiplePhrases(clause.subjects, "en"),
         ...li,
@@ -169,38 +170,38 @@ export function clause(clause: Clause): string {
         .join(" ");
     case "prepositions":
       return clause.prepositions.map(preposition).join(" ");
-    case "quotation":
-      throw new Error();
   }
 }
-export function fullClause(value: FullClause): string {
-  switch (value.type) {
-    case "default":
-      return [
-        ...emphasisAsArray(value.startingParticle),
-        ...nullableAsArray(value.kinOrTaso).map(wordUnit),
-        clause(value.clause),
-        ...nullableAsArray(value.anuSeme)
-          .map(wordUnit)
-          .map((word) => `anu ${word}`),
-        ...emphasisAsArray(value.endingParticle),
-      ]
-        .join(" ");
-    case "filler":
-      return emphasis(value.emphasis);
+export function contextClause(contextClause: ContextClause): string {
+  switch (contextClause.type) {
+    case "nanpa":
+      return nanpa(contextClause);
+    default:
+      return clause(contextClause);
   }
 }
 export function sentence(sentence: Sentence): string {
-  const text = [
-    ...sentence.laClauses.map(fullClause).map((clause) => `${clause} la`),
-    fullClause(sentence.finalClause),
-  ]
-    .join(" ");
+  let text: string;
+  switch (sentence.type) {
+    case "default":
+      text = [
+        ...nullableAsArray(sentence.kinOrTaso).map(wordUnit),
+        ...sentence.laClauses
+          .map(contextClause)
+          .map((clause) => `${clause} la`),
+        clause(sentence.finalClause),
+        ...nullableAsArray(sentence.anuSeme)
+          .map(wordUnit)
+          .map((word) => `anu ${word}`),
+        ...emphasisAsArray(sentence.emphasis),
+      ]
+        .join(" ");
+      break;
+    case "filler":
+      text = filler(sentence.filler);
+      break;
+  }
   return `${text}${sentence.punctuation}`;
-}
-export function quotation(quotation: Quotation): string {
-  const text = quotation.sentences.map(sentence).join(" ");
-  return `${quotation.leftMark}${text}${quotation.rightMark}`;
 }
 export function multipleSentences(sentences: MultipleSentences): string {
   switch (sentences.type) {

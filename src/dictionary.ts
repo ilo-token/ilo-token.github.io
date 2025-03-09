@@ -1,7 +1,6 @@
 import { dictionary as globalDictionary } from "../dictionary/dictionary.ts";
 import { parseDictionary } from "../dictionary/parser.ts";
 import { Definition, Dictionary } from "../dictionary/type.ts";
-import { ArrayResultError } from "./array-result.ts";
 
 const customDictionary: Dictionary = new Map();
 export const dictionary: Dictionary = new Map();
@@ -9,18 +8,12 @@ export const dictionary: Dictionary = new Map();
 export const contentWordSet: Set<string> = new Set();
 export const prepositionSet: Set<string> = new Set();
 export const preverbSet: Set<string> = new Set();
+export const fillerSet: Set<string> = new Set();
+export const numeralSet: Set<string> = new Set();
 export const tokiPonaWordSet: Set<string> = new Set();
 
 update();
 
-/** Represents Error due to missing dictionary entry */
-export class MissingEntryError extends ArrayResultError {
-  constructor(kind: string, word: string) {
-    super(`${kind} definition for the word "${word}" is missing`);
-    this.name = "MissingEntryError";
-  }
-}
-/** Updates custom dictionary. */
 export function loadCustomDictionary(dictionaryText: string): void {
   const dictionary = parseDictionary(dictionaryText);
   customDictionary.clear();
@@ -31,44 +24,47 @@ export function loadCustomDictionary(dictionaryText: string): void {
 }
 function update(): void {
   dictionary.clear();
-  for (
-    const word of new Set([
-      ...globalDictionary.keys(),
-      ...customDictionary.keys(),
-    ])
-  ) {
+  const words = new Set([
+    ...globalDictionary.keys(),
+    ...customDictionary.keys(),
+  ]);
+  for (const word of words) {
     const entry = customDictionary.get(word) ?? globalDictionary.get(word)!;
     if (entry.definitions.length > 0) {
       dictionary.set(word, entry);
     }
   }
-  for (
-    const set of [contentWordSet, prepositionSet, preverbSet, tokiPonaWordSet]
-  ) {
-    set.clear();
-  }
-  addSet(
+  redefineSet(
     contentWordSet,
-    (definition) =>
-      definition.type !== "filler" &&
-      definition.type !== "particle definition",
+    ({ type }) =>
+      type !== "filler" &&
+      type !== "particle definition",
   );
-  addSet(prepositionSet, (definition) => definition.type === "preposition");
-  addSet(
+  redefineSetWithType(prepositionSet, "preposition");
+  redefineSet(
     preverbSet,
     (definition) =>
       (definition.type === "verb" && definition.predicateType != null) ||
       definition.type === "modal verb",
   );
-  addSet(tokiPonaWordSet, () => true);
+  redefineSetWithType(fillerSet, "filler");
+  redefineSetWithType(numeralSet, "numeral");
+  redefineSet(tokiPonaWordSet, () => true);
 }
-function addSet(
+function redefineSet(
   set: Set<string>,
   filter: (definition: Definition) => boolean,
 ): void {
-  for (const [word, entry] of dictionary) {
-    if (entry.definitions.some(filter)) {
+  set.clear();
+  for (const [word, { definitions }] of dictionary) {
+    if (definitions.some(filter)) {
       set.add(word);
     }
   }
+}
+function redefineSetWithType(
+  set: Set<string>,
+  type: Definition["type"],
+): void {
+  redefineSet(set, ({ type: compareType }) => compareType === type);
 }

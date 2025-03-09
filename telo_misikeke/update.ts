@@ -1,12 +1,10 @@
-/** Codes for updating telo misikeke and Linku data. */
-
 import { retry } from "@std/async/retry";
 import { assertOk } from "../src/misc.ts";
 
 const TELO_MISIKEKE_URL =
   "https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/-/raw/main/";
 const LINKU_URL = "https://api.linku.la/v1/words";
-const LINKU_DESTINATION = new URL("./linku-data.json", import.meta.url);
+const LINKU_DESTINATION = new URL("./linku_data.json", import.meta.url);
 const SOURCE = [
   {
     source: new URL("./public/rules.js", TELO_MISIKEKE_URL),
@@ -30,7 +28,7 @@ const COMMONJS_EXPORT =
 async function buildCode(
   source: URL,
   destination: URL,
-  exportItems: Array<string>,
+  exportItems: ReadonlyArray<string>,
 ): Promise<void> {
   const response = assertOk(await retry(() => fetch(source)));
   const rawCode = await response.text();
@@ -40,8 +38,7 @@ async function buildCode(
   }
   const exports = exportItems.join(", ");
   const code = `\
-// This code is from
-// ${source}
+// This code is from ${source}
 //
 // Repository: https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/
 // Copyright (c) 2023 Nicolas Hurtubise
@@ -57,26 +54,28 @@ export { ${exports} };
 async function buildSonaLinku(): Promise<void> {
   const response = assertOk(await retry(() => fetch(LINKU_URL)));
   const json = await response.json();
-  const processedJson = parseLipuLinku(json);
   await Deno.writeTextFile(
     LINKU_DESTINATION,
-    JSON.stringify(processedJson, undefined, 2),
+    `${JSON.stringify(parseLipuLinku(json), undefined, 2)}\n`,
   );
 }
 function parseLipuLinku(
   data: { [word: string]: { usage_category: string } },
-): [string, string][] {
+): ReadonlyArray<readonly [word: string, usageCategory: string]> {
   return Object.entries(data)
-    .map<[string, string]>(([word, data]) => [word, data.usage_category])
+    .map<readonly [word: string, usageCategory: string]>(
+      ([word, data]) => [word, data.usage_category],
+    )
     .filter(([_, category]) => category !== "sandbox");
 }
 if (import.meta.main) {
   await Promise.all([
     buildSonaLinku(),
     ...SOURCE
-      .map((file) =>
-        buildCode(file.source, file.destination, file.exportItems)
+      .map(({ source, destination, exportItems }) =>
+        buildCode(source, destination, exportItems)
       ),
   ]);
+  // deno-lint-ignore no-console
   console.log("Updated telo misikeke.");
 }

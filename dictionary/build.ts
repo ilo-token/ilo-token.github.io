@@ -35,6 +35,7 @@ export async function build(checkFile: boolean): Promise<void> {
       }
     }
   }
+  // deno-lint-ignore no-console
   console.log("Building dictionary...");
   const text = await currentPromise;
   const json = JSON.stringify(
@@ -55,5 +56,6 @@ export const original = ${original};
   await Deno.writeTextFile(DESTINATION, code);
 }
 if (import.meta.main) {
-  await build(true);
+  const checkFile = true;
+  await build(checkFile);
 }

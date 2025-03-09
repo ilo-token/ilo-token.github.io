@@ -1,5 +1,5 @@
 import * as Dictionary from "../../dictionary/type.ts";
-import { ArrayResult } from "../array-result.ts";
+import { ArrayResult } from "../array_result.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";
 import * as EnglishComposer from "./composer.ts";
 import { nounAsPlainString, simpleNounForms } from "./noun.ts";
@@ -14,15 +14,29 @@ export function definitionAsPlainString(
       return nounAsPlainString(definition);
     case "personal pronoun":
       return ArrayResult.concat(
-        pronoun(definition, 1, false, "subject"),
-        pronoun(definition, 1, false, "object"),
+        pronoun({
+          definition,
+          reduplicationCount: 1,
+          emphasis: false,
+          place: "subject",
+        }),
+        pronoun({
+          definition,
+          reduplicationCount: 1,
+          emphasis: false,
+          place: "object",
+        }),
       )
         .map((noun) => EnglishComposer.noun(noun, 0));
     case "adjective":
-      return adjective(definition, 1, null)
+      return adjective({ definition, reduplicationCount: 1, emphasis: null })
         .map((adjective) => EnglishComposer.adjective(adjective, 0));
     case "compound adjective": {
-      return compoundAdjective(definition.adjective, 1, null)
+      return compoundAdjective({
+        adjectives: definition.adjective,
+        reduplicationCount: 1,
+        emphasis: null,
+      })
         .map((adjective) => EnglishComposer.adjective(adjective, 0));
     }
     case "determiner":
@@ -35,7 +49,7 @@ export function definitionAsPlainString(
     case "interjection":
       return new ArrayResult([definition.interjection]);
     case "verb": {
-      return partialVerb(definition, 1, false)
+      return partialVerb({ definition, reduplicationCount: 1, emphasis: false })
         .flatMap((partialVerb) =>
           verb({ ...partialVerb, type: "simple" }, "third", "plural")
         )

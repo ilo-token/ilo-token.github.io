@@ -1,15 +1,10 @@
-/** Module containing the Array Result data type. */
-
-import { distinctBy } from "@std/collections/distinct-by";
-import { flattenError } from "./misc.ts";
+import { flattenError, nullableAsArray } from "./misc.ts";
 
 export type ArrayResultOptions = {
   cause: unknown;
   isHtml: boolean;
 };
-/** Represents Error used by Array Result. */
 export class ArrayResultError extends Error {
-  /** Determines whether the error message contains HTML. */
   isHtml: boolean;
   constructor(message: string, options: Partial<ArrayResultOptions> = {}) {
     super(message, { cause: options.cause });
@@ -17,18 +12,14 @@ export class ArrayResultError extends Error {
     this.name = "ArrayResultError";
   }
 }
-/** Represents Error due to things not implemented yet. */
 export class TodoError extends ArrayResultError {
   constructor(functionality: string) {
     super(`${functionality} is not yet implemented`);
     this.name = "TodoError";
   }
 }
-/** Represents possibilities and error. */
 export class ArrayResult<T> {
-  /** Represents possibilities, considered error when the array is empty. */
   readonly array: ReadonlyArray<T>;
-  /** A list of all aggregated errors. */
   readonly errors: ReadonlyArray<ArrayResultError>;
   constructor(array?: ReadonlyArray<T> | ArrayResultError);
   constructor(array: undefined, errors: ReadonlyArray<ArrayResultError>);
@@ -54,35 +45,24 @@ export class ArrayResult<T> {
   static errors(errors: ReadonlyArray<ArrayResultError>): ArrayResult<never> {
     return new ArrayResult(undefined, errors);
   }
-  /** Returns true when the array is empty */
   isError(): boolean {
     return this.array.length === 0;
   }
-  /** Filters array. For convenience, the mapper function can throw
-   * ArrayResultError; Other kinds of errors will be ignored.
-   */
-  filter(mapper: (value: T) => boolean): ArrayResult<T> {
-    return this.flatMap((value) => {
-      if (mapper(value)) {
-        return new ArrayResult([value]);
-      } else {
-        return new ArrayResult();
-      }
-    });
+  unwrap(): ReadonlyArray<T> {
+    if (this.isError()) {
+      throw new AggregateError(this.errors);
+    } else {
+      return this.array;
+    }
   }
-  /**
-   * Maps all values and returns new ArrayResult. For convenience, the mapper
-   * function can throw ArrayResultError; Other kinds of errors will be ignored.
-   */
+  filter(mapper: (value: T) => boolean): ArrayResult<T> {
+    return this.flatMap((value) =>
+      mapper(value) ? new ArrayResult([value]) : new ArrayResult()
+    );
+  }
   map<U>(mapper: (value: T) => U): ArrayResult<U> {
     return this.flatMap((value) => new ArrayResult([mapper(value)]));
   }
-  /**
-   * Accepts mapper function that returns another ArrayResult. flatMap takes all
-   * values and flattens them into single array for ArrayResult. For convenience,
-   * the mapper function can throw ArrayResultError; Other kinds of errors will be
-   * ignored.
-   */
   flatMap<U>(mapper: (value: T) => ArrayResult<U>): ArrayResult<U> {
     if (this.isError()) {
       return this as unknown as ArrayResult<U>;
@@ -95,14 +75,9 @@ export class ArrayResult<T> {
     }
   }
   filterMap<U>(mapper: (value: T) => U): ArrayResult<NonNullable<U>> {
-    return this.flatMap((value) => {
-      const arrayResult = mapper(value);
-      if (arrayResult == null) {
-        return new ArrayResult();
-      } else {
-        return new ArrayResult([arrayResult]);
-      }
-    });
+    return this.flatMap((value) =>
+      new ArrayResult(nullableAsArray(mapper(value)))
+    );
   }
   sort(comparer: (left: T, right: T) => number): ArrayResult<T> {
     if (this.isError()) {
@@ -114,15 +89,6 @@ export class ArrayResult<T> {
   sortBy(mapper: (value: T) => number): ArrayResult<T> {
     return this.sort((left, right) => mapper(left) - mapper(right));
   }
-  deduplicateErrors(): ArrayResult<T> {
-    if (this.isError()) {
-      return ArrayResult.errors(
-        distinctBy(this.errors, ({ message }) => message),
-      );
-    } else {
-      return this;
-    }
-  }
   addErrorWhenNone(error: () => ArrayResultError): ArrayResult<T> {
     if (this.isError() && this.errors.length === 0) {
       return new ArrayResult(error());
@@ -130,27 +96,21 @@ export class ArrayResult<T> {
       return this;
     }
   }
-  /** Combines all ArrayResult. */
-  static concat<T>(...arrayResults: Array<ArrayResult<T>>): ArrayResult<T> {
+  static concat<T>(
+    ...arrayResults: ReadonlyArray<ArrayResult<T>>
+  ): ArrayResult<T> {
     return arrayResults.reduce(
-      (left, right) => {
-        if (left.isError() && right.isError()) {
-          return ArrayResult.errors([...left.errors, ...right.errors]);
-        } else {
-          return new ArrayResult([...left.array, ...right.array]);
-        }
-      },
+      (left, right) =>
+        left.isError() && right.isError()
+          ? ArrayResult.errors([...left.errors, ...right.errors])
+          : new ArrayResult([...left.array, ...right.array]),
       new ArrayResult<T>(),
     );
   }
-  /**
-   * Combines all permutations of all ArrayResult into an ArrayResult of a single tuple
-   * or array. If some of the ArrayResult is an error, all errors are aggregated.
-   */
-  static combine<T extends Array<unknown>>(
-    ...arrayResults: { [I in keyof T]: ArrayResult<T[I]> } & {
-      length: T["length"];
-    }
+  static combine<T extends ReadonlyArray<unknown>>(
+    ...arrayResults:
+      & Readonly<{ [I in keyof T]: ArrayResult<T[I]> }>
+      & Readonly<{ length: T["length"] }>
   ): ArrayResult<T> {
     // We resorted to using `any` types here, make sure it works properly
     return arrayResults.reduce(
@@ -158,12 +118,11 @@ export class ArrayResult<T> {
         if (left.isError() && right.isError()) {
           return ArrayResult.concat(left, right);
         } else if (left.isError()) {
-          return ArrayResult.errors(left.errors);
+          return left;
         } else if (right.isError()) {
-          return ArrayResult.errors(right.errors);
+          return right;
         } else {
-          return left
-            .flatMap((left) => right.map((right) => [...left, right]));
+          return left.flatMap((left) => right.map((right) => [...left, right]));
         }
       },
       new ArrayResult<any>([[]]),
@@ -173,15 +132,17 @@ export class ArrayResult<T> {
     try {
       return arrayResult();
     } catch (error) {
-      return ArrayResult.errors(extractArrayResultError(error));
+      return ArrayResult.errors(extractArrayResultError(flattenError(error)));
     }
   }
 }
 type Errors =
-  | { type: "array result"; errors: Array<ArrayResultError> }
-  | { type: "outside"; errors: Array<unknown> };
-function extractArrayResultError(error: unknown): Array<ArrayResultError> {
-  const errors = flattenError(error).reduce<Errors>(
+  | Readonly<{ type: "array result"; errors: ReadonlyArray<ArrayResultError> }>
+  | Readonly<{ type: "outside"; errors: ReadonlyArray<unknown> }>;
+export function extractArrayResultError(
+  errors: ReadonlyArray<unknown>,
+): ReadonlyArray<ArrayResultError> {
+  const aggregate = errors.reduce<Errors>(
     (errors, error) => {
       switch (errors.type) {
         case "array result":
@@ -191,12 +152,7 @@ function extractArrayResultError(error: unknown): Array<ArrayResultError> {
             return { type: "outside", errors: [error] };
           }
         case "outside": {
-          let moreError: Array<unknown>;
-          if (error instanceof ArrayResultError) {
-            moreError = [];
-          } else {
-            moreError = [error];
-          }
+          const moreError = error instanceof ArrayResultError ? [] : [error];
           return { type: "outside", errors: [...errors.errors, ...moreError] };
         }
       }
@@ -206,14 +162,14 @@ function extractArrayResultError(error: unknown): Array<ArrayResultError> {
       errors: [],
     },
   );
-  switch (errors.type) {
+  switch (aggregate.type) {
     case "array result":
-      return errors.errors;
+      return aggregate.errors;
     case "outside":
-      if (errors.errors.length === 1) {
-        throw errors.errors[0];
+      if (aggregate.errors.length === 1) {
+        throw aggregate.errors[0];
       } else {
-        throw new AggregateError(errors.errors);
+        throw new AggregateError(aggregate.errors);
       }
   }
 }

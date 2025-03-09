@@ -1,14 +1,8 @@
-/**
- * Module for lexer. It is responsible for turning string into array of token
- * trees. It also latinizes UCSUR characters.
- *
- * Note: the words lexer and parser are used interchangeably since they both
- * have the same capabilities.
- */
-
+import { sumOf } from "@std/collections/sum-of";
 import { settings } from "../settings.ts";
 import { cache } from "./cache.ts";
 import {
+  all,
   allAtLeastOnce,
   choice,
   choiceOnlyOne,
@@ -24,7 +18,14 @@ import {
   sourceOnly,
   UnexpectedError,
   UnrecognizedError,
-} from "./parser-lib.ts";
+} from "./parser_lib.ts";
+import {
+  ELLIPSIS,
+  NSK_COLON,
+  NSK_PERIOD,
+  SENTENCE_TERMINATOR,
+  SENTENCE_TERMINATOR_TO_ASCII,
+} from "./punctuation.ts";
 import { Token } from "./token.ts";
 import {
   END_OF_CARTOUCHE,
@@ -39,150 +40,112 @@ import {
   UCSUR_CHARACTER_REGEX,
   UCSUR_TO_LATIN,
 } from "./ucsur.ts";
+import { throwError } from "../misc.ts";
 
 const spacesWithoutNewline = match(/[^\S\n\r]*/, "spaces");
 const newline = match(/[\n\r]\s*/, "newline");
-/** parses space. */
 const spaces = sourceOnly(
   sequence(spacesWithoutNewline, choice(nothing, newline)),
 );
-/** Parses lowercase latin word. */
 const latinWord = match(/[a-z][a-zA-Z]*/, "word").skip(spaces);
-/** Parses variation selector. */
 const variationSelector = match(/[\uFE00-\uFE0F]/, "variation selector");
-/**
- * Parses UCSUR word, this doesn't parse space and so must be manually added if
- * needed
- */
 const ucsur = match(UCSUR_CHARACTER_REGEX, "UCSUR glyph")
   .map((ucsur) => UCSUR_TO_LATIN.get(ucsur)!);
-/**
- * Parses special UCSUR character, this doesn't parse space and so must be
- * manually added if needed
- */
 function specificSpecialUcsur(specialUcsur: string): Parser<string> {
   return matchString(
     specialUcsur,
     SPECIAL_UCSUR_DESCRIPTIONS.get(specialUcsur)!,
   );
 }
-/** Parses a single UCSUR word. */
 const singleUcsurWord = ucsur.skip(optionalAll(variationSelector)).skip(spaces);
-/** Parses a joiner. */
 const joiner = choiceOnlyOne(
   matchString("\u200D", "zero width joiner"),
   specificSpecialUcsur(STACKING_JOINER),
   specificSpecialUcsur(SCALING_JOINER),
 );
-/**
- * Parses combined glyphs. The spaces after aren't parsed and so must be
- * manually added by the caller.
- */
 const combinedGlyphs = sequence(ucsur, allAtLeastOnce(joiner.with(ucsur)))
   .map(([first, rest]) => [first, ...rest]);
-/** Parses a word, either UCSUR or latin. */
 const word = choiceOnlyOne(latinWord, singleUcsurWord);
-/** Parses proper words spanning multiple words. */
 const properWords = allAtLeastOnce(
   match(/[A-Z][a-zA-Z]*/, "proper word").skip(spaces),
 )
   .map((array) => array.join(" "))
   .map<Token>((words) => ({ type: "proper word", words, kind: "latin" }));
-/** Parses a specific word, either UCSUR or latin. */
 function specificWord(thatWord: string): Parser<string> {
-  return word.filter((thisWord) => {
-    if (thatWord === thisWord) {
-      return true;
-    } else {
-      throw new UnexpectedError(`"${thisWord}"`, `"${thatWord}"`);
-    }
-  });
+  return word.filter((thisWord) =>
+    thatWord === thisWord ||
+    throwError(new UnexpectedError(`"${thisWord}"`, `"${thatWord}"`))
+  );
 }
-/** Parses multiple a. */
-const multipleA = sequence(
-  specificWord("a"),
-  count(allAtLeastOnce(specificWord("a"))),
-)
-  .map<Token>(([_, count]) => ({ type: "multiple a", count: count + 1 }));
-/** Parses lengthened words. */
-const longWord = choiceOnlyOne(matchString("a"), matchString("n"))
-  .then((word) =>
-    count(allAtLeastOnce(matchString(word)))
-      .map<Token>((count) => ({
-        type: "long word",
-        word,
-        length: count + 1,
-      }))
-  )
-  .skip(spaces);
-
-/** Parses X ala X constructions if allowed by the settings. */
-const xAlaX = lazy(() => {
-  if (settings.xAlaXPartialParsing) {
-    return empty;
-  } else {
-    return word
-      .then((word) =>
-        sequence(specificWord("ala"), specificWord(word)).map(() => word)
-      );
-  }
-})
-  .map<Token>((word) => ({ type: "x ala x", word }));
-
-/** Parses a punctuation. */
-const punctuation = choiceOnlyOne(
-  match(/[.,:;?!…·。｡︒\u{F199C}\u{F199D}]+/u, "punctuation")
-    .map((punctuation) =>
-      punctuation
-        .replaceAll(/[·。｡︒\u{F199C}]/gu, ".")
-        .replaceAll("\u{F199D}", ":")
-        .replaceAll("...", "…")
+const multipleA = specificWord("a")
+  .with(count(allAtLeastOnce(specificWord("a"))))
+  .map<Token>((count) => ({ type: "multiple a", count: count + 1 }));
+const repeatingLetter = match(/[a-zA-Z]/, "latin letter")
+  .then((letter) =>
+    count(all(matchString(letter)))
+      .map<readonly [letter: string, number: number]>(
+        (count) => [letter, count + 1],
+      )
+  );
+const longWord = allAtLeastOnce(repeatingLetter)
+  .skip(spaces)
+  .map<Token & { type: "long word" }>((letters) => {
+    const word = letters.map(([letter]) => letter).join("");
+    const length = sumOf(letters, ([_, count]) => count) - word.length + 1;
+    return { type: "long word", word, length };
+  })
+  .filter(({ word }) => /^[a-z]/.test(word))
+  .filter(({ length }) => length > 1);
+const xAlaX = lazy(() =>
+  settings.xAlaXPartialParsing ? empty : word
+    .then((word) =>
+      sequence(specificWord("ala"), specificWord(word)).map(() => word)
     )
-    .skip(spaces),
+)
+  .map<Token>((word) => ({ type: "x ala x", word }));
+const punctuation = choiceOnlyOne(
+  allAtLeastOnce(
+    match(SENTENCE_TERMINATOR, "punctuation")
+      .map((punctuation) => SENTENCE_TERMINATOR_TO_ASCII.get(punctuation)!),
+  )
+    .skip(spaces)
+    .map((punctuation) => punctuation.join("").replaceAll("...", ELLIPSIS)),
   newline.map(() => "."),
 )
   .map<Token>((punctuation) => ({ type: "punctuation", punctuation }));
-/**
- * Parses cartouche element and returns the phonemes or letters it represents.
- */
 const cartoucheElement = choiceOnlyOne(
   singleUcsurWord
-    .skip(match(/[\uFF1A\u{F199D}]/u, "full width colon").skip(spaces)),
+    .skip(match(NSK_COLON, "full width colon").skip(spaces)),
   sequence(
     singleUcsurWord,
     count(
       allAtLeastOnce(
-        match(/[・。／\u{F199C}]/u, "full width dot").skip(spaces),
+        match(NSK_PERIOD, "full width dot").skip(spaces),
       ),
     ),
   )
     .map(([word, dots]) => {
-      let count = dots;
-      if (/^[aeiou]/.test(word)) {
-        count++;
-      }
+      const count = /^[aeiou]/.test(word) ? dots + 1 : dots;
       const morae = word.match(/[aeiou]|[jklmnpstw][aeiou]|n/g)!;
-      if (morae.length < count) {
+      if (count < morae.length) {
+        return morae.slice(0, count).join("");
+      } else {
         throw new UnrecognizedError("excess dots");
       }
-      return morae.slice(0, count).join("");
     }),
-  singleUcsurWord.map((word) => word[0]),
-  match(/[a-zA-Z]+/, "Latin letter")
+  singleUcsurWord.map(([letter]) => letter),
+  match(/[a-zA-Z]/, "Latin letter")
     .map((letter) => letter.toLowerCase())
     .skip(spaces),
 );
-/** Parses a single cartouche. */
-const cartouche = sequence(
-  specificSpecialUcsur(START_OF_CARTOUCHE).skip(spaces),
-  allAtLeastOnce(cartoucheElement),
-  specificSpecialUcsur(END_OF_CARTOUCHE).skip(spaces),
-)
-  .map(([_, words]) => {
-    const word = words.join("");
-    return `${word[0].toUpperCase()}${word.slice(1)}`;
-  });
-/** Parses multiple cartouches. */
+const cartouche = specificSpecialUcsur(START_OF_CARTOUCHE)
+  .skip(spaces)
+  .with(allAtLeastOnce(cartoucheElement))
+  .skip(specificSpecialUcsur(END_OF_CARTOUCHE))
+  .skip(spaces)
+  .map((words) =>
+    words.join("").replace(/^./, (character) => character.toUpperCase())
+  );
 const cartouches = allAtLeastOnce(cartouche)
   .map((words) => words.join(" "))
   .map<Token>((words) => ({
@@ -190,42 +153,25 @@ const cartouches = allAtLeastOnce(cartouche)
     words,
     kind: "cartouche",
   }));
-/**
- * Parses long glyph container.
- *
- * spaces after the first glyph and the last glyph aren't parsed and so must be
- * manually added by the caller if needed.
- */
 function longContainer<T>(
   left: string,
   right: string,
   inside: Parser<T>,
 ): Parser<T> {
-  return sequence(
-    specificSpecialUcsur(left),
-    inside,
-    specificSpecialUcsur(right),
-  )
-    .map(([_, inside]) => inside);
+  return specificSpecialUcsur(left)
+    .with(inside)
+    .skip(specificSpecialUcsur(right));
 }
-/** Parses long glyph container containing just spaces. */
 const longSpaceContainer = longContainer(
   START_OF_LONG_GLYPH,
   END_OF_LONG_GLYPH,
-  spacesWithoutNewline.map((space) => space.length),
+  count(spacesWithoutNewline).filter((length) => length > 0),
 )
   .skip(spaces);
-/**
- * Parses long glyph head.
- *
- * This doesn't parses space on the right and so must be manually added by the
- * caller if needed.
- */
 const longGlyphHead = choiceOnlyOne(
   combinedGlyphs,
   ucsur.map((word) => [word]),
 );
-/** Parses long glyph that only contains spaces. */
 const spaceLongGlyph = sequence(longGlyphHead, longSpaceContainer)
   .map<Token>(([words, spaceLength]) => ({
     type: "space long glyph",
@@ -258,12 +204,10 @@ const wordToken = word.map<Token>((word) => ({ type: "word", word }));
 
 Parser.startCache(cache);
 
-/** Parses a token. */
 export const token = choiceOnlyOne(
-  longWord,
   xAlaX,
   multipleA,
-  wordToken,
+  choice(longWord, wordToken),
   properWords,
   // UCSUR only
   spaceLongGlyph,
@@ -271,11 +215,11 @@ export const token = choiceOnlyOne(
   combinedGlyphsToken,
   // starting with non-words:
   punctuation,
+  cartouches,
   headlessLongGlyphEnd,
   headedLongGlyphEnd,
   headlessLongGlyphStart,
   insideLongGlyph,
-  cartouches,
 );
 
 Parser.endCache();

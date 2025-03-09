@@ -1,4 +1,4 @@
-import { ArrayResultError, TodoError } from "../array-result.ts";
+import { ArrayResultError, TodoError } from "../array_result.ts";
 
 export class TranslationTodoError extends TodoError {
   constructor(type: string) {

@@ -1,18 +1,9 @@
 import { nullableAsArray } from "../misc.ts";
-import { ArrayResult } from "../array-result.ts";
-import { parse } from "../parser/parser.ts";
 import * as English from "./ast.ts";
-import { multipleSentences } from "./sentence.ts";
 
 const EMPHASIS_STARTING_TAG = "<strong>";
 const EMPHASIS_ENDING_TAG = "</strong>";
 
-// class ComposingTodoError extends TodoError {
-//   constructor(type: string) {
-//     super(`composing ${type}`);
-//     this.name = "ComposingTodoError";
-//   }
-// }
 function word(word: English.Word): string {
   if (word.emphasis) {
     return `${EMPHASIS_STARTING_TAG}${word.word}${EMPHASIS_ENDING_TAG}`;
@@ -21,7 +12,7 @@ function word(word: English.Word): string {
   }
 }
 function compound(
-  elements: Array<string>,
+  elements: ReadonlyArray<string>,
   conjunction: string,
   depth: number,
 ): string {
@@ -31,18 +22,19 @@ function compound(
     const lastIndex = elements.length - 1;
     const init = elements.slice(0, lastIndex);
     const last = elements[lastIndex];
-    return `${init.map((item) => `${item},`).join(" ")} ${conjunction} ${last}`;
+    const initText = init.map((item) => `${item},`).join(" ");
+    return `${initText} ${conjunction} ${last}`;
   }
 }
 export function noun(phrases: English.NounPhrase, depth: number): string {
   switch (phrases.type) {
     case "simple": {
       const text = [
-        ...phrases.determiner.map((determiner) => word(determiner.determiner)),
+        ...phrases.determiner.map(({ determiner }) => word(determiner)),
         ...phrases.adjective.map(adjective),
         word(phrases.noun),
         ...nullableAsArray(phrases.postAdjective)
-          .map((adjective) => `${adjective.adjective} ${adjective.name}`),
+          .map(({ adjective, name }) => `${adjective} ${name}`),
         ...phrases.preposition.map(preposition),
       ]
         .join(" ");
@@ -92,21 +84,20 @@ export function verb(phrase: English.VerbPhrase, depth: number): string {
   let text: string;
   switch (phrase.type) {
     case "default": {
-      let verbText: Array<string>;
-      if (phrase.hideVerb) {
-        verbText = [];
-      } else {
-        const { modal, finite, infinite } = phrase.verb;
-        verbText = [
-          ...nullableAsArray(modal).map(word),
-          ...finite.map(word),
-          word(infinite),
-        ];
-      }
+      const { modal, first, rest } = phrase.verb;
+      const verbText = !phrase.hideVerb
+        ? [
+          ...nullableAsArray(modal),
+          ...nullableAsArray(first),
+          ...rest,
+        ]
+          .map(word)
+        : [];
       text = [
         ...phrase.adverb.map(word),
         ...verbText,
         ...nullableAsArray(phrase.subjectComplement).map(complement),
+        ...nullableAsArray(phrase.contentClause).map(clause),
       ]
         .join(" ");
       break;
@@ -127,12 +118,7 @@ export function verb(phrase: English.VerbPhrase, depth: number): string {
     .join(" ");
 }
 function defaultClause(clause: English.Clause & { type: "default" }): string {
-  let subject: Array<string>;
-  if (clause.hideSubject) {
-    subject = [];
-  } else {
-    subject = [noun(clause.subject, 0)];
-  }
+  const subject = !clause.hideSubject ? [noun(clause.subject, 0)] : [];
   return [
     ...subject,
     verb(clause.verb, 0),
@@ -158,12 +144,12 @@ function clause(ast: English.Clause): string {
 function sentence(sentence: English.Sentence): string {
   return `${sentence.clauses.map(clause).join(", ")}${sentence.punctuation}`
     .replace(
-      /(?<![<&a-zA-Z0-9])[a-zA-Z]/,
-      (character) => character.toUpperCase(),
+      /(?<![<&\p{Alpha}\p{Nd}\p{Nl}\p{No}])[\p{Alpha}\p{Nd}\p{Nl}\p{No}]/u,
+      (character) => character.toLocaleUpperCase(),
     );
 }
-export function translate(src: string): ArrayResult<string> {
-  return parse(src)
-    .flatMap(multipleSentences)
-    .map((sentences) => sentences.map(sentence).join(" "));
+export function multipleSentences(
+  sentences: ReadonlyArray<English.Sentence>,
+): string {
+  return sentences.map(sentence).join(" ");
 }

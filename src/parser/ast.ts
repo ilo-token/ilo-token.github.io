@@ -1,116 +1,103 @@
-/** Module for describing Toki Pona AST. */
-
-/** Represents an emphasis particle. */
 export type Emphasis =
-  | { type: "word"; word: string }
-  | { type: "long word"; word: string; length: number }
-  | { type: "multiple a"; count: number };
+  | Readonly<{ type: "word"; word: string }>
+  | Readonly<{ type: "long word"; word: string; length: number }>;
+export type Filler =
+  | Emphasis
+  | Readonly<{ type: "multiple a"; count: number }>;
 export type SimpleHeadedWordUnit =
-  | { type: "default"; word: string }
-  | { type: "x ala x"; word: string }
-  | { type: "reduplication"; word: string; count: number };
+  | Readonly<{ type: "default"; word: string }>
+  | Readonly<{ type: "x ala x"; word: string }>
+  | Readonly<{ type: "reduplication"; word: string; count: number }>;
 export type SimpleWordUnit =
   | SimpleHeadedWordUnit
-  | { type: "number"; number: number };
+  | Readonly<{ type: "number"; words: ReadonlyArray<string> }>;
 export type HeadedWordUnit =
   & SimpleHeadedWordUnit
-  & { emphasis: null | Emphasis };
-/** Represents a word unit. */
+  & Readonly<{ emphasis: null | Emphasis }>;
 export type WordUnit =
   & SimpleWordUnit
-  & { emphasis: null | Emphasis };
-/** Represents a single modifier. */
+  & Readonly<{ emphasis: null | Emphasis }>;
+export type Nanpa = Readonly<{ nanpa: WordUnit; phrase: Phrase }>;
 export type Modifier =
-  | { type: "default"; word: WordUnit }
-  | { type: "proper words"; words: string }
-  | { type: "pi"; phrase: Phrase }
-  | { type: "nanpa"; nanpa: WordUnit; phrase: Phrase }
-  | ({ type: "quotation" } & Quotation);
-/**
- * Represents a phrase including preverbial phrases, quotations, and
- * prepositional phrases intended for predicate.
- */
+  | Readonly<{ type: "default"; word: WordUnit }>
+  | Readonly<{ type: "proper words"; words: string }>
+  | Readonly<{ type: "pi"; phrase: Phrase }>
+  | (Readonly<{ type: "nanpa" }> & Nanpa);
 export type Phrase =
-  | {
+  | Readonly<{
     type: "default";
     headWord: WordUnit;
-    modifiers: Array<Modifier>;
+    modifiers: ReadonlyArray<Modifier>;
     emphasis: null | Emphasis;
-  }
-  | {
+  }>
+  | Readonly<{
     type: "preverb";
     preverb: HeadedWordUnit;
-    modifiers: Array<Modifier>;
+    modifiers: ReadonlyArray<Modifier>;
     phrase: Phrase;
     emphasis: null | Emphasis;
-  }
-  | ({ type: "preposition" } & Preposition)
-  | ({ type: "quotation" } & Quotation);
-/** Represents multiple phrases separated by repeated particle or "anu". */
+  }>
+  | (Readonly<{ type: "preposition" }> & Preposition);
 export type MultiplePhrases =
-  | { type: "single"; phrase: Phrase }
-  | { type: "and conjunction"; phrases: Array<MultiplePhrases> }
-  | { type: "anu"; phrases: Array<MultiplePhrases> };
-/** Represents a single prepositional phrase. */
-export type Preposition = {
+  | Readonly<{ type: "single"; phrase: Phrase }>
+  | Readonly<{
+    type: "and conjunction";
+    phrases: ReadonlyArray<MultiplePhrases>;
+  }>
+  | Readonly<{ type: "anu"; phrases: ReadonlyArray<MultiplePhrases> }>;
+export type Preposition = Readonly<{
   preposition: HeadedWordUnit;
-  modifiers: Array<Modifier>;
-  phrases: MultiplePhrases & { type: "single" | "anu" };
+  modifiers: ReadonlyArray<Modifier>;
+  phrases: MultiplePhrases & Readonly<{ type: "single" | "anu" }>;
   emphasis: null | Emphasis;
-};
-/** Represents multiple predicates. */
+}>;
 export type Predicate =
-  | { type: "single"; predicate: Phrase }
-  | {
+  | Readonly<{ type: "single"; predicate: Phrase }>
+  | Readonly<{
     type: "associated";
     predicates: MultiplePhrases;
     objects: null | MultiplePhrases;
-    prepositions: Array<Preposition>;
-  }
-  | { type: "and conjunction"; predicates: Array<Predicate> }
-  | { type: "anu"; predicates: Array<Predicate> };
-/** Represents a simple clause. */
+    prepositions: ReadonlyArray<Preposition>;
+  }>
+  | Readonly<{ type: "and conjunction"; predicates: ReadonlyArray<Predicate> }>
+  | Readonly<{ type: "anu"; predicates: ReadonlyArray<Predicate> }>;
 export type Clause =
-  | { type: "phrases"; phrases: MultiplePhrases }
-  | { type: "o vocative"; phrases: MultiplePhrases }
-  | {
+  | Readonly<{ type: "phrases"; phrases: MultiplePhrases }>
+  | Readonly<{ type: "o vocative"; phrases: MultiplePhrases }>
+  | Readonly<{
     type: "li clause";
     subjects: MultiplePhrases;
     predicates: Predicate;
     explicitLi: boolean;
-  }
-  | {
+  }>
+  | Readonly<{
     type: "o clause";
     subjects: null | MultiplePhrases;
     predicates: Predicate;
-  }
-  | { type: "prepositions"; prepositions: Array<Preposition> }
-  | ({ type: "quotation" } & Quotation);
-/** Represents a clause including preclauses and postclauses. */
-export type FullClause =
-  | {
+  }>
+  | Readonly<
+    { type: "prepositions"; prepositions: ReadonlyArray<Preposition> }
+  >;
+export type ContextClause =
+  | Clause
+  | (Readonly<{ type: "nanpa" }> & Nanpa);
+export type Sentence =
+  | Readonly<{
     type: "default";
-    startingParticle: null | Emphasis;
     kinOrTaso: null | HeadedWordUnit;
-    clause: Clause;
+    laClauses: ReadonlyArray<ContextClause>;
+    finalClause: Clause;
     anuSeme: null | HeadedWordUnit;
-    endingParticle: null | Emphasis;
-  }
-  | { type: "filler"; emphasis: Emphasis };
-/** Represents a single full sentence. */
-export type Sentence = {
-  laClauses: Array<FullClause>;
-  finalClause: FullClause;
-  interrogative: null | "seme" | "x ala x";
-  punctuation: string;
-};
-/** Represents quotation. */
-export type Quotation = {
-  sentences: Array<Sentence>;
-  leftMark: string;
-  rightMark: string;
-};
-/** The final representation of whole Toki Pona input text. */
+    emphasis: null | Emphasis;
+    punctuation: string;
+    interrogative: null | "seme" | "x ala x";
+  }>
+  | Readonly<{
+    type: "filler";
+    filler: Filler;
+    punctuation: string;
+    interrogative: null | "seme" | "x ala x";
+  }>;
 export type MultipleSentences =
-  | { type: "single word"; word: string }
-  | { type: "sentences"; sentences: Array<Sentence> };
+  | Readonly<{ type: "single word"; word: string }>
+  | Readonly<{ type: "sentences"; sentences: ReadonlyArray<Sentence> }>;

@@ -15,14 +15,51 @@ On this on-development version, things can be broken.
 </details>
 -->
 
+## 0.5.0
+
+ilo Token can now translate "o" imperative sentences such as "o toki" and "mi o
+lape".
+
+You can now have custom fillers in custom dictionary:
+
+```
+wa:
+  wow/woow/wooow(f);
+```
+
+With this definition, ilo Token can translate "waaaa" into "woooow". There is no
+repetition pattern to follow for toki pona words. "wwaaa" is just as valid.
+
+You can also now have custom numerals:
+
+```
+san:
+  3(num);
+```
+
+- Implement translation of "o" imperative sentences.
+- Allow custom fillers.
+- Allow custom numerals.
+- Numerals are now very permissive. Something like "wan tu" is now allowed. It
+  is also possible for ilo Token to output both numbers using pu system and
+  nasin nanpa pona: "tu ale wan" will be translated into 103 (pu system) _and_
+  201 (nasin nanpa pona).
+- Support for long "anu" glyph.
+- Fix sentence capitalization: If the sentence starts with number, no
+  capitalization will occur.
+
 ## 0.4.1
 
-ilo Token is now a lot faster.
+Released 27 Feb 2025
+
+ilo Token is now a lot faster. In exchange, it now uses more memory.
 
 - Fix custom dictionary error messages.
 - Fix custom dictionary not loading when ilo Token is newly loaded.
 
 ## 0.4.0
+
+Released 19 Feb 2025
 
 ilo Token can now translate into verbs! This means it can translate sentences!
 It still can't do the following however:

@@ -1,13 +1,10 @@
-/** Module for main execution in the browser. */
-
 import { dictionary } from "../dictionary/dictionary.ts";
 import { asComment } from "../dictionary/misc.ts";
-import PROJECT_DATA from "../project-data.json" with { type: "json" };
-import { ArrayResultError } from "./array-result.ts";
+import PROJECT_DATA from "../project_data.json" with { type: "json" };
+import { ArrayResultError } from "./array_result.ts";
 import { loadCustomDictionary } from "./dictionary.ts";
 import {
   checkLocalStorage,
-  escapeHtmlWithLineBreak,
   extractErrorMessage,
   flattenError,
   NEWLINES,
@@ -20,7 +17,7 @@ import {
   loadFromLocalStorage,
   resetElementsToCurrent,
   resetElementsToDefault,
-} from "./settings-frontend.ts";
+} from "./settings_frontend.ts";
 import { settings } from "./settings.ts";
 
 const TRANSLATE_LABEL = "Translate";
@@ -69,7 +66,7 @@ function main(): void {
     "input",
   ) as HTMLTextAreaElement;
 
-  const outputDisplay = document.getElementById("output") as HTMLUListElement;
+  const outputList = document.getElementById("output") as HTMLUListElement;
   const errorDisplay = document.getElementById(
     "error",
   ) as HTMLParagraphElement;
@@ -124,64 +121,53 @@ function main(): void {
   ) as HTMLAnchorElement;
 
   // set version
-  if (PROJECT_DATA.onDevelopment) {
-    versionDisplay.innerText = `${PROJECT_DATA.version} (On development)`;
-  } else {
-    const date = new Date(PROJECT_DATA.releaseDate)
-      .toLocaleDateString(undefined);
-    versionDisplay.innerText = `${PROJECT_DATA.version} - Released ${date}`;
-  }
+  const displayDate = PROJECT_DATA.onDevelopment
+    ? "On development"
+    : `- Released ${new Date(PROJECT_DATA.releaseDate).toLocaleDateString()}`;
+
+  versionDisplay.innerText = `${PROJECT_DATA.version} ${displayDate}`;
 
   // load settings
   loadFromLocalStorage();
 
   // load custom dictionary
-  let customDictionary: string;
-  if (checkLocalStorage()) {
-    customDictionary = localStorage.getItem(DICTIONARY_KEY) ?? "";
-  } else {
-    customDictionary = customDictionaryTextBox.value;
-  }
+  const customDictionary = checkLocalStorage()
+    ? localStorage.getItem(DICTIONARY_KEY) ?? ""
+    : customDictionaryTextBox.value;
   if (customDictionary.trim() !== "") {
     try {
       loadCustomDictionary(customDictionary);
     } catch (error) {
-      let message: string;
-      if (errorsFixable(flattenError(error))) {
-        message = DICTIONARY_LOADING_FAILED_FIXABLE_MESSAGE;
-      } else {
-        message = DICTIONARY_LOADING_FAILED_UNFIXABLE_MESSAGE;
-      }
-      errorDisplay.innerHTML = escapeHtmlWithLineBreak(message);
+      errorDisplay.innerText = errorsFixable(flattenError(error))
+        ? DICTIONARY_LOADING_FAILED_FIXABLE_MESSAGE
+        : DICTIONARY_LOADING_FAILED_UNFIXABLE_MESSAGE;
+      // deno-lint-ignore no-console
       console.error(error);
     }
   }
 
   // remove unused local storage data
   const used = [DICTIONARY_KEY, ...Object.keys(settings)];
-  const allKeys = [...new Array(localStorage.length).keys()]
-    .map((i) => localStorage.key(i)!);
-  for (const key of allKeys) {
-    if (!used.includes(key)) {
-      localStorage.removeItem(key);
-    }
+  const unused = [...new Array(localStorage.length).keys()]
+    .map((i) => localStorage.key(i)!)
+    .filter((key) => !used.includes(key));
+  for (const key of unused) {
+    localStorage.removeItem(key);
   }
 
   // initial text area size
   resizeTextarea();
   function resizeTextarea(): void {
     inputTextBox.style.height = "auto";
-    inputTextBox.style.height = `${`${inputTextBox.scrollHeight + 14}`}px`;
+    inputTextBox.style.height = `${inputTextBox.scrollHeight + 14}px`;
   }
 
   // initialize button label
   updateLabel();
   function updateLabel(): void {
-    if (settings.multiline) {
-      translateButton.innerText = TRANSLATE_LABEL_MULTILINE;
-    } else {
-      translateButton.innerText = TRANSLATE_LABEL;
-    }
+    translateButton.innerText = settings.multiline
+      ? TRANSLATE_LABEL_MULTILINE
+      : TRANSLATE_LABEL;
   }
 
   // add all event listener
@@ -197,41 +183,37 @@ function main(): void {
     }
   });
   function updateOutput(): void {
-    outputDisplay.innerHTML = "";
+    outputList.innerHTML = "";
     errorList.innerHTML = "";
     errorDisplay.innerText = "";
     try {
       for (const translation of translate(inputTextBox.value)) {
         const list = document.createElement("li");
         list.innerHTML = translation;
-        outputDisplay.appendChild(list);
+        outputList.appendChild(list);
       }
     } catch (error) {
       const errors = flattenError(error);
-      let message: string;
       switch (errors.length) {
         case 0:
-          message = UNKNOWN_ERROR_MESSAGE;
+          errorDisplay.innerText = UNKNOWN_ERROR_MESSAGE;
           break;
         case 1:
-          message = SINGULAR_ERROR_MESSAGE;
+          errorDisplay.innerText = SINGULAR_ERROR_MESSAGE;
           break;
         default:
-          message = MULTIPLE_ERROR_MESSAGE;
+          errorDisplay.innerText = MULTIPLE_ERROR_MESSAGE;
           break;
       }
-      errorDisplay.innerHTML = escapeHtmlWithLineBreak(message);
       for (const item of errors) {
-        let property: "innerHTML" | "innerText";
-        if (item instanceof ArrayResultError && item.isHtml) {
-          property = "innerHTML";
-        } else {
-          property = "innerText";
-        }
+        const property = item instanceof ArrayResultError && item.isHtml
+          ? "innerHTML"
+          : "innerText";
         const list = document.createElement("li");
         list[property] = extractErrorMessage(item);
         errorList.appendChild(list);
       }
+      // deno-lint-ignore no-console
       console.error(error);
     }
   }
@@ -266,26 +248,21 @@ function main(): void {
     }
   });
   function displayToCustomDictionary(message: string): void {
-    let original = customDictionaryTextBox.value.trimEnd();
-    if (original !== "") {
-      original += "\n\n";
-    }
-    customDictionaryTextBox.value = `${original}${message.trimEnd()}\n`;
+    const original = customDictionaryTextBox.value.trimEnd();
+    const append = original === "" ? "" : "\n\n";
+    customDictionaryTextBox.value =
+      `${original}${append}${message.trimEnd()}\n`;
     customDictionaryTextBox.scrollTo(0, customDictionaryTextBox.scrollHeight);
   }
   function addWord(): void {
     const word = addWordTextBox.value.trim();
     if (/^[a-z][a-zA-Z]*$/.test(word)) {
-      let definitions: string;
       const dictionaryEntry = dictionary.get(word);
-      if (dictionaryEntry != null) {
-        definitions = dictionaryEntry.src;
-      } else {
-        definitions = `\n${
+      const definitions = dictionaryEntry?.src ??
+        `\n${
           asComment(EMPTY_DEFINITION_PLACEHOLDER)
             .replaceAll(/^/gm, "  ")
         }`;
-      }
       displayToCustomDictionary(`${word}:${definitions}`);
     } else {
       displayToCustomDictionary(asComment(INVALID_WORD_ERROR));
@@ -303,16 +280,14 @@ function main(): void {
       customDictionaryDialogBox.close();
     } catch (error) {
       const errors = flattenError(error);
-      let message: string;
-      if (errorsFixable(errors)) {
-        message = DICTIONARY_ERROR_FIXABLE_MESSAGE;
-      } else {
-        message = DICTIONARY_ERROR_UNFIXABLE_MESSAGE;
-      }
+      const message = errorsFixable(errors)
+        ? DICTIONARY_ERROR_FIXABLE_MESSAGE
+        : DICTIONARY_ERROR_UNFIXABLE_MESSAGE;
       const errorListMessage = errors
         .map(extractErrorMessage)
         .map((message) => `\n- ${message.replaceAll(NEWLINES, "$&  ")}`);
       displayToCustomDictionary(asComment(`${message}${errorListMessage}`));
+      // deno-lint-ignore no-console
       console.error(error);
     }
   });
@@ -322,7 +297,7 @@ function main(): void {
     }
   });
 }
-function errorsFixable(errors: Array<unknown>): boolean {
+function errorsFixable(errors: ReadonlyArray<unknown>): boolean {
   return errors.length > 0 &&
     errors.every((error) => error instanceof ArrayResultError);
 }

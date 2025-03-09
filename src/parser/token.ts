@@ -1,43 +1,43 @@
-/** Module describing token. */
-
 import { repeatWithSpace } from "../misc.ts";
 
-/** Represents token. */
 export type Token =
-  | { type: "word"; word: string }
-  | {
+  | Readonly<{ type: "word"; word: string }>
+  | Readonly<{
     type: "combined glyphs";
-    words: Array<string>;
-  }
-  | {
+    words: ReadonlyArray<string>;
+  }>
+  | Readonly<{
     type: "space long glyph";
-    words: Array<string>;
+    words: ReadonlyArray<string>;
     spaceLength: number;
-  }
-  | {
+  }>
+  | Readonly<{
     type: "headed long glyph start";
-    words: Array<string>;
-  }
-  | {
+    words: ReadonlyArray<string>;
+  }>
+  | Readonly<{
     type: "headless long glyph end";
-  }
-  | {
+  }>
+  | Readonly<{
     type: "headless long glyph start";
-  }
-  | {
+  }>
+  | Readonly<{
     type: "headed long glyph end";
-    words: Array<string>;
-  }
-  | {
+    words: ReadonlyArray<string>;
+  }>
+  | Readonly<{
     type: "inside long glyph";
-    words: Array<string>;
-  }
-  | { type: "multiple a"; count: number }
-  | { type: "long word"; word: string; length: number }
-  | { type: "x ala x"; word: string }
-  | { type: "proper word"; words: string; kind: "cartouche" | "latin" }
-  | { type: "punctuation"; punctuation: string };
-/** Describes a token. Useful for error messages. */
+    words: ReadonlyArray<string>;
+  }>
+  | Readonly<{ type: "multiple a"; count: number }>
+  | Readonly<{ type: "long word"; word: string; length: number }>
+  | Readonly<{ type: "x ala x"; word: string }>
+  | Readonly<{
+    type: "proper word";
+    words: string;
+    kind: "cartouche" | "latin";
+  }>
+  | Readonly<{ type: "punctuation"; punctuation: string }>;
 export function describe(token: Token): string {
   switch (token.type) {
     case "word":
@@ -59,6 +59,8 @@ export function describe(token: Token): string {
       return `"${token.word.repeat(token.length)}"`;
     case "x ala x":
       return `"${token.word} ala ${token.word}"`;
+    case "punctuation":
+      return `punctuation mark "${token.punctuation}"`;
     case "proper word":
       switch (token.kind) {
         case "cartouche":
@@ -66,9 +68,5 @@ export function describe(token: Token): string {
         case "latin":
           return `proper word "${token.words}"`;
       }
-      // this is unreachable
-      // fallthrough
-    case "punctuation":
-      return `punctuation mark "${token.punctuation}"`;
   }
 }

@@ -7,12 +7,12 @@ import {
   settings,
 } from "./settings.ts";
 
-type Updater<T> = {
-  readonly parse: (value: string) => null | T;
-  readonly stringify: (value: T) => string;
-  readonly load: (input: HTMLInputElement | HTMLSelectElement) => T;
-  readonly set: (input: HTMLInputElement | HTMLSelectElement, value: T) => void;
-};
+type Updater<T> = Readonly<{
+  parse: (value: string) => null | T;
+  stringify: (value: T) => string;
+  load: (input: HTMLInputElement | HTMLSelectElement) => T;
+  set: (input: HTMLInputElement | HTMLSelectElement, value: T) => void;
+}>;
 const BOOL_UPDATER: Updater<boolean> = {
   parse: (value) => {
     switch (value) {
@@ -24,28 +24,19 @@ const BOOL_UPDATER: Updater<boolean> = {
         return null;
     }
   },
-  stringify: (value) => {
-    if (value) {
-      return "T";
-    } else {
-      return "F";
-    }
-  },
+  stringify: (value) => value ? "T" : "F",
   load: (input) => (input as HTMLInputElement).checked,
   set: (input, value) => {
     (input as HTMLInputElement).checked = value;
   },
 };
 const REDUNDANCY_UPDATER: Updater<RedundancySettings> = {
-  parse: (value) => {
-    if (["both", "condensed", "default only"].includes(value)) {
-      return value as RedundancySettings;
-    } else {
-      return null;
-    }
-  },
+  parse: (value) =>
+    ["both", "condensed", "default only"].includes(value)
+      ? value as RedundancySettings
+      : null,
   stringify: (value) => value,
-  load: (input) => input.value as RedundancySettings,
+  load: ({ value }) => value as RedundancySettings,
   set: (input, value) => {
     input.value = value;
   },
@@ -59,7 +50,7 @@ const UPDATERS: Readonly<{ [K in keyof Settings]: Updater<Settings[K]> }> = {
   xAlaXPartialParsing: BOOL_UPDATER,
   separateRepeatedModifiers: BOOL_UPDATER,
 };
-const KEYS = Object.keys(UPDATERS) as Array<keyof Settings>;
+const KEYS = Object.keys(UPDATERS) as ReadonlyArray<keyof Settings>;
 function loadOneFromLocalStorage<T extends keyof Settings>(key: T): void {
   const src = localStorage.getItem(key);
   if (src != null) {
@@ -94,11 +85,10 @@ function setElement<T extends keyof Settings>(
   );
 }
 export function loadFromLocalStorage(): void {
-  if (!checkLocalStorage()) {
-    return;
-  }
-  for (const key of KEYS) {
-    loadOneFromLocalStorage(key);
+  if (checkLocalStorage()) {
+    for (const key of KEYS) {
+      loadOneFromLocalStorage(key);
+    }
   }
 }
 export function loadFromElements(): void {

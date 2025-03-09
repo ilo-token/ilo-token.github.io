@@ -1,32 +1,26 @@
+import { zip } from "@std/collections/zip";
 import * as Dictionary from "../../dictionary/type.ts";
+import { ArrayResult } from "../array_result.ts";
 import { filterSet } from "../misc.ts";
-import { ArrayResult } from "../array-result.ts";
 import * as English from "./ast.ts";
 import { FilteredOutError } from "./error.ts";
 import { simpleNounForms } from "./noun.ts";
 import { word } from "./word.ts";
 
-function prettyPrintDeterminers(
-  determiners: Array<English.Determiner>,
-): string {
-  return `(${
-    determiners.map((determiner) => determiner.determiner).join(` `)
-  })`;
-}
 function filterKind(
-  determiners: Array<English.Determiner>,
-  kinds: Array<Dictionary.DeterminerType>,
-): Array<English.Determiner> {
-  return determiners.filter((determiner) => kinds.includes(determiner.kind));
+  determiners: ReadonlyArray<English.Determiner>,
+  kinds: ReadonlyArray<Dictionary.DeterminerType>,
+): ReadonlyArray<English.Determiner> {
+  return determiners.filter(({ kind }) => kinds.includes(kind));
 }
 function filterQuantity(
-  determiners: Array<English.Determiner>,
-  quantity: Dictionary.Quantity,
-): Array<English.Determiner> {
-  return determiners.filter((determiner) => determiner.quantity === quantity);
+  determiners: ReadonlyArray<English.Determiner>,
+  targetQuantity: Dictionary.Quantity,
+): ReadonlyArray<English.Determiner> {
+  return determiners.filter(({ quantity }) => quantity === targetQuantity);
 }
 function check(
-  quantities: Array<Dictionary.Quantity>,
+  quantities: ReadonlyArray<Dictionary.Quantity>,
   some: Dictionary.Quantity,
   not: Dictionary.Quantity,
 ): boolean {
@@ -34,9 +28,9 @@ function check(
     quantities.every((quantity) => quantity !== not);
 }
 export function findNumber(
-  determiners: Array<English.Determiner>,
+  determiners: ReadonlyArray<English.Determiner>,
 ): Dictionary.Quantity {
-  const quantities = determiners.map((determiner) => determiner.quantity);
+  const quantities = determiners.map(({ quantity }) => quantity);
   if (quantities.every((quantity) => quantity === `both`)) {
     return "both";
   } else if (check(quantities, "singular", "plural")) {
@@ -56,23 +50,25 @@ export function findNumber(
   }
 }
 export function determiner(
-  definition: Dictionary.Determiner,
-  reduplicationCount: number,
-  emphasis: boolean,
+  options: Readonly<{
+    definition: Dictionary.Determiner;
+    reduplicationCount: number;
+    emphasis: boolean;
+  }>,
 ): ArrayResult<English.Determiner> {
+  const { definition } = options;
   return simpleNounForms({
     singular: definition.determiner,
     plural: definition.plural,
   })
     .map((determiner) => ({
-      kind: definition.kind,
-      determiner: word(determiner, reduplicationCount, emphasis),
-      quantity: definition.quantity,
+      ...definition,
+      determiner: word({ ...options, word: determiner }),
     }));
 }
 export function fixDeterminer(
-  determiner: Array<English.Determiner>,
-): Array<English.Determiner> {
+  determiner: ReadonlyArray<English.Determiner>,
+): ReadonlyArray<English.Determiner> {
   const negative = filterKind(determiner, [`negative`]);
   const first = filterKind(determiner, [
     `article`,
@@ -93,7 +89,6 @@ export function fixDeterminer(
     [article.length > 1, encodeDeterminer`multiple articles ${article}`],
     [
       demonstrative.length > 1,
-
       encodeDeterminer`multiple demonstrative determiners ${demonstrative}`,
     ],
     [
@@ -143,14 +138,17 @@ export function fixDeterminer(
     );
   }
 }
+function prettyPrintDeterminers(
+  determiners: ReadonlyArray<English.Determiner>,
+): string {
+  return `(${determiners.map(({ determiner }) => determiner).join(` `)})`;
+}
 function encodeDeterminer(
   strings: TemplateStringsArray,
-  ...determiners: Array<Array<English.Determiner>>
+  ...determiners: ReadonlyArray<ReadonlyArray<English.Determiner>>
 ): () => string {
-  return () => {
-    const determinerStrings = determiners.map(prettyPrintDeterminers);
-    return strings
-      .map((string, i) => `${string}${determinerStrings[i] ?? ""}`)
+  return () =>
+    zip(strings, [...determiners.map(prettyPrintDeterminers), ""])
+      .flat()
       .join("");
-  };
 }

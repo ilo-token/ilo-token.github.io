@@ -1,35 +1,42 @@
 import * as Dictionary from "../../dictionary/type.ts";
-import { ArrayResult } from "../array-result.ts";
+import { ArrayResult } from "../array_result.ts";
+import { mapNullable, nullableAsArray } from "../misc.ts";
 import { settings } from "../settings.ts";
 import * as English from "./ast.ts";
-import { Word } from "./ast.ts";
+import { FilteredOutError } from "./error.ts";
 import { condense } from "./misc.ts";
 import { noun } from "./noun.ts";
 import { nounAsPreposition } from "./preposition.ts";
 import { unemphasized, word } from "./word.ts";
 
-export type VerbObjects = {
+export type VerbObjects = Readonly<{
   object: null | English.NounPhrase;
   objectComplement: null | English.Complement;
-  preposition: Array<English.Preposition>;
-};
-export type PartialVerb = Dictionary.VerbForms & VerbObjects & {
-  adverb: Array<English.Word>;
-  reduplicationCount: number;
-  wordEmphasis: boolean;
-  subjectComplement: null | English.Complement;
-  forObject: boolean | string;
-  predicateType: null | "verb" | "noun adjective";
-  phraseEmphasis: boolean;
-};
+  preposition: ReadonlyArray<English.Preposition>;
+}>;
+export type PartialVerb =
+  & VerbObjects
+  & Readonly<{
+    adverb: ReadonlyArray<English.Word>;
+    modal: null | English.Word;
+    // TODO: better name other than first and rest
+    first: null | Dictionary.VerbForms;
+    reduplicationCount: number;
+    wordEmphasis: boolean;
+    rest: ReadonlyArray<English.Word>;
+    subjectComplement: null | English.Complement;
+    forObject: boolean | string;
+    predicateType: null | "verb" | "noun adjective";
+    phraseEmphasis: boolean;
+  }>;
 export type PartialCompoundVerb =
-  | ({ type: "simple" } & PartialVerb)
+  | (Readonly<{ type: "simple" }> & PartialVerb)
   | (
-    & {
+    & Readonly<{
       type: "compound";
       conjunction: string;
-      verb: Array<PartialCompoundVerb>;
-    }
+      verb: ReadonlyArray<PartialCompoundVerb>;
+    }>
     & VerbObjects
   );
 export function condenseVerb(present: string, past: string): string {
@@ -37,34 +44,84 @@ export function condenseVerb(present: string, past: string): string {
   const second = past.split(" ")[0];
   return [condense(first, second), ...rest].join(" ");
 }
+export function addModal(modal: English.Word, verb: PartialVerb): PartialVerb {
+  if (verb.modal == null) {
+    const newRest = nullableAsArray(verb.first)
+      .map(({ presentPlural }) => presentPlural)
+      .map((verb) => verb === "are" ? "be" : verb)
+      .map((newVerb) =>
+        word({
+          word: newVerb,
+          reduplicationCount: verb.reduplicationCount,
+          emphasis: verb.wordEmphasis,
+        })
+      );
+    return {
+      ...verb,
+      modal,
+      first: null,
+      rest: [...newRest, ...verb.rest],
+      reduplicationCount: 1,
+      wordEmphasis: false,
+    };
+  } else {
+    throw new FilteredOutError("nested modal verb");
+  }
+}
+export function addModalToAll(
+  modal: English.Word,
+  verb: PartialCompoundVerb,
+): PartialCompoundVerb {
+  switch (verb.type) {
+    case "simple":
+      return { ...addModal(modal, verb), type: "simple" };
+    case "compound":
+      return {
+        ...verb,
+        verb: verb.verb.map((verb) => addModalToAll(modal, verb)),
+      };
+  }
+}
 export function partialVerb(
-  definition: Dictionary.Verb,
-  reduplicationCount: number,
-  emphasis: boolean,
+  options: Readonly<{
+    definition: Dictionary.Verb;
+    reduplicationCount: number;
+    emphasis: boolean;
+  }>,
 ): ArrayResult<PartialVerb> {
+  const { definition, reduplicationCount, emphasis } = options;
   const object = new ArrayResult([definition.directObject])
     .flatMap((object) => {
       if (object != null) {
-        return noun(object, 1, false);
+        return noun({
+          definition: object,
+          reduplicationCount: 1,
+          emphasis: false,
+        });
       } else {
         return new ArrayResult([null]);
       }
     });
   const preposition = ArrayResult.combine(
     ...definition.indirectObject
-      .flatMap((indirectObject) =>
-        noun(indirectObject.object, 1, false)
-          .map((object) =>
-            nounAsPreposition(object, indirectObject.preposition)
-          )
+      .flatMap(({ object, preposition }) =>
+        noun({
+          definition: object,
+          reduplicationCount: 1,
+          emphasis: false,
+        })
+          .map((object) => nounAsPreposition(object, preposition))
       ),
   );
   return ArrayResult.combine(object, preposition)
     .map(([object, preposition]) => ({
       ...definition,
       adverb: [],
+      modal: null,
+      first: definition,
       reduplicationCount,
       wordEmphasis: emphasis,
+      rest: [],
       subjectComplement: null,
       object,
       objectComplement: null,
@@ -74,7 +131,7 @@ export function partialVerb(
 }
 export function everyPartialVerb(
   verb: PartialCompoundVerb,
-): Array<PartialVerb> {
+): ReadonlyArray<PartialVerb> {
   switch (verb.type) {
     case "simple":
       return [verb];
@@ -86,93 +143,75 @@ export function everyPartialVerb(
 export function forObject(verb: PartialCompoundVerb): boolean | string {
   const [{ forObject }, ...rest] = everyPartialVerb(verb);
   if (
-    forObject === false || rest.some((verb) => forObject !== verb.forObject)
+    forObject !== false &&
+    rest.every(({ forObject: otherForObject }) => forObject === otherForObject)
   ) {
+    return forObject;
+  } else {
     return false;
   }
-  return forObject;
 }
 export function fromVerbForms(
-  verbForms: Dictionary.VerbForms,
-  perspective: Dictionary.Perspective,
-  quantity: English.Quantity,
-  reduplicationCount: number,
-  emphasis: boolean,
+  options: Readonly<{
+    verbForms: Dictionary.VerbForms;
+    perspective: Dictionary.Perspective;
+    quantity: English.Quantity;
+    reduplicationCount: number;
+    emphasis: boolean;
+  }>,
 ): ArrayResult<English.Verb> {
+  const { verbForms, perspective, quantity } = options;
   const is = verbForms.presentSingular === "is";
-  let presentSingular: string;
-  if (is && perspective === "first") {
-    presentSingular = "am";
-  } else {
-    presentSingular = verbForms.presentSingular;
-  }
-  let pastPlural: string;
-  let pastSingular: string;
-  if (is) {
-    pastPlural = "were";
-    pastSingular = "was";
-  } else {
-    pastPlural = pastSingular = verbForms.past;
-  }
-  let past: string;
-  let present: string;
-  if (quantity !== "singular" || (!is && perspective !== "third")) {
-    past = pastPlural;
-    present = verbForms.presentPlural;
-  } else {
-    past = pastSingular;
-    present = presentSingular;
-  }
-  let verb: ArrayResult<{ modal: null | string; infinite: string }>;
+  const presentSingular = is && perspective === "first"
+    ? "am"
+    : verbForms.presentSingular;
+  const [pastPlural, pastSingular] = is
+    ? ["were", "was"]
+    : [verbForms.past, verbForms.past];
+  const [past, present] =
+    quantity !== "singular" || (!is && perspective !== "third")
+      ? [pastPlural, verbForms.presentPlural]
+      : [pastSingular, presentSingular];
+  let verb: ArrayResult<{ modal: null | string; verb: string }>;
   switch (settings.tense) {
     case "condensed":
       if (is) {
         if (quantity === "condensed") {
           verb = new ArrayResult([{
             modal: null,
-            infinite:
-              `${presentSingular}/${verbForms.presentPlural}/${pastSingular}/${pastPlural}/will be`,
+            verb: "is/are/was/were/will be",
           }]);
         } else {
           verb = new ArrayResult([{
             modal: null,
-            infinite: `${present}/${past}/will be`,
+            verb: `${present}/${past}/will be`,
           }]);
         }
       } else {
         verb = new ArrayResult([{
           modal: "(will)",
-          infinite: condenseVerb(present, past),
+          verb: condenseVerb(present, past),
         }]);
       }
       break;
     case "both": {
-      let future: string;
-      if (is) {
-        future = "be";
-      } else {
-        future = verbForms.presentPlural;
-      }
+      const future = is ? "be" : verbForms.presentPlural;
       verb = new ArrayResult([
-        { modal: null, infinite: present },
-        { modal: null, infinite: past },
-        { modal: "will", infinite: future },
+        { modal: null, verb: present },
+        { modal: null, verb: past },
+        { modal: "will", verb: future },
       ]);
       break;
     }
     case "default only":
-      verb = new ArrayResult([{ modal: null, infinite: present }]);
+      verb = new ArrayResult([{ modal: null, verb: present }]);
       break;
   }
-  return verb.map((verb) => {
-    let modal: null | Word = null;
-    if (verb.modal != null) {
-      modal = unemphasized(verb.modal);
-    }
+  return verb.map(({ modal, verb }) => {
     return {
-      modal,
-      finite: [],
-      infinite: word(verb.infinite, reduplicationCount, emphasis),
+      modal: mapNullable(modal, unemphasized),
+      first: word({ ...options, word: verb }),
+      rest: [],
     };
   });
 }
@@ -183,19 +222,31 @@ export function verb(
 ): ArrayResult<English.VerbPhrase> {
   switch (partialVerb.type) {
     case "simple": {
-      return fromVerbForms(
-        partialVerb,
-        perspective,
-        quantity,
-        partialVerb.reduplicationCount,
-        partialVerb.wordEmphasis,
-      )
-        .map<English.VerbPhrase>((verb) => ({
+      const verbForms = partialVerb.first;
+      if (verbForms != null) {
+        return fromVerbForms({
+          verbForms,
+          perspective,
+          quantity,
+          reduplicationCount: partialVerb.reduplicationCount,
+          emphasis: partialVerb.wordEmphasis,
+        })
+          .map<English.VerbPhrase>((verb) => ({
+            ...partialVerb,
+            type: "default",
+            verb,
+            contentClause: null,
+            hideVerb: false,
+          }));
+      } else {
+        return new ArrayResult([{
           ...partialVerb,
           type: "default",
-          verb,
+          verb: { ...partialVerb, first: null },
+          contentClause: null,
           hideVerb: false,
-        }));
+        }]);
+      }
     }
     case "compound":
       return ArrayResult.combine(

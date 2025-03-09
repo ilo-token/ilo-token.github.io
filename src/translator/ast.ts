@@ -1,94 +1,95 @@
-/** Module for describing English AST. */
-
 import * as Dictionary from "../../dictionary/type.ts";
 
-export type Word = {
+export type Word = Readonly<{
   word: string;
   emphasis: boolean;
-};
+}>;
 export type Quantity = "singular" | "plural" | "condensed";
 export type NounPhrase =
-  | {
+  | Readonly<{
     type: "simple";
-    determiner: Array<Determiner>;
-    adjective: Array<AdjectivePhrase>;
+    determiner: ReadonlyArray<Determiner>;
+    adjective: ReadonlyArray<AdjectivePhrase>;
     noun: Word;
     quantity: Quantity;
     perspective: Dictionary.Perspective;
-    postAdjective: null | { adjective: string; name: string };
-    preposition: Array<Preposition>;
+    postAdjective: null | Readonly<{ adjective: string; name: string }>;
+    preposition: ReadonlyArray<Preposition>;
     emphasis: boolean;
-  }
-  | {
+  }>
+  | Readonly<{
     type: "compound";
     conjunction: string;
-    nouns: Array<NounPhrase>;
+    nouns: ReadonlyArray<NounPhrase>;
     quantity: Quantity;
-  };
-export type Determiner = {
+  }>;
+export type Determiner = Readonly<{
   kind: Dictionary.DeterminerType;
   determiner: Word;
   quantity: Dictionary.Quantity;
-};
+}>;
 export type AdjectivePhrase =
-  | {
+  | Readonly<{
     type: "simple";
     kind: Dictionary.AdjectiveType;
-    adverb: Array<Word>;
+    adverb: ReadonlyArray<Word>;
     adjective: Word;
     emphasis: boolean;
-  }
-  | {
+  }>
+  | Readonly<{
     type: "compound";
     conjunction: string;
-    adjective: Array<AdjectivePhrase>;
+    adjective: ReadonlyArray<AdjectivePhrase>;
     emphasis: boolean;
-  };
+  }>;
 export type Complement =
-  | { type: "noun"; noun: NounPhrase }
-  | { type: "adjective"; adjective: AdjectivePhrase };
-export type Verb = {
+  | Readonly<{ type: "noun"; noun: NounPhrase }>
+  | Readonly<{ type: "adjective"; adjective: AdjectivePhrase }>;
+// TODO: each verb should have its own adverbs
+export type Verb = Readonly<{
   modal: null | Word;
-  finite: Array<Word>;
-  infinite: Word;
-};
+  // TODO: better name
+  first: null | Word;
+  rest: ReadonlyArray<Word>;
+}>;
 export type VerbPhrase =
-  | {
+  | Readonly<{
     type: "default";
-    adverb: Array<Word>;
+    adverb: ReadonlyArray<Word>;
     verb: Verb;
     subjectComplement: null | Complement;
+    contentClause: null | Clause;
     object: null | NounPhrase;
     objectComplement: null | Complement;
-    preposition: Array<Preposition>;
+    preposition: ReadonlyArray<Preposition>;
     hideVerb: boolean;
-  }
-  | {
+  }>
+  | Readonly<{
     type: "compound";
     conjunction: string;
-    verbs: Array<VerbPhrase>;
+    verbs: ReadonlyArray<VerbPhrase>;
     object: null | NounPhrase;
     objectComplement: null | Complement;
-    preposition: Array<Preposition>;
-  };
+    preposition: ReadonlyArray<Preposition>;
+  }>;
 export type Clause =
-  | { type: "free form"; text: string }
-  | {
+  | Readonly<{ type: "free form"; text: string }>
+  | Readonly<{
     type: "default";
     subject: NounPhrase;
     verb: VerbPhrase;
     hideSubject: boolean;
-  }
-  | { type: "subject phrase"; subject: NounPhrase }
-  | { type: "interjection"; interjection: Word }
-  | { type: "vocative"; call: string; addressee: NounPhrase }
-  | { type: "dependent"; conjunction: Word; clause: Clause };
-export type Preposition = {
-  adverb: Array<Word>;
+  }>
+  | Readonly<{ type: "subject phrase"; subject: NounPhrase }>
+  | Readonly<{ type: "interjection"; interjection: Word }>
+  | Readonly<{ type: "vocative"; call: string; addressee: NounPhrase }>
+  | Readonly<{ type: "dependent"; conjunction: Word; clause: Clause }>;
+export type Preposition = Readonly<{
+  adverb: ReadonlyArray<Word>;
   preposition: Word;
   object: NounPhrase;
-};
-export type Sentence = {
-  clauses: Array<Clause>;
+}>;
+export type Sentence = Readonly<{
+  clauses: ReadonlyArray<Clause>;
   punctuation: string;
-};
+}>;

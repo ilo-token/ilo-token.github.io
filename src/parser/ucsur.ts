@@ -1,8 +1,5 @@
-/** Module for constants and other helper items for UCSUR. */
-
 // https://www.kreativekorp.com/ucsur/charts/sitelen.html
 
-/** */
 export const START_OF_CARTOUCHE = "\u{F1990}";
 export const END_OF_CARTOUCHE = "\u{F1991}";
 export const COMBINING_CARTOUCHE_EXTENSION = "\u{F1992}";
@@ -15,8 +12,8 @@ export const END_OF_LONG_GLYPH = "\u{F1998}";
 export const COMBINING_LONG_GLYPH_EXTENSION = "\u{F1999}";
 export const START_OF_REVERSE_LONG_GLYPH = "\u{F199A}";
 export const END_OF_REVERSE_LONG_GLYPH = "\u{F199B}";
-export const MIDDLE_DOT = "\u{F199C}";
-export const COLON = "\u{F199D}";
+export const UCSUR_MIDDLE_DOT = "\u{F199C}";
+export const UCSUR_COLON = "\u{F199D}";
 
 export const SPECIAL_UCSUR_DESCRIPTIONS: Map<string, string> = new Map(
   Object.entries({
@@ -32,8 +29,8 @@ export const SPECIAL_UCSUR_DESCRIPTIONS: Map<string, string> = new Map(
     [COMBINING_LONG_GLYPH_EXTENSION]: "combining long glyph extension",
     [START_OF_REVERSE_LONG_GLYPH]: "start of reverse long glyph",
     [END_OF_REVERSE_LONG_GLYPH]: "end of reverse long glyph",
-    [MIDDLE_DOT]: "middle dot",
-    [COLON]: "colon",
+    [UCSUR_MIDDLE_DOT]: "middle dot",
+    [UCSUR_COLON]: "colon",
   }),
 );
 export const UCSUR_TO_LATIN: Map<string, string> = new Map(Object.entries({
