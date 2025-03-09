@@ -55,9 +55,19 @@ export function fromNounForms(
   const { singular, plural } = nounForms;
   switch (determinerNumber) {
     case "singular":
-    case "plural":
-      return new ArrayResult(nullableAsArray(singular))
+    case "plural": {
+      let noun: null | string;
+      switch (determinerNumber) {
+        case "singular":
+          noun = singular;
+          break;
+        case "plural":
+          noun = plural;
+          break;
+      }
+      return new ArrayResult(nullableAsArray(noun))
         .map((noun) => ({ noun, quantity: determinerNumber }));
+    }
     case "both":
       switch (settings.quantity) {
         case "both":
