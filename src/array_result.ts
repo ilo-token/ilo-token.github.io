@@ -114,14 +114,17 @@ export class ArrayResult<T> {
   ): ArrayResult<T> {
     // We resorted to using `any` types here, make sure it works properly
     return arrayResults.reduce(
-      (left: ArrayResult<any>, right) =>
-        left.isError() && right.isError()
-          ? ArrayResult.concat(left, right)
-          : left.isError()
-          ? left
-          : right.isError()
-          ? right
-          : left.flatMap((left) => right.map((right) => [...left, right])),
+      (left: ArrayResult<any>, right) => {
+        if (left.isError() && right.isError()) {
+          return ArrayResult.concat(left, right);
+        } else if (left.isError()) {
+          return left;
+        } else if (right.isError()) {
+          return right;
+        } else {
+          return left.flatMap((left) => right.map((right) => [...left, right]));
+        }
+      },
       new ArrayResult<any>([[]]),
     ) as ArrayResult<T>;
   }

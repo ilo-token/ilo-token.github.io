@@ -190,19 +190,17 @@ function binaryWords(
   word: Set<string>,
   description: string,
 ): Parser<readonly [bottom: string, top: string]> {
-  return specificToken("combined glyphs").map(({ words }) =>
-    words.length > 2
-      ? throwError(
-        new UnrecognizedError(
-          `combined glyphs of ${words.length} words`,
-        ),
-      )
-      : !word.has(words[0])
-      ? throwError(new UnrecognizedError(`"${words[0]}" as ${description}`))
-      : !contentWordSet.has(words[1])
-      ? throwError(new UnrecognizedError(`"${words[1]}" as content word`))
-      : words as [string, string]
-  );
+  return specificToken("combined glyphs").map(({ words }) => {
+    if (words.length > 2) {
+      throw new UnrecognizedError(`combined glyphs of ${words.length} words`);
+    } else if (!word.has(words[0])) {
+      throw new UnrecognizedError(`"${words[0]}" as ${description}`);
+    } else if (!contentWordSet.has(words[1])) {
+      throw new UnrecognizedError(`"${words[1]}" as content word`);
+    } else {
+      return words as [string, string];
+    }
+  });
 }
 function optionalCombined(
   word: Set<string>,

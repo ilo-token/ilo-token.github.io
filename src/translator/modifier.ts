@@ -1,6 +1,5 @@
 import { ArrayResult } from "../array_result.ts";
 import { dictionary } from "../dictionary.ts";
-import { throwError } from "../misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as Composer from "../parser/composer.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";
@@ -173,19 +172,18 @@ function nanpaModifier(
     includeGerund: true,
     includeVerb: false,
   })
-    .map((phrase) =>
-      phrase.type !== "noun"
-        ? throwError(
-          new FilteredOutError(
-            `${phrase.type} within "in position" phrase`,
-          ),
-        )
-        : (phrase.noun as English.NounPhrase & { type: "simple" })
-            .preposition.length > 0
-        ? throwError(
-          new FilteredOutError('preposition within "in position" phrase'),
-        )
-        : {
+    .map((phrase) => {
+      if (phrase.type !== "noun") {
+        throw new FilteredOutError(
+          `${phrase.type} within "in position" phrase`,
+        );
+      } else if (
+        (phrase.noun as English.NounPhrase & { type: "simple" })
+          .preposition.length > 0
+      ) {
+        throw new FilteredOutError('preposition within "in position" phrase');
+      } else {
+        return {
           type: "in position phrase",
           noun: {
             type: "simple",
@@ -202,8 +200,9 @@ function nanpaModifier(
             preposition: [],
             emphasis: false,
           },
-        }
-    );
+        };
+      }
+    });
 }
 function modifier(
   modifier: TokiPona.Modifier,
