@@ -1,6 +1,6 @@
-import { ClearableCache } from "../cache.ts";
+import { ClearableCacheSet } from "../cache.ts";
 
-export const cache = new ClearableCache();
+export const cache = new ClearableCacheSet();
 
 // This needs to be called whenever settings or custom dictionary has changed
 export function clearCache(): void {
