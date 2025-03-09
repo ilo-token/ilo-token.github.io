@@ -31,16 +31,29 @@ import {
   NounForms,
   VerbForms,
 } from "./type.ts";
+import { Cache } from "../src/cache.ts";
+import { memoize } from "@std/cache/memoize";
 
 const RESERVED_SYMBOLS = "#()*+/:;<=>@[\\]^`{|}~";
 const WORDS = new RegExp(`[^${escapeRegex(RESERVED_SYMBOLS)}]`);
 
 const comment = match(/#[^\n\r]*/, "comment");
 const spaces = sourceOnly(all(choiceOnlyOne(match(/\s/, "space"), comment)));
+const tokiPonaWord = match(/[a-z][a-zA-Z]*/, "word");
+const backtick = matchString("`", "backtick");
+const openParenthesis = matchString("(", "open parenthesis");
+const closeParenthesis = matchString(")", "close parenthesis");
+const openBracket = matchString("[", "open bracket");
+const closeBracket = matchString("]", "close bracket");
+const comma = matchString(",", "comma");
+const colon = matchString(":", "colon");
+const semicolon = lex(matchString(";", "semicolon"));
+
+Parser.startCache(new Cache());
+
 function lex<T>(parser: Parser<T>): Parser<T> {
   return parser.skip(spaces);
 }
-const backtick = matchString("`", "backtick");
 const unescapedWord = allAtLeastOnce(
   choiceOnlyOne(
     match(WORDS, "word"),
@@ -58,13 +71,14 @@ const word = unescapedWord.map(escapeHtml);
 const slash = lex(matchString("/", "slash"));
 const forms = sequence(word, all(slash.with(word)))
   .map(([first, rest]) => [first, ...rest]);
-function keyword<T extends string>(keyword: T): Parser<T> {
-  return lex(match(/[a-z\-]+/, keyword))
+
+const keyword = memoize(<T extends string>(keyword: T): Parser<T> =>
+  lex(match(/[a-z\-]+/, keyword))
     .filter((that) =>
       keyword === that ||
       throwError(new UnexpectedError(`"${that}"`, `"${keyword}"`))
-    ) as Parser<T>;
-}
+    ) as Parser<T>
+);
 const number = choiceOnlyOne(keyword("singular"), keyword("plural"));
 const optionalNumber = optionalAll(number);
 const perspective = choiceOnlyOne(
@@ -73,18 +87,14 @@ const perspective = choiceOnlyOne(
   keyword("third"),
 );
 function tag<T>(parser: Parser<T>): Parser<T> {
-  return lex(matchString("(", "open parenthesis"))
+  return lex(openParenthesis)
     .with(parser)
-    .skip(lex(matchString(")", "close parenthesis")));
+    .skip(lex(closeParenthesis));
 }
 function template<T>(parser: Parser<T>): Parser<T> {
-  return lex(matchString("[", "open square bracket"))
-    .with(parser)
-    .skip(lex(matchString("]", "close square bracket")));
+  return lex(openBracket).with(parser).skip(lex(closeBracket));
 }
-function simpleUnit(kind: string): Parser<string> {
-  return word.skip(tag(keyword(kind)));
-}
+const simpleUnit = memoize((kind: string) => word.skip(tag(keyword(kind))));
 function detectRepetition(
   source: ReadonlyArray<string>,
 ): { before: string; repeat: string; after: string } {
@@ -324,7 +334,6 @@ function verbOnly(tagInside: Parser<unknown>): Parser<VerbForms> {
       }),
   );
 }
-const semicolon = lex(matchString(";", "semicolon"));
 const definition = choiceOnlyOne<Definition>(
   adjective
     .skip(semicolon)
@@ -492,12 +501,12 @@ const definition = choiceOnlyOne<Definition>(
       type: "filler",
     })),
 );
-const singleWord = lex(match(/[a-z][a-zA-Z]*/, "word"));
+const singleWord = lex(tokiPonaWord);
 const head = sequence(
-  all(singleWord.skip(lex(matchString(",", "comma")))),
+  all(singleWord.skip(lex(comma))),
   singleWord,
 )
-  .skip(matchString(":", "colon"))
+  .skip(colon)
   .map(([init, last]) => [...init, last]);
 const entry = withSource(spaces.with(all(definition)))
   .map(([definitions, src]) => ({ definitions, src: src.trimEnd() }));
@@ -512,6 +521,9 @@ const dictionaryParser = spaces
     )
   )
   .parser();
+
+Parser.endCache();
+
 const definitionExtractor = spaces
   .with(all(optionalAll(lex(head)).with(lex(match(/[^;]*;/, "definition")))))
   .skip(end)
