@@ -49,8 +49,7 @@ export type Complement =
 export type Verb = Readonly<{
   modal: null | Word;
   // TODO: better name
-  first: null | Word;
-  rest: ReadonlyArray<Word>;
+  verb: ReadonlyArray<Word>;
 }>;
 export type VerbPhrase =
   | Readonly<{

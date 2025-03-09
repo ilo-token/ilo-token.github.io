@@ -210,8 +210,7 @@ export function fromVerbForms(
   return verb.map(({ modal, verb }) => {
     return {
       modal: mapNullable(modal, unemphasized),
-      first: word({ ...options, word: verb }),
-      rest: [],
+      verb: [word({ ...options, word: verb })],
     };
   });
 }
@@ -242,7 +241,7 @@ export function verb(
         return new ArrayResult([{
           ...partialVerb,
           type: "default",
-          verb: { ...partialVerb, first: null },
+          verb: { modal: partialVerb.modal, verb: partialVerb.rest },
           contentClause: null,
           hideVerb: false,
         }]);

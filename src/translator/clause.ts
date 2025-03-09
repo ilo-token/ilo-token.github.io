@@ -50,8 +50,7 @@ function phraseClause(
                 adverb: [],
                 verb: {
                   modal: null,
-                  first: unemphasized("is"),
-                  rest: [],
+                  verb: [unemphasized("is")],
                 },
                 subjectComplement: {
                   type: "adjective",
@@ -117,8 +116,7 @@ function iWish(
       adverb: [],
       verb: {
         modal: null,
-        first: unemphasized("wish"),
-        rest: [],
+        verb: [unemphasized("wish")],
       },
       subjectComplement: null,
       contentClause: {
