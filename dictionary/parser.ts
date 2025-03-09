@@ -1,3 +1,4 @@
+import { memoize } from "@std/cache/memoize";
 import { escape as escapeHtml } from "@std/html/entities";
 import { escape as escapeRegex } from "@std/regexp/escape";
 import nlp from "compromise/three";
@@ -31,7 +32,6 @@ import {
   NounForms,
   VerbForms,
 } from "./type.ts";
-import { memoize } from "@std/cache/memoize";
 
 const RESERVED_SYMBOLS = "#()*+/:;<=>@[\\]^`{|}~";
 const WORDS = new RegExp(`[^${escapeRegex(RESERVED_SYMBOLS)}]`);
