@@ -17,7 +17,8 @@ On this on-development version, things can be broken.
 
 ## 0.5.0
 
-ilo Token can now translate "o" imperative sentences such as "o toki" and "mi o lape".
+ilo Token can now translate "o" imperative sentences such as "o toki" and "mi o
+lape".
 
 You can now have custom fillers in custom dictionary:
 
