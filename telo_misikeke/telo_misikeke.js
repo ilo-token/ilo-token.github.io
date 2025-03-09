@@ -12,6 +12,8 @@ export function errors(text) {
     .tokenize(text)
     .filter(({ ruleName }) => RULES[ruleName].category === "error")
     .map(({ text, ruleName, match }) =>
-      `"${escape(text)}" ${getMessage(ruleName, match)}`
+      `"${escape(text)}" ${
+        getMessage(ruleName, match).replaceAll(/\r\n|\n|\r/, "<br/>")
+      }`
     );
 }
