@@ -297,8 +297,8 @@ export function phraseAsVerb(
       }
       return {
         type: "simple",
-        adverb: [],
         modal: null,
+        adverb: [],
         first: {
           presentPlural: "are",
           presentSingular: "is",

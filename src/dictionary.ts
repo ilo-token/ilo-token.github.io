@@ -2,6 +2,8 @@ import { dictionary as globalDictionary } from "../dictionary/dictionary.ts";
 import { parseDictionary } from "../dictionary/parser.ts";
 import { Definition, Dictionary } from "../dictionary/type.ts";
 
+// All of these global constants are mutable
+
 const customDictionary: Dictionary = new Map();
 export const dictionary: Dictionary = new Map();
 

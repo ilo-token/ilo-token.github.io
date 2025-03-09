@@ -80,21 +80,23 @@ function complement(
       return adjective(complement.adjective, 0);
   }
 }
+export function adverbVerb(verbAdverb: English.AdverbVerb): string {
+  const { adverb, verb } = verbAdverb;
+  return [...adverb, verb].map(word).join(" ");
+}
 export function verb(phrase: English.VerbPhrase, depth: number): string {
   let text: string;
   switch (phrase.type) {
     case "default": {
-      const { modal, first, rest } = phrase.verb;
+      const { modal, verb } = phrase.verb;
       const verbText = !phrase.hideVerb
         ? [
           ...nullableAsArray(modal),
-          ...nullableAsArray(first),
-          ...rest,
+          ...verb,
         ]
-          .map(word)
+          .map(adverbVerb)
         : [];
       text = [
-        ...phrase.adverb.map(word),
         ...verbText,
         ...nullableAsArray(phrase.subjectComplement).map(complement),
         ...nullableAsArray(phrase.contentClause).map(clause),

@@ -1,21 +1,16 @@
 import { denoPlugins } from "@luca/esbuild-deno-loader";
 import { debounce } from "@std/async/debounce";
 import * as ESBuild from "esbuild";
+import * as Dictionary from "./dictionary/build.ts";
 
 const WATCH = [
-  "./dictionary/build.ts",
-  "./dictionary/dictionary",
-  "./dictionary/misc.ts",
-  "./dictionary/parser.ts",
-  "./dictionary/type.ts",
-  "./telo_misikeke/linku_data.json",
-  "./telo_misikeke/Parser.js",
-  "./telo_misikeke/rules.js",
-  "./telo_misikeke/telo_misikeke.js",
+  "./dictionary/",
+  "./telo_misikeke/",
   "./src/",
   "./project_data.json",
 ];
-const DICTIONARY = /dictionary[/\\][^/\\]+$/;
+const DICTIONARY_DIST_CODE = /[/\\]dictionary[/\\]dictionary\.ts$/;
+const DICTIONARY = /[/\\]dictionary[/\\]dictionary$/;
 
 function buildOptions(minify: boolean): ESBuild.BuildOptions {
   return {
@@ -33,14 +28,12 @@ async function buildAll(
   options: Readonly<{
     minify: boolean;
     buildDictionary: boolean;
-    checkDictionary?: boolean;
   }>,
 ): Promise<void> {
-  const { minify, buildDictionary, checkDictionary } = options;
+  const { minify, buildDictionary } = options;
   try {
     if (buildDictionary) {
-      const Dictionary = await import("./dictionary/build.ts");
-      await Dictionary.build(checkDictionary ?? true);
+      await Dictionary.build();
     }
     // deno-lint-ignore no-console
     console.log("Building main.js...");
@@ -67,19 +60,19 @@ if (import.meta.main) {
       let dictionaryChanged = false;
       const buildDebounced = debounce((buildDictionary: boolean) => {
         task = task.then(async () => {
-          await buildAll({
-            minify: false,
-            buildDictionary,
-            checkDictionary: false,
-          });
+          await buildAll({ minify: false, buildDictionary });
           dictionaryChanged = false;
         });
       }, 500);
       for await (const event of watcher) {
-        if (event.paths.some((path) => DICTIONARY.test(path))) {
-          dictionaryChanged = true;
+        if (
+          !event.paths.every((path) => DICTIONARY_DIST_CODE.test(path))
+        ) {
+          if (event.paths.some((path) => DICTIONARY.test(path))) {
+            dictionaryChanged = true;
+          }
+          buildDebounced(dictionaryChanged);
         }
-        buildDebounced(dictionaryChanged);
       }
       throw new Error("unreachable");
     }

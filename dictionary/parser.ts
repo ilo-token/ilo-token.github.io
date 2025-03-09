@@ -1,3 +1,4 @@
+import { memoize } from "@std/cache/memoize";
 import { escape as escapeHtml } from "@std/html/entities";
 import { escape as escapeRegex } from "@std/regexp/escape";
 import nlp from "compromise/three";
@@ -35,12 +36,30 @@ import {
 const RESERVED_SYMBOLS = "#()*+/:;<=>@[\\]^`{|}~";
 const WORDS = new RegExp(`[^${escapeRegex(RESERVED_SYMBOLS)}]`);
 
-const comment = match(/#[^\n\r]*/, "comment");
-const spaces = sourceOnly(all(choiceOnlyOne(match(/\s/, "space"), comment)));
 function lex<T>(parser: Parser<T>): Parser<T> {
   return parser.skip(spaces);
 }
+const comment = match(/#[^\n\r]*/, "comment");
+const spaces = sourceOnly(all(choiceOnlyOne(match(/\s/, "space"), comment)));
 const backtick = matchString("`", "backtick");
+
+const tokiPonaWord = lex(match(/[a-z][a-zA-Z]*/, "word"));
+const openParenthesis = lex(matchString("(", "open parenthesis"));
+const closeParenthesis = lex(matchString(")", "close parenthesis"));
+const openBracket = lex(matchString("[", "open bracket"));
+const closeBracket = lex(matchString("]", "close bracket"));
+const comma = lex(matchString(",", "comma"));
+const colon = lex(matchString(":", "colon"));
+const semicolon = lex(matchString(";", "semicolon"));
+const slash = lex(matchString("/", "slash"));
+
+const keyword = memoize(<T extends string>(keyword: T): Parser<T> =>
+  lex(match(/[a-z\-]+/, keyword))
+    .filter((that) =>
+      keyword === that ||
+      throwError(new UnexpectedError(`"${that}"`, `"${keyword}"`))
+    ) as Parser<T>
+);
 const unescapedWord = allAtLeastOnce(
   choiceOnlyOne(
     match(WORDS, "word"),
@@ -55,16 +74,8 @@ const unescapedWord = allAtLeastOnce(
     word !== "" || throwError(new ArrayResultError("missing word"))
   );
 const word = unescapedWord.map(escapeHtml);
-const slash = lex(matchString("/", "slash"));
 const forms = sequence(word, all(slash.with(word)))
   .map(([first, rest]) => [first, ...rest]);
-function keyword<T extends string>(keyword: T): Parser<T> {
-  return lex(match(/[a-z\-]+/, keyword))
-    .filter((that) =>
-      keyword === that ||
-      throwError(new UnexpectedError(`"${that}"`, `"${keyword}"`))
-    ) as Parser<T>;
-}
 const number = choiceOnlyOne(keyword("singular"), keyword("plural"));
 const optionalNumber = optionalAll(number);
 const perspective = choiceOnlyOne(
@@ -73,18 +84,12 @@ const perspective = choiceOnlyOne(
   keyword("third"),
 );
 function tag<T>(parser: Parser<T>): Parser<T> {
-  return lex(matchString("(", "open parenthesis"))
-    .with(parser)
-    .skip(lex(matchString(")", "close parenthesis")));
+  return openParenthesis.with(parser).skip(closeParenthesis);
 }
 function template<T>(parser: Parser<T>): Parser<T> {
-  return lex(matchString("[", "open square bracket"))
-    .with(parser)
-    .skip(lex(matchString("]", "close square bracket")));
+  return openBracket.with(parser).skip(closeBracket);
 }
-function simpleUnit(kind: string): Parser<string> {
-  return word.skip(tag(keyword(kind)));
-}
+const simpleUnit = memoize((kind: string) => word.skip(tag(keyword(kind))));
 function detectRepetition(
   source: ReadonlyArray<string>,
 ): { before: string; repeat: string; after: string } {
@@ -324,7 +329,6 @@ function verbOnly(tagInside: Parser<unknown>): Parser<VerbForms> {
       }),
   );
 }
-const semicolon = lex(matchString(";", "semicolon"));
 const definition = choiceOnlyOne<Definition>(
   adjective
     .skip(semicolon)
@@ -492,12 +496,8 @@ const definition = choiceOnlyOne<Definition>(
       type: "filler",
     })),
 );
-const singleWord = lex(match(/[a-z][a-zA-Z]*/, "word"));
-const head = sequence(
-  all(singleWord.skip(lex(matchString(",", "comma")))),
-  singleWord,
-)
-  .skip(matchString(":", "colon"))
+const head = sequence(all(tokiPonaWord.skip(comma)), tokiPonaWord)
+  .skip(colon)
   .map(([init, last]) => [...init, last]);
 const entry = withSource(spaces.with(all(definition)))
   .map(([definitions, src]) => ({ definitions, src: src.trimEnd() }));
@@ -512,6 +512,7 @@ const dictionaryParser = spaces
     )
   )
   .parser();
+
 const definitionExtractor = spaces
   .with(all(optionalAll(lex(head)).with(lex(match(/[^;]*;/, "definition")))))
   .skip(end)

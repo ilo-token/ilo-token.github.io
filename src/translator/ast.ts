@@ -45,17 +45,17 @@ export type AdjectivePhrase =
 export type Complement =
   | Readonly<{ type: "noun"; noun: NounPhrase }>
   | Readonly<{ type: "adjective"; adjective: AdjectivePhrase }>;
-// TODO: each verb should have its own adverbs
+export type AdverbVerb = {
+  adverb: ReadonlyArray<Word>;
+  verb: Word;
+};
 export type Verb = Readonly<{
-  modal: null | Word;
-  // TODO: better name
-  first: null | Word;
-  rest: ReadonlyArray<Word>;
+  modal: null | AdverbVerb;
+  verb: ReadonlyArray<AdverbVerb>;
 }>;
 export type VerbPhrase =
   | Readonly<{
     type: "default";
-    adverb: ReadonlyArray<Word>;
     verb: Verb;
     subjectComplement: null | Complement;
     contentClause: null | Clause;
