@@ -45,6 +45,7 @@ export type AdjectivePhrase =
 export type Complement =
   | Readonly<{ type: "noun"; noun: NounPhrase }>
   | Readonly<{ type: "adjective"; adjective: AdjectivePhrase }>;
+// TODO: each verb should have its own adverbs
 export type Verb = Readonly<{
   modal: null | Word;
   // TODO: better name
