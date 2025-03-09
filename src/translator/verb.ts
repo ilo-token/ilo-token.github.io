@@ -19,7 +19,7 @@ export type PartialVerb =
     adverb: ReadonlyArray<English.Word>;
     modal: null | English.Word;
     // TODO: better name other than first and rest
-    first: Dictionary.VerbForms;
+    first: null | Dictionary.VerbForms;
     reduplicationCount: number;
     wordEmphasis: boolean;
     rest: ReadonlyArray<English.Word>;
@@ -183,19 +183,29 @@ export function verb(
 ): ArrayResult<English.VerbPhrase> {
   switch (partialVerb.type) {
     case "simple": {
-      return fromVerbForms({
-        verbForms: partialVerb.first,
-        perspective,
-        quantity,
-        reduplicationCount: partialVerb.reduplicationCount,
-        emphasis: partialVerb.wordEmphasis,
-      })
-        .map<English.VerbPhrase>((verb) => ({
+      const verbForms = partialVerb.first;
+      if (verbForms != null) {
+        return fromVerbForms({
+          verbForms,
+          perspective,
+          quantity,
+          reduplicationCount: partialVerb.reduplicationCount,
+          emphasis: partialVerb.wordEmphasis,
+        })
+          .map<English.VerbPhrase>((verb) => ({
+            ...partialVerb,
+            type: "default",
+            verb,
+            hideVerb: false,
+          }));
+      } else {
+        return new ArrayResult([{
           ...partialVerb,
+          verb: { ...partialVerb, first: null },
           type: "default",
-          verb,
           hideVerb: false,
-        }));
+        }]);
+      }
     }
     case "compound":
       return ArrayResult.combine(
