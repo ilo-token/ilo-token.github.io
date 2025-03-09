@@ -4,7 +4,7 @@
 NOTE: Before publishing:
 - run `deno task update` to update all dependencies including telo misikeke
 - set parameters on `project-data.json`
-- Remove details
+- update this very document, don't forget to add release date
 -->
 
 <!--
