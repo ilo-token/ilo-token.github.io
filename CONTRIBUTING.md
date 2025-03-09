@@ -22,7 +22,9 @@ its wiki. You may open an issue for:
 - Fix suggestion to the wiki
 
 Please remember to search first before opening an issue, it might already exist!
-Duplicate issues are unnecessary.
+Also check the [changelog](./CHANGELOG.md) and open the on-development
+changelog, it might be already fixed but hasn't published yet! Duplicate issues
+are unnecessary.
 
 ## [Discussion](https://github.com/ilo-token/ilo-token.github.io/discussions)
 
