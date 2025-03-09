@@ -13,7 +13,6 @@ Deno.test("AST all distinct", () => {
   }
 });
 
-
 Deno.test("parser all error", () => {
   for (const sentence of MALFORMED_SENTENCES) {
     assertThrows(() => parse(sentence).unwrap());
