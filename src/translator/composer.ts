@@ -1,6 +1,5 @@
 import { nullableAsArray } from "../misc.ts";
 import * as English from "./ast.ts";
-import { phraseAsVerb } from "./phrase.ts";
 
 const EMPHASIS_STARTING_TAG = "<strong>";
 const EMPHASIS_ENDING_TAG = "</strong>";
