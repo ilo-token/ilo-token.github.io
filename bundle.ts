@@ -13,7 +13,7 @@ const WATCH = [
   "./telo_misikeke/rules.js",
   "./telo_misikeke/telo_misikeke.js",
   "./src/",
-  "./project-data.json",
+  "./project_data.json",
 ];
 const DICTIONARY = /dictionary[/\\][^/\\]+$/;
 
