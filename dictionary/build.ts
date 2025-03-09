@@ -1,23 +1,8 @@
-import { extractErrorMessage } from "../src/misc.ts";
 import { parseDictionary } from "./parser.ts";
 
 const SOURCE = new URL("./dictionary", import.meta.url);
 const DESTINATION = new URL("./dictionary.ts", import.meta.url);
 
-class ImportError extends Error {
-  constructor(message?: string, options?: { cause: unknown }) {
-    super(message, options);
-    this.name = "ImportError";
-  }
-}
-async function importPrevious(): Promise<string> {
-  try {
-    const { original } = await import("./dictionary.ts");
-    return original;
-  } catch (error) {
-    throw new ImportError(extractErrorMessage(error), { cause: error });
-  }
-}
 export async function build(): Promise<void> {
   // deno-lint-ignore no-console
   console.log("Building dictionary...");
