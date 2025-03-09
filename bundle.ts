@@ -4,18 +4,12 @@ import * as ESBuild from "esbuild";
 import * as Dictionary from "./dictionary/build.ts";
 
 const WATCH = [
-  "./dictionary/build.ts",
-  "./dictionary/dictionary",
-  "./dictionary/misc.ts",
-  "./dictionary/parser.ts",
-  "./dictionary/type.ts",
-  "./telo_misikeke/linku_data.json",
-  "./telo_misikeke/Parser.js",
-  "./telo_misikeke/rules.js",
-  "./telo_misikeke/telo_misikeke.js",
+  "./dictionary/",
+  "./telo_misikeke/",
   "./src/",
   "./project_data.json",
 ];
+const DICTIONARY_DIST_CODE = /[/\\]dictionary[/\\]dictionary\.ts$/;
 const DICTIONARY = /[/\\]dictionary[/\\]dictionary$/;
 
 function buildOptions(minify: boolean): ESBuild.BuildOptions {
@@ -71,10 +65,14 @@ if (import.meta.main) {
         });
       }, 500);
       for await (const event of watcher) {
-        if (event.paths.some((path) => DICTIONARY.test(path))) {
-          dictionaryChanged = true;
+        if (
+          !event.paths.every((path) => DICTIONARY_DIST_CODE.test(path))
+        ) {
+          if (event.paths.some((path) => DICTIONARY.test(path))) {
+            dictionaryChanged = true;
+          }
+          buildDebounced(dictionaryChanged);
         }
-        buildDebounced(dictionaryChanged);
       }
       throw new Error("unreachable");
     }
