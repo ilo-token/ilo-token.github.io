@@ -16,6 +16,8 @@ NOTE: Before publishing:
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
 
+ilo Token can now translate "o" imperative sentences such as "o toki" and "mi o lape".
+
 You can now have custom fillers in custom dictionary:
 
 ```
@@ -33,6 +35,7 @@ san:
   3(num);
 ```
 
+- Implement translation of "o" imperative sentences.
 - Allow custom fillers.
 - Allow custom numerals.
 - Numerals are now very permissive. Something like "wan tu" is now allowed. It
