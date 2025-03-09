@@ -7,11 +7,6 @@ import { FilteredOutError } from "./error.ts";
 import { simpleNounForms } from "./noun.ts";
 import { word } from "./word.ts";
 
-function prettyPrintDeterminers(
-  determiners: ReadonlyArray<English.Determiner>,
-): string {
-  return `(${determiners.map(({ determiner }) => determiner).join(` `)})`;
-}
 function filterKind(
   determiners: ReadonlyArray<English.Determiner>,
   kinds: ReadonlyArray<Dictionary.DeterminerType>,
@@ -142,6 +137,11 @@ export function fixDeterminer(
       errors.map((element) => new FilteredOutError(element())),
     );
   }
+}
+function prettyPrintDeterminers(
+  determiners: ReadonlyArray<English.Determiner>,
+): string {
+  return `(${determiners.map(({ determiner }) => determiner).join(` `)})`;
 }
 function encodeDeterminer(
   strings: TemplateStringsArray,
