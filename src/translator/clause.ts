@@ -56,6 +56,7 @@ function phraseClause(
                   type: "adjective",
                   adjective: phrase.adjective,
                 },
+                contentClause: null,
                 object: null,
                 objectComplement: null,
                 preposition: nullableAsArray(phrase.inWayPhrase)

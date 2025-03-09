@@ -196,13 +196,15 @@ export function verb(
             ...partialVerb,
             type: "default",
             verb,
+            contentClause: null,
             hideVerb: false,
           }));
       } else {
         return new ArrayResult([{
           ...partialVerb,
-          verb: { ...partialVerb, first: null },
           type: "default",
+          verb: { ...partialVerb, first: null },
+          contentClause: null,
           hideVerb: false,
         }]);
       }
