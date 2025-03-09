@@ -1,7 +1,7 @@
 export interface Clearable {
   clear(): void;
 }
-export class Cache {
+export class ClearableCache {
   readonly #caches: Set<WeakRef<Clearable>> = new Set();
   add(cache: Clearable): void {
     this.#caches.add(new WeakRef(cache));

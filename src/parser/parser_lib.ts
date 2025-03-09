@@ -1,6 +1,6 @@
 import { memoize } from "@std/cache/memoize";
 import { ArrayResult, ArrayResultError } from "../array_result.ts";
-import { Cache, Clearable, Lazy } from "../cache.ts";
+import { ClearableCache, Clearable, Lazy } from "../cache.ts";
 import { throwError } from "../misc.ts";
 
 export type ValueRest<T> = Readonly<{ rest: string; value: T }>;
@@ -9,7 +9,7 @@ export type ParserResult<T> = ArrayResult<ValueRest<T>>;
 export class Parser<T> {
   readonly unmemoizedParser: (src: string) => ParserResult<T>;
   readonly rawParser: (src: string) => ParserResult<T>;
-  static cache: null | Cache = null;
+  static cache: null | ClearableCache = null;
   constructor(parser: (src: string) => ParserResult<T>) {
     this.unmemoizedParser = parser;
     if (Parser.cache != null) {
@@ -65,16 +65,16 @@ export class Parser<T> {
   static addToCache(cache: Clearable): void {
     Parser.cache?.add(cache);
   }
-  static startCache(cache: Cache = new Cache()): void {
+  static startCache(cache: ClearableCache = new ClearableCache()): void {
     Parser.cache = cache;
   }
   static endCache(): void {
     Parser.cache = null;
   }
-  static startOrEndCache(cache: null | Cache = null): void {
+  static startOrEndCache(cache: null | ClearableCache = null): void {
     Parser.cache = cache;
   }
-  static inContext<T>(fn: () => T, cache: null | Cache = null): T {
+  static inContext<T>(fn: () => T, cache: null | ClearableCache = null): T {
     const previousCache = Parser.cache;
     Parser.startOrEndCache(cache);
     const value = fn();
