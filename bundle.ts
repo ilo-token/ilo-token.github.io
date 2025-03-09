@@ -16,7 +16,7 @@ const WATCH = [
   "./src/",
   "./project_data.json",
 ];
-const DICTIONARY = /dictionary[/\\][^/\\]+$/;
+const DICTIONARY = /[/\\]dictionary[/\\]dictionary$/;
 
 function buildOptions(minify: boolean): ESBuild.BuildOptions {
   return {
