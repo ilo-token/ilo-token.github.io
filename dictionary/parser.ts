@@ -49,8 +49,6 @@ const comma = matchString(",", "comma");
 const colon = matchString(":", "colon");
 const semicolon = lex(matchString(";", "semicolon"));
 
-Parser.startCache(new Cache());
-
 function lex<T>(parser: Parser<T>): Parser<T> {
   return parser.skip(spaces);
 }
@@ -521,8 +519,6 @@ const dictionaryParser = spaces
     )
   )
   .parser();
-
-Parser.endCache();
 
 const definitionExtractor = spaces
   .with(all(optionalAll(lex(head)).with(lex(match(/[^;]*;/, "definition")))))
