@@ -59,7 +59,7 @@ const slash = lex(matchString("/", "slash"));
 const forms = sequence(word, all(slash.with(word)))
   .map(([first, rest]) => [first, ...rest]);
 function keyword<T extends string>(keyword: T): Parser<T> {
-  return lex(match(/[a-z]+/, keyword))
+  return lex(match(/[a-z\-]+/, keyword))
     .filter((that) =>
       keyword === that ||
       throwError(new UnexpectedError(`"${that}"`, `"${keyword}"`))
@@ -227,9 +227,18 @@ const adjectiveKind = choiceOnlyOne(
 const adjective = sequence(
   all(simpleUnit("adv")),
   word,
-  tag(keyword("adj").with(adjectiveKind)),
+  tag(
+    keyword("adj").with(
+      sequence(adjectiveKind, optionalAll(keyword("gerund-like"))),
+    ),
+  ),
 )
-  .map(([adverb, adjective, kind]) => ({ adverb, adjective, kind }));
+  .map(([adverb, adjective, [kind, gerundLike]]) => ({
+    adverb,
+    adjective,
+    kind,
+    gerundLike: gerundLike != null,
+  }));
 const noun = sequence(
   all(determiner),
   all(adjective),

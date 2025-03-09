@@ -50,6 +50,7 @@ export type Adjective = Readonly<{
   adverb: ReadonlyArray<string>;
   adjective: string;
   kind: AdjectiveType;
+  gerundLike: boolean;
 }>;
 export type VerbForms = Readonly<{
   presentPlural: string;

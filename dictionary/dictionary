@@ -14,7 +14,7 @@ akesi:
   reptile(n);
   amphibian(n);
   scaly(adj material) creature(n);
-  crawling(adj opinion) creature(n);
+  crawling(adj opinion gerund-like) creature(n);
 
   reptilian(adj qualifier);
   amphibian(adj qualifier);
@@ -39,8 +39,8 @@ alasa:
   # hunting(n gerund);
   searching(n gerund);
 
-  # hunting(adj qualifier);
-  searching(adj qualifier);
+  # hunting(adj qualifier gerund-like);
+  searching(adj qualifier gerund-like);
 
 ale, ali:
   all(d quantifier plural);
@@ -105,12 +105,12 @@ awen:
   protecting(n gerund);
   continuing(n gerund);
 
-  # staying(adj qualifier);
-  remaining(adj qualifier);
-  # waiting(adj qualifier);
-  pausing(adj qualifier);
-  protecting(adj qualifier);
-  continuing(adj qualifier);
+  # staying(adj qualifier gerund-like);
+  remaining(adj qualifier gerund-like);
+  # waiting(adj qualifier gerund-like);
+  pausing(adj qualifier gerund-like);
+  protecting(adj qualifier gerund-like);
+  continuing(adj qualifier gerund-like);
 
 e:
   `[`marks the start of a direct object`]`(particle def);
@@ -148,11 +148,11 @@ esun:
   buying(n gerund);
   selling(n gerund);
 
-  # trading(adj qualifier);
-  # bartering(adj qualifier);
-  # exchanging(adj qualifier);
-  swapping(adj qualifier);
-  buying(adj qualifier);
+  # trading(adj qualifier gerund-like);
+  # bartering(adj qualifier gerund-like);
+  # exchanging(adj qualifier gerund-like);
+  swapping(adj qualifier gerund-like);
+  buying(adj qualifier gerund-like);
   sell(adj qualifier);
 
 ijo:
@@ -228,10 +228,10 @@ jasima:
   # mirroring(n gerund);
   duplicating(n gerund);
 
-  reflecting(adj qualifier);
-  # echoing(adj qualifier);
-  # mirroring(adj qualifier);
-  duplicating(adj qualifier);
+  reflecting(adj qualifier gerund-like);
+  # echoing(adj qualifier gerund-like);
+  # mirroring(adj qualifier gerund-like);
+  duplicating(adj qualifier gerund-like);
 
 jelo:
   yellow(adj color);
@@ -258,14 +258,14 @@ kala:
   fish(n);
   # marine(adj qualifier) animal(n);
   # sea(adj qualifier) creature(n);
-  swimming(adj qualifier) creature(n);
+  swimming(adj qualifier gerund-like) creature(n);
 
   swim(v);
 
   fish-like(adj qualifier);
   fish-related(adj opinion);
 
-  swimming(adj qualifier);
+  swimming(adj qualifier gerund-like);
 
 kalama:
   produce(v) sound(n);
@@ -288,10 +288,10 @@ kama:
   summoning(n gerund);
   becoming(n gerund);
 
-  arriving(adj qualifier);
-  # approaching(adj qualifier);
-  summoning(adj qualifier);
-  becoming(adj qualifier);
+  arriving(adj qualifier gerund-like);
+  # approaching(adj qualifier gerund-like);
+  summoning(adj qualifier gerund-like);
+  becoming(adj qualifier gerund-like);
 
 kasi:
   plant(n);
@@ -456,7 +456,7 @@ kulupu:
 
 kute:
   ear(n);
-  hearing(adj qualifier) organ(n);
+  hearing(adj qualifier gerund-like) organ(n);
 
   hear(v) [object];
   listen(v) at(prep) [object];
@@ -467,9 +467,9 @@ kute:
   listen(n gerund);
   obeying(n gerund);
 
-  hearing(adj qualifier);
-  listen(adj qualifier);
-  obeying(adj qualifier);
+  hearing(adj qualifier gerund-like);
+  listening(adj qualifier gerund-like);
+  obeying(adj qualifier gerund-like);
 
 la:
   `[`mark the previous statement as context to a following statement`]`(particle def);
@@ -483,9 +483,9 @@ lanpan:
   # seizing(n gerund);
   # stealing(n gerund);
 
-  taking(adj qualifier);
-  # seizing(adj qualifier);
-  # stealing(adj qualifier);
+  taking(adj qualifier gerund-like);
+  # seizing(adj qualifier gerund-like);
+  # stealing(adj qualifier gerund-like);
 
 lape:
   sleep(n singular);
@@ -493,8 +493,8 @@ lape:
   sleep(v);
   rest(v);
 
-  sleeping(adj qualifier);
-  resting(adj qualifier);
+  sleeping(adj qualifier gerund-like);
+  resting(adj qualifier gerund-like);
 
 laso:
   # turquoise(adj color);
@@ -651,7 +651,7 @@ luka:
   hand(n);
   arm(n);
   tactile(adj qualifier) organ(n);
-  grasping(adj qualifier) organ(n);
+  grasping(adj qualifier gerund-like) organ(n);
 
   grasp(v) [object];
   interact(v) with(prep) [object];
@@ -676,7 +676,7 @@ lukin, oko:
   visual(adj qualifier);
 
   eye(n);
-  seeing(adj qualifier) organ(n);
+  seeing(adj qualifier gerund-like) organ(n);
 
   try to(v) [predicate];
 
@@ -899,8 +899,8 @@ musi:
 
   art(n);
   fun(adj opinion);
-  amusing(adj opinion);
-  # interesting(adj opinion);
+  amusing(adj opinion gerund-like);
+  # interesting(adj opinion gerund-like);
   comical(adj opinion);
   # silly(adj opinion);
 
@@ -1111,12 +1111,12 @@ pana:
   putting(n gerund);
   releasing(n gerund);
 
-  giving(adj qualifier);
-  # sending(adj qualifier);
-  emitting(adj qualifier);
-  providing(adj qualifier);
-  putting(adj qualifier);
-  releasing(adj qualifier);
+  giving(adj qualifier gerund-like);
+  # sending(adj qualifier gerund-like);
+  emitting(adj qualifier gerund-like);
+  providing(adj qualifier gerund-like);
+  putting(adj qualifier gerund-like);
+  releasing(adj qualifier gerund-like);
 
 pi:
   `[`modify the next word with one or more following words`]`(particle def);
@@ -1169,7 +1169,7 @@ pipi:
   insect(n);
   bug(n);
   # spider(n);
-  tiny(adj size) crawling(adj qualifier) creature(n);
+  tiny(adj size) crawling(adj qualifier gerund-like) creature(n);
 
   insect-like(adj physical quality);
   bug-like(adj physical quality);
@@ -1292,13 +1292,13 @@ sike:
   # ball(n);
   # wheel(n);
 
-  repeating(adj qualifier) thing(n);
+  repeating(adj qualifier gerund-like) thing(n);
   cycle(n);
   orbit(n);
   loop(n);
 
   round(adj physical quality);
-  repeating(adj qualifier);
+  repeating(adj qualifier gerund-like);
 
   repeatedly(adv);
 
@@ -1509,9 +1509,9 @@ toki:
 
   language(n);
 
-  communicating(adj qualifier);
-  # saying(adj qualifier);
-  thinking(adj qualifier);
+  communicating(adj qualifier gerund-like);
+  # saying(adj qualifier gerund-like);
+  thinking(adj qualifier gerund-like);
 
   conversation-related(adj opinion);
   story-related(adj opinion);
@@ -1560,7 +1560,7 @@ uta:
   mouth(n);
   lip(n);
   throat(n);
-  consuming(adj qualifier) orifice(n);
+  consuming(adj qualifier gerund-like) orifice(n);
 
   mouth-related(adj opinion);
   lips-related(adj opinion);
@@ -1605,7 +1605,7 @@ wan:
 
 waso:
   bird(n);
-  flying(adj qualifier) creature(n);
+  flying(adj qualifier gerund-like) creature(n);
   winged(adj qualifier) animal(n);
 
   fly(v);

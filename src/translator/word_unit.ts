@@ -47,11 +47,15 @@ function defaultWordUnit(
             type: "noun",
           }]);
         case "adjective":
-          return adjective({ ...options, definition })
-            .map<WordUnitTranslation>((adjective) => ({
-              type: "adjective",
-              adjective,
-            }));
+          if (!includeGerund && definition.gerundLike) {
+            return new ArrayResult();
+          } else {
+            return adjective({ ...options, definition })
+              .map<WordUnitTranslation>((adjective) => ({
+                type: "adjective",
+                adjective,
+              }));
+          }
         case "compound adjective":
           return compoundAdjective({
             ...options,
