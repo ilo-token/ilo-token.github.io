@@ -298,11 +298,15 @@ export function phraseAsVerb(
       return {
         type: "simple",
         adverb: [],
-        presentPlural: "are",
-        presentSingular: "is",
-        past: "were",
+        modal: null,
+        first: {
+          presentPlural: "are",
+          presentSingular: "is",
+          past: "were",
+        },
         wordEmphasis: false,
         reduplicationCount: 1,
+        rest: [],
         subjectComplement,
         object: null,
         objectComplement: null,

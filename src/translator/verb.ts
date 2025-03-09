@@ -14,12 +14,15 @@ export type VerbObjects = Readonly<{
   preposition: ReadonlyArray<English.Preposition>;
 }>;
 export type PartialVerb =
-  & Dictionary.VerbForms
   & VerbObjects
   & Readonly<{
     adverb: ReadonlyArray<English.Word>;
+    modal: null | English.Word;
+    // TODO: better name other than first and rest
+    first: Dictionary.VerbForms;
     reduplicationCount: number;
     wordEmphasis: boolean;
+    rest: ReadonlyArray<English.Word>;
     subjectComplement: null | English.Complement;
     forObject: boolean | string;
     predicateType: null | "verb" | "noun adjective";
@@ -75,8 +78,11 @@ export function partialVerb(
     .map(([object, preposition]) => ({
       ...definition,
       adverb: [],
+      modal: null,
+      first: definition,
       reduplicationCount,
       wordEmphasis: emphasis,
+      rest: [],
       subjectComplement: null,
       object,
       objectComplement: null,
@@ -178,7 +184,7 @@ export function verb(
   switch (partialVerb.type) {
     case "simple": {
       return fromVerbForms({
-        verbForms: partialVerb,
+        verbForms: partialVerb.first,
         perspective,
         quantity,
         reduplicationCount: partialVerb.reduplicationCount,
