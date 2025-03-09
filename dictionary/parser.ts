@@ -31,7 +31,6 @@ import {
   NounForms,
   VerbForms,
 } from "./type.ts";
-import { Cache } from "../src/cache.ts";
 import { memoize } from "@std/cache/memoize";
 
 const RESERVED_SYMBOLS = "#()*+/:;<=>@[\\]^`{|}~";
