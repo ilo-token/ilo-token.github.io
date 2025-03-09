@@ -7,7 +7,7 @@ import { perspective } from "./noun.ts";
 import { multiplePhrases, multiplePhrasesAsNoun } from "./phrase.ts";
 import { predicate } from "./predicate.ts";
 import { nounAsPreposition } from "./preposition.ts";
-import { addModalToAll, verb } from "./verb.ts";
+import { addModalToAll, adverbless, verb } from "./verb.ts";
 import { unemphasized } from "./word.ts";
 
 function phraseClause(
@@ -49,7 +49,7 @@ function phraseClause(
                 type: "default",
                 verb: {
                   modal: null,
-                  verb: [{ adverb: [], verb: unemphasized("is") }],
+                  verb: [adverbless(unemphasized("is"))],
                 },
                 subjectComplement: {
                   type: "adjective",
@@ -114,7 +114,7 @@ function iWish(
       type: "default",
       verb: {
         modal: null,
-        verb: [{ adverb: [], verb: unemphasized("wish") }],
+        verb: [adverbless(unemphasized("wish"))],
       },
       subjectComplement: null,
       contentClause: {
@@ -161,7 +161,7 @@ function oClause(
         ArrayResult.from(() =>
           verb(
             addModalToAll(
-              { adverb: [], verb: unemphasized("should") },
+              adverbless(unemphasized("should")),
               predicate,
             ),
             subjectPerspective,

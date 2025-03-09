@@ -214,11 +214,8 @@ export function fromVerbForms(
   }
   return verb.map(({ modal, verb }) => {
     return {
-      modal: mapNullable(
-        modal,
-        (modal) => ({ adverb: [], verb: unemphasized(modal) }),
-      ),
-      verb: [{ adverb: [], verb: word({ ...options, word: verb }) }],
+      modal: mapNullable(modal, (modal) => adverbless(unemphasized(modal))),
+      verb: [adverbless(word({ ...options, word: verb }))],
     };
   });
 }
@@ -267,4 +264,7 @@ export function verb(
           verbs,
         }));
   }
+}
+export function adverbless(verb: English.Word): English.AdverbVerb {
+  return { adverb: [], verb };
 }
