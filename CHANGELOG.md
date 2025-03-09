@@ -7,14 +7,15 @@ NOTE: Before publishing:
 - Remove details
 -->
 
+<!--
 <details>
-
 <summary>On development changelog</summary>
-
-## 0.5.0 (On development)
-
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
+</details>
+-->
+
+## 0.5.0
 
 ilo Token can now translate "o" imperative sentences such as "o toki" and "mi o lape".
 
@@ -45,8 +46,6 @@ san:
 - Support for long "anu" glyph.
 - Fix sentence capitalization: If the sentence starts with number, no
   capitalization will occur.
-
-</details>
 
 ## 0.4.1
 
