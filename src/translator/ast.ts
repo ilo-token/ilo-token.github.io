@@ -57,6 +57,7 @@ export type VerbPhrase =
     adverb: ReadonlyArray<Word>;
     verb: Verb;
     subjectComplement: null | Complement;
+    contentClause: null | Clause;
     object: null | NounPhrase;
     objectComplement: null | Complement;
     preposition: ReadonlyArray<Preposition>;
