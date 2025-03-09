@@ -157,14 +157,15 @@ function oClause(
       emphasis: false,
     }]);
   return ArrayResult.combine(subject, predicate(clause.predicates, "o"))
-    .flatMap(([subject, predicate]) =>
-      ArrayResult.concat(
-        verb(predicate, perspective(subject), subject.quantity)
+    .flatMap(([subject, predicate]) => {
+      const subjectPerspective = perspective(subject);
+      return ArrayResult.concat(
+        verb(predicate, subjectPerspective, subject.quantity)
           .map<English.Clause>((verb) => iWish(subject, verb)),
         ArrayResult.from(() =>
           verb(
             addModalToAll(unemphasized("should"), predicate),
-            perspective(subject),
+            subjectPerspective,
             subject.quantity,
           )
         )
@@ -174,8 +175,8 @@ function oClause(
             verb,
             hideSubject: false,
           })),
-      )
-    );
+      );
+    });
 }
 export function clause(clause: TokiPona.Clause): ArrayResult<English.Clause> {
   switch (clause.type) {
