@@ -47,10 +47,9 @@ function phraseClause(
               },
               verb: {
                 type: "default",
-                adverb: [],
                 verb: {
                   modal: null,
-                  verb: [unemphasized("is")],
+                  verb: [{ adverb: [], verb: unemphasized("is") }],
                 },
                 subjectComplement: {
                   type: "adjective",
@@ -113,10 +112,9 @@ function iWish(
     },
     verb: {
       type: "default",
-      adverb: [],
       verb: {
         modal: null,
-        verb: [unemphasized("wish")],
+        verb: [{ adverb: [], verb: unemphasized("wish") }],
       },
       subjectComplement: null,
       contentClause: {
@@ -162,7 +160,10 @@ function oClause(
           .map<English.Clause>((verb) => iWish(subject, verb)),
         ArrayResult.from(() =>
           verb(
-            addModalToAll(unemphasized("should"), predicate),
+            addModalToAll(
+              { adverb: [], verb: unemphasized("should") },
+              predicate,
+            ),
             subjectPerspective,
             subject.quantity,
           )

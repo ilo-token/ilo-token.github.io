@@ -17,13 +17,13 @@ export type VerbObjects = Readonly<{
 export type PartialVerb =
   & VerbObjects
   & Readonly<{
+    modal: null | English.AdverbVerb;
     adverb: ReadonlyArray<English.Word>;
-    modal: null | English.Word;
     // TODO: better name other than first and rest
     first: null | Dictionary.VerbForms;
     reduplicationCount: number;
     wordEmphasis: boolean;
-    rest: ReadonlyArray<English.Word>;
+    rest: ReadonlyArray<English.AdverbVerb>;
     subjectComplement: null | English.Complement;
     forObject: boolean | string;
     predicateType: null | "verb" | "noun adjective";
@@ -44,21 +44,26 @@ export function condenseVerb(present: string, past: string): string {
   const second = past.split(" ")[0];
   return [condense(first, second), ...rest].join(" ");
 }
-export function addModal(modal: English.Word, verb: PartialVerb): PartialVerb {
+export function addModal(
+  modal: English.AdverbVerb,
+  verb: PartialVerb,
+): PartialVerb {
   if (verb.modal == null) {
     const newRest = nullableAsArray(verb.first)
       .map(({ presentPlural }) => presentPlural)
       .map((verb) => verb === "are" ? "be" : verb)
-      .map((newVerb) =>
-        word({
+      .map((newVerb) => ({
+        adverb: verb.adverb,
+        verb: word({
           word: newVerb,
           reduplicationCount: verb.reduplicationCount,
           emphasis: verb.wordEmphasis,
-        })
-      );
+        }),
+      }));
     return {
       ...verb,
       modal,
+      adverb: modal.adverb,
       first: null,
       rest: [...newRest, ...verb.rest],
       reduplicationCount: 1,
@@ -69,7 +74,7 @@ export function addModal(modal: English.Word, verb: PartialVerb): PartialVerb {
   }
 }
 export function addModalToAll(
-  modal: English.Word,
+  modal: English.AdverbVerb,
   verb: PartialCompoundVerb,
 ): PartialCompoundVerb {
   switch (verb.type) {
@@ -209,8 +214,11 @@ export function fromVerbForms(
   }
   return verb.map(({ modal, verb }) => {
     return {
-      modal: mapNullable(modal, unemphasized),
-      verb: [word({ ...options, word: verb })],
+      modal: mapNullable(
+        modal,
+        (modal) => ({ adverb: [], verb: unemphasized(modal) }),
+      ),
+      verb: [{ adverb: [], verb: word({ ...options, word: verb }) }],
     };
   });
 }
