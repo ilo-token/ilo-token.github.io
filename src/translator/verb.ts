@@ -238,7 +238,10 @@ export function verb(
           .map<English.VerbPhrase>((verb) => ({
             ...partialVerb,
             type: "default",
-            verb,
+            verb: {
+              modal: verb.modal,
+              verb: [...verb.verb, ...partialVerb.rest],
+            },
             contentClause: null,
             hideVerb: false,
           }));
