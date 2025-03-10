@@ -43,14 +43,13 @@ custom dictionary comes with
 limitations. Press Help above to get
 started.`;
 
-const WORD_NOT_FOUND_MESSAGE = "Word not found";
-
 const DICTIONARY_LOADING_FAILED_FIXABLE_MESSAGE =
   "Failed to load custom dictionary. This is mostly likely because the " +
   "syntax has been updated and your custom dictionary still uses the old " +
   "syntax. Please fix it. Apologies for the inconvenience.";
 const DICTIONARY_LOADING_FAILED_UNFIXABLE_MESSAGE =
   "Failed to load custom dictionary. Please report this.";
+const WORD_NOT_FOUND_MESSAGE = "Error: Word not found.";
 const INVALID_WORD_ERROR =
   "Error: Invalid word to add (You may remove this line).";
 const DICTIONARY_ERROR_FIXABLE_MESSAGE =
