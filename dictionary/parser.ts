@@ -42,6 +42,7 @@ function lex<T>(parser: Parser<T>): Parser<T> {
 const comment = match(/#[^\n\r]*/, "comment");
 const spaces = sourceOnly(all(choiceOnlyOne(match(/\s/, "space"), comment)));
 const backtick = matchString("`", "backtick");
+const colon = matchString(":", "colon");
 
 const tokiPonaWord = lex(match(/[a-z][a-zA-Z]*/, "word"));
 const openParenthesis = lex(matchString("(", "open parenthesis"));
@@ -49,7 +50,6 @@ const closeParenthesis = lex(matchString(")", "close parenthesis"));
 const openBracket = lex(matchString("[", "open bracket"));
 const closeBracket = lex(matchString("]", "close bracket"));
 const comma = lex(matchString(",", "comma"));
-const colon = lex(matchString(":", "colon"));
 const semicolon = lex(matchString(";", "semicolon"));
 const slash = lex(matchString("/", "slash"));
 
