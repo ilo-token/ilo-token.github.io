@@ -26,6 +26,9 @@ Also check the [changelog](./CHANGELOG.md) and open the on-development
 changelog, it might be already fixed but hasn't published yet! Duplicate issues
 are unnecessary.
 
+Note to maintainer/contributor: When there's a bug discovered, make a test for
+it. Use Deno's own testing tools.
+
 ## [Discussion](https://github.com/ilo-token/ilo-token.github.io/discussions)
 
 This GitHub repository have discussion, a dedicated forum page and shall serve
