@@ -4,7 +4,7 @@
 NOTE: Before publishing:
 - run `deno task update` to update all dependencies including telo misikeke
 - set parameters on `project-data.json`
-- Remove details
+- update this very document, don't forget to add release date
 -->
 
 <!--
@@ -15,13 +15,23 @@ On this on-development version, things can be broken.
 </details>
 -->
 
+## 0.5.2
+
+Released 14 March 2025
+
+- Change "Add word" button into "Import word".
+
 ## 0.5.1
+
+Released 9 Mar 2025
 
 - Fix adverb placement within verbs: "sina o lape pona" can now translate into
   "You should nicely sleep" instead of "You nicely should sleep".
 - Fix "token is not defined" bug when telo misikeke error messages is turned on.
 
 ## 0.5.0
+
+Released 9 Mar 2025
 
 ilo Token can now translate "o" imperative sentences such as "o toki" and "mi o
 lape".

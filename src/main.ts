@@ -42,7 +42,6 @@ non-pu words. Just know that the
 custom dictionary comes with
 limitations. Press Help above to get
 started.`;
-const EMPTY_DEFINITION_PLACEHOLDER = "Definitions here";
 
 const DICTIONARY_LOADING_FAILED_FIXABLE_MESSAGE =
   "Failed to load custom dictionary. This is mostly likely because the " +
@@ -50,6 +49,7 @@ const DICTIONARY_LOADING_FAILED_FIXABLE_MESSAGE =
   "syntax. Please fix it. Apologies for the inconvenience.";
 const DICTIONARY_LOADING_FAILED_UNFIXABLE_MESSAGE =
   "Failed to load custom dictionary. Please report this.";
+const WORD_NOT_FOUND_MESSAGE = "Error: Word not found.";
 const INVALID_WORD_ERROR =
   "Error: Invalid word to add (You may remove this line).";
 const DICTIONARY_ERROR_FIXABLE_MESSAGE =
@@ -100,11 +100,11 @@ function main(): void {
   const customDictionaryDialogBox = document.getElementById(
     "custom-dictionary-box",
   ) as HTMLDialogElement;
-  const addWordTextBox = document.getElementById(
-    "add-word",
+  const importWordTextBox = document.getElementById(
+    "import-word",
   ) as HTMLInputElement;
-  const addWordButton = document.getElementById(
-    "add-word-button",
+  const importWordButton = document.getElementById(
+    "import-word-button",
   ) as HTMLButtonElement;
   const customDictionaryTextBox = document.getElementById(
     "custom-dictionary",
@@ -240,11 +240,11 @@ function main(): void {
         `${asComment(DEFAULT_CUSTOM_DICTIONARY_MESSAGE)}\n`;
     }
   });
-  addWordButton.addEventListener("click", addWord);
-  addWordTextBox.addEventListener("keydown", (event) => {
+  importWordButton.addEventListener("click", importWord);
+  importWordTextBox.addEventListener("keydown", (event) => {
     if (event.code === "Enter" && !event.altKey && !event.shiftKey) {
       event.preventDefault();
-      addWord();
+      importWord();
     }
   });
   function displayToCustomDictionary(message: string): void {
@@ -254,16 +254,15 @@ function main(): void {
       `${original}${append}${message.trimEnd()}\n`;
     customDictionaryTextBox.scrollTo(0, customDictionaryTextBox.scrollHeight);
   }
-  function addWord(): void {
-    const word = addWordTextBox.value.trim();
+  function importWord(): void {
+    const word = importWordTextBox.value.trim();
     if (/^[a-z][a-zA-Z]*$/.test(word)) {
-      const dictionaryEntry = dictionary.get(word);
-      const definitions = dictionaryEntry?.src ??
-        `\n${
-          asComment(EMPTY_DEFINITION_PLACEHOLDER)
-            .replaceAll(/^/gm, "  ")
-        }`;
-      displayToCustomDictionary(`${word}:${definitions}`);
+      const definitions = dictionary.get(word)?.src;
+      if (definitions != null) {
+        displayToCustomDictionary(`${word}:${definitions}`);
+      } else {
+        displayToCustomDictionary(asComment(WORD_NOT_FOUND_MESSAGE));
+      }
     } else {
       displayToCustomDictionary(asComment(INVALID_WORD_ERROR));
     }
