@@ -1,3 +1,5 @@
+// This code is Deno only
+
 import { parseDictionary } from "./parser.ts";
 
 const SOURCE = new URL("./dictionary", import.meta.url);

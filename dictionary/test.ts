@@ -1,3 +1,5 @@
+// This code is Deno only
+
 import { assertMatch } from "@std/assert/match";
 import { dictionary } from "./dictionary.ts";
 

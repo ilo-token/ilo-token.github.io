@@ -1,3 +1,5 @@
+// This code is Deno only
+
 import { denoPlugins } from "@luca/esbuild-deno-loader";
 import { debounce } from "@std/async/debounce";
 import * as ESBuild from "esbuild";

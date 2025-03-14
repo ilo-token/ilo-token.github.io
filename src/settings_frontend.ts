@@ -1,3 +1,5 @@
+// This code is browser only
+
 import { toKebabCase } from "@std/text/to-kebab-case";
 import { checkLocalStorage, setIgnoreError } from "./misc.ts";
 import {

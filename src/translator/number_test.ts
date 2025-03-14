@@ -1,3 +1,5 @@
+// This code is Deno only
+
 import { assert } from "@std/assert/assert";
 import { number } from "./number.ts";
 

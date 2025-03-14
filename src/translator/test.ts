@@ -1,3 +1,5 @@
+// This code is Deno only
+
 import { assertArrayIncludes } from "@std/assert/array-includes";
 import { translate } from "./translator.ts";
 

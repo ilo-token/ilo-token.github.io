@@ -1,3 +1,5 @@
+// This code is Deno only
+
 import { retry } from "@std/async/retry";
 import { assertOk } from "../src/misc.ts";
 

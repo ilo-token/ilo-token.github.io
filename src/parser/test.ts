@@ -1,3 +1,5 @@
+// This code is Deno only
+
 import { assertNotEquals } from "@std/assert/not-equals";
 import { assertThrows } from "@std/assert/throws";
 import { uniquePairs } from "../misc.ts";

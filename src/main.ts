@@ -1,3 +1,5 @@
+// This code is browser only
+
 import { dictionary } from "../dictionary/dictionary.ts";
 import { asComment } from "../dictionary/misc.ts";
 import PROJECT_DATA from "../project_data.json" with { type: "json" };
