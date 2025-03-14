@@ -7,18 +7,19 @@ NOTE: Before publishing:
 - update this very document, don't forget to add release date
 -->
 
+<!--
 <details>
-
 <summary>On development changelog</summary>
+The latest on-development version can be accessed by building the source code.
+On this on-development version, things can be broken.
+</details>
+-->
 
 ## 0.5.2
 
-The latest on-development version can be accessed by building the source code.
-On this on-development version, things can be broken.
+Released 14 March 2025
 
 - Change "Add word" button into "Import word".
-
-</details>
 
 ## 0.5.1
 
