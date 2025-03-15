@@ -88,7 +88,7 @@ export function verb(phrase: English.VerbPhrase, depth: number): string {
   let text: string;
   switch (phrase.type) {
     case "default": {
-      const { modal, verb } = phrase.verb;
+      const { verb: { modal, verb } } = phrase;
       const verbText = !phrase.hideVerb
         ? [
           ...nullableAsArray(modal),

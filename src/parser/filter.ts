@@ -279,7 +279,7 @@ export const CLAUSE_RULE: ReadonlyArray<(clause: Clause) => boolean> = [
       clause.explicitLi &&
       clause.subjects.type === "single"
     ) {
-      const { phrase } = clause.subjects;
+      const { subjects: { phrase } } = clause;
       if (
         phrase.type === "default" &&
         phrase.headWord.type === "default" &&
@@ -287,7 +287,7 @@ export const CLAUSE_RULE: ReadonlyArray<(clause: Clause) => boolean> = [
         phrase.modifiers.length === 0 &&
         phrase.emphasis == null
       ) {
-        const { word } = phrase.headWord;
+        const { headWord: { word } } = phrase;
         if (["mi", "sina"].includes(word)) {
           throw new UnrecognizedError(`"${word} li"`);
         }
@@ -303,7 +303,7 @@ export const SENTENCE_RULE: ReadonlyArray<(sentence: Sentence) => boolean> = [
       if (
         sentence.kinOrTaso != null && sentence.kinOrTaso.type === "x ala x"
       ) {
-        const { word } = sentence.kinOrTaso;
+        const { kinOrTaso: { word } } = sentence;
         throw new UnrecognizedError(`"${word} ala ${word}"`);
       }
     }
