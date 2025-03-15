@@ -67,30 +67,32 @@ function interjection(clause: TokiPona.Clause): ArrayResult<English.Clause> {
     const { phrase } = clause.phrases;
     if (phrase.type === "default" && phrase.modifiers.length === 0) {
       const { headWord } = phrase;
-      if (headWord.type === "default" || headWord.type === "reduplication") {
-        return new ArrayResult(dictionary.get(headWord.word)!.definitions)
-          .filterMap((definition) => {
-            if (definition.type === "interjection") {
-              switch (headWord.type) {
-                case "default":
-                  return definition.interjection;
-                case "reduplication":
-                  return repeatWithSpace(
-                    definition.interjection,
-                    headWord.count,
-                  );
+      switch (headWord.type) {
+        case "default":
+        case "reduplication":
+          return new ArrayResult(dictionary.get(headWord.word)!.definitions)
+            .filterMap((definition) => {
+              if (definition.type === "interjection") {
+                switch (headWord.type) {
+                  case "default":
+                    return definition.interjection;
+                  case "reduplication":
+                    return repeatWithSpace(
+                      definition.interjection,
+                      headWord.count,
+                    );
+                }
+              } else {
+                return null;
               }
-            } else {
-              return null;
-            }
-          })
-          .map<English.Clause>((interjection) => ({
-            type: "interjection",
-            interjection: {
-              word: interjection,
-              emphasis: headWord.emphasis != null,
-            },
-          }));
+            })
+            .map<English.Clause>((interjection) => ({
+              type: "interjection",
+              interjection: {
+                word: interjection,
+                emphasis: headWord.emphasis != null,
+              },
+            }));
       }
     }
   }

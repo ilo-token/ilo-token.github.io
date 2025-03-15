@@ -288,7 +288,7 @@ export const CLAUSE_RULE: ReadonlyArray<(clause: Clause) => boolean> = [
         phrase.emphasis == null
       ) {
         const { word } = phrase.headWord;
-        if (word === "mi" || word === "sina") {
+        if (["mi", "sina"].includes(word)) {
           throw new UnrecognizedError(`"${word} li"`);
         }
       }
