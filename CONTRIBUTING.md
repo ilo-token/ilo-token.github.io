@@ -27,8 +27,9 @@ changelog, it might be already fixed but hasn't published yet! Duplicate issues
 are unnecessary.
 
 Note to maintainer/contributor: When there's a bug discovered, make a test for
-it if possible. Use Deno's own testing tools. Then edit the issue to link the
-test in following format:
+it if possible. Use Deno's own testing tools:
+[examples](https://github.com/ilo-token/ilo-token.github.io/blob/master/src/translator/test.ts).
+Then edit the issue to link the test in following format:
 
 ```md
 Test: [src/translator/test.ts "verb with adverb"](permalink including the lines)
