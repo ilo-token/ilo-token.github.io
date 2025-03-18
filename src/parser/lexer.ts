@@ -42,8 +42,8 @@ import {
 } from "./ucsur.ts";
 import { throwError } from "../misc.ts";
 
-const spacesWithoutNewline = match(/[^\S\n\r]*/, "spaces");
-const newline = match(/[\n\r]\s*/, "newline");
+const spacesWithoutNewline = match(/[^\S\n]*?(?=\S|\r?\n|$)/, "spaces");
+const newline = match(/\r?\n\s*/, "newline");
 const spaces = sourceOnly(
   sequence(spacesWithoutNewline, choice(nothing, newline)),
 );

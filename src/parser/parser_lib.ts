@@ -191,7 +191,7 @@ function describeSource(src: string): string {
   } else {
     const [token] = src.match(/\S*/)!;
     if (token === "") {
-      if (/^[\n\r]/.test(src)) {
+      if (/^\r?\n/.test(src)) {
         return "newline";
       } else {
         return "space";

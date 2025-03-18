@@ -2,7 +2,7 @@ import { distinctBy } from "@std/collections/distinct-by";
 import { escape } from "@std/regexp/escape";
 import { Lazy } from "./cache.ts";
 
-export const NEWLINES = /\r\n|\n|\r/g;
+export const NEWLINES = /\r?\n/g;
 
 export function nullableAsArray<T>(value?: T): ReadonlyArray<NonNullable<T>> {
   if (value == null) {

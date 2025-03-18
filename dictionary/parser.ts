@@ -39,7 +39,7 @@ const WORDS = new RegExp(`[^${escapeRegex(RESERVED_SYMBOLS)}]`);
 function lex<T>(parser: Parser<T>): Parser<T> {
   return parser.skip(spaces);
 }
-const comment = match(/#[^\n\r]*/, "comment");
+const comment = match(/#[^\n]*\n?/, "comment");
 const spaces = sourceOnly(all(choiceOnlyOne(match(/\s/, "space"), comment)));
 const backtick = matchString("`", "backtick");
 const colon = matchString(":", "colon");
