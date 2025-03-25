@@ -1,3 +1,4 @@
+import { assert } from "@std/assert/assert";
 import { memoize } from "@std/cache/memoize";
 import { ArrayResult, ArrayResultError } from "../array_result.ts";
 import { Clearable, ClearableCacheSet, Lazy } from "../cache.ts";
@@ -120,6 +121,7 @@ export function lazy<T>(parser: () => Parser<T>): Parser<T> {
   }
 }
 export function choice<T>(...choices: ReadonlyArray<Parser<T>>): Parser<T> {
+  assert(choices.length > 1, "`choice` called with less than 2 arguments");
   return new Parser((src) =>
     new ArrayResult(choices).flatMap((parser) => parser.rawParser(src))
   );
@@ -127,6 +129,10 @@ export function choice<T>(...choices: ReadonlyArray<Parser<T>>): Parser<T> {
 export function choiceOnlyOne<T>(
   ...choices: ReadonlyArray<Parser<T>>
 ): Parser<T> {
+  assert(
+    choices.length > 1,
+    "`choiceOnlyOne` called with less than 2 arguments",
+  );
   return choices.reduceRight(
     (right, left) =>
       new Parser((src) => {
@@ -151,6 +157,7 @@ export function sequence<T extends ReadonlyArray<unknown>>(
     & Readonly<{ [I in keyof T]: Parser<T[I]> }>
     & Readonly<{ length: T["length"] }>
 ): Parser<T> {
+  assert(sequence.length > 1, "`sequence` called with less than 2 arguments");
   // We resorted to using `any` types here, make sure it works properly
   return sequence.reduceRight(
     (right: Parser<any>, left) =>
