@@ -9,7 +9,7 @@
       "dependencies": ["build-dictionary"]
     },
     "start": "deno run -N=0.0.0.0 -R=./dist/ --no-prompt jsr:@std/http/file-server ./dist/",
-    "watch": "deno run -E -R -W -N=jsr.io --allow-run --no-prompt ./bundle.ts ./bundle.ts watch",
+    "watch": "deno run -E -R -W -N=jsr.io --allow-run --no-prompt ./bundle.ts watch",
     "update": "deno outdated --update && deno run -N=api.linku.la,gitlab.com -W=./telo_misikeke/linku_data.json,./telo_misikeke/Parser.js,./telo_misikeke/rules.js --no-prompt ./telo_misikeke/update.ts",
     "build-dictionary": "deno run -R=./dictionary/dictionary -W=./dictionary/dictionary.ts --no-prompt ./dictionary/build.ts"
   },
