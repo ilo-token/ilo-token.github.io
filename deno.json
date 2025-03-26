@@ -3,15 +3,15 @@
     "lib": ["dom", "deno.ns"]
   },
   "tasks": {
-    "build": "deno run --allow-read --allow-write --allow-env --allow-net --allow-run --no-prompt ./bundle.ts build",
+    "build": "deno run -E -R -W -N=jsr.io --allow-run --no-prompt ./bundle.ts build",
     "repl": {
       "command": "deno run --no-prompt ./src/repl.ts",
       "dependencies": ["build-dictionary"]
     },
-    "start": "deno run --allow-net --allow-read --no-prompt jsr:@std/http/file-server ./dist/",
-    "watch": "deno run --allow-read --allow-write --allow-env --allow-net --allow-run --no-prompt --watch ./bundle.ts watch",
-    "update": "deno outdated --update && deno run --allow-write --allow-net --no-prompt ./telo_misikeke/update.ts",
-    "build-dictionary": "deno run --allow-read --allow-write --no-prompt ./dictionary/build.ts"
+    "start": "deno run -N=0.0.0.0 -R=./dist/ --no-prompt jsr:@std/http/file-server ./dist/",
+    "watch": "deno run -E -R -W -N=jsr.io --allow-run --no-prompt ./bundle.ts ./bundle.ts watch",
+    "update": "deno outdated --update && deno run -N=api.linku.la,gitlab.com -W=./telo_misikeke/linku_data.json,./telo_misikeke/Parser.js,./telo_misikeke/rules.js --no-prompt ./telo_misikeke/update.ts",
+    "build-dictionary": "deno run -R=./dictionary/dictionary -W=./dictionary/dictionary.ts --no-prompt ./dictionary/build.ts"
   },
   "fmt": {
     "exclude": [
