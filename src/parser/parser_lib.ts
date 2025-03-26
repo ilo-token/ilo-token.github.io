@@ -1,5 +1,5 @@
 import { assert } from "@std/assert/assert";
-import { memoize } from "@std/cache/memoize";
+import { MemoizationCacheResult, memoize } from "@std/cache/memoize";
 import { ArrayResult, ArrayResultError } from "../array_result.ts";
 import { Clearable, ClearableCacheSet, Lazy } from "../cache.ts";
 import { throwError } from "../misc.ts";
@@ -14,7 +14,7 @@ export class Parser<T> {
   constructor(parser: (src: string) => ParserResult<T>) {
     this.unmemoizedParser = parser;
     if (Parser.cache != null) {
-      const cache = new Map();
+      const cache = new Map<string, MemoizationCacheResult<ParserResult<T>>>();
       Parser.addToCache(cache);
       this.rawParser = memoize(this.unmemoizedParser, { cache });
     } else {
