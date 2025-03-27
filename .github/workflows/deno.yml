@@ -15,7 +15,7 @@ jobs:
         with:
           deno-version: v2.x
       - name: Install Dependencies
-        run: deno install --locked
+        run: deno install --frozen
       - name: Build Dictionary
         run: deno task build-dictionary
       - name: Check formatting
