@@ -1,4 +1,4 @@
-import { nullableAsArray } from "../misc.ts";
+import { nullableAsArray } from "../../misc/misc.ts";
 import * as English from "./ast.ts";
 
 const EMPHASIS_STARTING_TAG = "<strong>";

@@ -1,6 +1,6 @@
 import { ArrayResult } from "../array_result.ts";
 import { dictionary } from "../dictionary.ts";
-import { nullableAsArray, repeatWithSpace } from "../misc.ts";
+import { nullableAsArray, repeatWithSpace } from "../../misc/misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { definitionAsPlainString } from "./as_string.ts";
 import * as English from "./ast.ts";

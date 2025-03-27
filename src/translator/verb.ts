@@ -1,6 +1,6 @@
 import * as Dictionary from "../../dictionary/type.ts";
 import { ArrayResult } from "../array_result.ts";
-import { mapNullable, nullableAsArray } from "../misc.ts";
+import { mapNullable, nullableAsArray } from "../../misc/misc.ts";
 import { settings } from "../settings.ts";
 import * as English from "./ast.ts";
 import { FilteredOutError } from "./error.ts";

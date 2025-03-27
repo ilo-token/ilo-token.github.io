@@ -40,7 +40,7 @@ import {
   UCSUR_CHARACTER_REGEX,
   UCSUR_TO_LATIN,
 } from "./ucsur.ts";
-import { throwError } from "../misc.ts";
+import { throwError } from "../../misc/misc.ts";
 
 const spacesWithoutNewline = match(/[^\S\n]*?(?=\S|\r?\n|$)/, "spaces");
 const newline = match(/\r?\n\s*/, "newline");

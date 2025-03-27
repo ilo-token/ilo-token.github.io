@@ -7,7 +7,7 @@ import {
   preverbSet,
   tokiPonaWordSet,
 } from "../dictionary.ts";
-import { nullableAsArray, throwError } from "../misc.ts";
+import { nullableAsArray, throwError } from "../../misc/misc.ts";
 import {
   Clause,
   ContextClause,

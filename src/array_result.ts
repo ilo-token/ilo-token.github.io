@@ -1,4 +1,4 @@
-import { flattenError, nullableAsArray } from "./misc.ts";
+import { flattenError, nullableAsArray } from "../misc/misc.ts";
 
 export type ArrayResultOptions = {
   cause: unknown;

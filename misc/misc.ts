@@ -1,5 +1,3 @@
-import { distinctBy } from "@std/collections/distinct-by";
-
 export function nullableAsArray<T>(value?: T): ReadonlyArray<NonNullable<T>> {
   if (value == null) {
     return [];
@@ -29,11 +27,6 @@ export function flattenError(error: unknown): ReadonlyArray<unknown> {
   } else {
     return [error];
   }
-}
-export function deduplicateErrors<T extends Error>(
-  errors: Iterable<T>,
-): ReadonlyArray<T> {
-  return distinctBy(errors, ({ message }) => message);
 }
 export function throwError(error: unknown): never {
   throw error;

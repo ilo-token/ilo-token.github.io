@@ -2,7 +2,7 @@ import { assert } from "@std/assert/assert";
 import { MemoizationCacheResult, memoize } from "@std/cache/memoize";
 import { ArrayResult, ArrayResultError } from "../array_result.ts";
 import { Clearable, ClearableCacheSet, Lazy } from "../cache.ts";
-import { throwError } from "../misc.ts";
+import { throwError } from "../../misc/misc.ts";
 
 export type ValueRest<T> = Readonly<{ rest: string; value: T }>;
 export type ParserResult<T> = ArrayResult<ValueRest<T>>;

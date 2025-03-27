@@ -2,9 +2,9 @@ import { distinct } from "@std/collections/distinct";
 import { shuffle } from "@std/random/shuffle";
 import { errors } from "../telo_misikeke/telo_misikeke.js";
 import { ArrayResultError } from "./array_result.ts";
-import { deduplicateErrors } from "./misc.ts";
 import { settings } from "./settings.ts";
 import { translate as rawTranslate } from "./translator/translator.ts";
+import { deduplicateErrors } from "../misc/deduplicate_errors.ts";
 
 export { ArrayResultError } from "./array_result.ts";
 export type { ArrayResultOptions } from "./array_result.ts";

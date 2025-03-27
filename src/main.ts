@@ -14,7 +14,7 @@ import PROJECT_DATA from "../project_data.json" with { type: "json" };
 import { ArrayResultError } from "./array_result.ts";
 import { loadCustomDictionary } from "./dictionary.ts";
 import { checkLocalStorage, setIgnoreError } from "./local_storage.ts";
-import { flattenError } from "./misc.ts";
+import { flattenError } from "../misc/misc.ts";
 import { translate } from "./mod.ts";
 import { clearCache } from "./parser/cache.ts";
 import { settings } from "./settings.ts";

@@ -1,6 +1,6 @@
 import * as Dictionary from "../../dictionary/type.ts";
 import { ArrayResult } from "../array_result.ts";
-import { nullableAsArray, throwError } from "../misc.ts";
+import { nullableAsArray, throwError } from "../../misc/misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
 import { UntranslatableError } from "./error.ts";
