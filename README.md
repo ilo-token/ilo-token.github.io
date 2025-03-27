@@ -15,6 +15,12 @@ You'll need the following in order to run commands:
 
 - [Deno](https://deno.com/)
 
+Before running any command line mentioned here, run the following command first.
+
+```
+deno install
+```
+
 ## Building
 
 This builds the distribution code at `./dist/main.js` as minified file ready for

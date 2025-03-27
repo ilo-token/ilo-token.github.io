@@ -28,6 +28,8 @@ jobs:
         uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
+      - name: Install Dependencies
+        run: deno install --locked
       - name: Build
         run: deno task build
       - name: Setup Pages
