@@ -76,5 +76,6 @@
     "@std/text": "jsr:@std/text@^1.0.12",
     "compromise": "npm:compromise@^14.14.3",
     "esbuild": "npm:esbuild@^0.25.1"
-  }
+  },
+  "lock": { "frozen": true }
 }
