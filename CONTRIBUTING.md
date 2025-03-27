@@ -65,6 +65,9 @@ Please don't do the following, we can do this ourselves.
 
 More things to remember:
 
+(These aren't strict rules. It's perfectly fine to not follow any of these, we
+can adapt.)
+
 - Keep the source code as runtime agnostic as possible. We target the browser
   and Deno. This is necessary because we use `deno test`. If a module is
   exclusive to one runtime, add a note above the code:
