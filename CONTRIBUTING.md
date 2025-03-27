@@ -51,8 +51,10 @@ Please search first before opening a new page! Duplicate pages are unnecessary.
 Before forking and editing, please claim an issue first or open an issue then
 claim it. After that, you can start away. This is necessary to avoid wasted
 duplicate efforts.
+[The wiki](https://github.com/ilo-token/ilo-token.github.io/wiki) contains
+useful information for contributors.
 
-You **don't** have to do this if:
+You **don't** have to open a new issue this if:
 
 - It is a contribution to the dictionary
 - It is a minor edit e.g. a typo fix
@@ -61,11 +63,16 @@ Please don't do the following, we can do this ourselves.
 
 - Updating dependencies
 
-Additionally, please format the code when you make changes. We use Deno's
-built-in formatter.
+More things to remember:
 
-[The wiki](https://github.com/ilo-token/ilo-token.github.io/wiki) contains
-useful for contributors.
+- Keep the source code as runtime agnostic as possible. We target the browser
+  and Deno. This is necessary because we use `deno test`. If a module is
+  exclusive to one runtime, add a note above the code:
+  `// This code is browser/Deno only`.
+- Ensure all the files are formatted: Run `deno fmt`.
+- Ensure all the test passes: Run `deno test --parallel`.
+- Make use of linter: Run `deno lint`. You can run `deno lint --watch` which
+  will auto-reload the stdout whenever you have fixed a linting issue.
 
 As a thank you for contributing, you'll get a shout out in the changelog!
 
