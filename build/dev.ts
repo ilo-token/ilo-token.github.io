@@ -2,18 +2,19 @@
 
 import { assert } from "@std/assert/assert";
 import { exists } from "@std/fs/exists";
-import * as ESBuild from "esbuild";
+import { BuildContext, BuildOptions, context } from "esbuild";
 import { OPTIONS } from "./config.ts";
 
-const BUILD_OPTIONS: ESBuild.BuildOptions = {
+const BUILD_OPTIONS: BuildOptions = {
   ...OPTIONS,
   minify: false,
   define: { LIVE_RELOAD: "true" },
 };
-async function watchMain(): Promise<void> {
-  const context = await ESBuild.context(BUILD_OPTIONS);
-  await context.watch();
-  await context.serve({ servedir: "./dist/" });
+async function watchMain(): Promise<BuildContext<BuildOptions>> {
+  const buildContext = await context(BUILD_OPTIONS);
+  await buildContext.watch();
+  await buildContext.serve({ servedir: "./dist/" });
+  return buildContext;
 }
 async function watchDictionary(): Promise<number> {
   const command = new Deno.Command(Deno.execPath(), {
@@ -43,6 +44,10 @@ if (import.meta.main) {
     const Dictionary = await import("../dictionary/build.ts");
     await Dictionary.build();
   }
-  const [statusCode] = await Promise.all([watchDictionary(), watchMain()]);
+  const [statusCode, context] = await Promise.all([
+    watchDictionary(),
+    watchMain(),
+  ]);
+  await context.dispose();
   Deno.exit(statusCode);
 }
