@@ -14,7 +14,7 @@ export function errors(text) {
     .filter(({ ruleName }) => RULES[ruleName].category === "error")
     .map(({ text, ruleName, match }) =>
       `"${escape(text)}" ${
-        getMessage(ruleName, match).replaceAll(NEWLINES, "<br/>")
+        getMessage(ruleName, match).replaceAll(/\r?\n/g, "<br/>")
       }`
     );
 }
