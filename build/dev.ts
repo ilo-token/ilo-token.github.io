@@ -23,6 +23,7 @@ if (import.meta.main) {
       "--frozen",
       "--cached-only",
       "--watch",
+      "--no-clear-screen",
       "./dictionary/watch.ts",
     ],
     cwd: new URL("../", import.meta.url),
