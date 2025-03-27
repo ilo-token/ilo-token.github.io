@@ -5,22 +5,17 @@ import { asComment } from "../dictionary/misc.ts";
 import PROJECT_DATA from "../project_data.json" with { type: "json" };
 import { ArrayResultError } from "./array_result.ts";
 import { loadCustomDictionary } from "./dictionary.ts";
-import {
-  checkLocalStorage,
-  extractErrorMessage,
-  flattenError,
-  NEWLINES,
-  setIgnoreError,
-} from "./misc.ts";
+import { checkLocalStorage, setIgnoreError } from "./local_storage.ts";
+import { flattenError } from "./misc.ts";
 import { translate } from "./mod.ts";
 import { clearCache } from "./parser/cache.ts";
+import { settings } from "./settings.ts";
 import {
   loadFromElements,
   loadFromLocalStorage,
   resetElementsToCurrent,
   resetElementsToDefault,
 } from "./settings_frontend.ts";
-import { settings } from "./settings.ts";
 
 const TRANSLATE_LABEL = "Translate";
 const TRANSLATE_LABEL_MULTILINE = "Translate (Ctrl + Enter)";
@@ -286,7 +281,7 @@ function main(): void {
         : DICTIONARY_ERROR_UNFIXABLE_MESSAGE;
       const errorListMessage = errors
         .map(extractErrorMessage)
-        .map((message) => `\n- ${message.replaceAll(NEWLINES, "$&  ")}`);
+        .map((message) => `\n- ${message.replaceAll(/\r?\n/g, "$&  ")}`);
       displayToCustomDictionary(asComment(`${message}${errorListMessage}`));
       // deno-lint-ignore no-console
       console.error(error);
@@ -297,6 +292,13 @@ function main(): void {
       event.preventDefault();
     }
   });
+}
+function extractErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  } else {
+    return `${error}`;
+  }
 }
 function errorsFixable(errors: ReadonlyArray<unknown>): boolean {
   return errors.length > 0 &&

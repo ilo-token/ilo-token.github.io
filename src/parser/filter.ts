@@ -1,5 +1,5 @@
 import { extractArrayResultError } from "../array_result.ts";
-import { findDuplicate, flattenError, throwError } from "../misc.ts";
+import { flattenError, throwError } from "../misc.ts";
 import { settings } from "../settings.ts";
 import {
   Clause,
@@ -417,4 +417,15 @@ function phraseHasTopLevelEmphasis(phrase: Phrase): boolean {
     case "preposition":
       return phrase.emphasis != null;
   }
+}
+function findDuplicate<T>(iterable: Iterable<T>): null | T {
+  const set = new Set();
+  for (const value of iterable) {
+    if (set.has(value)) {
+      return value;
+    } else {
+      set.add(value);
+    }
+  }
+  return null;
 }
