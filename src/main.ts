@@ -1,5 +1,13 @@
 // This code is browser only
 
+declare const LIVE_RELOAD: boolean;
+
+// auto-refresh when source code have changed
+if (typeof LIVE_RELOAD !== "undefined" && LIVE_RELOAD) {
+  new EventSource("/esbuild")
+    .addEventListener("change", () => location.reload());
+}
+
 import { dictionary } from "../dictionary/dictionary.ts";
 import { asComment } from "../dictionary/misc.ts";
 import PROJECT_DATA from "../project_data.json" with { type: "json" };
@@ -141,15 +149,6 @@ function main(): void {
       // deno-lint-ignore no-console
       console.error(error);
     }
-  }
-
-  // remove unused local storage data
-  const used = [DICTIONARY_KEY, ...Object.keys(settings)];
-  const unused = [...new Array(localStorage.length).keys()]
-    .map((i) => localStorage.key(i)!)
-    .filter((key) => !used.includes(key));
-  for (const key of unused) {
-    localStorage.removeItem(key);
   }
 
   // initial text area size
@@ -304,10 +303,18 @@ function errorsFixable(errors: ReadonlyArray<unknown>): boolean {
   return errors.length > 0 &&
     errors.every((error) => error instanceof ArrayResultError);
 }
-if (typeof document !== "undefined") {
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", main);
-  } else {
-    main();
-  }
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", main);
+} else {
+  main();
+}
+
+// remove unused local storage data
+const used = [DICTIONARY_KEY, ...Object.keys(settings)];
+const unused = [...new Array(localStorage.length).keys()]
+  .map((i) => localStorage.key(i)!)
+  .filter((key) => !used.includes(key));
+for (const key of unused) {
+  localStorage.removeItem(key);
 }

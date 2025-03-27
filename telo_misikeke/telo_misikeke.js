@@ -4,7 +4,6 @@ import { escape } from "@std/html/entities";
 import LINKU from "./linku_data.json" with { type: "json" };
 import { ParserWithCallbacks } from "./Parser.js";
 import { build_rules, getMessage } from "./rules.js";
-import { NEWLINES } from "../src/misc.ts";
 
 const RULES = build_rules(LINKU);
 

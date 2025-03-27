@@ -4,16 +4,12 @@
   },
   "tasks": {
     "build": {
-      "description": "Builds `./dist/main.js` as minified file with source mapping at `./dist/main.js.map`. This command also builds the dictionary at `./dictionary/dictionary.ts`.",
-      "command": "deno run -E -R -W -N=jsr.io --allow-run --no-prompt --frozen --cached-only ./bundle.ts build"
+      "description": "Builds every static files needed for GitHub pages",
+      "command": "deno run -E -R -W -N=jsr.io --allow-run --no-prompt --frozen --cached-only ./build.ts"
     },
-    "watch": {
-      "description": "Similar to `deno task build` but doesn't minify the code. This command also watches the source code and rebuilds `./dist/main.js` or `./dictionary/dictionary.ts` whenever necessary. This DOESN'T auto-refreshes the webpage.",
-      "command": "deno run -E -R -W -N=jsr.io --allow-run --no-prompt --frozen --cached-only ./bundle.ts watch"
-    },
-    "start-server": {
-      "description": "Starts a local server serving `./dist/` statically",
-      "command": "deno run -N=0.0.0.0 -R=./dist/ --no-prompt jsr:@std/http/file-server ./dist/"
+    "start": {
+      "description": "Starts a development server. The provided page will auto-reload whenever there are changes to the code.",
+      "command": "deno run -E -R -W -N=jsr.io --allow-run --no-prompt --frozen --cached-only ./dev.ts"
     },
     "repl": {
       "description": "Starts a REPL",
@@ -73,6 +69,7 @@
     "@std/async": "jsr:@std/async@^1.0.12",
     "@std/cache": "jsr:@std/cache@^0.2.0",
     "@std/collections": "jsr:@std/collections@^1.0.10",
+    "@std/fs": "jsr:@std/fs@^1.0.15",
     "@std/html": "jsr:@std/html@^1.0.3",
     "@std/random": "jsr:@std/random@^0.1.0",
     "@std/regexp": "jsr:@std/regexp@^1.0.1",

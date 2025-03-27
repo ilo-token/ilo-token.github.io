@@ -8,9 +8,12 @@
     "jsr:@std/cache@0.2": "0.2.0",
     "jsr:@std/collections@^1.0.10": "1.0.10",
     "jsr:@std/encoding@^1.0.5": "1.0.8",
+    "jsr:@std/encoding@^1.0.7": "1.0.8",
+    "jsr:@std/fs@^1.0.15": "1.0.15",
     "jsr:@std/html@^1.0.3": "1.0.3",
     "jsr:@std/internal@^1.0.6": "1.0.6",
     "jsr:@std/path@^1.0.6": "1.0.8",
+    "jsr:@std/path@^1.0.8": "1.0.8",
     "jsr:@std/random@0.1": "0.1.0",
     "jsr:@std/regexp@^1.0.1": "1.0.1",
     "jsr:@std/text@^1.0.12": "1.0.12",
@@ -22,8 +25,8 @@
       "integrity": "dc020d16d75b591f679f6b9288b10f38bdb4f24345edb2f5732affa1d9885267",
       "dependencies": [
         "jsr:@std/bytes",
-        "jsr:@std/encoding",
-        "jsr:@std/path"
+        "jsr:@std/encoding@^1.0.5",
+        "jsr:@std/path@^1.0.6"
       ]
     },
     "@std/assert@1.0.12": {
@@ -49,6 +52,12 @@
     },
     "@std/encoding@1.0.8": {
       "integrity": "a6c8f3f933ab1bed66244f435d1dc0fd23a888e07195532122ddc3d5f8f0e6b4"
+    },
+    "@std/fs@1.0.15": {
+      "integrity": "c083fb479889d6440d768e498195c3fc499d426fbf9a6592f98f53884d1d3f41",
+      "dependencies": [
+        "jsr:@std/path@^1.0.8"
+      ]
     },
     "@std/html@1.0.3": {
       "integrity": "7a0ac35e050431fb49d44e61c8b8aac1ebd55937e0dc9ec6409aa4bab39a7988"
@@ -200,6 +209,7 @@
       "jsr:@std/async@^1.0.12",
       "jsr:@std/cache@0.2",
       "jsr:@std/collections@^1.0.10",
+      "jsr:@std/fs@^1.0.15",
       "jsr:@std/html@^1.0.3",
       "jsr:@std/random@0.1",
       "jsr:@std/regexp@^1.0.1",
