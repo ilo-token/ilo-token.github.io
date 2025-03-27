@@ -15,7 +15,7 @@ async function watchMain(): Promise<void> {
   await context.watch();
   await context.serve({ servedir: "./dist/" });
 }
-async function watchDictionary(): Promise<never> {
+async function watchDictionary(): Promise<number> {
   const command = new Deno.Command(Deno.execPath(), {
     args: [
       "run",
@@ -36,12 +36,13 @@ async function watchDictionary(): Promise<never> {
   const process = command.spawn();
   const status = await process.status;
   assert(!status.success);
-  Deno.exit(status.code);
+  return status.code;
 }
 if (import.meta.main) {
   if (!await exists(new URL("../dictionary/dictionary.ts", import.meta.url))) {
     const Dictionary = await import("../dictionary/build.ts");
     await Dictionary.build();
   }
-  await Promise.all([watchDictionary(), watchMain()]);
+  const [statusCode] = await Promise.all([watchDictionary(), watchMain()]);
+  Deno.exit(statusCode);
 }
