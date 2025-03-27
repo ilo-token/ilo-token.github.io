@@ -34,5 +34,6 @@ if (import.meta.main) {
   const context = await ESBuild.context(BUILD_OPTIONS);
   await context.watch();
   await context.serve({ servedir: "./dist/" });
-  await process.status;
+  const status = await process.status;
+  Deno.exit(status.code);
 }
