@@ -8,6 +8,7 @@ async function tryBuild(): Promise<void> {
   try {
     await build();
   } catch (error) {
+    // deno-lint-ignore no-console
     console.log(error);
   }
 }
