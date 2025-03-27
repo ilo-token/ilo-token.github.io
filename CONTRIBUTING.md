@@ -70,7 +70,9 @@ More things to remember:
   exclusive to one runtime, add a note above the code:
   `// This code is browser/Deno only`.
 - Ensure all the files are formatted: Run `deno fmt`.
-- Ensure all the test passes: Run `deno test --parallel`.
+- Make sure you don't accidentally make more tests fail: Run
+  `deno test --parallel` before and after making changes to the code. Some tests
+  may already be failing.
 - Make use of linter: Run `deno lint`. You can run `deno lint --watch` which
   will auto-reload the stdout whenever you have fixed a linting issue.
 
