@@ -5,11 +5,11 @@
   "tasks": {
     "build": {
       "description": "Builds every static files needed for GitHub pages",
-      "command": "deno run -E -R -W -N=jsr.io --allow-run --no-prompt --frozen --cached-only ./build.ts"
+      "command": "deno run -E -R -W -N=jsr.io --allow-run --no-prompt --frozen --cached-only ./build/build.ts"
     },
     "start": {
       "description": "Starts a development server. The provided page will auto-reload whenever there are changes to the code.",
-      "command": "deno run -E -R -W -N=jsr.io --allow-run --no-prompt --frozen --cached-only ./dev.ts"
+      "command": "deno run -E -R -W -N=jsr.io --allow-run --no-prompt --frozen --cached-only ./build/dev.ts"
     },
     "repl": {
       "description": "Starts a REPL",

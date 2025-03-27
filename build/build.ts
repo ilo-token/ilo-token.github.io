@@ -2,7 +2,7 @@
 
 import * as ESBuild from "esbuild";
 import { OPTIONS } from "./config.ts";
-import * as Dictionary from "./dictionary/build.ts";
+import * as Dictionary from "../dictionary/build.ts";
 
 const BUILD_OPTIONS: ESBuild.BuildOptions = { ...OPTIONS, minify: true };
 

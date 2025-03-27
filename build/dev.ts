@@ -10,8 +10,8 @@ const BUILD_OPTIONS: ESBuild.BuildOptions = {
   define: { LIVE_RELOAD: "true" },
 };
 if (import.meta.main) {
-  if (!await exists(new URL("./dictionary/dictionary.ts", import.meta.url))) {
-    const Dictionary = await import("./dictionary/build.ts");
+  if (!await exists(new URL("../dictionary/dictionary.ts", import.meta.url))) {
+    const Dictionary = await import("../dictionary/build.ts");
     await Dictionary.build();
   }
   const command = new Deno.Command(Deno.execPath(), {
@@ -25,7 +25,7 @@ if (import.meta.main) {
       "--watch",
       "./dictionary/watch.ts",
     ],
-    cwd: new URL("./", import.meta.url),
+    cwd: new URL("../", import.meta.url),
     stdout: "inherit",
     stderr: "inherit",
     stdin: "null",
