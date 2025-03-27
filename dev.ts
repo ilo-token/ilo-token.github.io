@@ -14,7 +14,7 @@ if (import.meta.main) {
     const Dictionary = await import("./dictionary/build.ts");
     await Dictionary.build();
   }
-  const command = new Deno.Command("deno", {
+  const command = new Deno.Command(Deno.execPath(), {
     args: [
       "run",
       "-R=./dictionary/dictionary",
