@@ -1,7 +1,7 @@
 import { repeatWithSpace } from "../../misc/misc.ts";
 import * as English from "./ast.ts";
 
-export function unemphasized(word: string): English.Word {
+export function noEmphasis(word: string): English.Word {
   return { word, emphasis: false };
 }
 export function word(

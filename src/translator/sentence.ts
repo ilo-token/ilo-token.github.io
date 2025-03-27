@@ -6,7 +6,7 @@ import { definitionAsPlainString } from "./as_string.ts";
 import * as English from "./ast.ts";
 import { clause, contextClause } from "./clause.ts";
 import { FilteredOutError, TranslationTodoError } from "./error.ts";
-import { unemphasized } from "./word.ts";
+import { noEmphasis } from "./word.ts";
 
 function filler(filler: TokiPona.Filler): ArrayResult<string> {
   switch (filler.type) {
@@ -146,7 +146,9 @@ function sentence(
         );
       if (sentence.kinOrTaso != null) {
         return new ArrayResult(
-          new TranslationTodoError(`"${sentence.kinOrTaso.word}" preclause`),
+          new TranslationTodoError(
+            `"${sentence.kinOrTaso.word}" starting particle`,
+          ),
         );
       }
       const lastEngClause = clause(sentence.finalClause);
@@ -180,7 +182,7 @@ function sentence(
         .map<English.Sentence>((interjection) => ({
           clauses: [{
             type: "interjection",
-            interjection: unemphasized(interjection),
+            interjection: noEmphasis(interjection),
           }],
           punctuation,
         }));

@@ -7,7 +7,7 @@ import { FilteredOutError } from "./error.ts";
 import { condense } from "./misc.ts";
 import { noun } from "./noun.ts";
 import { nounAsPreposition } from "./preposition.ts";
-import { unemphasized, word } from "./word.ts";
+import { noEmphasis, word } from "./word.ts";
 
 export type VerbObjects = Readonly<{
   object: null | English.NounPhrase;
@@ -214,8 +214,8 @@ export function fromVerbForms(
   }
   return verb.map(({ modal, verb }) => {
     return {
-      modal: mapNullable(modal, (modal) => adverbless(unemphasized(modal))),
-      verb: [adverbless(word({ ...options, word: verb }))],
+      modal: mapNullable(modal, (modal) => noAdverbs(noEmphasis(modal))),
+      verb: [noAdverbs(word({ ...options, word: verb }))],
     };
   });
 }
@@ -268,6 +268,6 @@ export function verb(
         }));
   }
 }
-export function adverbless(verb: English.Word): English.AdverbVerb {
+export function noAdverbs(verb: English.Word): English.AdverbVerb {
   return { adverb: [], verb };
 }

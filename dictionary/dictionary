@@ -1361,7 +1361,7 @@ soko:
 sona:
     knowledge(n);
     information(n);
-    data(n plural); # data is not singular, datum sounds unfamaliar
+    data(n plural); # data is not singular, datum sounds unfamiliar
 
     know(v) [object];
     have(v) skill(n singular) in(prep) [object];
@@ -1463,7 +1463,7 @@ tawa:
     # walking(n gerund);
     shaking(n gerund);
     flight(n);
-    travelling(n gerund);
+    traveling(n gerund);
 
     to(prep) [indirect object];
     for(prep) [indirect object];
@@ -1536,12 +1536,12 @@ tomo:
 tonsi:
     non-binary(adj qualifier) person(n);
     gender nonconforming(adj qualifier) person(n);
-    genderqueer(adj qualifier) person(n);
+    gender-queer(adj qualifier) person(n);
     transgender(adj qualifier) person(n);
 
     non-binary(adj qualifier);
     gender nonconforming(adj qualifier);
-    genderqueer(adj qualifier);
+    gender-queer(adj qualifier);
     transgender(adj qualifier);
 
 tu:

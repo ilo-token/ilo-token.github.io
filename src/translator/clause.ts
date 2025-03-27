@@ -7,8 +7,8 @@ import { perspective } from "./noun.ts";
 import { multiplePhrases, multiplePhrasesAsNoun } from "./phrase.ts";
 import { predicate } from "./predicate.ts";
 import { nounAsPreposition } from "./preposition.ts";
-import { addModalToAll, adverbless, verb } from "./verb.ts";
-import { unemphasized } from "./word.ts";
+import { addModalToAll, noAdverbs, verb } from "./verb.ts";
+import { noEmphasis } from "./word.ts";
 
 function phraseClause(
   phrases: TokiPona.MultiplePhrases,
@@ -49,7 +49,7 @@ function phraseClause(
                 type: "default",
                 verb: {
                   modal: null,
-                  verb: [adverbless(unemphasized("is"))],
+                  verb: [noAdverbs(noEmphasis("is"))],
                 },
                 subjectComplement: {
                   type: "adjective",
@@ -103,7 +103,7 @@ function iWish(
       type: "simple",
       determiner: [],
       adjective: [],
-      noun: unemphasized("I"),
+      noun: noEmphasis("I"),
       quantity: "singular",
       perspective: "first",
       postAdjective: null,
@@ -114,7 +114,7 @@ function iWish(
       type: "default",
       verb: {
         modal: null,
-        verb: [adverbless(unemphasized("wish"))],
+        verb: [noAdverbs(noEmphasis("wish"))],
       },
       subjectComplement: null,
       contentClause: {
@@ -145,7 +145,7 @@ function oClause(
       type: "simple",
       determiner: [],
       adjective: [],
-      noun: unemphasized("you"),
+      noun: noEmphasis("you"),
       quantity: "plural",
       perspective: "second",
       postAdjective: null,
@@ -161,7 +161,7 @@ function oClause(
         ArrayResult.from(() =>
           verb(
             addModalToAll(
-              adverbless(unemphasized("should")),
+              noAdverbs(noEmphasis("should")),
               predicate,
             ),
             subjectPerspective,

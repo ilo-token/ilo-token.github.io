@@ -109,6 +109,6 @@ themselves serves as a space for broader topics, not just ilo Token.
   programming language, it uses similar techniques found in programming language
   development e.g. parsing.
 
-These are unnoficial spaces and are not subject to the
+These are unofficial spaces and are not subject to the
 [Contributor Covenant Code of Conduct](https://github.com/ilo-token/ilo-token.github.io/blob/master/CODE_OF_CONDUCT.md).
 Instead, each have its own rules and different moderators.

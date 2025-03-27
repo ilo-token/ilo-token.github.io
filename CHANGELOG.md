@@ -212,7 +212,7 @@ Inside update (intended for developers):
 - Rewritten whole code to use TypeScript, module, and functional programming.
 - Rewritten parser to use parser combinator.
 - Add language codes to html.
-- New wiki for contributors and thinkerers.
+- New wiki for contributors and tinkerers.
 - Overhaul `README.md`, only including build instruction. Information about the
   translator is now moved to wiki.
 

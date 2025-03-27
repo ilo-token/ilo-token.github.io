@@ -14,7 +14,7 @@ import { noun } from "./noun.ts";
 import { number } from "./number.ts";
 import { phrase } from "./phrase.ts";
 import { pronoun } from "./pronoun.ts";
-import { unemphasized, word } from "./word.ts";
+import { noEmphasis, word } from "./word.ts";
 import { getReduplicationCount } from "./word_unit.ts";
 
 export type ModifierTranslation =
@@ -285,7 +285,7 @@ export function multipleModifiers(
             type: "simple",
             determiner: [],
             adjective,
-            noun: unemphasized("way"),
+            noun: noEmphasis("way"),
             quantity: "singular",
             perspective: "third",
             postAdjective: null,
