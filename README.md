@@ -11,12 +11,12 @@ interpretation of the text. No machine learning involved.
 
 ## Starting development server
 
-After obtaining a local copy, You'll need [Deno](https://deno.com/) for this
-project. Then you'll need to install the dependencies before running any
-command: `deno install`.
+After using `git clone`, you'll need [Deno](https://deno.com/) for this project.
+Then you'll need to install the dependencies before running any command:
+`deno install`.
 
-After this, you can start away by running `deno task start` then follow the link
-provide by the stdout to open a local copy of ilo Token. This server will
-auto-reload the webpage whenever there are changes to the code.
+After this, you can start away by running `deno task start` then open the link
+provided by the stdout to open a local copy of ilo Token. The server will
+auto-reload the webpage whenever there are changes on the code.
 
 Run `deno task` to see more useful command lines.
