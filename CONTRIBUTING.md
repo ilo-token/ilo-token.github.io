@@ -77,7 +77,9 @@ can adapt.)
   `deno test --parallel` before and after making changes to the code. Some tests
   may already be failing.
 - Make use of linter: Run `deno lint`. You can run `deno lint --watch` which
-  will auto-reload the stdout whenever you have fixed a linting issue.
+  will auto-reload the stdout whenever you have fixed a linting issue. If a lint
+  rule is deemed unnecessary and more of an annoyance, open an [issue](#issue).
+  We can remove lint rules.
 
 As a thank you for contributing, you'll get a shout out in the changelog!
 
