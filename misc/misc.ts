@@ -1,3 +1,5 @@
+// Ensure this module don't have imports, make separate module when necessary
+
 export function nullableAsArray<T>(value?: T): ReadonlyArray<NonNullable<T>> {
   if (value == null) {
     return [];
