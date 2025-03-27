@@ -17,7 +17,7 @@ if (import.meta.main) {
   let task = Promise.resolve();
   const buildDebounced = debounce(() => {
     task = task.then(tryBuild);
-  }, 500);
+  }, 200);
   buildDebounced();
   buildDebounced.flush();
   for await (const _ of watcher) {
