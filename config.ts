@@ -1,9 +1,9 @@
 // This code is Deno only
 
 import { denoPlugins } from "@luca/esbuild-deno-loader";
-import * as ESBuild from "esbuild";
+import { BuildOptions } from "esbuild";
 
-export const OPTIONS: ESBuild.BuildOptions = {
+export const OPTIONS: BuildOptions = {
   entryPoints: ["./src/main.ts"],
   outfile: "./dist/main.js",
   format: "iife",
