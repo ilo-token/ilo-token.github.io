@@ -3,15 +3,31 @@
     "lib": ["dom", "deno.ns"]
   },
   "tasks": {
-    "build": "deno run -E -R -W -N=jsr.io --allow-run --no-prompt --frozen --cached-only ./bundle.ts build",
+    "build": {
+      "description": "Builds `./dist/main.js` as minified file with source mapping at `./dist/main.js.map`. This command also builds the dictionary at `./dictionary/dictionary.ts`.",
+      "command": "deno run -E -R -W -N=jsr.io --allow-run --no-prompt --frozen --cached-only ./bundle.ts build"
+    },
+    "watch": {
+      "description": "Similar to `deno task build` but doesn't minify the code. This command also watches the source code and rebuilds `./dist/main.js` or `./dictionary/dictionary.ts` whenever necessary. This DOESN'T auto-refreshes the webpage.",
+      "command": "deno run -E -R -W -N=jsr.io --allow-run --no-prompt --frozen --cached-only ./bundle.ts watch"
+    },
+    "start-server": {
+      "description": "Starts a local server serving `./dist/` statically",
+      "command": "deno run -N=0.0.0.0 -R=./dist/ --no-prompt jsr:@std/http/file-server ./dist/"
+    },
     "repl": {
+      "description": "Starts a REPL",
       "command": "deno run --no-prompt --frozen --cached-only ./src/repl.ts",
       "dependencies": ["build-dictionary"]
     },
-    "start": "deno run -N=0.0.0.0 -R=./dist/ --no-prompt jsr:@std/http/file-server ./dist/",
-    "watch": "deno run -E -R -W -N=jsr.io --allow-run --no-prompt --frozen --cached-only ./bundle.ts watch",
-    "update": "deno outdated --update && deno run -N=api.linku.la,gitlab.com -W=./telo_misikeke/linku_data.json,./telo_misikeke/Parser.js,./telo_misikeke/rules.js --no-prompt --frozen --cached-only ./telo_misikeke/update.ts",
-    "build-dictionary": "deno run -R=./dictionary/dictionary -W=./dictionary/dictionary.ts --no-prompt --frozen --cached-only ./dictionary/build.ts"
+    "update": {
+      "description": "Updates dependencies and telo misikeke",
+      "command": "deno outdated --update && deno run -N=api.linku.la,gitlab.com -W=./telo_misikeke/linku_data.json,./telo_misikeke/Parser.js,./telo_misikeke/rules.js --no-prompt --frozen --cached-only ./telo_misikeke/update.ts"
+    },
+    "build-dictionary": {
+      "description": "Builds the dictionary at `./dictionary/dictionary.ts`",
+      "command": "deno run -R=./dictionary/dictionary -W=./dictionary/dictionary.ts --no-prompt --frozen --cached-only ./dictionary/build.ts"
+    }
   },
   "fmt": {
     "exclude": [
