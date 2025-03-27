@@ -1,5 +1,7 @@
 // https://www.kreativekorp.com/ucsur/charts/sitelen.html
 
+import { WORD_UNIT_RULES } from "./filter.ts";
+
 export const START_OF_CARTOUCHE = "\u{F1990}";
 export const END_OF_CARTOUCHE = "\u{F1991}";
 export const COMBINING_CARTOUCHE_EXTENSION = "\u{F1992}";
@@ -180,11 +182,14 @@ export const KU_LILI = [
   "majuna",
   "powe",
 ];
-export const UCSUR_TO_LATIN: Map<string, string> = new Map([
-  ...[...PU, ...KU_SULI]
-    .map((latin, i) => [String.fromCodePoint(0xF1900 + i), latin] as const),
-  ...KU_LILI
-    .map((latin, i) => [String.fromCodePoint(0xF19A0 + i), latin] as const),
-]);
+export const UCSUR_TO_LATIN: Map<string, string> = new Map(
+  [
+    { start: 0xF1900, words: [...PU, ...KU_SULI] } as const,
+    { start: 0xF19A0, words: KU_LILI } as const,
+  ]
+    .flatMap(({ start, words }) =>
+      words.map((latin, i) => [String.fromCodePoint(start + i), latin] as const)
+    ),
+);
 export const UCSUR_CHARACTER_REGEX =
   /[\u{F1900}-\u{F1988}\u{F19A0}-\u{F19A3}]/u;
