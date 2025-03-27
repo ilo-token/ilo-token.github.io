@@ -7,13 +7,18 @@ NOTE: Before publishing:
 - update this very document, don't forget to add release date
 -->
 
-<!--
 <details>
+
 <summary>On development changelog</summary>
+
+## 0.5.3
+
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
+
+- Fix UCSUR translation.
+
 </details>
--->
 
 ## 0.5.2
 
