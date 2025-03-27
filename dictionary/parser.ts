@@ -2,8 +2,9 @@ import { memoize } from "@std/cache/memoize";
 import { escape as escapeHtml } from "@std/html/entities";
 import { escape as escapeRegex } from "@std/regexp/escape";
 import nlp from "compromise/three";
-import { ArrayResultError } from "../src/array_result.ts";
+import { deduplicateErrors } from "../misc/deduplicate_errors.ts";
 import { mapNullable, nullableAsArray, throwError } from "../misc/misc.ts";
+import { ArrayResultError } from "../src/array_result.ts";
 import {
   all,
   allAtLeastOnce,
@@ -27,7 +28,6 @@ import {
   NounForms,
   VerbForms,
 } from "./type.ts";
-import { deduplicateErrors } from "../misc/deduplicate_errors.ts";
 
 const RESERVED_SYMBOLS = "#()*+/:;<=>@[\\]^`{|}~";
 const WORDS = new RegExp(`[^${escapeRegex(RESERVED_SYMBOLS)}]`);
