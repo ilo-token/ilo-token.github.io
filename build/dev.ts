@@ -2,7 +2,7 @@
 
 import { assert } from "@std/assert/assert";
 import { exists } from "@std/fs/exists";
-import { BuildContext, BuildOptions, context } from "esbuild";
+import { BuildOptions, context } from "esbuild";
 import { OPTIONS } from "./config.ts";
 
 const BUILD_OPTIONS: BuildOptions = {
@@ -10,16 +10,13 @@ const BUILD_OPTIONS: BuildOptions = {
   minify: false,
   define: { LIVE_RELOAD: "true" },
 };
-async function watchMain(): Promise<BuildContext<BuildOptions>> {
+async function watchMain(): Promise<AsyncDisposable> {
+  await using stack = new AsyncDisposableStack();
   const buildContext = await context(BUILD_OPTIONS);
-  try {
-    await buildContext.watch();
-    await buildContext.serve({ servedir: "./dist/" });
-  } catch (error) {
-    await buildContext.dispose();
-    throw error;
-  }
-  return buildContext;
+  stack.defer(async () => await buildContext.dispose());
+  buildContext.watch();
+  buildContext.serve({ servedir: "./dist/" });
+  return stack.move();
 }
 async function watchDictionary(): Promise<number> {
   const command = new Deno.Command(Deno.execPath(), {
@@ -47,7 +44,6 @@ async function watchDictionary(): Promise<number> {
 if (import.meta.main) {
   let statusCode: number;
   {
-    await using stack = new AsyncDisposableStack();
     if (
       !await exists(new URL("../dictionary/dictionary.ts", import.meta.url))
     ) {
@@ -55,8 +51,7 @@ if (import.meta.main) {
       await Dictionary.build();
     }
     const statusCodePromise = watchDictionary();
-    const context = await watchMain();
-    stack.defer(async () => await context.dispose());
+    await using _ = await watchMain();
     statusCode = await statusCodePromise;
   }
   Deno.exit(statusCode);
