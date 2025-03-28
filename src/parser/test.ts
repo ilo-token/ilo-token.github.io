@@ -1,7 +1,7 @@
 // This code is Deno only
 
-import { assert } from "@std/assert/assert";
 import { assertEquals } from "@std/assert/equals";
+import { assertLess } from "@std/assert/less";
 import { assertNotEquals } from "@std/assert/not-equals";
 import { assertThrows } from "@std/assert/throws";
 import { EXAMPLE_SENTENCES, MALFORMED_SENTENCES } from "../examples.ts";
@@ -33,7 +33,7 @@ Deno.test("ucsur ordered", () => {
   for (const [i, word] of PU.entries()) {
     if (i < PU.length - 1) {
       const other = PU[i + 1];
-      assert(word < PU[i + 1], `error between ${word} and ${other}`);
+      assertLess(word, PU[i + 1], `error between ${word} and ${other}`);
     }
   }
 });
