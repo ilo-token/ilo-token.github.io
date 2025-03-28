@@ -8,6 +8,7 @@ import { condense } from "./misc.ts";
 import { noun } from "./noun.ts";
 import { nounAsPreposition } from "./preposition.ts";
 import { noEmphasis, word } from "./word.ts";
+import { version } from "esbuild";
 
 export type VerbObjects = Readonly<{
   object: null | English.NounPhrase;
@@ -161,10 +162,8 @@ export function fromVerbForms(
     verbForms: Dictionary.VerbForms;
     perspective: Dictionary.Perspective;
     quantity: English.Quantity;
-    reduplicationCount: number;
-    emphasis: boolean;
   }>,
-): ArrayResult<English.Verb> {
+): ArrayResult<Readonly<{ modal: null | string; verb: string }>> {
   const { verbForms, perspective, quantity } = options;
   const is = verbForms.presentSingular === "is";
   const presentSingular = is && perspective === "first"
@@ -177,47 +176,37 @@ export function fromVerbForms(
     quantity !== "singular" || (!is && perspective !== "third")
       ? [pastPlural, verbForms.presentPlural]
       : [pastSingular, presentSingular];
-  let verb: ArrayResult<{ modal: null | string; verb: string }>;
   switch (settings.tense) {
     case "condensed":
       if (is) {
         if (quantity === "condensed") {
-          verb = new ArrayResult([{
+          return new ArrayResult([{
             modal: null,
             verb: "is/are/was/were/will be",
           }]);
         } else {
-          verb = new ArrayResult([{
+          return new ArrayResult([{
             modal: null,
             verb: `${present}/${past}/will be`,
           }]);
         }
       } else {
-        verb = new ArrayResult([{
+        return new ArrayResult([{
           modal: "(will)",
           verb: condenseVerb(present, past),
         }]);
       }
-      break;
     case "both": {
       const future = is ? "be" : verbForms.presentPlural;
-      verb = new ArrayResult([
+      return new ArrayResult([
         { modal: null, verb: present },
         { modal: null, verb: past },
         { modal: "will", verb: future },
       ]);
-      break;
     }
     case "default only":
-      verb = new ArrayResult([{ modal: null, verb: present }]);
-      break;
+      return new ArrayResult([{ modal: null, verb: present }]);
   }
-  return verb.map(({ modal, verb }) => {
-    return {
-      modal: mapNullable(modal, (modal) => noAdverbs(noEmphasis(modal))),
-      verb: [noAdverbs(word({ ...options, word: verb }))],
-    };
-  });
 }
 export function verb(
   partialVerb: PartialCompoundVerb,
@@ -232,15 +221,26 @@ export function verb(
           verbForms,
           perspective,
           quantity,
-          reduplicationCount: partialVerb.reduplicationCount,
-          emphasis: partialVerb.wordEmphasis,
         })
           .map<English.VerbPhrase>((verb) => ({
             ...partialVerb,
             type: "default",
             verb: {
-              modal: verb.modal,
-              verb: [...verb.verb, ...partialVerb.rest],
+              modal: mapNullable(
+                mapNullable(verb.modal, noEmphasis),
+                noAdverbs,
+              ),
+              verb: [
+                {
+                  adverb: partialVerb.adverb,
+                  verb: word({
+                    word: verb.verb,
+                    reduplicationCount: partialVerb.reduplicationCount,
+                    emphasis: partialVerb.wordEmphasis,
+                  }),
+                },
+                ...partialVerb.rest,
+              ],
             },
             contentClause: null,
             hideVerb: false,
