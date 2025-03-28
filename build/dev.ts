@@ -45,14 +45,19 @@ async function watchDictionary(): Promise<number> {
   return status.code;
 }
 if (import.meta.main) {
-  if (!await exists(new URL("../dictionary/dictionary.ts", import.meta.url))) {
-    const Dictionary = await import("../dictionary/build.ts");
-    await Dictionary.build();
+  let statusCode: number;
+  {
+    await using stack = new AsyncDisposableStack();
+    if (
+      !await exists(new URL("../dictionary/dictionary.ts", import.meta.url))
+    ) {
+      const Dictionary = await import("../dictionary/build.ts");
+      await Dictionary.build();
+    }
+    const statusCodePromise = watchDictionary();
+    const context = await watchMain();
+    stack.defer(async () => await context.dispose());
+    statusCode = await statusCodePromise;
   }
-  const [statusCode, context] = await Promise.all([
-    watchDictionary(),
-    watchMain(),
-  ]);
-  await context.dispose();
   Deno.exit(statusCode);
 }
