@@ -8,7 +8,6 @@ import { condense } from "./misc.ts";
 import { noun } from "./noun.ts";
 import { nounAsPreposition } from "./preposition.ts";
 import { noEmphasis, word } from "./word.ts";
-import { version } from "esbuild";
 
 export type VerbObjects = Readonly<{
   object: null | English.NounPhrase;
