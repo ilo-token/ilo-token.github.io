@@ -13,8 +13,10 @@ async function tryBuild(): Promise<void> {
   }
 }
 if (import.meta.main) {
-  const watcher = Deno.watchFs("./dictionary/dictionary");
+  await using stack = new AsyncDisposableStack();
+  using watcher = Deno.watchFs("./dictionary/dictionary");
   let task = Promise.resolve();
+  stack.defer(async () => await task);
   const buildDebounced = debounce(() => {
     task = task.then(tryBuild);
   }, 200);

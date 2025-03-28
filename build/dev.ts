@@ -12,8 +12,13 @@ const BUILD_OPTIONS: BuildOptions = {
 };
 async function watchMain(): Promise<BuildContext<BuildOptions>> {
   const buildContext = await context(BUILD_OPTIONS);
-  await buildContext.watch();
-  await buildContext.serve({ servedir: "./dist/" });
+  try {
+    await buildContext.watch();
+    await buildContext.serve({ servedir: "./dist/" });
+  } catch (error) {
+    await buildContext.dispose();
+    throw error;
+  }
   return buildContext;
 }
 async function watchDictionary(): Promise<number> {
