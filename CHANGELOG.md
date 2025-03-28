@@ -16,7 +16,9 @@ NOTE: Before publishing:
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
 
-- Fix UCSUR translation.
+- Fix adverbs not showing along with verbs.
+- Fix UCSUR translation. Previously, some UCSUR words are translated into wrong
+  words in latin letters.
 
 </details>
 
