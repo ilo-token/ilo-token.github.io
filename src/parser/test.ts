@@ -1,12 +1,12 @@
 // This code is Deno only
 
+import { assert } from "@std/assert/assert";
 import { assertEquals } from "@std/assert/equals";
 import { assertNotEquals } from "@std/assert/not-equals";
 import { assertThrows } from "@std/assert/throws";
 import { EXAMPLE_SENTENCES, MALFORMED_SENTENCES } from "../examples.ts";
 import { parse } from "./parser.ts";
 import { KU_LILI, KU_SULI, PU } from "./ucsur.ts";
-import { assert } from "@std/assert/assert";
 
 Deno.test("AST all distinct", () => {
   for (const sentence of EXAMPLE_SENTENCES) {
