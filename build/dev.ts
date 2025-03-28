@@ -3,6 +3,7 @@
 import { assert } from "@std/assert/assert";
 import { exists } from "@std/fs/exists";
 import { BuildOptions, context } from "esbuild";
+import { AsyncDisposableStack } from "../misc/async_disposable_stack.ts";
 import { OPTIONS } from "./config.ts";
 
 const BUILD_OPTIONS: BuildOptions = {

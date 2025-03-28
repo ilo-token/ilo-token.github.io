@@ -2,6 +2,7 @@
 
 import { unreachable } from "@std/assert/unreachable";
 import { debounce } from "@std/async/debounce";
+import { AsyncDisposableStack } from "../misc/async_disposable_stack.ts";
 import { build } from "./build.ts";
 
 async function tryBuild(): Promise<void> {
