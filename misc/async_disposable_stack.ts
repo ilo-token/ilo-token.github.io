@@ -14,13 +14,14 @@ export class AsyncDisposableStack implements AsyncDisposable {
   }
   async [Symbol.asyncDispose](): Promise<void> {
     const errors = [];
-    for (const callback of this.#callbacks.reverse()) {
+    for (const callback of [...this.#callbacks].reverse()) {
       try {
         await callback();
       } catch (error) {
         errors.push(error);
       }
     }
+    this.#callbacks = [];
     switch (errors.length) {
       case 0:
         break;
