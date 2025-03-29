@@ -18,7 +18,7 @@ On this on-development version, things can be broken.
 
 - Fix adverbs not showing along with verbs.
 - Fix UCSUR translation. Previously, some UCSUR words are translated into wrong
-  words in latin letters.
+  words in latin script.
 
 </details>
 
