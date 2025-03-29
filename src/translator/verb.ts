@@ -3,7 +3,7 @@ import { ArrayResult } from "../array_result.ts";
 import { mapNullable, nullableAsArray } from "../../misc/misc.ts";
 import { settings } from "../settings.ts";
 import * as English from "./ast.ts";
-import { FilteredOutError } from "./error.ts";
+import { FilteredError } from "./error.ts";
 import { condense } from "./misc.ts";
 import { noun } from "./noun.ts";
 import { nounAsPreposition } from "./preposition.ts";
@@ -70,7 +70,7 @@ export function addModal(
       wordEmphasis: false,
     };
   } else {
-    throw new FilteredOutError("nested modal verb");
+    throw new FilteredError("nested modal verb");
   }
 }
 export function addModalToAll(

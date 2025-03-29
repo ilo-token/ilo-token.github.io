@@ -2,7 +2,7 @@ import { ArrayResult } from "../array_result.ts";
 import { nullableAsArray, throwError } from "../../misc/misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
-import { FilteredOutError, TranslationTodoError } from "./error.ts";
+import { FilteredError, TranslationTodoError } from "./error.ts";
 import { perspective } from "./noun.ts";
 import { multiplePhrases, multiplePhrasesAsNoun } from "./phrase.ts";
 import { predicate } from "./predicate.ts";
@@ -66,7 +66,7 @@ function phraseClause(
               hideSubject: true,
             };
           case "verb":
-            throw new FilteredOutError("verb as interjection");
+            throw new FilteredError("verb as interjection");
         }
       },
     );
@@ -193,7 +193,7 @@ export function clause(clause: TokiPona.Clause): ArrayResult<English.Clause> {
           phrase.type === "noun"
             ? { type: "vocative", call: "hey", addressee: phrase.noun }
             : throwError(
-              new FilteredOutError(`${phrase.type} within o vocative`),
+              new FilteredError(`${phrase.type} within o vocative`),
             )
         );
     case "li clause":

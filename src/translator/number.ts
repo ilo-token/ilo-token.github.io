@@ -2,7 +2,7 @@ import { sumOf } from "@std/collections/sum-of";
 import { ArrayResult } from "../array_result.ts";
 import { dictionary } from "../dictionary.ts";
 import { nullableAsArray, throwError } from "../../misc/misc.ts";
-import { FilteredOutError } from "./error.ts";
+import { FilteredError } from "./error.ts";
 
 function singleNumber(word: string): ArrayResult<number> {
   return new ArrayResult(dictionary.get(word)!.definitions)
@@ -16,7 +16,7 @@ function regularNumber(number: ReadonlyArray<number>): number {
     number.slice(i + 2).some((b) => a === b)
   );
   if (duplicate) {
-    throw new FilteredOutError("separate repeated numeral");
+    throw new FilteredError("separate repeated numeral");
   } else {
     return sumOf(number, (number) => number);
   }
@@ -24,7 +24,7 @@ function regularNumber(number: ReadonlyArray<number>): number {
 function subHundred(number: ReadonlyArray<number>): number {
   const total = regularNumber(number);
   if (total >= 100) {
-    throw new FilteredOutError("nasin nanpa pona position exceeding 99");
+    throw new FilteredError("nasin nanpa pona position exceeding 99");
   } else {
     return total;
   }
@@ -45,7 +45,7 @@ function unfilteredNasinNanpaPona(
         .findIndex((number) => number !== 100);
       const hundredCount = index !== -1 ? index : number.length - aleStart;
       if (previousHundredCount <= hundredCount) {
-        throw new FilteredOutError('unsorted "ale"');
+        throw new FilteredError('unsorted "ale"');
       } else {
         return subHundred(number.slice(0, aleStart)) * 100 ** hundredCount +
           unfilteredNasinNanpaPona(
@@ -72,7 +72,7 @@ function combineNumbers(numbers: ReadonlyArray<number>): ArrayResult<number> {
         ),
         ArrayResult.from(() => new ArrayResult([regularNumber(numbers)])),
       )
-      : throwError(new FilteredOutError('"ala" along with other numeral'))
+      : throwError(new FilteredError('"ala" along with other numeral'))
   );
 }
 export function number(number: ReadonlyArray<string>): ArrayResult<number> {

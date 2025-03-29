@@ -7,7 +7,7 @@ import * as English from "./ast.ts";
 import { determiner } from "./determiner.ts";
 import {
   ExhaustedError,
-  FilteredOutError,
+  FilteredError,
   TranslationTodoError,
 } from "./error.ts";
 import { noun } from "./noun.ts";
@@ -174,14 +174,14 @@ function nanpaModifier(
   })
     .map((phrase) => {
       if (phrase.type !== "noun") {
-        throw new FilteredOutError(
+        throw new FilteredError(
           `${phrase.type} within "in position" phrase`,
         );
       } else if (
         (phrase.noun as English.NounPhrase & { type: "simple" })
           .preposition.length > 0
       ) {
-        throw new FilteredOutError('preposition within "in position" phrase');
+        throw new FilteredError('preposition within "in position" phrase');
       } else {
         return {
           type: "in position phrase",

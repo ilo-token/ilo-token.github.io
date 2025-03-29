@@ -5,7 +5,7 @@ import * as TokiPona from "../parser/ast.ts";
 import { definitionAsPlainString } from "./as_string.ts";
 import * as English from "./ast.ts";
 import { clause, contextClause } from "./clause.ts";
-import { FilteredOutError, TranslationTodoError } from "./error.ts";
+import { FilteredError, TranslationTodoError } from "./error.ts";
 import { noEmphasis } from "./word.ts";
 
 function filler(filler: TokiPona.Filler): ArrayResult<string> {
@@ -108,7 +108,7 @@ function anuSeme(seme: TokiPona.HeadedWordUnit): English.Clause {
       interjection = repeatWithSpace("right", seme.count);
       break;
     case "x ala x":
-      throw new FilteredOutError('"seme ala seme"');
+      throw new FilteredError('"seme ala seme"');
   }
   return {
     type: "interjection",
