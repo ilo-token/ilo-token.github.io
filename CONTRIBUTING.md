@@ -71,7 +71,7 @@ More things to remember:
   `// This code is browser/Deno only`.
 
 (The following aren't strict rules. It's perfectly fine to not follow any of
-these, we can adapt.)
+these for any reason e.g. you just want to fix typo.)
 
 - Ensure all the files are formatted: Run `deno fmt`.
 - Make sure you don't accidentally make more tests fail: Run
