@@ -75,7 +75,7 @@
     "@std/regexp": "jsr:@std/regexp@^1.0.1",
     "@std/text": "jsr:@std/text@^1.0.12",
     "compromise": "npm:compromise@^14.14.3",
-    "esbuild": "npm:esbuild@^0.25.1"
+    "esbuild": "npm:esbuild@^0.25.2"
   },
   "lock": { "frozen": true }
 }
