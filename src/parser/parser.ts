@@ -7,7 +7,7 @@ import {
   preverbSet,
   tokiPonaWordSet,
 } from "../dictionary.ts";
-import { nullableAsArray, throwError } from "../misc.ts";
+import { nullableAsArray, throwError } from "../../misc/misc.ts";
 import {
   Clause,
   ContextClause,
@@ -234,7 +234,7 @@ const phrase: Parser<Phrase> = lazy(() =>
         modifiers,
         emphasis: phraseModifier,
       })),
-    binaryWords(preverbSet, "preveb").map(([preverb, phrase]) => ({
+    binaryWords(preverbSet, "preverb").map(([preverb, phrase]) => ({
       type: "preverb",
       preverb: { type: "default", word: preverb, emphasis: null },
       modifiers: [],

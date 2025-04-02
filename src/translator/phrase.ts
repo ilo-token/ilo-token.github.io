@@ -1,5 +1,5 @@
 import { ArrayResult } from "../array_result.ts";
-import { mapNullable, nullableAsArray } from "../misc.ts";
+import { mapNullable, nullableAsArray } from "../../misc/misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as Composer from "../parser/composer.ts";
 import { AdjectiveWithInWay, fixAdjective } from "./adjective.ts";
@@ -8,7 +8,7 @@ import * as English from "./ast.ts";
 import { findNumber, fixDeterminer } from "./determiner.ts";
 import {
   ExhaustedError,
-  FilteredOutError,
+  FilteredError,
   TranslationTodoError,
 } from "./error.ts";
 import { CONJUNCTION } from "./misc.ts";
@@ -47,7 +47,7 @@ function nounPhrase(
       ...partialNoun.adjective,
     ]);
     if (partialNoun.postAdjective != null && modifier.name != null) {
-      throw new FilteredOutError("double name");
+      throw new FilteredError("double name");
     }
     const postAdjective = partialNoun.postAdjective ??
       mapNullable(modifier.name, (name) => ({ adjective: "named", name }));
@@ -58,10 +58,10 @@ function nounPhrase(
         .map((object) => nounAsPreposition(object, "of")),
     ];
     if (preposition.length > 1) {
-      throw new FilteredOutError("multiple preposition within noun phrase");
+      throw new FilteredError("multiple preposition within noun phrase");
     }
     if (preposition.length > 0 && postAdjective != null) {
-      throw new FilteredOutError("named noun with preposition");
+      throw new FilteredError("named noun with preposition");
     }
     const headNoun = fromNounForms(partialNoun, quantity)
       .map(({ noun, quantity }) => ({
@@ -132,7 +132,7 @@ function adjectivePhrase(
           inWayPhrase: modifier.inWayPhrase,
         };
       } else {
-        throw new FilteredOutError("adverb with compound adjective");
+        throw new FilteredError("adverb with compound adjective");
       }
   }
 }
@@ -346,7 +346,7 @@ export function multiplePhrases(
               phrase.type === "adjective" && phrase.inWayPhrase != null
             )
           ) {
-            throw new FilteredOutError("in way phrase within compound");
+            throw new FilteredError("in way phrase within compound");
           }
           if (phrase.every((phrase) => phrase.type === "noun")) {
             return {

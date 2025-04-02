@@ -2,7 +2,7 @@ import { ArrayResult } from "../array_result.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
 import { TranslationTodoError } from "./error.ts";
-import { unemphasized } from "./word.ts";
+import { noEmphasis } from "./word.ts";
 
 export function preposition(
   _preposition: TokiPona.Preposition,
@@ -15,7 +15,7 @@ export function nounAsPreposition(
 ): English.Preposition {
   return {
     adverb: [],
-    preposition: unemphasized(preposition),
+    preposition: noEmphasis(preposition),
     object: phrase,
   };
 }

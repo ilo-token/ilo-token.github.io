@@ -14,6 +14,8 @@ jobs:
         uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
+      - name: Install Dependencies
+        run: deno install --frozen
       - name: Build Dictionary
         run: deno task build-dictionary
       - name: Check formatting
@@ -21,4 +23,4 @@ jobs:
       - name: Lint
         run: deno lint
       - name: Test
-        run: deno test
+        run: deno test --parallel

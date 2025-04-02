@@ -15,6 +15,14 @@ On this on-development version, things can be broken.
 </details>
 -->
 
+## 0.5.3
+
+Released 2 April 2025
+
+- Fix adverbs not showing along with verbs.
+- Fix UCSUR translation. Previously, some UCSUR words are translated into wrong
+  words in latin script.
+
 ## 0.5.2
 
 Released 14 March 2025
@@ -212,7 +220,7 @@ Inside update (intended for developers):
 - Rewritten whole code to use TypeScript, module, and functional programming.
 - Rewritten parser to use parser combinator.
 - Add language codes to html.
-- New wiki for contributors and thinkerers.
+- New wiki for contributors and tinkerers.
 - Overhaul `README.md`, only including build instruction. Information about the
   translator is now moved to wiki.
 

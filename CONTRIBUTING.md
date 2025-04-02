@@ -26,6 +26,15 @@ Also check the [changelog](./CHANGELOG.md) and open the on-development
 changelog, it might be already fixed but hasn't published yet! Duplicate issues
 are unnecessary.
 
+Note to maintainer/contributor: When there's a bug discovered, make a test for
+it if possible. Use Deno's own testing tools:
+[examples](https://github.com/ilo-token/ilo-token.github.io/blob/master/src/translator/test.ts).
+Then edit the issue to link the test in following format:
+
+```md
+Test: [src/translator/test.ts "verb with adverb"](permalink including the lines)
+```
+
 ## [Discussion](https://github.com/ilo-token/ilo-token.github.io/discussions)
 
 This GitHub repository have discussion, a dedicated forum page and shall serve
@@ -42,8 +51,10 @@ Please search first before opening a new page! Duplicate pages are unnecessary.
 Before forking and editing, please claim an issue first or open an issue then
 claim it. After that, you can start away. This is necessary to avoid wasted
 duplicate efforts.
+[The wiki](https://github.com/ilo-token/ilo-token.github.io/wiki) contains
+useful information for contributors.
 
-You **don't** have to do this if:
+You **don't** have to open a new issue this if:
 
 - It is a contribution to the dictionary
 - It is a minor edit e.g. a typo fix
@@ -52,11 +63,22 @@ Please don't do the following, we can do this ourselves.
 
 - Updating dependencies
 
-Additionally, please format the code when you make changes. We use Deno's
-built-in formatter.
+More things to remember:
 
-[The wiki](https://github.com/ilo-token/ilo-token.github.io/wiki) contains
-useful for contributors.
+- Keep the source code as runtime agnostic as possible. We target the browser
+  and Deno. This is necessary because we use `deno test`. If a module is
+  exclusive to one runtime, add a note above the code:
+  `// This code is browser/Deno only`.
+
+(The following aren't strict rules. It's perfectly fine to not follow any of
+these, we can adapt.)
+
+- Ensure all the files are formatted: Run `deno fmt`.
+- Make sure you don't accidentally make more tests fail: Run
+  `deno test --parallel` before and after making changes to the code. Some tests
+  may already be failing.
+- Make use of linter: Run `deno lint`. If a lint rule is deemed unnecessary and
+  more of an annoyance, open an [issue](#issue). We can remove lint rules.
 
 As a thank you for contributing, you'll get a shout out in the changelog!
 
@@ -86,6 +108,6 @@ themselves serves as a space for broader topics, not just ilo Token.
   programming language, it uses similar techniques found in programming language
   development e.g. parsing.
 
-These are unnoficial spaces and are not subject to the
+These are unofficial spaces and are not subject to the
 [Contributor Covenant Code of Conduct](https://github.com/ilo-token/ilo-token.github.io/blob/master/CODE_OF_CONDUCT.md).
 Instead, each have its own rules and different moderators.

@@ -1,10 +1,10 @@
 import * as Dictionary from "../../dictionary/type.ts";
 import { ArrayResult } from "../array_result.ts";
-import { nullableAsArray, throwError } from "../misc.ts";
+import { nullableAsArray, throwError } from "../../misc/misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
 import { UntranslatableError } from "./error.ts";
-import { unemphasized, word } from "./word.ts";
+import { noEmphasis, word } from "./word.ts";
 
 export type AdjectiveWithInWay = Readonly<{
   adjective: English.AdjectivePhrase;
@@ -38,7 +38,7 @@ export function adjective(
     .map(({ emphasis, so }) => ({
       type: "simple",
       kind: definition.kind,
-      adverb: [...definition.adverb, ...nullableAsArray(so)].map(unemphasized),
+      adverb: [...definition.adverb, ...nullableAsArray(so)].map(noEmphasis),
       adjective: word({
         word: definition.adjective,
         reduplicationCount,

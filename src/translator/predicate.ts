@@ -1,9 +1,9 @@
 import { ArrayResult } from "../array_result.ts";
-import { nullableAsArray, throwError } from "../misc.ts";
+import { nullableAsArray, throwError } from "../../misc/misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { AdjectiveWithInWay } from "./adjective.ts";
 import * as English from "./ast.ts";
-import { FilteredOutError, UntranslatableError } from "./error.ts";
+import { FilteredError, UntranslatableError } from "./error.ts";
 import { CONJUNCTION } from "./misc.ts";
 import {
   multiplePhrases,
@@ -20,7 +20,7 @@ function verbObject(
 ): PartialCompoundVerb {
   const useForObject = forObject(verb);
   if (useForObject === false) {
-    throw new FilteredOutError("intransitive verb with object");
+    throw new FilteredError("intransitive verb with object");
   } else {
     const [englishObject, preposition] = useForObject === true
       ? [object, []]

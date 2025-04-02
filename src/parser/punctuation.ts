@@ -1,4 +1,4 @@
-import { characterClass } from "../misc.ts";
+import { escape } from "@std/regexp/escape";
 import { UCSUR_COLON, UCSUR_MIDDLE_DOT } from "./ucsur.ts";
 
 export const ELLIPSIS = "\u2026";
@@ -28,3 +28,7 @@ export const SENTENCE_TERMINATOR = characterClass(
 );
 export const NSK_PERIOD = characterClass(NSK_PERIOD_SET);
 export const NSK_COLON = characterClass(FULL_WIDTH_COLON);
+
+function characterClass(characters: Iterable<string>): RegExp {
+  return new RegExp(`[${escape([...characters].join(""))}]`, "u");
+}

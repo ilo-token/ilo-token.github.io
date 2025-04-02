@@ -12,7 +12,7 @@ export class ExhaustedError extends ArrayResultError {
     this.name = "ExhaustedError";
   }
 }
-export class FilteredOutError extends ArrayResultError {
+export class FilteredError extends ArrayResultError {
   constructor(element: string) {
     super(`${element} is filtered out`);
     this.name = "FilteredOutError";

@@ -1,9 +1,8 @@
 import { zip } from "@std/collections/zip";
 import * as Dictionary from "../../dictionary/type.ts";
 import { ArrayResult } from "../array_result.ts";
-import { filterSet } from "../misc.ts";
 import * as English from "./ast.ts";
-import { FilteredOutError } from "./error.ts";
+import { FilteredError } from "./error.ts";
 import { simpleNounForms } from "./noun.ts";
 import { word } from "./word.ts";
 
@@ -44,7 +43,7 @@ export function findNumber(
     const plural = prettyPrintDeterminers(
       filterQuantity(determiners, "plural"),
     );
-    throw new FilteredOutError(
+    throw new FilteredError(
       `determiner for singular nouns ${singular} with determiner for plural nouns ${plural}`,
     );
   }
@@ -134,7 +133,7 @@ export function fixDeterminer(
     ];
   } else {
     throw new AggregateError(
-      errors.map((element) => new FilteredOutError(element())),
+      errors.map((element) => new FilteredError(element())),
     );
   }
 }
@@ -151,4 +150,9 @@ function encodeDeterminer(
     zip(strings, [...determiners.map(prettyPrintDeterminers), ""])
       .flat()
       .join("");
+}
+function filterSet<T>(
+  set: Iterable<readonly [condition: boolean, value: T]>,
+): ReadonlyArray<T> {
+  return [...set].filter(([condition]) => condition).map(([_, value]) => value);
 }

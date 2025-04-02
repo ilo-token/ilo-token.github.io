@@ -1,23 +1,24 @@
-import { memoize } from "@std/cache/memoize";
+import { assert } from "@std/assert/assert";
+import { MemoizationCacheResult, memoize } from "@std/cache/memoize";
 import { ArrayResult, ArrayResultError } from "../array_result.ts";
 import { Clearable, ClearableCacheSet, Lazy } from "../cache.ts";
-import { throwError } from "../misc.ts";
+import { throwError } from "../../misc/misc.ts";
 
 export type ValueRest<T> = Readonly<{ rest: string; value: T }>;
 export type ParserResult<T> = ArrayResult<ValueRest<T>>;
 
 export class Parser<T> {
-  readonly unmemoizedParser: (src: string) => ParserResult<T>;
+  readonly nonMemoizedParser: (src: string) => ParserResult<T>;
   readonly rawParser: (src: string) => ParserResult<T>;
   static cache: null | ClearableCacheSet = null;
   constructor(parser: (src: string) => ParserResult<T>) {
-    this.unmemoizedParser = parser;
+    this.nonMemoizedParser = parser;
     if (Parser.cache != null) {
-      const cache = new Map<string, ParserResult<T>>();
+      const cache = new Map<string, MemoizationCacheResult<ParserResult<T>>>();
       Parser.addToCache(cache);
-      this.rawParser = memoize(this.unmemoizedParser, { cache });
+      this.rawParser = memoize(this.nonMemoizedParser, { cache });
     } else {
-      this.rawParser = this.unmemoizedParser;
+      this.rawParser = this.nonMemoizedParser;
     }
   }
   parser(): (src: string) => ArrayResult<T> {
@@ -25,28 +26,28 @@ export class Parser<T> {
     return (src) => rawParser(src).map(({ value }) => value);
   }
   map<U>(mapper: (value: T) => U): Parser<U> {
-    const { unmemoizedParser } = this;
+    const { nonMemoizedParser: unmemoizedParser } = this;
     return new Parser((src) =>
       unmemoizedParser(src)
         .map(({ value, rest }) => ({ value: mapper(value), rest }))
     );
   }
   filter(mapper: (value: T) => boolean): Parser<T> {
-    const { unmemoizedParser } = this;
+    const { nonMemoizedParser: unmemoizedParser } = this;
     return new Parser((src) =>
       unmemoizedParser(src).filter(({ value }) => mapper(value))
     );
   }
   then<U>(mapper: (value: T) => Parser<U>): Parser<U> {
     const { cache } = Parser;
-    const { unmemoizedParser } = this;
+    const { nonMemoizedParser: unmemoizedParser } = this;
     return new Parser((src) => {
       const parser = Parser.inContext(() => unmemoizedParser(src), cache);
       return parser.flatMap(({ value, rest }) => mapper(value).rawParser(rest));
     });
   }
   sort(comparer: (left: T, right: T) => number): Parser<T> {
-    const { unmemoizedParser } = this;
+    const { nonMemoizedParser: unmemoizedParser } = this;
     return new Parser((src) =>
       unmemoizedParser(src).sort((left, right) =>
         comparer(left.value, right.value)
@@ -104,7 +105,7 @@ export const nothing = new Parser((src) =>
 export const emptyArray = nothing.map(() => []);
 export function lookAhead<T>(parser: Parser<T>): Parser<T> {
   return new Parser((src) =>
-    parser.unmemoizedParser(src).map(({ value }) => ({ value, rest: src }))
+    parser.nonMemoizedParser(src).map(({ value }) => ({ value, rest: src }))
   );
 }
 export function lazy<T>(parser: () => Parser<T>): Parser<T> {
@@ -112,14 +113,15 @@ export function lazy<T>(parser: () => Parser<T>): Parser<T> {
   if (Parser.cache != null) {
     const cachedParser = new Lazy(() => Parser.inContext(parser, cache));
     Parser.addToCache(cachedParser);
-    return new Parser((src) => cachedParser.getValue().unmemoizedParser(src));
+    return new Parser((src) => cachedParser.getValue().nonMemoizedParser(src));
   } else {
     return new Parser((src) =>
-      Parser.inContext(parser, cache).unmemoizedParser(src)
+      Parser.inContext(parser, cache).nonMemoizedParser(src)
     );
   }
 }
 export function choice<T>(...choices: ReadonlyArray<Parser<T>>): Parser<T> {
+  assert(choices.length > 1, "`choice` called with less than 2 arguments");
   return new Parser((src) =>
     new ArrayResult(choices).flatMap((parser) => parser.rawParser(src))
   );
@@ -127,6 +129,10 @@ export function choice<T>(...choices: ReadonlyArray<Parser<T>>): Parser<T> {
 export function choiceOnlyOne<T>(
   ...choices: ReadonlyArray<Parser<T>>
 ): Parser<T> {
+  assert(
+    choices.length > 1,
+    "`choiceOnlyOne` called with less than 2 arguments",
+  );
   return choices.reduceRight(
     (right, left) =>
       new Parser((src) => {
@@ -151,6 +157,7 @@ export function sequence<T extends ReadonlyArray<unknown>>(
     & Readonly<{ [I in keyof T]: Parser<T[I]> }>
     & Readonly<{ length: T["length"] }>
 ): Parser<T> {
+  assert(sequence.length > 1, "`sequence` called with less than 2 arguments");
   // We resorted to using `any` types here, make sure it works properly
   return sequence.reduceRight(
     (right: Parser<any>, left) =>
@@ -191,7 +198,7 @@ function describeSource(src: string): string {
   } else {
     const [token] = src.match(/\S*/)!;
     if (token === "") {
-      if (/^[\n\r]/.test(src)) {
+      if (/^\r?\n/.test(src)) {
         return "newline";
       } else {
         return "space";
@@ -265,7 +272,7 @@ export function withSource<T>(
   parser: Parser<T>,
 ): Parser<readonly [value: T, source: string]> {
   return new Parser((src) =>
-    parser.unmemoizedParser(src).map(({ value, rest }) => ({
+    parser.nonMemoizedParser(src).map(({ value, rest }) => ({
       value: [value, src.slice(0, src.length - rest.length)],
       rest,
     }))

@@ -1,24 +1,29 @@
+// This code is browser only
+
+declare const LIVE_RELOAD: boolean;
+
+// auto-refresh when source code have changed
+if (typeof LIVE_RELOAD !== "undefined" && LIVE_RELOAD) {
+  new EventSource("/esbuild")
+    .addEventListener("change", () => location.reload());
+}
+
 import { dictionary } from "../dictionary/dictionary.ts";
 import { asComment } from "../dictionary/misc.ts";
 import PROJECT_DATA from "../project_data.json" with { type: "json" };
 import { ArrayResultError } from "./array_result.ts";
 import { loadCustomDictionary } from "./dictionary.ts";
-import {
-  checkLocalStorage,
-  extractErrorMessage,
-  flattenError,
-  NEWLINES,
-  setIgnoreError,
-} from "./misc.ts";
+import { checkLocalStorage, setIgnoreError } from "./local_storage.ts";
+import { flattenError } from "../misc/misc.ts";
 import { translate } from "./mod.ts";
 import { clearCache } from "./parser/cache.ts";
+import { settings } from "./settings.ts";
 import {
   loadFromElements,
   loadFromLocalStorage,
   resetElementsToCurrent,
   resetElementsToDefault,
 } from "./settings_frontend.ts";
-import { settings } from "./settings.ts";
 
 const TRANSLATE_LABEL = "Translate";
 const TRANSLATE_LABEL_MULTILINE = "Translate (Ctrl + Enter)";
@@ -144,15 +149,6 @@ function main(): void {
       // deno-lint-ignore no-console
       console.error(error);
     }
-  }
-
-  // remove unused local storage data
-  const used = [DICTIONARY_KEY, ...Object.keys(settings)];
-  const unused = [...new Array(localStorage.length).keys()]
-    .map((i) => localStorage.key(i)!)
-    .filter((key) => !used.includes(key));
-  for (const key of unused) {
-    localStorage.removeItem(key);
   }
 
   // initial text area size
@@ -284,7 +280,7 @@ function main(): void {
         : DICTIONARY_ERROR_UNFIXABLE_MESSAGE;
       const errorListMessage = errors
         .map(extractErrorMessage)
-        .map((message) => `\n- ${message.replaceAll(NEWLINES, "$&  ")}`);
+        .map((message) => `\n- ${message.replaceAll(/\r?\n/g, "$&  ")}`);
       displayToCustomDictionary(asComment(`${message}${errorListMessage}`));
       // deno-lint-ignore no-console
       console.error(error);
@@ -296,14 +292,29 @@ function main(): void {
     }
   });
 }
+function extractErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  } else {
+    return `${error}`;
+  }
+}
 function errorsFixable(errors: ReadonlyArray<unknown>): boolean {
   return errors.length > 0 &&
     errors.every((error) => error instanceof ArrayResultError);
 }
-if (typeof document !== "undefined") {
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", main);
-  } else {
-    main();
-  }
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", main);
+} else {
+  main();
+}
+
+// remove unused local storage data
+const used = [DICTIONARY_KEY, ...Object.keys(settings)];
+const unused = [...new Array(localStorage.length).keys()]
+  .map((i) => localStorage.key(i)!)
+  .filter((key) => !used.includes(key));
+for (const key of unused) {
+  localStorage.removeItem(key);
 }

@@ -2,13 +2,9 @@ import { memoize } from "@std/cache/memoize";
 import { escape as escapeHtml } from "@std/html/entities";
 import { escape as escapeRegex } from "@std/regexp/escape";
 import nlp from "compromise/three";
+import { deduplicateErrors } from "../misc/deduplicate_errors.ts";
+import { mapNullable, nullableAsArray, throwError } from "../misc/misc.ts";
 import { ArrayResultError } from "../src/array_result.ts";
-import {
-  deduplicateErrors,
-  mapNullable,
-  nullableAsArray,
-  throwError,
-} from "../src/misc.ts";
 import {
   all,
   allAtLeastOnce,
@@ -39,7 +35,7 @@ const WORDS = new RegExp(`[^${escapeRegex(RESERVED_SYMBOLS)}]`);
 function lex<T>(parser: Parser<T>): Parser<T> {
   return parser.skip(spaces);
 }
-const comment = match(/#[^\n\r]*/, "comment");
+const comment = match(/#[^\n]*\n?/, "comment");
 const spaces = sourceOnly(all(choiceOnlyOne(match(/\s/, "space"), comment)));
 const backtick = matchString("`", "backtick");
 const colon = matchString(":", "colon");

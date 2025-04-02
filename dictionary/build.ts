@@ -1,3 +1,5 @@
+// This code is Deno only
+
 import { parseDictionary } from "./parser.ts";
 
 const SOURCE = new URL("./dictionary", import.meta.url);
@@ -20,6 +22,8 @@ import { Dictionary } from "./type.ts";
 export const dictionary: Dictionary = new Map(Object.entries(${json}));
 `;
   await Deno.writeTextFile(DESTINATION, code);
+  // deno-lint-ignore no-console
+  console.log("Building dictionary done");
 }
 if (import.meta.main) {
   await build();

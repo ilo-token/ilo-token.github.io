@@ -1,4 +1,4 @@
-import { nullableAsArray } from "../misc.ts";
+import { nullableAsArray } from "../../misc/misc.ts";
 import * as English from "./ast.ts";
 
 const EMPHASIS_STARTING_TAG = "<strong>";
@@ -88,7 +88,7 @@ export function verb(phrase: English.VerbPhrase, depth: number): string {
   let text: string;
   switch (phrase.type) {
     case "default": {
-      const { modal, verb } = phrase.verb;
+      const { verb: { modal, verb } } = phrase;
       const verbText = !phrase.hideVerb
         ? [
           ...nullableAsArray(modal),

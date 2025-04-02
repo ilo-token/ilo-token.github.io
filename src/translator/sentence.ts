@@ -1,12 +1,12 @@
 import { ArrayResult } from "../array_result.ts";
 import { dictionary } from "../dictionary.ts";
-import { nullableAsArray, repeatWithSpace } from "../misc.ts";
+import { nullableAsArray, repeatWithSpace } from "../../misc/misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { definitionAsPlainString } from "./as_string.ts";
 import * as English from "./ast.ts";
 import { clause, contextClause } from "./clause.ts";
-import { FilteredOutError, TranslationTodoError } from "./error.ts";
-import { unemphasized } from "./word.ts";
+import { FilteredError, TranslationTodoError } from "./error.ts";
+import { noEmphasis } from "./word.ts";
 
 function filler(filler: TokiPona.Filler): ArrayResult<string> {
   switch (filler.type) {
@@ -64,33 +64,35 @@ function emphasisAsPunctuation(
 }
 function interjection(clause: TokiPona.Clause): ArrayResult<English.Clause> {
   if (clause.type === "phrases" && clause.phrases.type === "single") {
-    const { phrase } = clause.phrases;
+    const { phrases: { phrase } } = clause;
     if (phrase.type === "default" && phrase.modifiers.length === 0) {
       const { headWord } = phrase;
-      if (headWord.type === "default" || headWord.type === "reduplication") {
-        return new ArrayResult(dictionary.get(headWord.word)!.definitions)
-          .filterMap((definition) => {
-            if (definition.type === "interjection") {
-              switch (headWord.type) {
-                case "default":
-                  return definition.interjection;
-                case "reduplication":
-                  return repeatWithSpace(
-                    definition.interjection,
-                    headWord.count,
-                  );
+      switch (headWord.type) {
+        case "default":
+        case "reduplication":
+          return new ArrayResult(dictionary.get(headWord.word)!.definitions)
+            .filterMap((definition) => {
+              if (definition.type === "interjection") {
+                switch (headWord.type) {
+                  case "default":
+                    return definition.interjection;
+                  case "reduplication":
+                    return repeatWithSpace(
+                      definition.interjection,
+                      headWord.count,
+                    );
+                }
+              } else {
+                return null;
               }
-            } else {
-              return null;
-            }
-          })
-          .map<English.Clause>((interjection) => ({
-            type: "interjection",
-            interjection: {
-              word: interjection,
-              emphasis: headWord.emphasis != null,
-            },
-          }));
+            })
+            .map<English.Clause>((interjection) => ({
+              type: "interjection",
+              interjection: {
+                word: interjection,
+                emphasis: headWord.emphasis != null,
+              },
+            }));
       }
     }
   }
@@ -106,7 +108,7 @@ function anuSeme(seme: TokiPona.HeadedWordUnit): English.Clause {
       interjection = repeatWithSpace("right", seme.count);
       break;
     case "x ala x":
-      throw new FilteredOutError('"seme ala seme"');
+      throw new FilteredError('"seme ala seme"');
   }
   return {
     type: "interjection",
@@ -144,7 +146,9 @@ function sentence(
         );
       if (sentence.kinOrTaso != null) {
         return new ArrayResult(
-          new TranslationTodoError(`"${sentence.kinOrTaso.word}" preclause`),
+          new TranslationTodoError(
+            `"${sentence.kinOrTaso.word}" starting particle`,
+          ),
         );
       }
       const lastEngClause = clause(sentence.finalClause);
@@ -178,7 +182,7 @@ function sentence(
         .map<English.Sentence>((interjection) => ({
           clauses: [{
             type: "interjection",
-            interjection: unemphasized(interjection),
+            interjection: noEmphasis(interjection),
           }],
           punctuation,
         }));

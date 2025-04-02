@@ -1,5 +1,6 @@
+// This code is Deno only
+
 import { retry } from "@std/async/retry";
-import { assertOk } from "../src/misc.ts";
 
 const TELO_MISIKEKE_URL =
   "https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/-/raw/main/";
@@ -78,4 +79,14 @@ if (import.meta.main) {
   ]);
   // deno-lint-ignore no-console
   console.log("Updated telo misikeke.");
+}
+function assertOk(response: Response): Response {
+  if (!response.ok) {
+    const { url, status, statusText } = response;
+    throw new Error(
+      `unable to fetch ${url} (${status} ${statusText})`,
+    );
+  } else {
+    return response;
+  }
 }

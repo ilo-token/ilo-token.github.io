@@ -7,14 +7,14 @@ import * as English from "./ast.ts";
 import { determiner } from "./determiner.ts";
 import {
   ExhaustedError,
-  FilteredOutError,
+  FilteredError,
   TranslationTodoError,
 } from "./error.ts";
 import { noun } from "./noun.ts";
 import { number } from "./number.ts";
 import { phrase } from "./phrase.ts";
 import { pronoun } from "./pronoun.ts";
-import { unemphasized, word } from "./word.ts";
+import { noEmphasis, word } from "./word.ts";
 import { getReduplicationCount } from "./word_unit.ts";
 
 export type ModifierTranslation =
@@ -174,14 +174,14 @@ function nanpaModifier(
   })
     .map((phrase) => {
       if (phrase.type !== "noun") {
-        throw new FilteredOutError(
+        throw new FilteredError(
           `${phrase.type} within "in position" phrase`,
         );
       } else if (
         (phrase.noun as English.NounPhrase & { type: "simple" })
           .preposition.length > 0
       ) {
-        throw new FilteredOutError('preposition within "in position" phrase');
+        throw new FilteredError('preposition within "in position" phrase');
       } else {
         return {
           type: "in position phrase",
@@ -285,7 +285,7 @@ export function multipleModifiers(
             type: "simple",
             determiner: [],
             adjective,
-            noun: unemphasized("way"),
+            noun: noEmphasis("way"),
             quantity: "singular",
             perspective: "third",
             postAdjective: null,
