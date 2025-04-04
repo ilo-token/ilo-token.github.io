@@ -16,7 +16,10 @@ export class Parser<T> {
     if (Parser.cache != null) {
       const cache = new Map<string, MemoizationCacheResult<ParserResult<T>>>();
       Parser.addToCache(cache);
-      this.rawParser = memoize(this.nonMemoizedParser, { cache });
+      this.rawParser = memoize(this.nonMemoizedParser, {
+        cache,
+        errorIsCacheable: () => true,
+      });
     } else {
       this.rawParser = this.nonMemoizedParser;
     }
