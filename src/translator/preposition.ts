@@ -43,7 +43,7 @@ export function preposition(
       adverb,
       preposition,
       object,
-      emphasis: preposition.emphasis != null,
+      emphasis: preposition.emphasis,
     }));
 }
 function prepositionAsWord(
