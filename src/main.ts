@@ -1,5 +1,6 @@
 // This code is browser only
 
+// This is defined by esbuild
 declare const LIVE_RELOAD: boolean;
 
 // auto-refresh when source code have changed
