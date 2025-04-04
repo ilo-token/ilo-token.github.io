@@ -80,11 +80,12 @@ export type Clause =
   >;
 export type ContextClause =
   | Clause
-  | (Readonly<{ type: "nanpa" }> & Nanpa);
+  | (Readonly<{ type: "nanpa" }> & Nanpa)
+  | (Readonly<{ type: "anu"; anu: HeadedWordUnit }>);
 export type Sentence =
   | Readonly<{
     type: "default";
-    kinOrTaso: null | HeadedWordUnit;
+    startingParticle: null | HeadedWordUnit;
     laClauses: ReadonlyArray<ContextClause>;
     finalClause: Clause;
     anuSeme: null | HeadedWordUnit;

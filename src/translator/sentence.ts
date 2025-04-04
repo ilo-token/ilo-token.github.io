@@ -144,18 +144,18 @@ function sentence(
             clause,
           }))
         );
-      if (sentence.kinOrTaso != null) {
+      if (sentence.startingParticle != null) {
         return new ArrayResult(
           new TranslationTodoError(
-            `"${sentence.kinOrTaso.word}" starting particle`,
+            `"${sentence.startingParticle.word}" starting particle`,
           ),
         );
       }
       const lastEngClause = clause(sentence.finalClause);
       const right = nullableAsArray(sentence.anuSeme).map(anuSeme);
       const interjectionClause =
-        sentence.laClauses.length === 0 && sentence.kinOrTaso == null &&
-          sentence.kinOrTaso == null
+        sentence.laClauses.length === 0 && sentence.startingParticle == null &&
+          sentence.startingParticle == null
           ? interjection(sentence.finalClause)
           : new ArrayResult<English.Clause>();
       const engClauses = ArrayResult.combine(

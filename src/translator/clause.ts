@@ -209,7 +209,10 @@ export function contextClause(
 ): ArrayResult<English.Clause> {
   switch (contextClause.type) {
     case "nanpa":
-      return new ArrayResult(new TranslationTodoError("nanpa context clause"));
+    case "anu":
+      return new ArrayResult(
+        new TranslationTodoError(`${contextClause.type} context clause`),
+      );
     default:
       return clause(contextClause);
   }

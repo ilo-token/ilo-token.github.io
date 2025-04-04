@@ -176,6 +176,8 @@ export function contextClause(contextClause: ContextClause): string {
   switch (contextClause.type) {
     case "nanpa":
       return nanpa(contextClause);
+    case "anu":
+      return wordUnit(contextClause.anu);
     default:
       return clause(contextClause);
   }
@@ -185,7 +187,7 @@ export function sentence(sentence: Sentence): string {
   switch (sentence.type) {
     case "default":
       text = [
-        ...nullableAsArray(sentence.kinOrTaso).map(wordUnit),
+        ...nullableAsArray(sentence.startingParticle).map(wordUnit),
         ...sentence.laClauses
           .map(contextClause)
           .map((clause) => `${clause} la`),

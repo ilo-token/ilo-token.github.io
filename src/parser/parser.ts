@@ -605,6 +605,7 @@ const clause = choice<Clause>(
   .filter(filter(CLAUSE_RULE));
 const contextClause = choice<ContextClause>(
   nanpa.map((nanpa) => ({ ...nanpa, type: "nanpa" })),
+  wordUnit(new Set(["anu"]), '"anu"').map((anu) => ({ type: "anu", anu })),
   clause,
 );
 const la = choice(
@@ -652,7 +653,8 @@ const anuSeme = choice(
 const sentence = choice<Sentence>(
   sequence(
     optional(
-      wordUnit(new Set(["kin", "taso"]), "taso/kin").skip(optionalComma),
+      wordUnit(new Set(["taso", "kin", "anu"]), "taso/kin/anu")
+        .skip(optionalComma),
     ),
     many(contextClause.skip(la)),
     clause,
@@ -668,7 +670,7 @@ const sentence = choice<Sentence>(
     .map<Sentence & { type: "default" }>(
       (
         [
-          kinOrTaso,
+          startingParticle,
           laClauses,
           finalClause,
           anuSeme,
@@ -678,7 +680,7 @@ const sentence = choice<Sentence>(
       ) => {
         const sentence: Sentence & { type: "default" } = {
           type: "default",
-          kinOrTaso,
+          startingParticle,
           laClauses,
           finalClause,
           anuSeme,

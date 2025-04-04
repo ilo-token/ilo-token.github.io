@@ -301,20 +301,21 @@ export const SENTENCE_RULE: ReadonlyArray<(sentence: Sentence) => boolean> = [
   (sentence) => {
     if (sentence.type === "default") {
       if (
-        sentence.kinOrTaso != null && sentence.kinOrTaso.type === "x ala x"
+        sentence.startingParticle != null &&
+        sentence.startingParticle.type === "x ala x"
       ) {
-        const { kinOrTaso: { word } } = sentence;
+        const { startingParticle: { word } } = sentence;
         throw new UnrecognizedError(`"${word} ala ${word}"`);
       }
     }
     return true;
   },
-  // If there is "la", there can't be "taso" or "kin"
+  // If there is "la", there can't be starting particle e.g. taso
   (sentence) =>
     sentence.type !== "default" || sentence.laClauses.length === 0 ||
-    sentence.kinOrTaso == null || throwError(
+    sentence.startingParticle == null || throwError(
       new UnrecognizedError(
-        `${sentence.kinOrTaso.word} particle with "la"`,
+        `${sentence.startingParticle.word} particle with "la"`,
       ),
     ),
 

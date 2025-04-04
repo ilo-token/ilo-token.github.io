@@ -104,6 +104,8 @@ export function everyWordUnitInContextClause(
   switch (contextClause.type) {
     case "nanpa":
       return everyWordUnitInNanpa(contextClause);
+    case "anu":
+      return [contextClause.anu];
     default:
       return everyWordUnitInClause(contextClause);
   }
@@ -114,7 +116,7 @@ export function everyWordUnitInSentence(
   switch (sentence.type) {
     case "default":
       return [
-        ...nullableAsArray(sentence.kinOrTaso),
+        ...nullableAsArray(sentence.startingParticle),
         ...sentence.laClauses.flatMap(everyWordUnitInContextClause),
         ...everyWordUnitInClause(sentence.finalClause),
         ...nullableAsArray(sentence.anuSeme),
