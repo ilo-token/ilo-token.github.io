@@ -34,3 +34,18 @@ export function flattenError(error: unknown): ReadonlyArray<unknown> {
 export function throwError(error: unknown): never {
   throw error;
 }
+export function compound(
+  elements: ReadonlyArray<string>,
+  conjunction: string,
+  repeat: boolean,
+): string {
+  if (repeat || elements.length <= 2) {
+    return elements.join(` ${conjunction} `);
+  } else {
+    const lastIndex = elements.length - 1;
+    const init = elements.slice(0, lastIndex);
+    const last = elements[lastIndex];
+    const initText = init.map((item) => `${item},`).join(" ");
+    return `${initText} ${conjunction} ${last}`;
+  }
+}

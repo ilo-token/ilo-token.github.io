@@ -140,7 +140,7 @@ export function fixDeterminer(
 function prettyPrintDeterminers(
   determiners: ReadonlyArray<English.Determiner>,
 ): string {
-  return `(${determiners.map(({ determiner }) => determiner).join(` `)})`;
+  return `(${determiners.map(({ determiner }) => determiner).join(" ")})`;
 }
 function encodeDeterminer(
   strings: TemplateStringsArray,
@@ -152,7 +152,7 @@ function encodeDeterminer(
       .join("");
 }
 function filterSet<T>(
-  set: Iterable<readonly [condition: boolean, value: T]>,
+  set: ReadonlyArray<readonly [condition: boolean, value: T]>,
 ): ReadonlyArray<T> {
-  return [...set].filter(([condition]) => condition).map(([_, value]) => value);
+  return set.filter(([condition]) => condition).map(([_, value]) => value);
 }

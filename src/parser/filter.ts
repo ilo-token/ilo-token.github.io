@@ -1,5 +1,5 @@
 import { extractArrayResultError } from "../array_result.ts";
-import { flattenError, throwError } from "../../misc/misc.ts";
+import { compound, flattenError, throwError } from "../../misc/misc.ts";
 import { settings } from "../settings.ts";
 import {
   Clause,
@@ -150,10 +150,18 @@ export const MULTIPLE_MODIFIERS_RULES: ReadonlyArray<
         }
       });
       const duplicate = findDuplicate(words);
-      if (duplicate == null) {
+      if (duplicate.size === 0) {
         return true;
       } else {
-        throw new UnrecognizedError(`duplicate "${duplicate}" in modifier`);
+        const repeatConjunction = false;
+        const list = compound(
+          [...duplicate].map((word) => `"${word}"`),
+          "and",
+          repeatConjunction,
+        );
+        throw new UnrecognizedError(
+          `duplicate ${list} in modifier`,
+        );
       }
     }
   },
@@ -428,14 +436,15 @@ function phraseHasTopLevelEmphasis(phrase: Phrase): boolean {
       return phrase.emphasis != null;
   }
 }
-function findDuplicate<T>(iterable: Iterable<T>): null | T {
-  const set = new Set();
+function findDuplicate<T>(iterable: Iterable<T>): Set<T> {
+  const unique = new Set<T>();
+  const duplicates = new Set<T>();
   for (const value of iterable) {
-    if (set.has(value)) {
-      return value;
+    if (unique.has(value)) {
+      duplicates.add(value);
     } else {
-      set.add(value);
+      unique.add(value);
     }
   }
-  return null;
+  return duplicates;
 }

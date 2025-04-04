@@ -10,7 +10,6 @@ if (typeof LIVE_RELOAD !== "undefined" && LIVE_RELOAD) {
 }
 
 import { dictionary } from "../dictionary/dictionary.ts";
-import { asComment } from "../dictionary/misc.ts";
 import PROJECT_DATA from "../project_data.json" with { type: "json" };
 import { ArrayResultError, isArrayResult } from "./array_result.ts";
 import { loadCustomDictionary } from "./dictionary.ts";
@@ -293,13 +292,6 @@ function main(): void {
     }
   });
 }
-function extractErrorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message;
-  } else {
-    return `${error}`;
-  }
-}
 
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", main);
@@ -314,4 +306,17 @@ const unused = [...new Array(localStorage.length).keys()]
   .filter((key) => !used.includes(key));
 for (const key of unused) {
   localStorage.removeItem(key);
+}
+
+function extractErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  } else {
+    return `${error}`;
+  }
+}
+export function asComment(text: string): string {
+  return text
+    .replaceAll(/^/mg, "# ")
+    .replaceAll(/^#\s+$/mg, "#");
 }

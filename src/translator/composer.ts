@@ -1,4 +1,4 @@
-import { nullableAsArray } from "../../misc/misc.ts";
+import { compound, nullableAsArray } from "../../misc/misc.ts";
 import * as English from "./ast.ts";
 
 const EMPHASIS_STARTING_TAG = "<strong>";
@@ -9,21 +9,6 @@ function word(word: English.Word): string {
     return `${EMPHASIS_STARTING_TAG}${word.word}${EMPHASIS_ENDING_TAG}`;
   } else {
     return word.word;
-  }
-}
-function compound(
-  elements: ReadonlyArray<string>,
-  conjunction: string,
-  depth: number,
-): string {
-  if (depth !== 0 || elements.length <= 2) {
-    return elements.join(` ${conjunction} `);
-  } else {
-    const lastIndex = elements.length - 1;
-    const init = elements.slice(0, lastIndex);
-    const last = elements[lastIndex];
-    const initText = init.map((item) => `${item},`).join(" ");
-    return `${initText} ${conjunction} ${last}`;
   }
 }
 export function noun(phrases: English.NounPhrase, depth: number): string {
@@ -44,7 +29,7 @@ export function noun(phrases: English.NounPhrase, depth: number): string {
       return compound(
         phrases.nouns.map((phrase) => noun(phrase, depth + 1)),
         phrases.conjunction,
-        depth,
+        depth !== 0,
       );
   }
 }
@@ -62,7 +47,7 @@ export function adjective(
       text = compound(
         phrases.adjective.map((phrase) => adjective(phrase, depth + 1)),
         phrases.conjunction,
-        depth,
+        depth !== 0,
       );
   }
   return word({ word: text, emphasis: phrases.emphasis });
@@ -111,7 +96,7 @@ export function verb(phrase: English.VerbPhrase, depth: number): string {
       text = compound(
         phrase.verbs.map((item) => verb(item, depth + 1)),
         phrase.conjunction,
-        depth,
+        depth !== 0,
       );
   }
   return [
