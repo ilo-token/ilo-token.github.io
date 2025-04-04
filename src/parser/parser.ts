@@ -29,6 +29,7 @@ import { cache } from "./cache.ts";
 import { everyWordUnitInSentence } from "./extract.ts";
 import {
   CLAUSE_RULE,
+  CONTEXT_CLAUSE_RULE,
   filter,
   MODIFIER_RULES,
   MULTIPLE_MODIFIERS_RULES,
@@ -607,7 +608,8 @@ const contextClause = choice<ContextClause>(
   nanpa.map((nanpa) => ({ ...nanpa, type: "nanpa" })),
   wordUnit(new Set(["anu"]), '"anu"').map((anu) => ({ type: "anu", anu })),
   clause,
-);
+)
+  .filter(filter(CONTEXT_CLAUSE_RULE));
 const la = choice(
   comma.with(specificWord("la")),
   specificWord("la").skip(comma),

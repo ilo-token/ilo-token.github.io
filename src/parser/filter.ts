@@ -3,6 +3,7 @@ import { flattenError, throwError } from "../../misc/misc.ts";
 import { settings } from "../settings.ts";
 import {
   Clause,
+  ContextClause,
   Modifier,
   MultiplePhrases,
   Nanpa,
@@ -227,6 +228,14 @@ export const PREPOSITION_RULE: ReadonlyArray<(phrase: Preposition) => boolean> =
         .every(({ emphasis }) => emphasis == null) ||
       throwError(new UnrecognizedError("nested emphasis")),
   ];
+export const CONTEXT_CLAUSE_RULE: ReadonlyArray<
+  (contextClause: ContextClause) => boolean
+> = [
+  // Prevent "anu ala anu la"
+  (clause) =>
+    clause.type !== "anu" || clause.anu.type !== "x ala x" ||
+    throwError(new UnrecognizedError('"anu ala anu la"')),
+];
 export const CLAUSE_RULE: ReadonlyArray<(clause: Clause) => boolean> = [
   // disallow preposition in subject
   (clause) => {
