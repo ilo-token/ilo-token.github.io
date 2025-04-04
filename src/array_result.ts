@@ -173,3 +173,7 @@ export function extractArrayResultError(
       }
   }
 }
+export function isArrayResult(errors: ReadonlyArray<unknown>): boolean {
+  return errors.length > 0 &&
+    errors.every((error) => error instanceof ArrayResultError);
+}

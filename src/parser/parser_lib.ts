@@ -1,8 +1,12 @@
 import { assert } from "@std/assert/assert";
 import { MemoizationCacheResult, memoize } from "@std/cache/memoize";
-import { ArrayResult, ArrayResultError } from "../array_result.ts";
+import {
+  ArrayResult,
+  ArrayResultError,
+  isArrayResult,
+} from "../array_result.ts";
 import { Clearable, ClearableCacheSet, Lazy } from "../cache.ts";
-import { throwError } from "../../misc/misc.ts";
+import { flattenError, throwError } from "../../misc/misc.ts";
 
 export type ValueRest<T> = Readonly<{ rest: string; value: T }>;
 export type ParserResult<T> = ArrayResult<ValueRest<T>>;
@@ -18,7 +22,7 @@ export class Parser<T> {
       Parser.addToCache(cache);
       this.rawParser = memoize(this.nonMemoizedParser, {
         cache,
-        errorIsCacheable: () => true,
+        errorIsCacheable: (error) => isArrayResult(flattenError(error)),
       });
     } else {
       this.rawParser = this.nonMemoizedParser;

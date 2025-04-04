@@ -12,7 +12,7 @@ if (typeof LIVE_RELOAD !== "undefined" && LIVE_RELOAD) {
 import { dictionary } from "../dictionary/dictionary.ts";
 import { asComment } from "../dictionary/misc.ts";
 import PROJECT_DATA from "../project_data.json" with { type: "json" };
-import { ArrayResultError } from "./array_result.ts";
+import { ArrayResultError, isArrayResult } from "./array_result.ts";
 import { loadCustomDictionary } from "./dictionary.ts";
 import { checkLocalStorage, setIgnoreError } from "./local_storage.ts";
 import { flattenError } from "../misc/misc.ts";
@@ -144,7 +144,7 @@ function main(): void {
     try {
       loadCustomDictionary(customDictionary);
     } catch (error) {
-      errorDisplay.innerText = errorsFixable(flattenError(error))
+      errorDisplay.innerText = isArrayResult(flattenError(error))
         ? DICTIONARY_LOADING_FAILED_FIXABLE_MESSAGE
         : DICTIONARY_LOADING_FAILED_UNFIXABLE_MESSAGE;
       // deno-lint-ignore no-console
@@ -276,7 +276,7 @@ function main(): void {
       customDictionaryDialogBox.close();
     } catch (error) {
       const errors = flattenError(error);
-      const message = errorsFixable(errors)
+      const message = isArrayResult(errors)
         ? DICTIONARY_ERROR_FIXABLE_MESSAGE
         : DICTIONARY_ERROR_UNFIXABLE_MESSAGE;
       const errorListMessage = errors
@@ -299,10 +299,6 @@ function extractErrorMessage(error: unknown): string {
   } else {
     return `${error}`;
   }
-}
-function errorsFixable(errors: ReadonlyArray<unknown>): boolean {
-  return errors.length > 0 &&
-    errors.every((error) => error instanceof ArrayResultError);
 }
 
 if (document.readyState === "loading") {
