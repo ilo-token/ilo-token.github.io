@@ -1,7 +1,7 @@
 // Examples gathered from https://github.com/kilipan/nasin-toki
 // CC-BY-SA 4.0 https://github.com/kilipan/nasin-toki/blob/main/LICENSE.txt
 export const EXAMPLE_SENTENCES = [
-  // "anu seme",
+  "anu seme",
   // "toki [ni] li pona",
   "toki li pona",
   "toki ni li pona",
