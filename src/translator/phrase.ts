@@ -325,7 +325,7 @@ export function multiplePhrases(
     phrases: TokiPona.MultiplePhrases;
     place: Place;
     includeGerund: boolean;
-    andParticle: string;
+    andParticle: null | string;
     includeVerb: boolean;
   }>,
 ): ArrayResult<PhraseTranslation> {

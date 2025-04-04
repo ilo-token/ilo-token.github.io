@@ -68,7 +68,10 @@ export function adjective(
   return word({ word: text, emphasis: phrases.emphasis });
 }
 function preposition(preposition: English.Preposition): string {
-  return `${word(preposition.preposition)} ${noun(preposition.object, 0)}`;
+  return word({
+    word: `${word(preposition.preposition)} ${noun(preposition.object, 0)}`,
+    emphasis: preposition.emphasis,
+  });
 }
 function complement(
   complement: English.Complement,

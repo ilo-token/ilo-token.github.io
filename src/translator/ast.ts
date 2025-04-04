@@ -88,6 +88,7 @@ export type Preposition = Readonly<{
   adverb: ReadonlyArray<Word>;
   preposition: Word;
   object: NounPhrase;
+  emphasis: boolean;
 }>;
 export type Sentence = Readonly<{
   clauses: ReadonlyArray<Clause>;
