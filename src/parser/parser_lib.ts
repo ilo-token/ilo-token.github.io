@@ -2,7 +2,6 @@ import { assert } from "@std/assert/assert";
 import { MemoizationCacheResult, memoize } from "@std/cache/memoize";
 import { ArrayResult, ArrayResultError } from "../array_result.ts";
 import { Clearable, ClearableCacheSet, Lazy } from "../cache.ts";
-import { throwError } from "../../misc/misc.ts";
 
 export type ValueRest<T> = Readonly<{ rest: string; value: T }>;
 export type ParserResult<T> = ArrayResult<ValueRest<T>>;
@@ -213,33 +212,31 @@ export function matchCapture(
   description: string,
 ): Parser<RegExpMatchArray> {
   const newRegex = new RegExp(`^${regex.source}`, regex.flags);
-  return new Parser((src) =>
-    ArrayResult.from(() => {
-      const match = src.match(newRegex);
-      if (match != null) {
-        return new ArrayResult([{
-          value: match,
-          rest: src.slice(match[0].length),
-        }]);
-      } else {
-        throw new UnexpectedError(describeSource(src), description);
-      }
-    })
-  );
+  return new Parser((src) => {
+    const match = src.match(newRegex);
+    if (match != null) {
+      return new ArrayResult([{
+        value: match,
+        rest: src.slice(match[0].length),
+      }]);
+    } else {
+      return new ArrayResult(
+        new UnexpectedError(describeSource(src), description),
+      );
+    }
+  });
 }
 export function match(regex: RegExp, description: string): Parser<string> {
   return matchCapture(regex, description).map(([matched]) => matched);
 }
 export function slice(length: number, description: string): Parser<string> {
   return new Parser((src) =>
-    ArrayResult.from(() =>
-      src.length >= length
-        ? new ArrayResult([{
-          rest: src.slice(length),
-          value: src.slice(0, length),
-        }])
-        : throwError(new UnexpectedError(describeSource(src), description))
-    )
+    src.length >= length
+      ? new ArrayResult([{
+        rest: src.slice(length),
+        value: src.slice(0, length),
+      }])
+      : new ArrayResult(new UnexpectedError(describeSource(src), description))
   );
 }
 export function matchString(
@@ -247,14 +244,12 @@ export function matchString(
   description = `"${match}"`,
 ): Parser<string> {
   return new Parser((src) =>
-    ArrayResult.from(() =>
-      src.length >= match.length && src.slice(0, match.length) === match
-        ? new ArrayResult([{
-          rest: src.slice(match.length),
-          value: match,
-        }])
-        : throwError(new UnexpectedError(describeSource(src), description))
-    )
+    src.length >= match.length && src.slice(0, match.length) === match
+      ? new ArrayResult([{
+        rest: src.slice(match.length),
+        value: match,
+      }])
+      : new ArrayResult(new UnexpectedError(describeSource(src), description))
   );
 }
 export const everything = new Parser((src) =>
@@ -262,11 +257,9 @@ export const everything = new Parser((src) =>
 );
 export const character = match(/./us, "character");
 export const end = new Parser((src) =>
-  ArrayResult.from(() =>
-    src === ""
-      ? new ArrayResult([{ value: null, rest: "" }])
-      : throwError(new UnexpectedError(describeSource(src), "end of text"))
-  )
+  src === ""
+    ? new ArrayResult([{ value: null, rest: "" }])
+    : new ArrayResult(new UnexpectedError(describeSource(src), "end of text"))
 );
 export function withSource<T>(
   parser: Parser<T>,
