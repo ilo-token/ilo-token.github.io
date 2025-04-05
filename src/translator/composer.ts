@@ -137,7 +137,9 @@ function sentence(sentence: English.Sentence): string {
   const capitalized = capitalize(sentence.clauses.map(clause).join(", "));
   return `${capitalized}${sentence.punctuation}`;
 }
-export function multipleSentences(sentences: English.Sentences): string {
+export function multipleSentences(
+  sentences: English.MultipleSentences,
+): string {
   switch (sentences.type) {
     case "free form":
       return capitalize(sentences.text);

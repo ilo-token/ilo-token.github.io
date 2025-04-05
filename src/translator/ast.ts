@@ -95,6 +95,6 @@ export type Sentence = Readonly<{
   clauses: ReadonlyArray<Clause>;
   punctuation: string;
 }>;
-export type Sentences =
+export type MultipleSentences =
   | Readonly<{ type: "free form"; text: string }>
   | Readonly<{ type: "sentences"; sentences: ReadonlyArray<Sentence> }>;

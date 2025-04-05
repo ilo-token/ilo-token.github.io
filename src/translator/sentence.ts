@@ -177,7 +177,7 @@ function sentence(
 }
 export function multipleSentences(
   sentences: TokiPona.MultipleSentences,
-): ArrayResult<English.Sentences> {
+): ArrayResult<English.MultipleSentences> {
   switch (sentences.type) {
     case "single word": {
       const { word } = sentences;
