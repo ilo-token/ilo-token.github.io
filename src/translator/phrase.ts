@@ -346,7 +346,7 @@ export function multiplePhrases(
               phrase.type === "adjective" && phrase.inWayPhrase != null
             )
           ) {
-            throw new FilteredError("in way phrase within compound");
+            throw new FilteredError("in [adjective] way phrase within compound");
           }
           if (phrase.every((phrase) => phrase.type === "noun")) {
             return {
