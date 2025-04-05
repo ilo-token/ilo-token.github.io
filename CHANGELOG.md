@@ -21,6 +21,9 @@ such as "tawa mi la sina pona" and prepositional predicate such as "mi kepeken
 ilo".
 
 - Implement translation of preposition.
+- Implement "nanpa X la" translation.
+- Fix "nanpa translation": Before it translated into just "position" instead of
+  e.g. "position 1".
 
 </details>
 
