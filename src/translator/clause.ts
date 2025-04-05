@@ -9,6 +9,7 @@ import { predicate } from "./predicate.ts";
 import { nounAsPreposition, preposition } from "./preposition.ts";
 import { addModalToAll, noAdverbs, verb } from "./verb.ts";
 import { noEmphasis } from "./word.ts";
+import { nanpa } from "./modifier.ts";
 
 function phraseClause(
   phrases: TokiPona.MultiplePhrases,
@@ -215,6 +216,14 @@ export function contextClause(
           }))
         );
     case "nanpa":
+      return nanpa(contextClause)
+        .map((object) => [{
+          type: "preposition",
+          adverb: [],
+          preposition: noEmphasis("at"),
+          object,
+          emphasis: false,
+        }]);
     case "anu":
       return new ArrayResult(
         new TranslationTodoError(`${contextClause.type} context clause`),

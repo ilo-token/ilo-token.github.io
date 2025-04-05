@@ -28,7 +28,7 @@ export type ModifierTranslation =
   | Readonly<{ type: "determiner"; determiner: English.Determiner }>
   | Readonly<{ type: "adverb"; adverb: English.Word }>
   | Readonly<{ type: "name"; name: string }>
-  | Readonly<{ type: "in position phrase"; noun: English.NounPhrase }>;
+  | Readonly<{ type: "position phrase"; noun: English.NounPhrase }>;
 export type AdjectivalModifier = Readonly<{
   nounPreposition:
     | null
@@ -146,7 +146,7 @@ export function defaultModifier(
     }
   }
 }
-export function piModifier(
+export function pi(
   insidePhrase: TokiPona.Phrase,
 ): ArrayResult<ModifierTranslation> {
   return phrase({
@@ -163,9 +163,9 @@ export function piModifier(
       modifier.type !== "adjective" || modifier.inWayPhrase == null
     ) as ArrayResult<ModifierTranslation>;
 }
-function nanpaModifier(
+export function nanpa(
   nanpa: TokiPona.Modifier & { type: "nanpa" },
-): ArrayResult<ModifierTranslation> {
+): ArrayResult<English.NounPhrase> {
   return phrase({
     phrase: nanpa.phrase,
     place: "object",
@@ -184,22 +184,19 @@ function nanpaModifier(
         throw new FilteredError('preposition within "in position" phrase');
       } else {
         return {
-          type: "in position phrase",
+          type: "simple",
+          determiner: [],
+          adjective: [],
           noun: {
-            type: "simple",
-            determiner: [],
-            adjective: [],
-            noun: {
-              word: "position",
-              emphasis: nanpa.nanpa.emphasis != null,
-            },
-            quantity: "singular",
-            perspective: "third",
-            postCompound: phrase.noun,
-            postAdjective: null,
-            preposition: [],
-            emphasis: false,
+            word: "position",
+            emphasis: nanpa.nanpa.emphasis != null,
           },
+          quantity: "singular",
+          perspective: "third",
+          postCompound: phrase.noun,
+          postAdjective: null,
+          preposition: [],
+          emphasis: false,
         };
       }
     });
@@ -213,9 +210,10 @@ function modifier(
     case "proper words":
       return new ArrayResult([{ type: "name", name: modifier.words }]);
     case "pi":
-      return piModifier(modifier.phrase);
+      return pi(modifier.phrase);
     case "nanpa":
-      return nanpaModifier(modifier);
+      return nanpa(modifier)
+        .map((noun) => ({ type: "position phrase", noun }));
   }
 }
 export function multipleModifiers(
@@ -247,7 +245,7 @@ export function multipleModifiers(
         .flatMap((modifier) => modifier.type === "name" ? [modifier.name] : []);
 
       const inPositionPhrase = modifiers.flatMap((modifier) =>
-        modifier.type === "in position phrase" ? [modifier.noun] : []
+        modifier.type === "position phrase" ? [modifier.noun] : []
       );
 
       let adjectival: ArrayResult<MultipleModifierTranslation>;
