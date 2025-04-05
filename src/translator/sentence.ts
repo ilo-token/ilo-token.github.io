@@ -173,6 +173,7 @@ function sentence(
         originalPunctuation: punctuation,
       });
       return engClauses.map((clauses) => ({
+        type: "sentence",
         clauses,
         punctuation: usePunctuation,
       }));
@@ -180,6 +181,7 @@ function sentence(
     case "filler":
       return filler(sentence.filler)
         .map<English.Sentence>((interjection) => ({
+          type: "sentence",
           clauses: [{
             type: "interjection",
             interjection: noEmphasis(interjection),
@@ -197,8 +199,8 @@ export function multipleSentences(
       return new ArrayResult(dictionary.get(word)!.definitions)
         .flatMap(definitionAsPlainString)
         .map<English.Sentence>((definition) => ({
-          clauses: [{ type: "free form", text: definition }],
-          punctuation: "",
+          type: "free form",
+          text: definition,
         }))
         .map((definition) => [definition]);
     }

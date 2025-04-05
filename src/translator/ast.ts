@@ -73,7 +73,6 @@ export type VerbPhrase =
     preposition: ReadonlyArray<Preposition>;
   }>;
 export type Clause =
-  | Readonly<{ type: "free form"; text: string }>
   | Readonly<{
     type: "default";
     subject: NounPhrase;
@@ -90,7 +89,10 @@ export type Preposition = Readonly<{
   object: NounPhrase;
   emphasis: boolean;
 }>;
-export type Sentence = Readonly<{
-  clauses: ReadonlyArray<Clause>;
-  punctuation: string;
-}>;
+export type Sentence =
+  | Readonly<{ type: "free form"; text: string }>
+  | Readonly<{
+    type: "sentence";
+    clauses: ReadonlyArray<Clause>;
+    punctuation: string;
+  }>;

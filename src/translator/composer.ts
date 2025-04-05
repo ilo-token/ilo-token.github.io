@@ -117,8 +117,6 @@ function defaultClause(clause: English.Clause & { type: "default" }): string {
 }
 function clause(ast: English.Clause): string {
   switch (ast.type) {
-    case "free form":
-      return ast.text;
     case "default":
       return defaultClause(ast);
     case "interjection":
@@ -132,11 +130,21 @@ function clause(ast: English.Clause): string {
   }
 }
 function sentence(sentence: English.Sentence): string {
-  return `${sentence.clauses.map(clause).join(", ")}${sentence.punctuation}`
-    .replace(
-      /(?<![<&\p{Alpha}\p{Nd}\p{Nl}\p{No}])[\p{Alpha}\p{Nd}\p{Nl}\p{No}]/u,
-      (character) => character.toLocaleUpperCase(),
-    );
+  let text: string;
+  switch (sentence.type) {
+    case "free form":
+      text = sentence.text;
+      break;
+    case "sentence":
+      text = `${
+        sentence.clauses.map(clause).join(", ")
+      }${sentence.punctuation}`;
+      break;
+  }
+  return text.replace(
+    /(?<![<&\p{Alpha}\p{Nd}\p{Nl}\p{No}])[\p{Alpha}\p{Nd}\p{Nl}\p{No}]/u,
+    (character) => character.toLocaleUpperCase(),
+  );
 }
 export function multipleSentences(
   sentences: ReadonlyArray<English.Sentence>,
