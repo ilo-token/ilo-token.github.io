@@ -271,8 +271,6 @@ export function withSource<T>(
     }))
   );
 }
-export function sourceOnly<T>(
-  parser: Parser<T>,
-): Parser<string> {
+export function sourceOnly(parser: Parser<unknown>): Parser<string> {
   return withSource(parser).map(([_, source]) => source);
 }
