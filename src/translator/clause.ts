@@ -213,6 +213,10 @@ export function contextClause(
         new TranslationTodoError(`${contextClause.type} context clause`),
       );
     default:
-      return clause(contextClause);
+      return clause(contextClause).map((clause) => ({
+        type: "dependent",
+        conjunction: noEmphasis("given"),
+        clause,
+      }));
   }
 }

@@ -131,19 +131,7 @@ function sentence(
   switch (sentence.type) {
     case "default": {
       const laClauses = sentence.laClauses;
-      const givenClauses = ArrayResult.combine(
-        ...laClauses.map(contextClause),
-      )
-        .map((clauses) =>
-          clauses.map<English.Clause>((clause) => ({
-            type: "dependent",
-            conjunction: {
-              word: "given",
-              emphasis: false,
-            },
-            clause,
-          }))
-        );
+      const givenClauses = ArrayResult.combine(...laClauses.map(contextClause));
       if (sentence.startingParticle != null) {
         return new ArrayResult(
           new TranslationTodoError(
