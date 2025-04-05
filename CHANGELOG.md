@@ -22,7 +22,7 @@ ilo".
 
 - Implement translation of preposition.
 - Implement "nanpa X la" translation.
-- Fix "nanpa translation": Before it translated into just "position" instead of
+- Fix "nanpa" translation: Before it translated into just "position" instead of
   e.g. "position 1".
 
 </details>
