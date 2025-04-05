@@ -287,6 +287,7 @@ export function multipleModifiers(
             quantity: "singular",
             perspective: "third",
             postAdjective: null,
+            postCompound: null,
             preposition: [],
             emphasis: false,
           }

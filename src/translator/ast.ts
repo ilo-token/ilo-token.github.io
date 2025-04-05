@@ -14,6 +14,7 @@ export type NounPhrase =
     quantity: Quantity;
     perspective: Dictionary.Perspective;
     postAdjective: null | Readonly<{ adjective: string; name: string }>;
+    postCompound: null | NounPhrase;
     preposition: ReadonlyArray<Preposition>;
     emphasis: boolean;
   }>

@@ -20,6 +20,8 @@ export function noun(phrases: English.NounPhrase, depth: number): string {
         word(phrases.noun),
         ...nullableAsArray(phrases.postAdjective)
           .map(({ adjective, name }) => `${adjective} ${name}`),
+        ...nullableAsArray(phrases.postCompound)
+          .map((phrase) => noun(phrase, 0)),
         ...phrases.preposition.map(preposition),
       ]
         .join(" ");

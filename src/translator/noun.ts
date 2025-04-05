@@ -115,6 +115,7 @@ export function noun(
       ...partialNoun,
       type: "simple",
       noun: word({ ...options, word: noun }),
+      postCompound: null,
       quantity,
       preposition: [],
       emphasis: false,

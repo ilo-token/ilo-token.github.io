@@ -43,6 +43,7 @@ function phraseClause(
                 quantity: "singular",
                 perspective: "third",
                 postAdjective: null,
+                postCompound: null,
                 preposition: [],
                 emphasis: false,
               },
@@ -108,6 +109,7 @@ function iWish(
       quantity: "singular",
       perspective: "first",
       postAdjective: null,
+      postCompound: null,
       preposition: [],
       emphasis: false,
     },
@@ -150,6 +152,7 @@ function oClause(
       quantity: "plural",
       perspective: "second",
       postAdjective: null,
+      postCompound: null,
       preposition: [],
       emphasis: false,
     }]);
