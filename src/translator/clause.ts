@@ -200,14 +200,13 @@ export function clause(clause: TokiPona.Clause): ArrayResult<English.Clause> {
       return liClause(clause);
     case "o clause":
       return oClause(clause);
-    case "prepositions":
-      return new ArrayResult(new TranslationTodoError(clause.type));
   }
 }
 export function contextClause(
   contextClause: TokiPona.ContextClause,
 ): ArrayResult<English.Clause> {
   switch (contextClause.type) {
+    case "prepositions":
     case "nanpa":
     case "anu":
       return new ArrayResult(

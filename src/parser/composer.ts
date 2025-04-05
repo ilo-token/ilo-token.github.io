@@ -171,12 +171,12 @@ export function clause(clause: Clause): string {
         multiplePredicates(clause.predicates, "o"),
       ]
         .join(" ");
-    case "prepositions":
-      return clause.prepositions.map(preposition).join(" ");
   }
 }
 export function contextClause(contextClause: ContextClause): string {
   switch (contextClause.type) {
+    case "prepositions":
+      return contextClause.prepositions.map(preposition).join(" ");
     case "nanpa":
       return nanpa(contextClause);
     case "anu":

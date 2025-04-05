@@ -261,8 +261,6 @@ export const CLAUSE_RULE: ReadonlyArray<(clause: Clause) => boolean> = [
           return true;
         }
         break;
-      case "prepositions":
-        return true;
     }
     if (
       everyPhraseInMultiplePhrases(phrases).some(hasPrepositionInPhrase)

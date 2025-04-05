@@ -559,18 +559,6 @@ const clause = choice<Clause>(
       predicates,
       explicitLi: false,
     })),
-  sequence(
-    preposition,
-    many(optionalComma.with(preposition)),
-  )
-    .map(
-      ([preposition, morePreposition]) => [preposition, ...morePreposition],
-    )
-    .sortBy((prepositions) => -prepositions.length)
-    .map((prepositions) => ({
-      type: "prepositions",
-      prepositions,
-    })),
   subjectPhrases
     .map((phrases) => ({ type: "phrases", phrases })),
   subjectPhrases
@@ -605,6 +593,18 @@ const clause = choice<Clause>(
 )
   .filter(filter(CLAUSE_RULE));
 const contextClause = choice<ContextClause>(
+  sequence(
+    preposition,
+    many(optionalComma.with(preposition)),
+  )
+    .map(
+      ([preposition, morePreposition]) => [preposition, ...morePreposition],
+    )
+    .sortBy((prepositions) => -prepositions.length)
+    .map((prepositions) => ({
+      type: "prepositions",
+      prepositions,
+    })),
   nanpa.map((nanpa) => ({ ...nanpa, type: "nanpa" })),
   wordUnit(new Set(["anu"]), '"anu"').map((anu) => ({ type: "anu", anu })),
   clause,
