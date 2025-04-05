@@ -16,9 +16,11 @@ NOTE: Before publishing:
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
 
-- Implement translation of preposition in following places:
-  - Before "la"
-  - After verb or object
+ilo Token can now translate prepositions. This includes preposition before "la"
+such as "tawa mi la sina pona" and prepositional predicate such as "mi kepeken
+ilo".
+
+- Implement translation of preposition.
 
 </details>
 
