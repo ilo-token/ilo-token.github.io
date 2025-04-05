@@ -6,7 +6,7 @@ import { FilteredError, TranslationTodoError } from "./error.ts";
 import { perspective } from "./noun.ts";
 import { multiplePhrases, multiplePhrasesAsNoun } from "./phrase.ts";
 import { predicate } from "./predicate.ts";
-import { nounAsPreposition } from "./preposition.ts";
+import { nounAsPreposition, preposition } from "./preposition.ts";
 import { addModalToAll, noAdverbs, verb } from "./verb.ts";
 import { noEmphasis } from "./word.ts";
 
@@ -204,19 +204,26 @@ export function clause(clause: TokiPona.Clause): ArrayResult<English.Clause> {
 }
 export function contextClause(
   contextClause: TokiPona.ContextClause,
-): ArrayResult<English.Clause> {
+): ArrayResult<ReadonlyArray<English.Clause>> {
   switch (contextClause.type) {
     case "prepositions":
+      return ArrayResult.combine(...contextClause.prepositions.map(preposition))
+        .map((prepositions) =>
+          prepositions.map((preposition) => ({
+            ...preposition,
+            type: "preposition",
+          }))
+        );
     case "nanpa":
     case "anu":
       return new ArrayResult(
         new TranslationTodoError(`${contextClause.type} context clause`),
       );
     default:
-      return clause(contextClause).map((clause) => ({
+      return clause(contextClause).map((clause) => [{
         type: "dependent",
         conjunction: noEmphasis("given"),
         clause,
-      }));
+      }]);
   }
 }

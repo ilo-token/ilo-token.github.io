@@ -131,7 +131,10 @@ function sentence(
   switch (sentence.type) {
     case "default": {
       const laClauses = sentence.laClauses;
-      const givenClauses = ArrayResult.combine(...laClauses.map(contextClause));
+      const contextClauses = ArrayResult.combine(
+        ...laClauses.map(contextClause),
+      )
+        .map((clause) => clause.flat());
       if (sentence.startingParticle != null) {
         return new ArrayResult(
           new TranslationTodoError(
@@ -147,11 +150,11 @@ function sentence(
           ? interjection(sentence.finalClause)
           : new ArrayResult<English.Clause>();
       const engClauses = ArrayResult.combine(
-        givenClauses,
+        contextClauses,
         ArrayResult.concat(interjectionClause, lastEngClause),
       )
-        .map(([givenClauses, lastClause]) => [
-          ...givenClauses,
+        .map(([contextClauses, lastClause]) => [
+          ...contextClauses,
           lastClause,
           ...right,
         ]);
