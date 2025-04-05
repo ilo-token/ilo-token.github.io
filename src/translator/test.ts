@@ -2,7 +2,6 @@
 
 import { assertArrayIncludes } from "@std/assert/array-includes";
 import { translate } from "./translator.ts";
-import { assert } from "@std/assert/assert";
 import { number } from "./number.ts";
 
 Deno.test("verb with adverb", () => {
@@ -36,6 +35,6 @@ const NUMBER_TESTS = new Map(Object.entries({
 Deno.test("numeral translation", () => {
   for (const [tokiPona, expected] of NUMBER_TESTS) {
     const numbers = number(tokiPona.trim().split(" ")).unwrap();
-    assert(numbers.includes(expected), `Error at "${tokiPona}"`);
+    assertArrayIncludes(numbers, [expected], `Error at "${tokiPona}"`);
   }
 });
