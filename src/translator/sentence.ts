@@ -49,18 +49,19 @@ function emphasisAsPunctuation(
     } else {
       return originalPunctuation;
     }
+  } else {
+    const questionMark = interrogative ? "?" : "";
+    let exclamationMark: string;
+    switch (emphasis.type) {
+      case "word":
+        exclamationMark = "!";
+        break;
+      case "long word":
+        exclamationMark = "!".repeat(emphasis.length);
+        break;
+    }
+    return `${questionMark}${exclamationMark}`;
   }
-  const questionMark = interrogative ? "?" : "";
-  let exclamationMark: string;
-  switch (emphasis.type) {
-    case "word":
-      exclamationMark = "!";
-      break;
-    case "long word":
-      exclamationMark = "!".repeat(emphasis.length);
-      break;
-  }
-  return `${questionMark}${exclamationMark}`;
 }
 function interjection(clause: TokiPona.Clause): ArrayResult<English.Clause> {
   if (clause.type === "phrases" && clause.phrases.type === "single") {
