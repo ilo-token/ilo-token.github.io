@@ -673,7 +673,7 @@ const sentence = choice<Sentence>(
       (
         [
           startingParticle,
-          laClauses,
+          contextClauses,
           finalClause,
           anuSeme,
           emphasis,
@@ -683,7 +683,7 @@ const sentence = choice<Sentence>(
         const sentence: Sentence & { type: "default" } = {
           type: "default",
           startingParticle,
-          laClauses,
+          contextClauses,
           finalClause,
           anuSeme,
           emphasis,

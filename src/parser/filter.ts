@@ -327,7 +327,7 @@ export const SENTENCE_RULE: ReadonlyArray<(sentence: Sentence) => boolean> = [
   },
   // If there is "la", there can't be starting particle e.g. taso
   (sentence) =>
-    sentence.type !== "default" || sentence.laClauses.length === 0 ||
+    sentence.type !== "default" || sentence.contextClauses.length === 0 ||
     sentence.startingParticle == null || throwError(
       new UnrecognizedError(
         `${sentence.startingParticle.word} particle with "la"`,

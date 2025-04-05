@@ -191,7 +191,7 @@ export function sentence(sentence: Sentence): string {
     case "default":
       text = [
         ...nullableAsArray(sentence.startingParticle).map(wordUnit),
-        ...sentence.laClauses
+        ...sentence.contextClauses
           .map(contextClause)
           .map((clause) => `${clause} la`),
         clause(sentence.finalClause),

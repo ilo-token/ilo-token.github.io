@@ -117,7 +117,7 @@ export function everyWordUnitInSentence(
     case "default":
       return [
         ...nullableAsArray(sentence.startingParticle),
-        ...sentence.laClauses.flatMap(everyWordUnitInContextClause),
+        ...sentence.contextClauses.flatMap(everyWordUnitInContextClause),
         ...everyWordUnitInClause(sentence.finalClause),
         ...nullableAsArray(sentence.anuSeme),
       ];

@@ -86,7 +86,7 @@ export type Sentence =
   | Readonly<{
     type: "default";
     startingParticle: null | HeadedWordUnit;
-    laClauses: ReadonlyArray<ContextClause>;
+    contextClauses: ReadonlyArray<ContextClause>;
     finalClause: Clause;
     anuSeme: null | HeadedWordUnit;
     emphasis: null | Emphasis;

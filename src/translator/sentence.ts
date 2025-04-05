@@ -130,9 +130,8 @@ function sentence(
     : sentence.punctuation;
   switch (sentence.type) {
     case "default": {
-      const laClauses = sentence.laClauses;
       const contextClauses = ArrayResult.combine(
-        ...laClauses.map(contextClause),
+        ...sentence.contextClauses.map(contextClause),
       )
         .map((clause) => clause.flat());
       if (sentence.startingParticle != null) {
@@ -142,28 +141,27 @@ function sentence(
           ),
         );
       }
-      const lastEngClause = clause(sentence.finalClause);
-      const right = nullableAsArray(sentence.anuSeme).map(anuSeme);
-      const interjectionClause =
-        sentence.laClauses.length === 0 && sentence.startingParticle == null &&
+      const finalClause = clause(sentence.finalClause);
+      const useAnuSeme = nullableAsArray(sentence.anuSeme).map(anuSeme);
+      const interjectionClause = sentence.contextClauses.length === 0 &&
           sentence.startingParticle == null
-          ? interjection(sentence.finalClause)
-          : new ArrayResult<English.Clause>();
-      const engClauses = ArrayResult.combine(
+        ? interjection(sentence.finalClause)
+        : new ArrayResult<English.Clause>();
+      const clauses = ArrayResult.combine(
         contextClauses,
-        ArrayResult.concat(interjectionClause, lastEngClause),
+        ArrayResult.concat(interjectionClause, finalClause),
       )
         .map(([contextClauses, lastClause]) => [
           ...contextClauses,
           lastClause,
-          ...right,
+          ...useAnuSeme,
         ]);
       const usePunctuation = emphasisAsPunctuation({
         emphasis: sentence.emphasis,
         interrogative: sentence.interrogative != null,
         originalPunctuation: punctuation,
       });
-      return engClauses.map((clauses) => ({
+      return clauses.map((clauses) => ({
         type: "sentence",
         clauses,
         punctuation: usePunctuation,
