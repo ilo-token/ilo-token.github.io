@@ -593,6 +593,8 @@ const clause = choice<Clause>(
 )
   .filter(filter(CLAUSE_RULE));
 const contextClause = choice<ContextClause>(
+  wordUnit(new Set(["anu"]), '"anu"').map((anu) => ({ type: "anu", anu })),
+  nanpa.map((nanpa) => ({ ...nanpa, type: "nanpa" })),
   sequence(
     preposition,
     many(optionalComma.with(preposition)),
@@ -605,8 +607,6 @@ const contextClause = choice<ContextClause>(
       type: "prepositions",
       prepositions,
     })),
-  nanpa.map((nanpa) => ({ ...nanpa, type: "nanpa" })),
-  wordUnit(new Set(["anu"]), '"anu"').map((anu) => ({ type: "anu", anu })),
   clause,
 )
   .filter(filter(CONTEXT_CLAUSE_RULE));
