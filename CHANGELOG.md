@@ -16,7 +16,9 @@ NOTE: Before publishing:
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
 
-- Implement translation of preposition found after verb or object.
+- Implement translation of preposition in following places:
+  - Before "la"
+  - After verb or object
 
 </details>
 
