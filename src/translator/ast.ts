@@ -90,10 +90,10 @@ export type Preposition = Readonly<{
   object: NounPhrase;
   emphasis: boolean;
 }>;
-export type Sentence =
+export type Sentence = Readonly<{
+  clauses: ReadonlyArray<Clause>;
+  punctuation: string;
+}>;
+export type Sentences =
   | Readonly<{ type: "free form"; text: string }>
-  | Readonly<{
-    type: "sentence";
-    clauses: ReadonlyArray<Clause>;
-    punctuation: string;
-  }>;
+  | Readonly<{ type: "sentences"; sentences: ReadonlyArray<Sentence> }>;

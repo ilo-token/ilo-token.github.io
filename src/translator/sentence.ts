@@ -177,23 +177,23 @@ function sentence(
 }
 export function multipleSentences(
   sentences: TokiPona.MultipleSentences,
-): ArrayResult<ReadonlyArray<English.Sentence>> {
+): ArrayResult<English.Sentences> {
   switch (sentences.type) {
     case "single word": {
       const { word } = sentences;
       return new ArrayResult(dictionary.get(word)!.definitions)
         .flatMap(definitionAsPlainString)
-        .map<English.Sentence>((definition) => ({
+        .map((definition) => ({
           type: "free form",
           text: definition,
-        }))
-        .map((definition) => [definition]);
+        }));
     }
     case "sentences":
       return ArrayResult.combine(
         ...sentences.sentences.map((value, i) =>
           sentence(value, i === sentences.sentences.length - 1)
         ),
-      );
+      )
+        .map((sentences) => ({ type: "sentences", sentences }));
   }
 }

@@ -132,24 +132,22 @@ function clause(ast: English.Clause): string {
   }
 }
 function sentence(sentence: English.Sentence): string {
-  let text: string;
-  switch (sentence.type) {
+  const capitalized = capitalize(sentence.clauses.map(clause).join(", "));
+  return `${capitalized}${sentence.punctuation}`;
+}
+export function multipleSentences(
+  sentences: English.Sentences,
+): string {
+  switch (sentences.type) {
     case "free form":
-      text = sentence.text;
-      break;
-    case "sentence":
-      text = `${
-        sentence.clauses.map(clause).join(", ")
-      }${sentence.punctuation}`;
-      break;
+      return capitalize(sentences.text);
+    case "sentences":
+      return sentences.sentences.map(sentence).join(" ");
   }
+}
+function capitalize(text: string): string {
   return text.replace(
     /(?<![<&\p{Alpha}\p{Nd}\p{Nl}\p{No}])[\p{Alpha}\p{Nd}\p{Nl}\p{No}]/u,
     (character) => character.toLocaleUpperCase(),
   );
-}
-export function multipleSentences(
-  sentences: ReadonlyArray<English.Sentence>,
-): string {
-  return sentences.map(sentence).join(" ");
 }
