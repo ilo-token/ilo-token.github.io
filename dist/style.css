@@ -87,10 +87,6 @@ dialog > div > div,
 dialog > div > input[type="text"] {
   flex-grow: 1;
 }
-dialog input[type="checkbox"] {
-  width: 1em;
-  height: 1em;
-}
 @media (min-width: 800px) {
   body {
     margin: 50px;
