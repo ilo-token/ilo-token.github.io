@@ -22,6 +22,8 @@ ilo".
 
 - Implement translation of preposition.
 - Implement "nanpa X la" translation.
+- Context clauses can now be translated into adverbs e.g. "pona la mi moku" will
+  be translated as "nicely, I ate".
 - Fix "nanpa" translation: Before it translated into just "position" instead of
   e.g. "position 1".
 
