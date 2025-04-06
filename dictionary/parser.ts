@@ -322,13 +322,10 @@ const definition = choiceOnlyOne<Definition>(
     adjective.skip(keyword("and")).skip(tag(keyword("c"))),
     adjective,
   )
-    .filter(([first, second]) => {
-      if (first.adverb.length === 0 && second.adverb.length === 0) {
-        return true;
-      } else {
-        throw new ArrayResultError("compound adjective cannot have adverb");
-      }
-    })
+    .filter(([first, second]) =>
+      (first.adverb.length === 0 && second.adverb.length === 0) ||
+      throwError(new ArrayResultError("compound adjective cannot have adverb"))
+    )
     .skip(semicolon)
     .map((adjective) => ({ type: "compound adjective", adjective })),
   noun

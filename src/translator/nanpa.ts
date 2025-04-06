@@ -1,3 +1,4 @@
+import { throwError } from "../../misc/misc.ts";
 import { ArrayResult } from "../array_result.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
@@ -13,18 +14,19 @@ export function nanpa(
     includeGerund: true,
     includeVerb: false,
   })
-    .map((phrase) => {
-      if (phrase.type !== "noun") {
-        throw new FilteredError(
-          `${phrase.type} within "position X" phrase`,
-        );
-      } else if (
-        (phrase.noun as English.NounPhrase & { type: "simple" })
-          .preposition.length > 0
-      ) {
-        throw new FilteredError('preposition within "position X" phrase');
-      } else {
-        return {
+    .map((phrase) =>
+      phrase.type !== "noun"
+        ? throwError(
+          new FilteredError(
+            `${phrase.type} within "position X" phrase`,
+          ),
+        )
+        : (phrase.noun as English.NounPhrase & { type: "simple" })
+            .preposition.length > 0
+        ? throwError(
+          new FilteredError('preposition within "position X" phrase'),
+        )
+        : {
           type: "simple",
           determiner: [],
           adjective: [],
@@ -38,7 +40,6 @@ export function nanpa(
           postAdjective: null,
           preposition: [],
           emphasis: false,
-        };
-      }
-    });
+        }
+    );
 }

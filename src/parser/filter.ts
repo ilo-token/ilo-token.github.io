@@ -193,17 +193,11 @@ export const PHRASE_RULE: ReadonlyArray<(phrase: Phrase) => boolean> = [
     !phraseHasTopLevelEmphasis(phrase.phrase),
 
   // Emphasis must not be nested
-  (phrase) => {
-    if (
-      phrase.emphasis == null ||
-      everyWordUnitInPhrase(phrase)
-        .every(({ emphasis }) => emphasis == null)
-    ) {
-      return true;
-    } else {
-      throw new UnrecognizedError("nested emphasis");
-    }
-  },
+  (phrase) =>
+    phrase.emphasis == null ||
+    everyWordUnitInPhrase(phrase)
+      .every(({ emphasis }) => emphasis == null) ||
+    throwError(new UnrecognizedError("nested emphasis")),
 ];
 export const PREPOSITION_RULE: ReadonlyArray<(phrase: Preposition) => boolean> =
   [
