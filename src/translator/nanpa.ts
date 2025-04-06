@@ -16,13 +16,13 @@ export function nanpa(
     .map((phrase) => {
       if (phrase.type !== "noun") {
         throw new FilteredError(
-          `${phrase.type} within "in position" phrase`,
+          `${phrase.type} within "position X" phrase`,
         );
       } else if (
         (phrase.noun as English.NounPhrase & { type: "simple" })
           .preposition.length > 0
       ) {
-        throw new FilteredError('preposition within "in position" phrase');
+        throw new FilteredError('preposition within "position X" phrase');
       } else {
         return {
           type: "simple",
