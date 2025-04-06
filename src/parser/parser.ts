@@ -197,7 +197,7 @@ function binaryWords(
     } else if (!contentWordSet.has(words[1])) {
       throw new UnrecognizedError(`"${words[1]}" as content word`);
     } else {
-      return words as [string, string];
+      return words as readonly [bottom: string, top: string];
     }
   });
 }

@@ -81,7 +81,7 @@ function template<T>(parser: Parser<T>): Parser<T> {
 const simpleUnit = memoize((kind: string) => word.skip(tag(keyword(kind))));
 function detectRepetition(
   source: ReadonlyArray<string>,
-): { before: string; repeat: string; after: string } {
+): Readonly<{ before: string; repeat: string; after: string }> {
   if (source.length === 1) {
     return { before: source[0], repeat: "", after: "" };
   }
