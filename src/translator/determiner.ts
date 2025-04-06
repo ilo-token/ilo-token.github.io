@@ -37,14 +37,10 @@ export function findNumber(
   } else if (check(quantities, "plural", "singular")) {
     return "plural";
   } else {
-    const singular = prettyPrintDeterminers(
-      filterQuantity(determiners, "singular"),
-    );
-    const plural = prettyPrintDeterminers(
-      filterQuantity(determiners, "plural"),
-    );
+    const singular = filterQuantity(determiners, "singular");
+    const plural = filterQuantity(determiners, "plural");
     throw new FilteredError(
-      `determiner for singular nouns ${singular} with determiner for plural nouns ${plural}`,
+      encodeDeterminer`determiner for singular nouns ${singular} with determiner for plural nouns ${plural}`(),
     );
   }
 }
