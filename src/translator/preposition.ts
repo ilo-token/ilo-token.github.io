@@ -20,7 +20,8 @@ export function preposition(
         modifier.type === "adverbial"
           ? (modifier.inWayPhrase == null ? modifier.adverb : throwError(
             new FilteredError(
-              '"in [adjective] way" prepositional phrase modifying preposition',
+              '"in [adjective] way" prepositional phrase modifying ' +
+                "preposition",
             ),
           ))
           : throwError(new FilteredError("adjectives modifying preposition"))

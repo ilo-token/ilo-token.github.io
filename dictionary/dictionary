@@ -77,7 +77,8 @@ ante:
     difference(n);
 
 anu:
-    `[`separates multiple possibilities, replacing another particle`]`(particle def);
+    `[`separates multiple possibilities, replacing another particle`]`
+        (particle def);
     or(particle def);
 
     # # These are no longer in Linku
@@ -89,7 +90,9 @@ anu:
 
 awen:
     # stay(v);
-    remain(v linking) [predicate]; # Thanks to ilo Tani for telling me this is supposed to be a linking verb
+    remain(v linking) [predicate];
+        # Thanks to ilo Tani for telling me this is supposed to be a linking
+        # verb
     # wait(v);
     pause(v) [object];
 
@@ -391,7 +394,8 @@ ko:
     sticky(adj material);
 
 kokosila:
-    speak(v) a(d article singular) non-Toki Pona(adj qualifier) language(n singular);
+    speak(v) a(d article singular) non-Toki Pona(adj qualifier)
+        language(n singular);
 
 kon:
     air(n);
@@ -422,7 +426,8 @@ kon:
     # ghost-related(adj opinion);
 
 ku:
-    interact(v) with(prep) the(d article) Toki Pona(adj qualifier) Dictionary(n singular);
+    interact(v) with(prep) the(d article) Toki Pona(adj qualifier)
+        Dictionary(n singular);
     the(d article) Toki Pona(adj qualifier) Dictionary(n);
 
 kule:
@@ -472,7 +477,8 @@ kute:
     obeying(adj qualifier gerund-like);
 
 la:
-    `[`mark the previous statement as context to a following statement`]`(particle def);
+    `[`mark the previous statement as context to a following statement`]`
+        (particle def);
 
 lanpan:
     take(v) [object];
@@ -1008,12 +1014,15 @@ noka:
     root-related(adj opinion);
 
 o:
-    `[`marks the end of a vocative `(`who is being spoken to`)``]`(particle def);
-    `[`marks the start of an imperative `(`command, wish, instruction`)``]`(particle def);
+    `[`marks the end of a vocative `(`who is being spoken to`)``]`
+        (particle def);
+    `[`marks the start of an imperative `(`command, wish, instruction`)``]`
+        (particle def);
     should(particle def);
 
 olin:
-    have(v) strong(adj opinion) emotional(adj opinion) bond(n singular) with(prep) [object];
+    have(v) strong(adj opinion) emotional(adj opinion) bond(n singular)
+        with(prep) [object];
     respect(v) [object];
 
     affection(n singular);
@@ -1209,8 +1218,10 @@ pona:
     nicely(adv);
 
 pu:
-    interact(v) with(prep) the(d article) book(n singular) titled(adj) Toki Pona`:` The Language of Good(n proper);
-    the(d article) book(n) titled(adj) Toki Pona`:` The Language of Good(n proper);
+    interact(v) with(prep) the(d article) book(n singular) titled(adj)
+        Toki Pona`:` The Language of Good(n proper);
+    the(d article) book(n) titled(adj)
+        Toki Pona`:` The Language of Good(n proper);
 
 sama:
     same(adj opinion);
@@ -1249,7 +1260,8 @@ selo:
     boundary-related(adj opinion);
 
 seme:
-    `[`indicate a question by marking missing info in a sentence`]`(particle def);
+    `[`indicate a question by marking missing info in a sentence`]`
+        (particle def);
     what/what(n);
     which/which(n);
     what(d interrogative);
@@ -1387,7 +1399,8 @@ soweli:
     beast-related(adj opinion);
 
 su:
-    interact(v) with(prep) Sonja's(d possessive) story(adj qualifier) book(adj qualifier) series(n singular);
+    interact(v) with(prep) Sonja's(d possessive) story(adj qualifier)
+        book(adj qualifier) series(n singular);
     Sonja's(d possessive) story(adj qualifier) book(adj qualifier) series(n);
 
 suli:

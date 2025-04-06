@@ -295,8 +295,8 @@ function verbOnly(tagInside: Parser<unknown>): Parser<VerbForms> {
         };
         if (conjugations == null) {
           throw new ArrayResultError(
-            `no verb conjugation found for "${verb}". consider providing all ` +
-              "conjugations instead",
+            `no verb conjugation found for "${verb}". consider providing ` +
+              "all conjugations instead",
           );
         }
         if (verb !== conjugations.Infinitive) {
