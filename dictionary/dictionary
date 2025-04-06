@@ -76,6 +76,8 @@ ante:
 
     difference(n);
 
+    differently(adv);
+
 anu:
     `[`separates multiple possibilities, replacing another particle`]`
         (particle def);
@@ -129,6 +131,8 @@ epiku:
 
     # coolness(n);
     awesomeness(n);
+
+    amazingly(adv);
 
 esun:
     # trade(v) [object];
@@ -208,6 +212,8 @@ jaki:
     grossness(n);
     # toxicity(n);
     # rottenness(n);
+
+    disgustingly(adv);
 
 jan:
     person(n);
@@ -440,6 +446,8 @@ kule:
     colorful(adj color);
     diverse(adj qualifier);
 
+    colorfully(adv);
+
 kulupu:
     group(n);
     # community(n);
@@ -565,6 +573,8 @@ len:
 
     cover(v) [object];
     hide(v) [object];
+
+    secretly(adv);
 
 lete:
     cold(adj material);
@@ -694,7 +704,9 @@ lupa:
     # window(n);
     # portal(n);
 
-    # TODO adjectives
+    holey(adj physical quality);
+
+    hole-related(adj opinion);
 
 ma:
     earth(n singular);
@@ -912,6 +924,9 @@ musi:
 
     have(v) fun(n singular);
 
+    amusingly(adv);
+    comically(adv);
+
 mute:
     many(d quantifier plural);
     # several(d quantifier plural);
@@ -1033,6 +1048,10 @@ olin:
     romantic(adj qualifier);
     familial(adj qualifier);
 
+    respectfully(adv);
+    platonically(adv);
+    romantically(adv);
+
 ona:
     they/them(personal pronoun third plural);
     it/it(personal pronoun third singular);
@@ -1063,6 +1082,8 @@ pakala:
     # botch(v) [object];
     # harm(v) [object];
     # mess up(v) [object];
+
+    incorrectly(adv);
 
 pali:
     # work(n);
@@ -1234,6 +1255,8 @@ sama:
     # same as(prep) [indirect object];
 
     similarity(n);
+
+    equally(adv);
 
 seli:
     hot(adj material);
@@ -1452,6 +1475,8 @@ suwi:
     fragrance(n);
     cuteness(n);
 
+    charmingly(adv);
+
 tan:
     from(prep) [indirect object];
     because of(prep) [indirect object];
@@ -1569,6 +1594,8 @@ unpa:
 
     sexual(adj qualifier);
 
+    sexually(adv);
+
 uta:
     mouth(n);
     lip(n);
@@ -1646,7 +1673,7 @@ weka:
     distant(adj origin);
 
     remove(v) [object];
-    # TODO: get rid of
+    # get rid of
 
     absence(n);
     removal(n);
