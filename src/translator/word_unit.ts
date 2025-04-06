@@ -124,13 +124,13 @@ export function fromSimpleDefinition(
     case "reduplication":
       return new ArrayResult(dictionary.get(wordUnit.word)!.definitions)
         .filterMap(mapper)
-        .map((useWord) => {
-          return word({
+        .map((useWord) =>
+          word({
             word: useWord,
             reduplicationCount: getReduplicationCount(wordUnit),
             emphasis: wordUnit.emphasis != null,
-          });
-        });
+          })
+        );
     case "number":
       return new ArrayResult();
     case "x ala x":

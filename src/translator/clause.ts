@@ -84,15 +84,15 @@ function liClause(
     }),
     predicate(clause.predicates, "li"),
   )
-    .flatMap(([subject, predicate]) => {
-      return verb(predicate, perspective(subject), subject.quantity)
+    .flatMap(([subject, predicate]) =>
+      verb(predicate, perspective(subject), subject.quantity)
         .map((verb) => ({
           type: "default",
           subject,
           verb,
           hideSubject: false,
-        }));
-    });
+        }))
+    );
 }
 function iWish(
   subject: English.NounPhrase,
@@ -136,25 +136,27 @@ function iWish(
 function oClause(
   clause: TokiPona.Clause & { type: "o clause" },
 ): ArrayResult<English.Clause> {
-  const subject: ArrayResult<English.NounPhrase> = clause.subjects != null
+  const subject = clause.subjects != null
     ? multiplePhrasesAsNoun({
       phrases: clause.subjects,
       place: "subject",
       includeGerund: true,
       andParticle: "en",
     })
-    : new ArrayResult([{
-      type: "simple",
-      determiner: [],
-      adjective: [],
-      noun: noEmphasis("you"),
-      quantity: "plural",
-      perspective: "second",
-      postAdjective: null,
-      postCompound: null,
-      preposition: [],
-      emphasis: false,
-    }]);
+    : new ArrayResult([
+      {
+        type: "simple",
+        determiner: [],
+        adjective: [],
+        noun: noEmphasis("you"),
+        quantity: "plural",
+        perspective: "second",
+        postAdjective: null,
+        postCompound: null,
+        preposition: [],
+        emphasis: false,
+      } as const,
+    ]);
   return ArrayResult.combine(subject, predicate(clause.predicates, "o"))
     .flatMap(([subject, predicate]) => {
       const subjectPerspective = perspective(subject);

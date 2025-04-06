@@ -20,14 +20,7 @@ import {
   UnexpectedError,
   withSource,
 } from "../src/parser/parser_lib.ts";
-import {
-  Definition,
-  Determiner,
-  Dictionary,
-  Noun,
-  NounForms,
-  VerbForms,
-} from "./type.ts";
+import { Definition, Dictionary, VerbForms } from "./type.ts";
 
 const RESERVED_SYMBOLS = "#()*+/:;<=>@[\\]^`{|}~";
 const WORDS = new RegExp(`[^${escapeRegex(RESERVED_SYMBOLS)}]`);
@@ -117,37 +110,35 @@ const nounOnly = choiceOnlyOne(
         .with(optionalAll(keyword("gerund"))),
     ),
   )
-    .map<NounForms & { gerund: boolean }>(
-      ([noun, gerund]) => {
-        const sentence = nlp(noun);
-        sentence.tag("Noun");
-        const singular = sentence
-          .nouns()
-          .toSingular()
-          .text();
-        const plural = sentence
-          .nouns()
-          .toPlural()
-          .text();
-        if (singular === "" || plural === "") {
-          throw new ArrayResultError(
-            `no singular or plural form found for "${noun}". consider ` +
-              "providing both singular and plural forms instead",
-          );
-        }
-        if (noun !== singular) {
-          throw new ArrayResultError(
-            `conjugation error: "${noun}" is not "${singular}". ` +
-              "consider providing both singular and plural forms instead",
-          );
-        }
-        return {
-          singular: escapeHtml(singular),
-          plural: escapeHtml(plural),
-          gerund: gerund != null,
-        };
-      },
-    ),
+    .map(([noun, gerund]) => {
+      const sentence = nlp(noun);
+      sentence.tag("Noun");
+      const singular = sentence
+        .nouns()
+        .toSingular()
+        .text();
+      const plural = sentence
+        .nouns()
+        .toPlural()
+        .text();
+      if (singular === "" || plural === "") {
+        throw new ArrayResultError(
+          `no singular or plural form found for "${noun}". consider ` +
+            "providing both singular and plural forms instead",
+        );
+      }
+      if (noun !== singular) {
+        throw new ArrayResultError(
+          `conjugation error: "${noun}" is not "${singular}". ` +
+            "consider providing both singular and plural forms instead",
+        );
+      }
+      return {
+        singular: escapeHtml(singular),
+        plural: escapeHtml(plural),
+        gerund: gerund != null,
+      };
+    }),
   sequence(
     word,
     tag(
@@ -155,28 +146,26 @@ const nounOnly = choiceOnlyOne(
         .with(sequence(optionalAll(keyword("gerund")), number)),
     ),
   )
-    .map<NounForms & { gerund: boolean }>(
-      ([noun, [gerund, number]]) => {
-        let singular: null | string;
-        let plural: null | string;
-        switch (number) {
-          case "singular":
-          case "plural":
-            switch (number) {
-              case "singular":
-                singular = noun;
-                plural = null;
-                break;
-              case "plural":
-                singular = null;
-                plural = noun;
-                break;
-            }
-            break;
-        }
-        return { singular, plural, gerund: gerund != null };
-      },
-    ),
+    .map(([noun, [gerund, number]]) => {
+      let singular: null | string;
+      let plural: null | string;
+      switch (number) {
+        case "singular":
+        case "plural":
+          switch (number) {
+            case "singular":
+              singular = noun;
+              plural = null;
+              break;
+            case "plural":
+              singular = null;
+              plural = noun;
+              break;
+          }
+          break;
+      }
+      return { singular, plural, gerund: gerund != null };
+    }),
   sequence(
     word,
     optionalAll(slash.with(word)),
@@ -185,13 +174,11 @@ const nounOnly = choiceOnlyOne(
         .with(optionalAll(keyword("gerund"))),
     ),
   )
-    .map<NounForms & { gerund: boolean }>(
-      ([singular, plural, gerund]) => ({
-        singular,
-        plural,
-        gerund: gerund != null,
-      }),
-    ),
+    .map(([singular, plural, gerund]) => ({
+      singular,
+      plural,
+      gerund: gerund != null,
+    })),
 );
 const determinerType = choiceOnlyOne(
   keyword("article"),
@@ -208,17 +195,19 @@ const determiner = sequence(
   optionalAll(slash.with(word)),
   tag(keyword("d").with(sequence(determinerType, optionalNumber))),
 )
-  .map<Determiner>(([determiner, plural, [kind, quantity]]) => ({
-    determiner,
-    plural,
-    kind,
-    quantity: quantity ?? "both",
-  }));
+  .map(([determiner, plural, [kind, quantity]]) =>
+    ({
+      determiner,
+      plural,
+      kind,
+      quantity: quantity ?? "both",
+    }) as const
+  );
 const adjectiveKind = choiceOnlyOne(
   keyword("opinion"),
   keyword("size"),
   sequence(keyword("physical"), keyword("quality"))
-    .map<"physical quality">(() => "physical quality"),
+    .map(() => "physical quality" as const),
   keyword("age"),
   keyword("color"),
   keyword("origin"),
@@ -249,8 +238,8 @@ const noun = sequence(
       .skip(tag(sequence(keyword("n"), keyword("proper")))),
   ),
 )
-  .map<Noun>(([determiner, adjective, noun, post]) => {
-    return {
+  .map(([determiner, adjective, noun, post]) =>
+    ({
       ...noun,
       determiner,
       adjective,
@@ -258,8 +247,8 @@ const noun = sequence(
         post,
         ([adjective, name]) => ({ adjective, name }),
       ),
-    };
-  });
+    }) as const
+  );
 function verbOnly(tagInside: Parser<unknown>): Parser<VerbForms> {
   return choiceOnlyOne(
     sequence(
@@ -437,15 +426,13 @@ const definition = choiceOnlyOne<Definition>(
     ),
   )
     .skip(semicolon)
-    .map((
-      [
-        singularSubject,
-        singularObject,
-        pluralSubject,
-        pluralObject,
-        perspective,
-      ],
-    ) => ({
+    .map(([
+      singularSubject,
+      singularObject,
+      pluralSubject,
+      pluralObject,
+      perspective,
+    ]) => ({
       type: "personal pronoun",
       singular: { subject: singularSubject, object: singularObject },
       plural: { subject: pluralSubject, object: pluralObject },

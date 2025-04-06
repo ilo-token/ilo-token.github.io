@@ -15,7 +15,7 @@ export const END_OF_REVERSE_LONG_GLYPH = "\u{F199B}";
 export const UCSUR_MIDDLE_DOT = "\u{F199C}";
 export const UCSUR_COLON = "\u{F199D}";
 
-export const SPECIAL_UCSUR_DESCRIPTIONS: Map<string, string> = new Map(
+export const SPECIAL_UCSUR_DESCRIPTIONS = new Map(
   Object.entries({
     [START_OF_CARTOUCHE]: "start of cartouche",
     [END_OF_CARTOUCHE]: "end of cartouche",
@@ -180,7 +180,7 @@ export const KU_LILI = [
   "majuna",
   "powe",
 ];
-export const UCSUR_TO_LATIN: Map<string, string> = new Map(
+export const UCSUR_TO_LATIN = new Map(
   [
     { start: 0xF1900, words: [...PU, ...KU_SULI] } as const,
     { start: 0xF19A0, words: KU_LILI } as const,

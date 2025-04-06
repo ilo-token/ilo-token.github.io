@@ -64,9 +64,7 @@ function parseLipuLinku(
   data: { [word: string]: { usage_category: string } },
 ): ReadonlyArray<readonly [word: string, usageCategory: string]> {
   return Object.entries(data)
-    .map<readonly [word: string, usageCategory: string]>(
-      ([word, data]) => [word, data.usage_category],
-    )
+    .map(([word, data]) => [word, data.usage_category] as const)
     .filter(([_, category]) => category !== "sandbox");
 }
 if (import.meta.main) {

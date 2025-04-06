@@ -370,7 +370,7 @@ export function filter<T>(
   rules: ReadonlyArray<(value: T) => boolean>,
 ): (value: T) => boolean {
   return (value) => {
-    const result: ReadonlyArray<null | ReadonlyArray<unknown>> = rules.map(
+    const result = rules.map(
       (rule) => {
         try {
           if (rule(value)) {

@@ -180,9 +180,8 @@ export function predicate(
         ...tokiPonaPredicate.prepositions.map(preposition),
       );
       return ArrayResult.combine(predicatePhrase, object, prepositionPhrase)
-        .flatMap(
-          ([predicate, object, preposition]) =>
-            associatedPredicate(predicate, object, preposition),
+        .flatMap(([predicate, object, preposition]) =>
+          associatedPredicate(predicate, object, preposition)
         );
     }
     // TODO: combine adjectives and nouns

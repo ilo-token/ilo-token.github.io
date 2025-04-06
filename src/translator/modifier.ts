@@ -278,7 +278,7 @@ export function multipleModifiers(
         name.length === 0 &&
         inPositionPhrase.length === 0
       ) {
-        const inWayPhrase: null | English.NounPhrase = adjective.length > 0
+        const inWayPhrase = adjective.length > 0
           ? {
             type: "simple",
             determiner: [],
@@ -290,7 +290,7 @@ export function multipleModifiers(
             postCompound: null,
             preposition: [],
             emphasis: false,
-          }
+          } as const
           : null;
         adverbial = new ArrayResult([{
           type: "adverbial",

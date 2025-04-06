@@ -70,7 +70,7 @@ const properWords = allAtLeastOnce(
   match(/[A-Z][a-zA-Z]*/, "proper word").skip(spaces),
 )
   .map((array) => array.join(" "))
-  .map<Token>((words) => ({ type: "proper word", words, kind: "latin" }));
+  .map((words) => ({ type: "proper word", words, kind: "latin" }) as const);
 function specificWord(thatWord: string): Parser<string> {
   return word.filter((thisWord) =>
     thatWord === thisWord ||
@@ -79,20 +79,18 @@ function specificWord(thatWord: string): Parser<string> {
 }
 const multipleA = specificWord("a")
   .with(count(allAtLeastOnce(specificWord("a"))))
-  .map<Token>((count) => ({ type: "multiple a", count: count + 1 }));
+  .map((count) => ({ type: "multiple a", count: count + 1 }) as const);
 const repeatingLetter = match(/[a-zA-Z]/, "latin letter")
   .then((letter) =>
     count(all(matchString(letter)))
-      .map<readonly [letter: string, number: number]>(
-        (count) => [letter, count + 1],
-      )
+      .map((count) => [letter, count + 1] as const)
   );
 const longWord = allAtLeastOnce(repeatingLetter)
   .skip(spaces)
-  .map<Token & { type: "long word" }>((letters) => {
+  .map((letters) => {
     const word = letters.map(([letter]) => letter).join("");
     const length = sumOf(letters, ([_, count]) => count) - word.length + 1;
-    return { type: "long word", word, length };
+    return { type: "long word", word, length } as const;
   })
   .filter(({ word }) => /^[a-z]/.test(word))
   .filter(({ length }) => length > 1);
@@ -102,7 +100,7 @@ const xAlaX = lazy(() =>
       sequence(specificWord("ala"), specificWord(word)).map(() => word)
     )
 )
-  .map<Token>((word) => ({ type: "x ala x", word }));
+  .map((word) => ({ type: "x ala x", word }) as const);
 const punctuation = choiceOnlyOne(
   allAtLeastOnce(
     match(SENTENCE_TERMINATOR, "punctuation")
@@ -112,7 +110,7 @@ const punctuation = choiceOnlyOne(
     .map((punctuation) => punctuation.join("").replaceAll("...", ELLIPSIS)),
   newline.map(() => "."),
 )
-  .map<Token>((punctuation) => ({ type: "punctuation", punctuation }));
+  .map((punctuation) => ({ type: "punctuation", punctuation }) as const);
 const cartoucheElement = choiceOnlyOne(
   singleUcsurWord
     .skip(match(NSK_COLON, "full width colon").skip(spaces)),
@@ -148,11 +146,13 @@ const cartouche = specificSpecialUcsur(START_OF_CARTOUCHE)
   );
 const cartouches = allAtLeastOnce(cartouche)
   .map((words) => words.join(" "))
-  .map<Token>((words) => ({
-    type: "proper word",
-    words,
-    kind: "cartouche",
-  }));
+  .map((words) =>
+    ({
+      type: "proper word",
+      words,
+      kind: "cartouche",
+    }) as const
+  );
 function longContainer<T>(
   left: string,
   right: string,
@@ -172,42 +172,47 @@ const longGlyphHead = choiceOnlyOne(
   combinedGlyphs,
   ucsur.map((word) => [word]),
 );
-const spaceLongGlyph = sequence(longGlyphHead, longSpaceContainer)
-  .map<Token>(([words, spaceLength]) => ({
-    type: "space long glyph",
-    words,
-    spaceLength,
-  }));
+const spaceLongGlyph = sequence(
+  longGlyphHead,
+  longSpaceContainer,
+)
+  .map(([words, spaceLength]) =>
+    ({
+      type: "space long glyph",
+      words,
+      spaceLength,
+    }) as const
+  );
 const headedLongGlyphStart = longGlyphHead
   .skip(specificSpecialUcsur(START_OF_LONG_GLYPH))
   .skip(spaces)
-  .map<Token>((words) => ({ type: "headed long glyph start", words }));
+  .map((words) => ({ type: "headed long glyph start", words }) as const);
 const headlessLongGlyphEnd = specificSpecialUcsur(END_OF_LONG_GLYPH)
   .skip(spaces)
-  .map<Token>(() => ({ type: "headless long glyph end" }));
+  .map(() => ({ type: "headless long glyph end" }) as const);
 const headlessLongGlyphStart = specificSpecialUcsur(START_OF_REVERSE_LONG_GLYPH)
   .skip(spaces)
-  .map<Token>(() => ({ type: "headless long glyph end" }));
+  .map(() => ({ type: "headless long glyph end" }) as const);
 const headedLongGlyphEnd = specificSpecialUcsur(END_OF_REVERSE_LONG_GLYPH)
   .with(longGlyphHead)
   .skip(spaces)
-  .map<Token>((words) => ({ type: "headed long glyph start", words }));
+  .map((words) => ({ type: "headed long glyph start", words }) as const);
 const insideLongGlyph = specificSpecialUcsur(END_OF_REVERSE_LONG_GLYPH)
   .with(longGlyphHead)
   .skip(specificSpecialUcsur(START_OF_LONG_GLYPH))
   .skip(spaces)
-  .map<Token>((words) => ({ type: "inside long glyph", words }));
+  .map((words) => ({ type: "inside long glyph", words }) as const);
 const combinedGlyphsToken = combinedGlyphs
   .skip(spaces)
-  .map<Token>((words) => ({ type: "combined glyphs", words }));
-const wordToken = word.map<Token>((word) => ({ type: "word", word }));
+  .map((words) => ({ type: "combined glyphs", words }) as const);
+const wordToken = word.map((word) => ({ type: "word", word }) as const);
 
 Parser.startCache(cache);
 
-export const token = choiceOnlyOne(
+export const token = choiceOnlyOne<Token>(
   xAlaX,
   multipleA,
-  choice(longWord, wordToken),
+  choice<Token>(longWord, wordToken),
   properWords,
   // UCSUR only
   spaceLongGlyph,

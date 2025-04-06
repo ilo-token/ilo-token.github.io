@@ -17,7 +17,6 @@ import {
   Modifier,
   MultiplePhrases,
   MultipleSentences,
-  Nanpa,
   Phrase,
   Predicate,
   Preposition,
@@ -66,13 +65,12 @@ const spaces = match(/\s*/, "spaces");
 Parser.startCache(cache);
 
 const specificToken = memoize(
-  <T extends Token["type"]>(type: T): Parser<Token & { type: T }> => {
-    return token.map((token) =>
+  <T extends Token["type"]>(type: T): Parser<Token & { type: T }> =>
+    token.map((token) =>
       token.type === type
         ? token as Token & { type: T }
         : throwError(new UnexpectedError(describe(token), type))
-    );
-  },
+    ),
 );
 const punctuation = specificToken("punctuation")
   .map(({ punctuation }) => punctuation);
@@ -115,7 +113,7 @@ function filterCombinedGlyphs(
 const emphasis = choice<Emphasis>(
   specificToken("space long glyph")
     .filter(({ words }) => filterCombinedGlyphs(words, "a"))
-    .map<Emphasis>(({ spaceLength }) => ({
+    .map(({ spaceLength }) => ({
       type: "long word",
       word: "a",
       length: spaceLength,
@@ -133,7 +131,7 @@ function xAlaX(
   useWord: Set<string>,
   description: string,
 ): Parser<SimpleWordUnit & { type: "x ala x" }> {
-  return choice<SimpleWordUnit & { type: "x ala x" }>(
+  return choice(
     specificToken("headless long glyph start")
       .with(wordFrom(useWord, description))
       .skip(
@@ -211,7 +209,7 @@ function optionalCombined(
     wordUnit(word, description)
       .map((wordUnit) => [wordUnit, null]),
     binaryWords(word, description)
-      .map<readonly [HeadedWordUnit, null | Modifier]>(([first, second]) => [
+      .map(([first, second]) => [
         { type: "default", word: first, emphasis: null },
         {
           type: "default",
@@ -277,7 +275,7 @@ const phrase: Parser<Phrase> = lazy(() =>
     .filter(filter(PHRASE_RULE))
 );
 const nanpa = sequence(wordUnit(new Set(["nanpa"]), '"nanpa"'), phrase)
-  .map<Nanpa>(([nanpa, phrase]) => ({ nanpa, phrase }))
+  .map(([nanpa, phrase]) => ({ nanpa, phrase }))
   .filter(filter(NANPA_RULES));
 const pi = choice(
   specificToken("headed long glyph start")
@@ -288,25 +286,27 @@ const pi = choice(
 );
 const modifiers = sequence(
   many(
-    choice(
+    choice<Modifier>(
       sequence(number, optionalEmphasis)
-        .map<Modifier>(([words, emphasis]) => ({
-          type: "default",
-          word: { type: "number", words, emphasis },
-        }))
+        .map(([words, emphasis]) =>
+          ({
+            type: "default",
+            word: { type: "number", words, emphasis },
+          }) as const
+        )
         .filter(filter(MODIFIER_RULES)),
       wordUnit(contentWordSet, "modifier")
-        .map<Modifier>((word) => ({ type: "default", word }))
+        .map((word) => ({ type: "default", word }) as const)
         .filter(filter(MODIFIER_RULES)),
       properWords
-        .map<Modifier>((words) => ({ type: "proper words", words }))
+        .map((words) => ({ type: "proper words", words }) as const)
         .filter(filter(MODIFIER_RULES)),
     ),
   ),
-  many(nanpa.map<Modifier>((nanpa) => ({ ...nanpa, type: "nanpa" }))),
+  many(nanpa.map((nanpa) => ({ ...nanpa, type: "nanpa" }) as const)),
   many(
     pi
-      .map<Modifier>((phrase) => ({ type: "pi", phrase }))
+      .map((phrase) => ({ type: "pi", phrase }) as const)
       .filter(filter(MODIFIER_RULES)),
   ),
 )
@@ -318,7 +318,7 @@ const modifiers = sequence(
   ])
   .filter(filter(MULTIPLE_MODIFIERS_RULES));
 const singlePhrase = phrase
-  .map<MultiplePhrases>((phrase) => ({ type: "single", phrase }));
+  .map((phrase) => ({ type: "single", phrase }) as const);
 const longAnu = sequence(
   specificToken("headless long glyph start").with(phrase),
   manyAtLeastOnce(
@@ -337,8 +337,8 @@ function nestedPhrasesOnly(
   } else {
     const [first, ...rest] = nestingRule;
     const type = first === "anu" ? "anu" : "and conjunction";
-    const longAnuParser = type === "anu"
-      ? longAnu.map<MultiplePhrases>((phrases) => ({
+    const longAnuParser: Parser<MultiplePhrases> = type === "anu"
+      ? longAnu.map((phrases) => ({
         type: "anu",
         phrases: phrases.map((phrase) => ({ type: "single", phrase })),
       }))
@@ -410,14 +410,16 @@ const preposition = choice<Preposition>(
     phrase,
   )
     .skip(specificToken("headless long glyph end"))
-    .map<Preposition>(([words, phrase]) => {
+    .map(([words, phrase]) => {
       const modifiers = words
         .slice(1)
-        .map<Modifier>((word) => ({
-          type: "default",
-          word: { type: "default", word, emphasis: null },
-          emphasis: null,
-        }));
+        .map((word) =>
+          ({
+            type: "default",
+            word: { type: "default", word, emphasis: null },
+            emphasis: null,
+          }) as const
+        );
       return {
         preposition: { type: "default", word: words[0], emphasis: null },
         modifiers,
@@ -455,9 +457,7 @@ const preposition = choice<Preposition>(
     >,
     optionalEmphasis,
   )
-    .map<Preposition>((
-      [[preposition, modifier], modifiers, phrases, emphasis],
-    ) => ({
+    .map(([[preposition, modifier], modifiers, phrases, emphasis]) => ({
       preposition,
       modifiers: [...nullableAsArray(modifier), ...modifiers],
       phrases,
@@ -477,14 +477,14 @@ function associatedPredicates(
     ),
     many(optionalComma.with(preposition)),
   )
-    .map<Predicate & { type: "associated" }>((
-      [predicates, objects, prepositions],
-    ) => ({
-      type: "associated",
-      predicates,
-      objects,
-      prepositions,
-    }))
+    .map(([predicates, objects, prepositions]) =>
+      ({
+        type: "associated",
+        predicates,
+        objects,
+        prepositions,
+      }) as const
+    )
     .filter(({ objects, prepositions }) =>
       objects != null || prepositions.length > 0
     )
@@ -494,20 +494,20 @@ function multiplePredicates(
   nestingRule: ReadonlyArray<"li" | "o" | "anu">,
 ): Parser<Predicate> {
   if (nestingRule.length === 0) {
-    return choice<Predicate>(
+    return choice(
       associatedPredicates([]),
       phrase.map((predicate) => ({ type: "single", predicate })),
     );
   } else {
     const [first, ...rest] = nestingRule;
     const type = first === "anu" ? "anu" : "and conjunction";
-    const longAnuParser = type === "anu"
-      ? longAnu.map<Predicate>((phrases) => ({
+    const longAnuParser: Parser<Predicate> = type === "anu"
+      ? longAnu.map((phrases) => ({
         type: "anu",
         predicates: phrases.map((predicate) => ({ type: "single", predicate })),
       }))
       : empty;
-    return choice<Predicate>(
+    return choice(
       longAnuParser,
       associatedPredicates(nestingRule),
       sequence(
@@ -599,9 +599,7 @@ const contextClause = choice<ContextClause>(
     preposition,
     many(optionalComma.with(preposition)),
   )
-    .map(
-      ([preposition, morePreposition]) => [preposition, ...morePreposition],
-    )
+    .map(([preposition, morePreposition]) => [preposition, ...morePreposition])
     .sortBy((prepositions) => -prepositions.length)
     .map((prepositions) => ({
       type: "prepositions",
@@ -669,40 +667,36 @@ const sentence = choice<Sentence>(
         .map(() => ""),
     ),
   )
-    .map<Sentence & { type: "default" }>(
-      (
-        [
-          startingParticle,
-          contextClauses,
-          finalClause,
-          anuSeme,
-          emphasis,
-          punctuation,
-        ],
-      ) => {
-        const sentence: Sentence & { type: "default" } = {
-          type: "default",
-          startingParticle,
-          contextClauses,
-          finalClause,
-          anuSeme,
-          emphasis,
-          punctuation,
-          interrogative: null,
-        };
-        const wordUnits = everyWordUnitInSentence(sentence);
-        const interrogative = wordUnits.some(({ type }) => type === "x ala x")
-          ? "x ala x"
-          : wordUnits.some((wordUnit) =>
-              (wordUnit.type === "default" ||
-                wordUnit.type === "reduplication") &&
-              wordUnit.word === "seme"
-            )
-          ? "seme"
-          : null;
-        return { ...sentence, interrogative };
-      },
-    )
+    .map(([
+      startingParticle,
+      contextClauses,
+      finalClause,
+      anuSeme,
+      emphasis,
+      punctuation,
+    ]) => {
+      const sentence = {
+        type: "default",
+        startingParticle,
+        contextClauses,
+        finalClause,
+        anuSeme,
+        emphasis,
+        punctuation,
+        interrogative: null,
+      } as const;
+      const wordUnits = everyWordUnitInSentence(sentence);
+      const interrogative = wordUnits.some(({ type }) => type === "x ala x")
+        ? "x ala x"
+        : wordUnits.some((wordUnit) =>
+            (wordUnit.type === "default" ||
+              wordUnit.type === "reduplication") &&
+            wordUnit.word === "seme"
+          )
+        ? "seme"
+        : null;
+      return { ...sentence, interrogative } as const;
+    })
     .sortBy(({ anuSeme }) => anuSeme == null ? 1 : 0),
   sequence(filler, optional(punctuation))
     .map(([filler, punctuation]) => ({
