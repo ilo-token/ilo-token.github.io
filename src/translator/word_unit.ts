@@ -37,10 +37,10 @@ function defaultWordUnit(
               definition,
               emphasis: emphasis != null,
             })
-              .map<WordUnitTranslation>((noun) => ({ ...noun, type: "noun" }));
+              .map((noun) => ({ ...noun, type: "noun" }));
           }
         case "personal pronoun":
-          return new ArrayResult<WordUnitTranslation>([{
+          return new ArrayResult([{
             ...partialPronoun({
               ...options,
               pronoun: definition,
@@ -53,7 +53,7 @@ function defaultWordUnit(
             return new ArrayResult();
           } else {
             return adjective({ ...options, definition })
-              .map<WordUnitTranslation>((adjective) => ({
+              .map((adjective) => ({
                 type: "adjective",
                 adjective,
               }));
@@ -63,7 +63,7 @@ function defaultWordUnit(
             ...options,
             adjectives: definition.adjective,
           })
-            .map<WordUnitTranslation>((adjective) => ({
+            .map((adjective) => ({
               type: "adjective",
               adjective,
             }));
@@ -73,7 +73,7 @@ function defaultWordUnit(
             definition,
             emphasis: emphasis != null,
           })
-            .map<WordUnitTranslation>((verb) => ({ ...verb, type: "verb" }));
+            .map((verb) => ({ ...verb, type: "verb" }));
         default:
           return new ArrayResult();
       }
@@ -90,7 +90,7 @@ export function wordUnit(
   switch (wordUnit.type) {
     case "number":
       return number(wordUnit.words)
-        .map<WordUnitTranslation>((number) => ({
+        .map((number) => ({
           type: "noun",
           determiner: [],
           adjective: [],

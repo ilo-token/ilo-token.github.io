@@ -22,57 +22,55 @@ function phraseClause(
     andParticle: "en",
     includeVerb: false,
   })
-    .map<English.Clause>(
-      (phrase) => {
-        switch (phrase.type) {
-          case "noun":
-            return {
-              type: "subject phrase",
-              subject: phrase.noun,
-            };
-          case "adjective":
-            return {
-              type: "default",
-              subject: {
-                type: "simple",
-                determiner: [],
-                adjective: [],
-                noun: {
-                  word: "it",
-                  emphasis: false,
-                },
-                quantity: "singular",
-                perspective: "third",
-                postAdjective: null,
-                postCompound: null,
-                preposition: [],
+    .map((phrase) => {
+      switch (phrase.type) {
+        case "noun":
+          return {
+            type: "subject phrase",
+            subject: phrase.noun,
+          };
+        case "adjective":
+          return {
+            type: "default",
+            subject: {
+              type: "simple",
+              determiner: [],
+              adjective: [],
+              noun: {
+                word: "it",
                 emphasis: false,
               },
-              verb: {
-                type: "default",
-                verb: {
-                  modal: null,
-                  verb: [noAdverbs(noEmphasis("is"))],
-                },
-                subjectComplement: {
-                  type: "adjective",
-                  adjective: phrase.adjective,
-                },
-                contentClause: null,
-                object: null,
-                objectComplement: null,
-                preposition: nullableAsArray(phrase.inWayPhrase)
-                  .map((object) => nounAsPreposition(object, "in")),
-                hideVerb: true,
-              },
+              quantity: "singular",
+              perspective: "third",
+              postAdjective: null,
+              postCompound: null,
               preposition: [],
-              hideSubject: true,
-            };
-          case "verb":
-            throw new FilteredError("verb as interjection");
-        }
-      },
-    );
+              emphasis: false,
+            },
+            verb: {
+              type: "default",
+              verb: {
+                modal: null,
+                verb: [noAdverbs(noEmphasis("is"))],
+              },
+              subjectComplement: {
+                type: "adjective",
+                adjective: phrase.adjective,
+              },
+              contentClause: null,
+              object: null,
+              objectComplement: null,
+              preposition: nullableAsArray(phrase.inWayPhrase)
+                .map((object) => nounAsPreposition(object, "in")),
+              hideVerb: true,
+            },
+            preposition: [],
+            hideSubject: true,
+          };
+        case "verb":
+          throw new FilteredError("verb as interjection");
+      }
+    });
 }
 function liClause(
   clause: TokiPona.Clause & { type: "li clause" },
@@ -138,14 +136,14 @@ function iWish(
 function oClause(
   clause: TokiPona.Clause & { type: "o clause" },
 ): ArrayResult<English.Clause> {
-  const subject = clause.subjects != null
+  const subject: ArrayResult<English.NounPhrase> = clause.subjects != null
     ? multiplePhrasesAsNoun({
       phrases: clause.subjects,
       place: "subject",
       includeGerund: true,
       andParticle: "en",
     })
-    : new ArrayResult<English.NounPhrase>([{
+    : new ArrayResult([{
       type: "simple",
       determiner: [],
       adjective: [],
@@ -162,7 +160,7 @@ function oClause(
       const subjectPerspective = perspective(subject);
       return ArrayResult.concat(
         verb(predicate, subjectPerspective, subject.quantity)
-          .map<English.Clause>((verb) => iWish(subject, verb)),
+          .map((verb) => iWish(subject, verb)),
         ArrayResult.from(() =>
           verb(
             addModalToAll(

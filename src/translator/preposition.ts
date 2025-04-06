@@ -39,7 +39,7 @@ export function preposition(
           : throwError(new FilteredError(`${phrases.type} as indirect object`))
       ),
   )
-    .map<English.Preposition>(([preposition, adverb, object]) => ({
+    .map(([preposition, adverb, object]) => ({
       adverb,
       preposition,
       object,

@@ -193,7 +193,7 @@ function defaultPhrase(
       } else if (
         includeVerb && headWord.type === "verb" && modifier.type === "adverbial"
       ) {
-        return new ArrayResult<PhraseTranslation>([{
+        return new ArrayResult([{
           type: "verb",
           verb: {
             ...verbPhrase({ emphasis, verb: headWord, modifier }),
@@ -243,7 +243,7 @@ export function phrase(
       if (includeVerb) {
         return preposition(phrase)
           .map(prepositionAsVerb)
-          .map<PhraseTranslation>((verb) => ({
+          .map((verb) => ({
             type: "verb",
             verb: { ...verb, type: "simple" },
           }));

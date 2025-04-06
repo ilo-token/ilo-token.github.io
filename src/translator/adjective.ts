@@ -91,7 +91,7 @@ export function fixAdjective(
   adjective: ReadonlyArray<English.AdjectivePhrase>,
 ): ReadonlyArray<English.AdjectivePhrase> {
   return adjective
-    .flatMap<English.AdjectivePhrase & { type: "simple" }>((adjective) => {
+    .flatMap((adjective) => {
       switch (adjective.type) {
         case "simple":
           return [adjective];

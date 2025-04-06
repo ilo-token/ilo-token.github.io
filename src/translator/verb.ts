@@ -221,7 +221,7 @@ export function verb(
           perspective,
           quantity,
         })
-          .map<English.VerbPhrase>((verb) => ({
+          .map((verb) => ({
             ...partialVerb,
             type: "default",
             verb: {

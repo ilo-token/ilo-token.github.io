@@ -192,7 +192,7 @@ export function predicate(
         ...tokiPonaPredicate.predicates
           .map((predicates) => predicate(predicates, andParticle)),
       )
-        .map<PartialCompoundVerb>((predicates) => ({
+        .map((predicates) => ({
           type: "compound",
           conjunction: CONJUNCTION[tokiPonaPredicate.type],
           verb: predicates,

@@ -52,7 +52,7 @@ export function defaultModifier(
   const emphasis = wordUnit.emphasis != null;
   switch (wordUnit.type) {
     case "number":
-      return number(wordUnit.words).map<ModifierTranslation>((number) => {
+      return number(wordUnit.words).map((number) => {
         const quantity = number === 1 ? "singular" : "plural";
         return {
           type: "determiner" as const,
@@ -77,7 +77,7 @@ export function defaultModifier(
           switch (definition.type) {
             case "noun":
               return noun({ definition, reduplicationCount, emphasis })
-                .map<ModifierTranslation>((noun) => ({
+                .map((noun) => ({
                   type: "noun",
                   noun,
                 }));
@@ -87,7 +87,7 @@ export function defaultModifier(
                 reduplicationCount,
                 emphasis,
               })
-                .map<ModifierTranslation>((noun) => ({
+                .map((noun) => ({
                   type: "noun preposition",
                   noun,
                   preposition: definition.preposition,
@@ -106,7 +106,7 @@ export function defaultModifier(
                 reduplicationCount,
                 emphasis: wordUnit.emphasis != null,
               })
-                .map<ModifierTranslation>((determiner) => ({
+                .map((determiner) => ({
                   type: "determiner",
                   determiner,
                 }));
@@ -116,7 +116,7 @@ export function defaultModifier(
                 reduplicationCount,
                 emphasis: wordUnit.emphasis,
               })
-                .map<ModifierTranslation>((adjective) => ({
+                .map((adjective) => ({
                   type: "adjective",
                   adjective,
                 }));
@@ -126,12 +126,12 @@ export function defaultModifier(
                 reduplicationCount,
                 emphasis: wordUnit.emphasis,
               })
-                .map<ModifierTranslation>((adjective) => ({
+                .map((adjective) => ({
                   type: "adjective",
                   adjective,
                 }));
             case "adverb":
-              return new ArrayResult<ModifierTranslation>([{
+              return new ArrayResult([{
                 type: "adverb",
                 adverb: word({
                   word: definition.adverb,
@@ -257,7 +257,7 @@ export function multipleModifiers(
         inPositionPhrase.length <= 1 &&
         (noun.length === 0 || inPositionPhrase.length === 0)
       ) {
-        adjectival = new ArrayResult<MultipleModifierTranslation>([{
+        adjectival = new ArrayResult([{
           type: "adjectival",
           nounPreposition: nounPreposition[0] ?? null,
           determiner,
@@ -292,7 +292,7 @@ export function multipleModifiers(
             emphasis: false,
           }
           : null;
-        adverbial = new ArrayResult<MultipleModifierTranslation>([{
+        adverbial = new ArrayResult([{
           type: "adverbial",
           adverb,
           inWayPhrase,

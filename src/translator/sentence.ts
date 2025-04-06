@@ -144,7 +144,7 @@ function sentence(
     }
     case "filler":
       return filler(sentence.filler)
-        .map<English.Sentence>((interjection) => ({
+        .map((interjection) => ({
           type: "sentence",
           clauses: [{
             type: "interjection",
