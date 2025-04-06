@@ -4,7 +4,7 @@ import { dictionary } from "../dictionary.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { definitionAsPlainString } from "./as_string.ts";
 import * as English from "./ast.ts";
-import { clause, contextClause, unwrap } from "./clause.ts";
+import { clause, contextClause, unwrapSingleWord } from "./clause.ts";
 import { FilteredError, TranslationTodoError } from "./error.ts";
 import { noEmphasis } from "./word.ts";
 import { fromSimpleDefinition } from "./word_unit.ts";
@@ -107,7 +107,9 @@ function sentence(
       const interjectionClause: ArrayResult<English.Clause> =
         sentence.contextClauses.length === 0 &&
           sentence.startingParticle == null
-          ? new ArrayResult(nullableAsArray(unwrap(sentence.finalClause)))
+          ? new ArrayResult(
+            nullableAsArray(unwrapSingleWord(sentence.finalClause)),
+          )
             .flatMap((wordUnit) =>
               fromSimpleDefinition(
                 wordUnit,

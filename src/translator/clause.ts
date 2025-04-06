@@ -234,7 +234,7 @@ export function contextClause(
       );
     default:
       return ArrayResult.concat<ReadonlyArray<English.Clause>>(
-        new ArrayResult(nullableAsArray(unwrap(contextClause)))
+        new ArrayResult(nullableAsArray(unwrapSingleWord(contextClause)))
           .flatMap((wordUnit) =>
             fromSimpleDefinition(
               wordUnit,
@@ -251,7 +251,7 @@ export function contextClause(
       );
   }
 }
-export function unwrap(
+export function unwrapSingleWord(
   clause: TokiPona.Clause,
 ): null | TokiPona.WordUnit {
   if (clause.type === "phrases" && clause.phrases.type === "single") {
