@@ -127,7 +127,7 @@ function main(): void {
 
   // set version
   const displayDate = PROJECT_DATA.onDevelopment
-    ? "On development"
+    ? "(on development)"
     : `- Released ${new Date(PROJECT_DATA.releaseDate).toLocaleDateString()}`;
 
   versionDisplay.innerText = `${PROJECT_DATA.version} ${displayDate}`;
