@@ -19,7 +19,6 @@ export type PartialVerb =
   & Readonly<{
     modal: null | English.AdverbVerb;
     adverb: ReadonlyArray<English.Word>;
-    // TODO: better name other than first and rest
     first: null | Dictionary.VerbForms;
     reduplicationCount: number;
     wordEmphasis: boolean;
