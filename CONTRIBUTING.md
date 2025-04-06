@@ -5,21 +5,13 @@ about the pages to get you started. Remember you can always ask for help in the
 [discussion](#Discussion) or privately through my email:
 [neverrare@proton.me](mailto:neverrare@proton.me)
 
-## [Wiki](https://github.com/ilo-token/ilo-token.github.io/wiki)
-
-The wiki is a place full of useful information for contributors from how the
-code works to guidelines for editing the dictionary!
-
-It's not perfect however. If you spot a mistake, please open an issue.
-
 ## [Issue](https://github.com/ilo-token/ilo-token.github.io/issues)
 
-The issue page is intended for tracking the development of ilo Token as well as
-its wiki. You may open an issue for:
+The issue page is intended for tracking the development of ilo Token. You may
+open an issue for:
 
 - Bug report
 - Feature request
-- Fix suggestion to the wiki
 
 Please remember to search first before opening an issue, it might already exist!
 Also check the [changelog](./CHANGELOG.md) and open the on-development
@@ -51,8 +43,6 @@ Please search first before opening a new page! Duplicate pages are unnecessary.
 Before forking and editing, please claim an issue first or open an issue then
 claim it. After that, you can start away. This is necessary to avoid wasted
 duplicate efforts.
-[The wiki](https://github.com/ilo-token/ilo-token.github.io/wiki) contains
-useful information for contributors.
 
 You **don't** have to open a new issue this if:
 
