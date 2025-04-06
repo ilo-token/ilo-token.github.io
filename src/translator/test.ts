@@ -9,6 +9,11 @@ Deno.test("verb with adverb", () => {
   assertArrayIncludes(translations, ["I nicely communicate"]);
 });
 
+Deno.test("adjective with adverb", () => {
+  const translations = translate("pona ike").unwrap();
+  assertArrayIncludes(translations, ["Badly good"]);
+});
+
 const NUMBER_TESTS = new Map(Object.entries({
   "tu tu tu wan": 7,
   "luka tu": 7,
