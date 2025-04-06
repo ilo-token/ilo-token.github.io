@@ -84,6 +84,7 @@ export type Clause =
   | Readonly<{ type: "interjection"; interjection: Word }>
   | Readonly<{ type: "vocative"; call: string; addressee: NounPhrase }>
   | (Readonly<{ type: "preposition" }> & Preposition)
+  | Readonly<{ type: "adverb"; adverb: Word }>
   | Readonly<{ type: "dependent"; conjunction: Word; clause: Clause }>;
 export type Preposition = Readonly<{
   adverb: ReadonlyArray<Word>;

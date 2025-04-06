@@ -129,6 +129,8 @@ function clause(ast: English.Clause): string {
       return `${ast.call} ${noun(ast.addressee, 0)}`;
     case "preposition":
       return preposition(ast);
+    case "adverb":
+      return word(ast.adverb);
     case "dependent":
       return `${word(ast.conjunction)} ${clause(ast.clause)}`;
   }

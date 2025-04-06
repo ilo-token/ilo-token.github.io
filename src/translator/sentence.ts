@@ -1,12 +1,13 @@
+import { nullableAsArray, repeatWithSpace } from "../../misc/misc.ts";
 import { ArrayResult } from "../array_result.ts";
 import { dictionary } from "../dictionary.ts";
-import { nullableAsArray, repeatWithSpace } from "../../misc/misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { definitionAsPlainString } from "./as_string.ts";
 import * as English from "./ast.ts";
-import { clause, contextClause } from "./clause.ts";
+import { clause, contextClause, unwrap } from "./clause.ts";
 import { FilteredError, TranslationTodoError } from "./error.ts";
 import { noEmphasis } from "./word.ts";
+import { fromSimpleDefinition } from "./word_unit.ts";
 
 function filler(filler: TokiPona.Filler): ArrayResult<string> {
   switch (filler.type) {
@@ -63,42 +64,6 @@ function emphasisAsPunctuation(
     return `${questionMark}${exclamationMark}`;
   }
 }
-function interjection(clause: TokiPona.Clause): ArrayResult<English.Clause> {
-  if (clause.type === "phrases" && clause.phrases.type === "single") {
-    const { phrases: { phrase } } = clause;
-    if (phrase.type === "default" && phrase.modifiers.length === 0) {
-      const { headWord } = phrase;
-      switch (headWord.type) {
-        case "default":
-        case "reduplication":
-          return new ArrayResult(dictionary.get(headWord.word)!.definitions)
-            .filterMap((definition) => {
-              if (definition.type === "interjection") {
-                switch (headWord.type) {
-                  case "default":
-                    return definition.interjection;
-                  case "reduplication":
-                    return repeatWithSpace(
-                      definition.interjection,
-                      headWord.count,
-                    );
-                }
-              } else {
-                return null;
-              }
-            })
-            .map<English.Clause>((interjection) => ({
-              type: "interjection",
-              interjection: {
-                word: interjection,
-                emphasis: headWord.emphasis != null,
-              },
-            }));
-      }
-    }
-  }
-  return new ArrayResult();
-}
 function anuSeme(seme: TokiPona.HeadedWordUnit): English.Clause {
   let interjection: string;
   switch (seme.type) {
@@ -139,10 +104,21 @@ function sentence(
         );
       }
       const useAnuSeme = nullableAsArray(sentence.anuSeme).map(anuSeme);
-      const interjectionClause = sentence.contextClauses.length === 0 &&
+      const interjectionClause: ArrayResult<English.Clause> =
+        sentence.contextClauses.length === 0 &&
           sentence.startingParticle == null
-        ? interjection(sentence.finalClause)
-        : new ArrayResult<English.Clause>();
+          ? new ArrayResult(nullableAsArray(unwrap(sentence.finalClause)))
+            .flatMap((wordUnit) =>
+              fromSimpleDefinition(
+                wordUnit,
+                (definition) =>
+                  definition.type === "interjection"
+                    ? definition.interjection
+                    : null,
+              )
+            )
+            .map((interjection) => ({ type: "interjection", interjection }))
+          : new ArrayResult();
       const clauses = ArrayResult.combine(
         ArrayResult.combine(...sentence.contextClauses.map(contextClause))
           .map((clause) => clause.flat()),

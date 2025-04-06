@@ -1,3 +1,4 @@
+import { Definition } from "../../dictionary/type.ts";
 import { ArrayResult } from "../array_result.ts";
 import { dictionary } from "../dictionary.ts";
 import * as TokiPona from "../parser/ast.ts";
@@ -8,6 +9,7 @@ import { PartialNoun, partialNoun } from "./noun.ts";
 import { number } from "./number.ts";
 import { partialPronoun, Place } from "./pronoun.ts";
 import { PartialVerb, partialVerb } from "./verb.ts";
+import { word } from "./word.ts";
 
 export type WordUnitTranslation =
   | (Readonly<{ type: "noun" }> & PartialNoun)
@@ -111,6 +113,28 @@ export function wordUnit(
         emphasis: wordUnit.emphasis,
       });
     }
+  }
+}
+export function fromSimpleDefinition(
+  wordUnit: TokiPona.WordUnit,
+  mapper: (definition: Definition) => null | string,
+): ArrayResult<English.Word> {
+  switch (wordUnit.type) {
+    case "default":
+    case "reduplication":
+      return new ArrayResult(dictionary.get(wordUnit.word)!.definitions)
+        .filterMap(mapper)
+        .map((useWord) => {
+          return word({
+            word: useWord,
+            reduplicationCount: getReduplicationCount(wordUnit),
+            emphasis: wordUnit.emphasis != null,
+          });
+        });
+    case "number":
+      return new ArrayResult();
+    case "x ala x":
+      return new ArrayResult(new TranslationTodoError("x ala x"));
   }
 }
 export function getReduplicationCount(wordUnit: TokiPona.WordUnit): number {

@@ -1,15 +1,16 @@
-import { ArrayResult } from "../array_result.ts";
 import { nullableAsArray, throwError } from "../../misc/misc.ts";
+import { ArrayResult } from "../array_result.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
 import { FilteredError, TranslationTodoError } from "./error.ts";
+import { nanpa } from "./modifier.ts";
 import { perspective } from "./noun.ts";
 import { multiplePhrases, multiplePhrasesAsNoun } from "./phrase.ts";
 import { predicate } from "./predicate.ts";
 import { nounAsPreposition, preposition } from "./preposition.ts";
 import { addModalToAll, noAdverbs, verb } from "./verb.ts";
 import { noEmphasis } from "./word.ts";
-import { nanpa } from "./modifier.ts";
+import { fromSimpleDefinition } from "./word_unit.ts";
 
 function phraseClause(
   phrases: TokiPona.MultiplePhrases,
@@ -232,10 +233,32 @@ export function contextClause(
         new TranslationTodoError(`${contextClause.type} context clause`),
       );
     default:
-      return clause(contextClause).map((clause) => [{
-        type: "dependent",
-        conjunction: noEmphasis("given"),
-        clause,
-      }]);
+      return ArrayResult.concat<ReadonlyArray<English.Clause>>(
+        new ArrayResult(nullableAsArray(unwrap(contextClause)))
+          .flatMap((wordUnit) =>
+            fromSimpleDefinition(
+              wordUnit,
+              (definition) =>
+                definition.type === "adverb" ? definition.adverb : null,
+            )
+          )
+          .map((adverb) => [{ type: "adverb", adverb }]),
+        clause(contextClause).map((clause) => [{
+          type: "dependent",
+          conjunction: noEmphasis("given"),
+          clause,
+        }]),
+      );
   }
+}
+export function unwrap(
+  clause: TokiPona.Clause,
+): null | TokiPona.WordUnit {
+  if (clause.type === "phrases" && clause.phrases.type === "single") {
+    const { phrases: { phrase } } = clause;
+    if (phrase.type === "default" && phrase.modifiers.length === 0) {
+      return phrase.headWord;
+    }
+  }
+  return null;
 }
