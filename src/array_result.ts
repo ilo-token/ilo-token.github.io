@@ -166,11 +166,7 @@ export function extractArrayResultError(
     case "array result":
       return aggregate.errors;
     case "outside":
-      if (aggregate.errors.length === 1) {
-        throw aggregate.errors[0];
-      } else {
-        throw new AggregateError(aggregate.errors);
-      }
+      throw new AggregateError(aggregate.errors);
   }
 }
 export function isArrayResult(errors: ReadonlyArray<unknown>): boolean {
