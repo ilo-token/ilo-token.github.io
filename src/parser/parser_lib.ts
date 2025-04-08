@@ -54,7 +54,7 @@ export class Parser<T> {
   constructor(parser: InnerParser<T>) {
     // TODO: remove assertion
     const ensureParser: InnerParser<T> = (source) => {
-      assert(source.source.length > source.position);
+      assert(source.source.length >= source.position);
       return parser(source);
     };
     const cache: SourceMemoResult<T> = new SourceMemo();
