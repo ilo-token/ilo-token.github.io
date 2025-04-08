@@ -223,10 +223,9 @@ export function matchString(
   description = `"${match}"`,
 ): Parser<string> {
   return new Parser(({ source, position }) => {
-    const sourceString = source.slice(position);
     if (
       source.length - position >= match.length &&
-      sourceString.slice(0, match.length)
+      source.slice(position, position + match.length) === match
     ) {
       return new ArrayResult([{
         rest: { source, position: position + match.length },
@@ -234,7 +233,10 @@ export function matchString(
       }]);
     } else {
       return new ArrayResult(
-        new UnexpectedError(describeSource(sourceString), description),
+        new UnexpectedError(
+          describeSource(source.slice(position)),
+          description,
+        ),
       );
     }
   });

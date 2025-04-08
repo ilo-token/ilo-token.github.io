@@ -1,11 +1,13 @@
 // This code is Deno only
 
+import { assertArrayIncludes } from "@std/assert/array-includes";
 import { assertEquals } from "@std/assert/equals";
 import { assertLess } from "@std/assert/less";
 import { assertNotEquals } from "@std/assert/not-equals";
 import { assertThrows } from "@std/assert/throws";
 import { EXAMPLE_SENTENCES, MALFORMED_SENTENCES } from "../examples.ts";
 import { parse } from "./parser.ts";
+import { end, match, matchString, sequence } from "./parser_lib.ts";
 import { KU_LILI, KU_SULI, PU } from "./ucsur.ts";
 
 Deno.test("AST all distinct", () => {
@@ -49,3 +51,14 @@ function uniquePairs<T>(
 ): ReadonlyArray<readonly [T, T]> {
   return array.flatMap((a, i) => array.slice(i + 1).map((b) => [a, b]));
 }
+
+Deno.test("parser", () => {
+  const space = match(/\s*/, "space");
+  const parser = sequence(
+    match(/toki/, '"toki"').skip(space),
+    matchString("pona").skip(space),
+    match(/a/, '"a"').skip(end),
+  )
+    .generateParser();
+  assertArrayIncludes(parser("toki pona a").unwrap(), [["toki", "pona", "a"]]);
+});
