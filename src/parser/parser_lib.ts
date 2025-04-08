@@ -8,7 +8,7 @@ type InnerParser<T> = (input: Source) => ParserResult<T>;
 
 class SourceMemo<T> {
   #source = "";
-  #map: Map<number, T> = new Map();
+  readonly #map: Map<number, T> = new Map();
   set(key: Source, value: T): void {
     if (this.#source !== key.source) {
       this.#source = key.source;
