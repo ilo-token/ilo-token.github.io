@@ -24,7 +24,6 @@ import {
   SimpleHeadedWordUnit,
   SimpleWordUnit,
 } from "./ast.ts";
-import { cache } from "./cache.ts";
 import { everyWordUnitInSentence } from "./extract.ts";
 import {
   CLAUSE_RULE,
@@ -59,10 +58,9 @@ import {
   UnrecognizedError,
 } from "./parser_lib.ts";
 import { describe, Token } from "./token.ts";
+import { lazy as lazyEval } from "../../misc/misc.ts";
 
 const spaces = match(/\s*/, "spaces");
-
-Parser.startCache(cache);
 
 const specificToken = memoize(
   <T extends Token["type"]>(type: T): Parser<Token & { type: T }> =>
@@ -219,7 +217,7 @@ function optionalCombined(
   );
 }
 const number = manyAtLeastOnce(wordFrom(numeralSet, "numeral"));
-const phrase: Parser<Phrase> = lazy(() =>
+const phrase: Parser<Phrase> = lazy(lazyEval(() =>
   choice<Phrase>(
     sequence(
       number,
@@ -273,7 +271,7 @@ const phrase: Parser<Phrase> = lazy(() =>
       })),
   )
     .filter(filter(PHRASE_RULE))
-);
+));
 const nanpa = sequence(wordUnit(new Set(["nanpa"]), '"nanpa"'), phrase)
   .map(([nanpa, phrase]) => ({ nanpa, phrase }))
   .filter(filter(NANPA_RULES));
@@ -723,6 +721,4 @@ export const parse = spaces
       .filter(filter(MULTIPLE_SENTENCES_RULE))
       .map((sentences) => ({ type: "sentences", sentences })),
   ))
-  .parser();
-
-Parser.endCache();
+  .generateParser();

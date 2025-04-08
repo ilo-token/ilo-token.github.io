@@ -1,57 +1,71 @@
 import { assert } from "@std/assert/assert";
+import { LruCache } from "@std/cache/lru-cache";
 import { MemoizationCacheResult, memoize } from "@std/cache/memoize";
 import { ArrayResult, ArrayResultError } from "../array_result.ts";
-import { Clearable, ClearableCacheSet, Lazy } from "../cache.ts";
 
-export type ValueRest<T> = Readonly<{ rest: string; value: T }>;
-export type ParserResult<T> = ArrayResult<ValueRest<T>>;
+const CACHE_SIZE = 10;
 
-export class Parser<T> {
-  readonly nonMemoizedParser: (source: string) => ParserResult<T>;
-  readonly rawParser: (source: string) => ParserResult<T>;
-  static cache: null | ClearableCacheSet = null;
-  constructor(parser: (source: string) => ParserResult<T>) {
-    this.nonMemoizedParser = parser;
-    if (Parser.cache != null) {
-      const cache: Map<string, MemoizationCacheResult<ParserResult<T>>> =
-        new Map();
-      Parser.addToCache(cache);
-      this.rawParser = memoize(this.nonMemoizedParser, { cache });
-    } else {
-      this.rawParser = this.nonMemoizedParser;
+type Source = Readonly<{ source: string; position: number }>;
+type ParserResult<T> = ArrayResult<Readonly<{ rest: Source; value: T }>>;
+type InnerParser<T> = (input: Source) => ParserResult<T>;
+
+class SourceMemo<T> {
+  #map: LruCache<string, Map<number, T>> = new LruCache(CACHE_SIZE);
+  set(key: Source, value: T): void {
+    let map = this.#map.get(key.source);
+    if (map == null) {
+      const newMap: Map<number, T> = new Map();
+      this.#map.set(key.source, newMap);
+      map = newMap;
     }
+    map.set(key.position, value);
   }
-  parser(): (source: string) => ArrayResult<T> {
-    const { rawParser } = this;
-    return (source) => rawParser(source).map(({ value }) => value);
+  get(key: Source): undefined | T {
+    return this.#map.get(key.source)?.get(key.position);
+  }
+  has(key: Source): boolean {
+    return this.#map.get(key.source)?.has(key.position) ?? false;
+  }
+  delete(key: Source): void {
+    this.#map.get(key.source)?.delete(key.position);
+  }
+}
+export class Parser<T> {
+  readonly rawParser: InnerParser<T>;
+  constructor(parser: InnerParser<T>) {
+    this.rawParser = memoize<
+      InnerParser<T>,
+      Source,
+      SourceMemo<MemoizationCacheResult<ParserResult<T>>>
+    >(parser, { cache: new SourceMemo() });
+  }
+  generateParser(): (source: string) => ArrayResult<T> {
+    return (source) =>
+      this.rawParser({ source, position: 0 })
+        .map(({ value }) => value);
   }
   map<U>(mapper: (value: T) => U): Parser<U> {
-    const { nonMemoizedParser } = this;
     return new Parser((source) =>
-      nonMemoizedParser(source)
+      this.rawParser(source)
         .map(({ value, rest }) => ({ value: mapper(value), rest }))
     );
   }
   filter(mapper: (value: T) => boolean): Parser<T> {
-    const { nonMemoizedParser } = this;
     return new Parser((source) =>
-      nonMemoizedParser(source).filter(({ value }) => mapper(value))
+      this.rawParser(source).filter(({ value }) => mapper(value))
     );
   }
   then<U>(mapper: (value: T) => Parser<U>): Parser<U> {
-    const { cache } = Parser;
-    const { nonMemoizedParser } = this;
-    return new Parser((source) => {
-      const parser = Parser.inContext(() => nonMemoizedParser(source), cache);
-      return parser.flatMap(({ value, rest }) => mapper(value).rawParser(rest));
-    });
+    return new Parser((source) =>
+      this
+        .rawParser(source)
+        .flatMap(({ value, rest }) => mapper(value).rawParser(rest))
+    );
   }
   sort(comparer: (left: T, right: T) => number): Parser<T> {
-    const { nonMemoizedParser } = this;
     return new Parser((source) =>
-      nonMemoizedParser(source).sort((left, right) =>
-        comparer(left.value, right.value)
-      )
+      this.rawParser(source)
+        .sort((left, right) => comparer(left.value, right.value))
     );
   }
   sortBy(mapper: (value: T) => number): Parser<T> {
@@ -62,25 +76,6 @@ export class Parser<T> {
   }
   skip<U>(parser: Parser<U>): Parser<T> {
     return sequence(this, parser).map(([arrayResult]) => arrayResult);
-  }
-  static addToCache(cache: Clearable): void {
-    Parser.cache?.add(cache);
-  }
-  static startCache(cache: ClearableCacheSet = new ClearableCacheSet()): void {
-    Parser.cache = cache;
-  }
-  static endCache(): void {
-    Parser.cache = null;
-  }
-  static startOrEndCache(cache: null | ClearableCacheSet = null): void {
-    Parser.cache = cache;
-  }
-  static inContext<T>(fn: () => T, cache: null | ClearableCacheSet = null): T {
-    const previousCache = Parser.cache;
-    Parser.startOrEndCache(cache);
-    const value = fn();
-    Parser.startOrEndCache(previousCache);
-    return value;
   }
 }
 export class UnexpectedError extends ArrayResultError {
@@ -105,25 +100,12 @@ export const nothing = new Parser((source) =>
 export const emptyArray = nothing.map(() => []);
 export function lookAhead<T>(parser: Parser<T>): Parser<T> {
   return new Parser((source) =>
-    parser.nonMemoizedParser(source).map(({ value }) => ({
-      value,
-      rest: source,
-    }))
+    parser.rawParser(source)
+      .map(({ value }) => ({ value, rest: source }))
   );
 }
 export function lazy<T>(parser: () => Parser<T>): Parser<T> {
-  const { cache } = Parser;
-  if (Parser.cache != null) {
-    const cachedParser = new Lazy(() => Parser.inContext(parser, cache));
-    Parser.addToCache(cachedParser);
-    return new Parser((source) =>
-      cachedParser.getValue().nonMemoizedParser(source)
-    );
-  } else {
-    return new Parser((source) =>
-      Parser.inContext(parser, cache).nonMemoizedParser(source)
-    );
-  }
+  return new Parser((source) => parser().rawParser(source));
 }
 export function choice<T>(...choices: ReadonlyArray<Parser<T>>): Parser<T> {
   assert(choices.length > 1, "`choice` called with less than 2 arguments");
@@ -218,16 +200,17 @@ export function matchCapture(
   description: string,
 ): Parser<RegExpMatchArray> {
   const newRegex = new RegExp(`^${regex.source}`, regex.flags);
-  return new Parser((source) => {
-    const match = source.match(newRegex);
+  return new Parser(({ source, position }) => {
+    const sourceString = source.slice(position);
+    const match = sourceString.match(newRegex);
     if (match != null) {
       return new ArrayResult([{
         value: match,
-        rest: source.slice(match[0].length),
+        rest: { source, position: position + match[0].length },
       }]);
     } else {
       return new ArrayResult(
-        new UnexpectedError(describeSource(source), description),
+        new UnexpectedError(describeSource(sourceString), description),
       );
     }
   });
@@ -235,50 +218,53 @@ export function matchCapture(
 export function match(regex: RegExp, description: string): Parser<string> {
   return matchCapture(regex, description).map(([matched]) => matched);
 }
-export function slice(length: number, description: string): Parser<string> {
-  return new Parser((source) =>
-    source.length >= length
-      ? new ArrayResult([{
-        rest: source.slice(length),
-        value: source.slice(0, length),
-      }])
-      : new ArrayResult(
-        new UnexpectedError(describeSource(source), description),
-      )
-  );
-}
 export function matchString(
   match: string,
   description = `"${match}"`,
 ): Parser<string> {
-  return new Parser((source) =>
-    source.length >= match.length && source.slice(0, match.length) === match
-      ? new ArrayResult([{
-        rest: source.slice(match.length),
+  return new Parser(({ source, position }) => {
+    const sourceString = source.slice(position);
+    if (
+      source.length - position >= match.length &&
+      sourceString.slice(0, match.length)
+    ) {
+      return new ArrayResult([{
+        rest: { source, position: position + match.length },
         value: match,
-      }])
-      : new ArrayResult(
-        new UnexpectedError(describeSource(source), description),
-      )
-  );
+      }]);
+    } else {
+      return new ArrayResult(
+        new UnexpectedError(describeSource(sourceString), description),
+      );
+    }
+  });
 }
-export const everything = new Parser((source) =>
-  new ArrayResult([{ value: source, rest: "" }])
+export const everything = new Parser(({ source, position }) =>
+  new ArrayResult([{
+    value: source.slice(position),
+    rest: { source, position: source.length },
+  }])
 );
 export const character = match(/./us, "character");
 export const end = new Parser((source) =>
-  source === ""
-    ? new ArrayResult([{ value: null, rest: "" }])
+  source.position === source.source.length
+    ? new ArrayResult([{ value: null, rest: source }])
     : new ArrayResult(
-      new UnexpectedError(describeSource(source), "end of text"),
+      new UnexpectedError(
+        describeSource(source.source.slice(source.position)),
+        "end of text",
+      ),
     )
 );
 export function withSource<T>(
   parser: Parser<T>,
 ): Parser<readonly [value: T, source: string]> {
   return new Parser((source) =>
-    parser.nonMemoizedParser(source).map(({ value, rest }) => ({
-      value: [value, source.slice(0, source.length - rest.length)],
+    parser.rawParser(source).map(({ value, rest }) => ({
+      value: [
+        value,
+        source.source.slice(source.position, rest.position),
+      ] as const,
       rest,
     }))
   );

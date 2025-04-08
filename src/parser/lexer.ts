@@ -1,6 +1,5 @@
 import { sumOf } from "@std/collections/sum-of";
 import { settings } from "../settings.ts";
-import { cache } from "./cache.ts";
 import {
   all,
   allAtLeastOnce,
@@ -207,8 +206,6 @@ const combinedGlyphsToken = combinedGlyphs
   .map((words) => ({ type: "combined glyphs", words }) as const);
 const wordToken = word.map((word) => ({ type: "word", word }) as const);
 
-Parser.startCache(cache);
-
 export const token = choiceOnlyOne<Token>(
   xAlaX,
   multipleA,
@@ -226,5 +223,3 @@ export const token = choiceOnlyOne<Token>(
   headlessLongGlyphStart,
   insideLongGlyph,
 );
-
-Parser.endCache();

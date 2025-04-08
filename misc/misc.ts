@@ -49,3 +49,14 @@ export function compound(
     return `${initText} ${conjunction} ${last}`;
   }
 }
+export function lazy<T>(fn: () => T): () => T {
+  let defined = false;
+  let value: null | T;
+  return () => {
+    if (!defined) {
+      defined = true;
+      value = fn();
+    }
+    return value!;
+  };
+}
