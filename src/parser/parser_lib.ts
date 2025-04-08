@@ -54,17 +54,15 @@ class SourceMemo<T> {
 export class Parser<T> {
   readonly rawParser: InnerParser<T>;
   constructor(parser: InnerParser<T>) {
-    // TODO: remove assertion
-    const ensureParser: InnerParser<T> = (source) => {
-      assertGreaterOrEqual(source.source.length, source.position);
-      return parser(source);
-    };
     this.rawParser = memoize<
       InnerParser<T>,
       Source,
       SourceMemo<MemoizationCacheResult<ParserResult<T>>>
     >(
-      ensureParser,
+      (source) => {
+        assertGreaterOrEqual(source.source.length, source.position);
+        return parser(source);
+      },
       { cache: new SourceMemo() },
     );
   }
