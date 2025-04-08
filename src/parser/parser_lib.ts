@@ -12,7 +12,7 @@ class SourceMemo<T> {
   set(key: Source, value: T): void {
     if (this.#source !== key.source) {
       this.#source = key.source;
-      this.#map = new Map();
+      this.clear();
     }
     this.#map.set(key.position, value);
   }
