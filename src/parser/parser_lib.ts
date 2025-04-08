@@ -85,8 +85,7 @@ export class Parser<T> {
   }
   then<U>(mapper: (value: T) => Parser<U>): Parser<U> {
     return new Parser((input) =>
-      this
-        .rawParser(input)
+      this.rawParser(input)
         .flatMap(({ value, length }) =>
           mapper(value)
             .rawParser({
