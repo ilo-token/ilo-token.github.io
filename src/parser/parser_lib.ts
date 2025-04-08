@@ -52,10 +52,15 @@ export function clearCache(): void {
 export class Parser<T> {
   readonly rawParser: InnerParser<T>;
   constructor(parser: InnerParser<T>) {
+    // TODO: remove assertion
+    const ensureParser: InnerParser<T> = (source) => {
+      assert(source.source.length > source.position);
+      return parser(source);
+    };
     const cache: SourceMemoResult<T> = new SourceMemo();
     caches.add(new WeakRef(cache));
     this.rawParser = memoize<InnerParser<T>, Source, SourceMemoResult<T>>(
-      parser,
+      ensureParser,
       { cache },
     );
   }
