@@ -60,10 +60,15 @@ export class Parser<T> {
       this
         .rawParser(source)
         .flatMap(({ value, size }) =>
-          mapper(value).rawParser({
-            source: source.source,
-            position: source.position + size,
-          })
+          mapper(value)
+            .rawParser({
+              source: source.source,
+              position: source.position + size,
+            })
+            .map(({ value, size: addedSize }) => ({
+              value,
+              size: size + addedSize,
+            }))
         )
     );
   }
