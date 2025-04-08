@@ -709,8 +709,8 @@ const sentence = choice<Sentence>(
   .filter(filter(SENTENCE_RULE));
 export const parse = spaces
   .with(
-    lookAhead(everything.filter((src) =>
-      src.trimEnd().length <= 500 ||
+    lookAhead(everything.filter((source) =>
+      source.trimEnd().length <= 500 ||
       throwError(new UnrecognizedError("long text"))
     )),
   )

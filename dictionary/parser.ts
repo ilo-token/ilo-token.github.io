@@ -480,7 +480,7 @@ const head = sequence(all(tokiPonaWord.skip(comma)), tokiPonaWord)
   .skip(colon)
   .map(([init, last]) => [...init, last]);
 const entry = withSource(spaces.with(all(definition)))
-  .map(([definitions, src]) => ({ definitions, src: src.trimEnd() }));
+  .map(([definitions, source]) => ({ definitions, source: source.trimEnd() }));
 const dictionaryParser = spaces
   .with(all(sequence(head, entry)))
   .skip(end)

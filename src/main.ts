@@ -253,7 +253,7 @@ function main(): void {
   function importWord(): void {
     const word = importWordTextBox.value.trim();
     if (/^[a-z][a-zA-Z]*$/.test(word)) {
-      const definitions = dictionary.get(word)?.src;
+      const definitions = dictionary.get(word)?.source;
       if (definitions != null) {
         displayToCustomDictionary(`${word}:${definitions}`);
       } else {

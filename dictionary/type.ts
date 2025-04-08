@@ -94,6 +94,6 @@ export type Definition =
   | Readonly<{ type: "interjection"; interjection: string }>;
 export type Entry = Readonly<{
   definitions: ReadonlyArray<Definition>;
-  src: string;
+  source: string;
 }>;
 export type Dictionary = Map<string, Entry>;
