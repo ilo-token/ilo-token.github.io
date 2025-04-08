@@ -26,30 +26,30 @@ export class Parser<T> {
     return (source) => rawParser(source).map(({ value }) => value);
   }
   map<U>(mapper: (value: T) => U): Parser<U> {
-    const { nonMemoizedParser: unmemoizedParser } = this;
+    const { nonMemoizedParser } = this;
     return new Parser((source) =>
-      unmemoizedParser(source)
+      nonMemoizedParser(source)
         .map(({ value, rest }) => ({ value: mapper(value), rest }))
     );
   }
   filter(mapper: (value: T) => boolean): Parser<T> {
-    const { nonMemoizedParser: unmemoizedParser } = this;
+    const { nonMemoizedParser } = this;
     return new Parser((source) =>
-      unmemoizedParser(source).filter(({ value }) => mapper(value))
+      nonMemoizedParser(source).filter(({ value }) => mapper(value))
     );
   }
   then<U>(mapper: (value: T) => Parser<U>): Parser<U> {
     const { cache } = Parser;
-    const { nonMemoizedParser: unmemoizedParser } = this;
+    const { nonMemoizedParser } = this;
     return new Parser((source) => {
-      const parser = Parser.inContext(() => unmemoizedParser(source), cache);
+      const parser = Parser.inContext(() => nonMemoizedParser(source), cache);
       return parser.flatMap(({ value, rest }) => mapper(value).rawParser(rest));
     });
   }
   sort(comparer: (left: T, right: T) => number): Parser<T> {
-    const { nonMemoizedParser: unmemoizedParser } = this;
+    const { nonMemoizedParser } = this;
     return new Parser((source) =>
-      unmemoizedParser(source).sort((left, right) =>
+      nonMemoizedParser(source).sort((left, right) =>
         comparer(left.value, right.value)
       )
     );
