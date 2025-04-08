@@ -3,9 +3,9 @@ import { assertGreaterOrEqual } from "@std/assert/greater-or-equal";
 import { MemoizationCacheResult, memoize } from "@std/cache/memoize";
 import { ArrayResult, ArrayResultError } from "../array_result.ts";
 
-type Source = Readonly<{ source: string; position: number }>;
+type Input = Readonly<{ source: string; position: number }>;
 type ParserResult<T> = ArrayResult<Readonly<{ value: T; length: number }>>;
-type InnerParser<T> = (input: Source) => ParserResult<T>;
+type InnerParser<T> = (input: Input) => ParserResult<T>;
 
 let source = "";
 const allMemo: Set<WeakRef<SourceMemo<unknown>>> = new Set();
@@ -25,24 +25,24 @@ class SourceMemo<T> {
   constructor() {
     allMemo.add(new WeakRef(this));
   }
-  set(key: Source, value: T): void {
+  set(key: Input, value: T): void {
     if (source !== key.source) {
       source = key.source;
       clearCache();
     }
     this.#map.set(key.position, value);
   }
-  get(key: Source): undefined | T {
+  get(key: Input): undefined | T {
     if (source === key.source) {
       return this.#map.get(key.position);
     } else {
       return undefined;
     }
   }
-  has(key: Source): boolean {
+  has(key: Input): boolean {
     return source === key.source && this.#map.has(key.position);
   }
-  delete(key: Source): void {
+  delete(key: Input): void {
     if (source === key.source) {
       this.#map.delete(key.position);
     }
@@ -56,41 +56,41 @@ export class Parser<T> {
   constructor(parser: InnerParser<T>) {
     this.rawParser = memoize<
       InnerParser<T>,
-      Source,
+      Input,
       SourceMemo<MemoizationCacheResult<ParserResult<T>>>
     >(
-      (source) => {
-        assertGreaterOrEqual(source.source.length, source.position);
-        return parser(source);
+      (input) => {
+        assertGreaterOrEqual(input.source.length, input.position);
+        return parser(input);
       },
       { cache: new SourceMemo() },
     );
   }
   generateParser(): (source: string) => ArrayResult<T> {
-    return (source) =>
-      this.rawParser({ source, position: 0 })
+    return (input) =>
+      this.rawParser({ source: input, position: 0 })
         .map(({ value }) => value);
   }
   map<U>(mapper: (value: T) => U): Parser<U> {
-    return new Parser((source) =>
-      this.rawParser(source)
+    return new Parser((input) =>
+      this.rawParser(input)
         .map(({ value, length }) => ({ value: mapper(value), length }))
     );
   }
   filter(mapper: (value: T) => boolean): Parser<T> {
-    return new Parser((source) =>
-      this.rawParser(source).filter(({ value }) => mapper(value))
+    return new Parser((input) =>
+      this.rawParser(input).filter(({ value }) => mapper(value))
     );
   }
   then<U>(mapper: (value: T) => Parser<U>): Parser<U> {
-    return new Parser((source) =>
+    return new Parser((input) =>
       this
-        .rawParser(source)
+        .rawParser(input)
         .flatMap(({ value, length }) =>
           mapper(value)
             .rawParser({
-              source: source.source,
-              position: source.position + length,
+              source: input.source,
+              position: input.position + length,
             })
             .map(({ value, length: addedLength }) => ({
               value,
@@ -100,8 +100,8 @@ export class Parser<T> {
     );
   }
   sort(comparer: (left: T, right: T) => number): Parser<T> {
-    return new Parser((source) =>
-      this.rawParser(source)
+    return new Parser((input) =>
+      this.rawParser(input)
         .sort((left, right) => comparer(left.value, right.value))
     );
   }
@@ -136,13 +136,13 @@ export const nothing = new Parser(() =>
 );
 export const emptyArray = nothing.map(() => []);
 export function lookAhead<T>(parser: Parser<T>): Parser<T> {
-  return new Parser((source) =>
-    parser.rawParser(source)
+  return new Parser((input) =>
+    parser.rawParser(input)
       .map(({ value }) => ({ value, length: 0 }))
   );
 }
 export function lazy<T>(parser: () => Parser<T>): Parser<T> {
-  return new Parser((source) => parser().rawParser(source));
+  return new Parser((input) => parser().rawParser(input));
 }
 export function choice<T>(...choices: ReadonlyArray<Parser<T>>): Parser<T> {
   assertGreater(
@@ -150,8 +150,8 @@ export function choice<T>(...choices: ReadonlyArray<Parser<T>>): Parser<T> {
     1,
     "`choice` called with less than 2 arguments",
   );
-  return new Parser((source) =>
-    new ArrayResult(choices).flatMap((parser) => parser.rawParser(source))
+  return new Parser((input) =>
+    new ArrayResult(choices).flatMap((parser) => parser.rawParser(input))
   );
 }
 export function choiceOnlyOne<T>(
@@ -164,10 +164,10 @@ export function choiceOnlyOne<T>(
   );
   return choices.reduceRight(
     (right, left) =>
-      new Parser((source) => {
-        const arrayResult = left.rawParser(source);
+      new Parser((input) => {
+        const arrayResult = left.rawParser(input);
         if (arrayResult.isError()) {
-          return ArrayResult.concat(arrayResult, right.rawParser(source));
+          return ArrayResult.concat(arrayResult, right.rawParser(input));
         } else {
           return arrayResult;
         }
@@ -291,12 +291,12 @@ export const everything = new Parser(({ source, position }) =>
   }])
 );
 export const character = match(/./us, "character");
-export const end = new Parser((source) =>
-  source.position === source.source.length
+export const end = new Parser((input) =>
+  input.position === input.source.length
     ? new ArrayResult([{ value: null, length: 0 }])
     : new ArrayResult(
       new UnexpectedError(
-        describeSource(source.source.slice(source.position)),
+        describeSource(input.source.slice(input.position)),
         "end of text",
       ),
     )
@@ -304,11 +304,11 @@ export const end = new Parser((source) =>
 export function withSource<T>(
   parser: Parser<T>,
 ): Parser<readonly [value: T, source: string]> {
-  return new Parser((source) =>
-    parser.rawParser(source).map(({ value, length }) => ({
+  return new Parser((input) =>
+    parser.rawParser(input).map(({ value, length }) => ({
       value: [
         value,
-        source.source.slice(source.position, source.position + length),
+        input.source.slice(input.position, input.position + length),
       ] as const,
       length,
     }))
