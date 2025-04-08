@@ -1,4 +1,5 @@
-import { assert } from "@std/assert/assert";
+import { assertGreater } from "@std/assert/greater";
+import { assertGreaterOrEqual } from "@std/assert/greater-or-equal";
 import { MemoizationCacheResult, memoize } from "@std/cache/memoize";
 import { ArrayResult, ArrayResultError } from "../array_result.ts";
 
@@ -55,7 +56,7 @@ export class Parser<T> {
   constructor(parser: InnerParser<T>) {
     // TODO: remove assertion
     const ensureParser: InnerParser<T> = (source) => {
-      assert(source.source.length >= source.position);
+      assertGreaterOrEqual(source.source.length, source.position);
       return parser(source);
     };
     this.rawParser = memoize<
@@ -146,7 +147,11 @@ export function lazy<T>(parser: () => Parser<T>): Parser<T> {
   return new Parser((source) => parser().rawParser(source));
 }
 export function choice<T>(...choices: ReadonlyArray<Parser<T>>): Parser<T> {
-  assert(choices.length > 1, "`choice` called with less than 2 arguments");
+  assertGreater(
+    choices.length,
+    1,
+    "`choice` called with less than 2 arguments",
+  );
   return new Parser((source) =>
     new ArrayResult(choices).flatMap((parser) => parser.rawParser(source))
   );
@@ -154,8 +159,9 @@ export function choice<T>(...choices: ReadonlyArray<Parser<T>>): Parser<T> {
 export function choiceOnlyOne<T>(
   ...choices: ReadonlyArray<Parser<T>>
 ): Parser<T> {
-  assert(
-    choices.length > 1,
+  assertGreater(
+    choices.length,
+    1,
     "`choiceOnlyOne` called with less than 2 arguments",
   );
   return choices.reduceRight(
@@ -182,7 +188,11 @@ export function sequence<T extends ReadonlyArray<unknown>>(
     & Readonly<{ [I in keyof T]: Parser<T[I]> }>
     & Readonly<{ length: T["length"] }>
 ): Parser<T> {
-  assert(sequence.length > 1, "`sequence` called with less than 2 arguments");
+  assertGreater(
+    sequence.length,
+    1,
+    "`sequence` called with less than 2 arguments",
+  );
   // We resorted to using `any` types here, make sure it works properly
   return sequence.reduceRight(
     (right: Parser<any>, left) =>
