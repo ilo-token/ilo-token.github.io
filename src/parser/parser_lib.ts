@@ -3,7 +3,7 @@ import { MemoizationCacheResult, memoize } from "@std/cache/memoize";
 import { ArrayResult, ArrayResultError } from "../array_result.ts";
 
 type Source = Readonly<{ source: string; position: number }>;
-type ParserResult<T> = ArrayResult<Readonly<{ value: T; size: number }>>;
+type ParserResult<T> = ArrayResult<Readonly<{ value: T; length: number }>>;
 type InnerParser<T> = (input: Source) => ParserResult<T>;
 
 let source = "";
@@ -75,7 +75,7 @@ export class Parser<T> {
   map<U>(mapper: (value: T) => U): Parser<U> {
     return new Parser((source) =>
       this.rawParser(source)
-        .map(({ value, size }) => ({ value: mapper(value), size }))
+        .map(({ value, length }) => ({ value: mapper(value), length }))
     );
   }
   filter(mapper: (value: T) => boolean): Parser<T> {
@@ -87,15 +87,15 @@ export class Parser<T> {
     return new Parser((source) =>
       this
         .rawParser(source)
-        .flatMap(({ value, size }) =>
+        .flatMap(({ value, length }) =>
           mapper(value)
             .rawParser({
               source: source.source,
-              position: source.position + size,
+              position: source.position + length,
             })
-            .map(({ value, size: addedSize }) => ({
+            .map(({ value, length: addedLength }) => ({
               value,
-              size: size + addedSize,
+              length: length + addedLength,
             }))
         )
     );
@@ -133,13 +133,13 @@ export function error(error: ArrayResultError): Parser<never> {
 }
 export const empty = new Parser<never>(() => new ArrayResult());
 export const nothing = new Parser(() =>
-  new ArrayResult([{ value: null, size: 0 }])
+  new ArrayResult([{ value: null, length: 0 }])
 );
 export const emptyArray = nothing.map(() => []);
 export function lookAhead<T>(parser: Parser<T>): Parser<T> {
   return new Parser((source) =>
     parser.rawParser(source)
-      .map(({ value }) => ({ value, size: 0 }))
+      .map(({ value }) => ({ value, length: 0 }))
   );
 }
 export function lazy<T>(parser: () => Parser<T>): Parser<T> {
@@ -242,7 +242,7 @@ export function matchCapture(
     const sourceString = source.slice(position);
     const match = sourceString.match(newRegex);
     if (match != null) {
-      return new ArrayResult([{ value: match, size: match[0].length }]);
+      return new ArrayResult([{ value: match, length: match[0].length }]);
     } else {
       return new ArrayResult(
         new UnexpectedError(describeSource(sourceString), description),
@@ -264,7 +264,7 @@ export function matchString(
     ) {
       return new ArrayResult([{
         value: match,
-        size: match.length,
+        length: match.length,
       }]);
     } else {
       return new ArrayResult(
@@ -279,13 +279,13 @@ export function matchString(
 export const everything = new Parser(({ source, position }) =>
   new ArrayResult([{
     value: source.slice(position),
-    size: source.length - position,
+    length: source.length - position,
   }])
 );
 export const character = match(/./us, "character");
 export const end = new Parser((source) =>
   source.position === source.source.length
-    ? new ArrayResult([{ value: null, size: 0 }])
+    ? new ArrayResult([{ value: null, length: 0 }])
     : new ArrayResult(
       new UnexpectedError(
         describeSource(source.source.slice(source.position)),
@@ -297,12 +297,12 @@ export function withSource<T>(
   parser: Parser<T>,
 ): Parser<readonly [value: T, source: string]> {
   return new Parser((source) =>
-    parser.rawParser(source).map(({ value, size }) => ({
+    parser.rawParser(source).map(({ value, length }) => ({
       value: [
         value,
-        source.source.slice(source.position, source.position + size),
+        source.source.slice(source.position, source.position + length),
       ] as const,
-      size,
+      length,
     }))
   );
 }
