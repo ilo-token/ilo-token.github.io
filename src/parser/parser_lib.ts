@@ -1,5 +1,5 @@
 import { assertGreater } from "@std/assert/greater";
-import { assertGreaterOrEqual } from "@std/assert/greater-or-equal";
+import { assertLessOrEqual } from "@std/assert/less-or-equal";
 import { MemoizationCacheResult, memoize } from "@std/cache/memoize";
 import { ArrayResult, ArrayResultError } from "../array_result.ts";
 
@@ -61,7 +61,7 @@ export class Parser<T> {
     >(
       (input) => {
         // TODO: remove assertion
-        assertGreaterOrEqual(input.source.length, input.position);
+        assertLessOrEqual(input.position, input.source.length);
         return parser(input);
       },
       { cache: new SourceMemo() },
