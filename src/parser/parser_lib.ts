@@ -60,6 +60,7 @@ export class Parser<T> {
       SourceMemo<MemoizationCacheResult<ParserResult<T>>>
     >(
       (input) => {
+        // TODO: remove assertion
         assertGreaterOrEqual(input.source.length, input.position);
         return parser(input);
       },
