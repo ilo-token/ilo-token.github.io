@@ -52,7 +52,7 @@ function uniquePairs<T>(
   return array.flatMap((a, i) => array.slice(i + 1).map((b) => [a, b]));
 }
 
-Deno.test("parser", () => {
+Deno.test("small parser", () => {
   const space = match(/\s*/, "space");
   const parser = sequence(
     match(/toki/, '"toki"').skip(space),
