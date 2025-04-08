@@ -66,7 +66,7 @@ import { describe, Token } from "./token.ts";
 const spaces = match(/\s*/, "spaces");
 
 const specificToken = memoize(
-  <T extends Token["type"]>(type: T): Parser<Token & { type: T }> =>
+  <T extends Token["type"]>(type: T) =>
     token.map((token) =>
       token.type === type
         ? token as Token & { type: T }

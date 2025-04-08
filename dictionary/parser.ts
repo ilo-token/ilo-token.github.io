@@ -42,7 +42,7 @@ const comma = lex(matchString(",", "comma"));
 const semicolon = lex(matchString(";", "semicolon"));
 const slash = lex(matchString("/", "slash"));
 
-const keyword = memoize(<T extends string>(keyword: T): Parser<T> =>
+const keyword = memoize(<T extends string>(keyword: T) =>
   lex(match(/[a-z\-]+/, keyword))
     .filter((that) =>
       keyword === that ||
