@@ -1,5 +1,10 @@
 import { memoize } from "@std/cache/memoize";
 import {
+  lazy as lazyEval,
+  nullableAsArray,
+  throwError,
+} from "../../misc/misc.ts";
+import {
   contentWordSet,
   fillerSet,
   numeralSet,
@@ -7,7 +12,6 @@ import {
   preverbSet,
   tokiPonaWordSet,
 } from "../dictionary.ts";
-import { nullableAsArray, throwError } from "../../misc/misc.ts";
 import {
   Clause,
   ContextClause,
@@ -58,7 +62,6 @@ import {
   UnrecognizedError,
 } from "./parser_lib.ts";
 import { describe, Token } from "./token.ts";
-import { lazy as lazyEval } from "../../misc/misc.ts";
 
 const spaces = match(/\s*/, "spaces");
 
@@ -125,6 +128,15 @@ const emphasis = choice<Emphasis>(
   specificWord("a").map((word) => ({ type: "word", word })),
 );
 const optionalEmphasis = optional(emphasis);
+const alaXLongGlyph = memoize((word: string) =>
+  specificWord(word)
+    .skip(specificToken("headless long glyph end"))
+    .map(() => ({ type: "x ala x", word }) as const)
+);
+const alaX = memoize((word: string) =>
+  sequence(specificWord("ala"), specificWord(word))
+    .map(() => ({ type: "x ala x", word }) as const)
+);
 function xAlaX(
   useWord: Set<string>,
   description: string,
@@ -136,34 +148,30 @@ function xAlaX(
         specificToken("inside long glyph")
           .filter(({ words }) => filterCombinedGlyphs(words, "ala")),
       )
-      .then((word) =>
-        specificWord(word)
-          .skip(specificToken("headless long glyph end"))
-          .map(() => ({ type: "x ala x", word }))
-      ),
+      .then(alaXLongGlyph),
     specificToken("x ala x")
       .map(({ word }) => ({ type: "x ala x", word })),
     word
-      .then((word) =>
-        sequence(specificWord("ala"), specificWord(word))
-          .map(() => ({ type: "x ala x", word }))
-      ),
+      .then(alaX),
   );
 }
+const reduplicateRest = memoize((word: string) =>
+  count(manyAtLeastOnce(specificWord(word)))
+    .map((count) =>
+      ({
+        type: "reduplication",
+        word,
+        count: count + 1,
+      }) as const
+    )
+);
 function simpleWordUnit(
   word: Set<string>,
   description: string,
 ): Parser<SimpleHeadedWordUnit> {
   return choice<SimpleHeadedWordUnit>(
     wordFrom(word, description)
-      .then((word) =>
-        count(manyAtLeastOnce(specificWord(word)))
-          .map((count) => ({
-            type: "reduplication",
-            word,
-            count: count + 1,
-          }))
-      ),
+      .then(reduplicateRest),
     xAlaX(word, description),
     wordFrom(word, description)
       .map((word) => ({ type: "default", word })),

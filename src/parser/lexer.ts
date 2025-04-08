@@ -1,4 +1,5 @@
 import { sumOf } from "@std/collections/sum-of";
+import { throwError } from "../../misc/misc.ts";
 import { settings } from "../settings.ts";
 import {
   all,
@@ -39,7 +40,7 @@ import {
   UCSUR_CHARACTER_REGEX,
   UCSUR_TO_LATIN,
 } from "./ucsur.ts";
-import { throwError } from "../../misc/misc.ts";
+import { memoize } from "@std/cache/memoize";
 
 const spacesWithoutNewline = match(/[^\S\n]*?(?=\S|\r?\n|$)/, "spaces");
 const newline = match(/\r?\n\s*/, "newline");
@@ -80,10 +81,10 @@ const multipleA = specificWord("a")
   .with(count(allAtLeastOnce(specificWord("a"))))
   .map((count) => ({ type: "multiple a", count: count + 1 }) as const);
 const repeatingLetter = match(/[a-zA-Z]/, "latin letter")
-  .then((letter) =>
+  .then(memoize((letter) =>
     count(all(matchString(letter)))
       .map((count) => [letter, count + 1] as const)
-  );
+  ));
 const longWord = allAtLeastOnce(repeatingLetter)
   .skip(spaces)
   .map((letters) => {
@@ -95,9 +96,9 @@ const longWord = allAtLeastOnce(repeatingLetter)
   .filter(({ length }) => length > 1);
 const xAlaX = lazy(() =>
   settings.xAlaXPartialParsing ? empty : word
-    .then((word) =>
+    .then(memoize((word) =>
       sequence(specificWord("ala"), specificWord(word)).map(() => word)
-    )
+    ))
 )
   .map((word) => ({ type: "x ala x", word }) as const);
 const punctuation = choiceOnlyOne(
