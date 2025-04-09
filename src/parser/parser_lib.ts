@@ -178,7 +178,9 @@ export function allAtLeastOnce<T>(parser: Parser<T>): Parser<ReadonlyArray<T>> {
   return sequence(parser, all(parser))
     .map(([first, rest]) => [first, ...rest]);
 }
-export function count(parser: Parser<{ length: number }>): Parser<number> {
+export function count(
+  parser: Parser<Readonly<{ length: number }>>,
+): Parser<number> {
   return parser.map(({ length }) => length);
 }
 function describeSource(source: string): string {
@@ -240,13 +242,12 @@ export function matchString(
     }
   });
 }
-export const everything = new Parser((position) =>
+export const allRest = new Parser((position) =>
   new ArrayResult([{
     value: currentSource.slice(position),
     length: currentSource.length - position,
   }])
 );
-export const character = match(/./us, "character");
 export const end = new Parser((position) =>
   position === currentSource.length
     ? new ArrayResult([{ value: null, length: 0 }])

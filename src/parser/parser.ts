@@ -49,7 +49,7 @@ import {
   count,
   empty,
   end,
-  everything,
+  allRest,
   lazy,
   lookAhead,
   many,
@@ -715,7 +715,7 @@ const sentence = choice<Sentence>(
   .filter(filter(SENTENCE_RULE));
 export const parser = spaces
   .with(
-    lookAhead(everything.filter((source) =>
+    lookAhead(allRest.filter((source) =>
       source.trimEnd().length <= 500 ||
       throwError(new UnrecognizedError("long text"))
     )),

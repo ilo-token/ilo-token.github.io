@@ -8,7 +8,6 @@ import { ArrayResultError } from "../src/array_result.ts";
 import {
   all,
   allAtLeastOnce,
-  character,
   choiceOnlyOne,
   end,
   match,
@@ -32,6 +31,7 @@ const comment = match(/#[^\n]*\n?/, "comment");
 const spaces = sourceOnly(all(choiceOnlyOne(match(/\s/, "space"), comment)));
 const backtick = matchString("`", "backtick");
 const colon = matchString(":", "colon");
+const character = match(/./u, "character");
 
 const tokiPonaWord = lex(match(/[a-z][a-zA-Z]*/, "word"));
 const openParenthesis = lex(matchString("(", "open parenthesis"));
