@@ -1,6 +1,5 @@
 import { assertGreater } from "@std/assert/greater";
-import { assertLessOrEqual } from "@std/assert/less-or-equal";
-import { MemoizationCacheResult, memoize } from "@std/cache/memoize";
+import { memoize } from "@std/cache/memoize";
 import { ArrayResult, ArrayResultError } from "../array_result.ts";
 
 type Input = Readonly<{ source: string; position: number }>;
@@ -54,18 +53,18 @@ class SourceMemo<T> {
 export class Parser<T> {
   readonly rawParser: InnerParser<T>;
   constructor(parser: InnerParser<T>) {
-    this.rawParser = memoize<
-      InnerParser<T>,
-      Input,
-      SourceMemo<MemoizationCacheResult<ParserResult<T>>>
-    >(
-      (input) => {
-        // TODO: remove assertion
-        assertLessOrEqual(input.position, input.source.length);
-        return parser(input);
-      },
-      { cache: new SourceMemo() },
-    );
+    // Turns out @std/cache@0.2.0 is buggy
+    const cache: SourceMemo<ParserResult<T>> = new SourceMemo();
+    allMemo.add(new WeakRef(cache));
+    this.rawParser = (input) => {
+      if (cache.has(input)) {
+        return cache.get(input)!;
+      } else {
+        const result = parser(input);
+        cache.set(input, result);
+        return result;
+      }
+    };
   }
   generateParser(): (source: string) => ArrayResult<T> {
     return (input) => {
