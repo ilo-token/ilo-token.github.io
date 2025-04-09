@@ -1,7 +1,7 @@
 import { sumOf } from "@std/collections/sum-of";
+import { nullableAsArray } from "../../misc/misc.ts";
 import { ArrayResult } from "../array_result.ts";
 import { dictionary } from "../dictionary.ts";
-import { nullableAsArray } from "../../misc/misc.ts";
 import { FilteredError } from "./error.ts";
 
 function singleNumber(word: string): ArrayResult<number> {

@@ -1,5 +1,5 @@
-import { extractArrayResultError } from "../array_result.ts";
 import { compound, flattenError, throwError } from "../../misc/misc.ts";
+import { extractArrayResultError } from "../array_result.ts";
 import { settings } from "../settings.ts";
 import {
   Clause,

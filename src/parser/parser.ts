@@ -44,12 +44,12 @@ import {
 } from "./filter.ts";
 import { token } from "./lexer.ts";
 import {
+  allRest,
   choice,
   choiceOnlyOne,
   count,
   empty,
   end,
-  allRest,
   lazy,
   lookAhead,
   many,
