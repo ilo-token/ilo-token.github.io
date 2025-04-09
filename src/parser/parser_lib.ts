@@ -68,6 +68,7 @@ export class Parser<T> {
   }
   generateParser(): (source: string) => ArrayResult<T> {
     return (input) => {
+      source = input;
       clearCache();
       return this.rawParser({ source: input, position: 0 })
         .map(({ value }) => value);
