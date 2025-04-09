@@ -4,7 +4,7 @@
 declare const LIVE_RELOAD: boolean;
 
 // auto-refresh when source code have changed
-if (typeof LIVE_RELOAD !== "undefined" && LIVE_RELOAD) {
+if (LIVE_RELOAD) {
   new EventSource("/esbuild")
     .addEventListener("change", () => location.reload());
 }
