@@ -8,9 +8,13 @@ const DESTINATION = new URL("./dictionary.ts", import.meta.url);
 export async function build(): Promise<void> {
   // deno-lint-ignore no-console
   console.log("Building dictionary...");
+  const start = performance.now();
   const text = await Deno.readTextFile(SOURCE);
+  const startDictionary = performance.now();
+  const dictionary = parseDictionary(text);
+  const endDictionary = performance.now();
   const json = JSON.stringify(
-    Object.fromEntries(parseDictionary(text)),
+    Object.fromEntries(dictionary),
     undefined,
     2,
   );
@@ -22,8 +26,13 @@ import { Dictionary } from "./type.ts";
 export const dictionary: Dictionary = new Map(Object.entries(${json}));
 `;
   await Deno.writeTextFile(DESTINATION, code);
+  const end = performance.now();
+  const total = Math.floor(end - start);
+  const parsing = Math.floor(endDictionary - startDictionary);
   // deno-lint-ignore no-console
-  console.log("Building dictionary done");
+  console.log(
+    `Building dictionary done in ${total}ms (parsing dictionary took ${parsing}ms)`,
+  );
 }
 if (import.meta.main) {
   await build();

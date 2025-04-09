@@ -11,6 +11,10 @@ const BUILD_OPTIONS: ESBuild.BuildOptions = {
 };
 
 if (import.meta.main) {
+  const start = performance.now();
   await Dictionary.build();
   await ESBuild.build(BUILD_OPTIONS);
+  const end = performance.now();
+  // deno-lint-ignore no-console
+  console.log(`Total time took: ${Math.floor(end - start)}ms`);
 }
