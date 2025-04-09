@@ -29,6 +29,7 @@ export type PhraseTranslation =
   | Readonly<{ type: "noun"; noun: English.NounPhrase }>
   | (Readonly<{ type: "adjective" }> & AdjectiveWithInWay)
   | Readonly<{ type: "verb"; verb: PartialCompoundVerb }>;
+
 function nounPhrase(
   options: Readonly<{
     emphasis: boolean;

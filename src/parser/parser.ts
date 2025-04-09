@@ -83,6 +83,7 @@ const comma = punctuation
 const optionalComma = optional(comma);
 const word = specificToken("word").map(({ word }) => word);
 const properWords = specificToken("proper word").map(({ words }) => words);
+
 function wordFrom(set: Set<string>, description: string): Parser<string> {
   return word.filter((word) =>
     set.has(word) ||
@@ -128,6 +129,7 @@ const emphasis = choice<Emphasis>(
   specificWord("a").map((word) => ({ type: "word", word })),
 );
 const optionalEmphasis = optional(emphasis);
+
 const alaXLongGlyph = memoize((word: string) =>
   specificWord(word)
     .skip(specificToken("headless long glyph end"))
@@ -335,6 +337,7 @@ const longAnu = sequence(
 )
   .skip(specificToken("headless long glyph end"))
   .map(([phrase, morePhrase]) => [phrase, ...morePhrase]);
+
 function nestedPhrasesOnly(
   nestingRule: ReadonlyArray<"en" | "li" | "o" | "e" | "anu">,
 ): Parser<MultiplePhrases> {
@@ -471,6 +474,7 @@ const preposition = choice<Preposition>(
     })),
 )
   .filter(filter(PREPOSITION_RULE));
+
 function associatedPredicates(
   nestingRule: ReadonlyArray<"li" | "o" | "anu">,
 ): Parser<Predicate> {

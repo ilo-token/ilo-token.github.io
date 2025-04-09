@@ -79,6 +79,7 @@ function template<T>(parser: Parser<T>): Parser<T> {
   return openBracket.with(parser).skip(closeBracket);
 }
 const simpleUnit = memoize((kind: string) => word.skip(tag(keyword(kind))));
+
 function detectRepetition(
   source: ReadonlyArray<string>,
 ): Readonly<{ before: string; repeat: string; after: string }> {

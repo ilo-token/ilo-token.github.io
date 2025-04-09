@@ -53,6 +53,7 @@ const UPDATERS: Readonly<{ [K in keyof Settings]: Updater<Settings[K]> }> = {
   separateRepeatedModifiers: BOOL_UPDATER,
 };
 const KEYS = Object.keys(UPDATERS) as ReadonlyArray<keyof Settings>;
+
 function loadOneFromLocalStorage<T extends keyof Settings>(key: T): void {
   const source = localStorage.getItem(key);
   if (source != null) {

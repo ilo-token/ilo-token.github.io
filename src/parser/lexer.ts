@@ -71,6 +71,7 @@ const properWords = allAtLeastOnce(
 )
   .map((array) => array.join(" "))
   .map((words) => ({ type: "proper word", words, kind: "latin" }) as const);
+
 const specificWord = memoize((thatWord: string) =>
   word.filter((thisWord) =>
     thatWord === thisWord ||
@@ -94,6 +95,7 @@ const longWord = allAtLeastOnce(repeatingLetter)
   })
   .filter(({ word }) => /^[a-z]/.test(word))
   .filter(({ length }) => length > 1);
+  
 const alaX = memoize((word: string) =>
   sequence(specificWord("ala"), specificWord(word)).map(() => word)
 );

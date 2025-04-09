@@ -15,6 +15,7 @@ export type WordUnitTranslation =
   | (Readonly<{ type: "noun" }> & PartialNoun)
   | Readonly<{ type: "adjective"; adjective: English.AdjectivePhrase }>
   | (Readonly<{ type: "verb" }> & PartialVerb);
+
 function defaultWordUnit(
   options: Readonly<{
     word: string;
