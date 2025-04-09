@@ -2,11 +2,11 @@ import { assertGreater } from "@std/assert/greater";
 import { MemoizationCacheResult, memoize } from "@std/cache/memoize";
 import { ArrayResult, ArrayResultError } from "../array_result.ts";
 
-type Input = Readonly<{ source: string; position: number }>;
 type ParserResult<T> = ArrayResult<Readonly<{ value: T; length: number }>>;
-type InnerParser<T> = (input: Input) => ParserResult<T>;
+type InnerParser<T> = (input: number) => ParserResult<T>;
 type Memo<T> = Map<number, MemoizationCacheResult<ParserResult<T>>>;
 
+let currentSource = "";
 const allMemo: Set<WeakRef<Memo<unknown>>> = new Set();
 
 export class Parser<T> {
@@ -16,11 +16,12 @@ export class Parser<T> {
     allMemo.add(new WeakRef(cache));
     this.rawParser = memoize<InnerParser<T>, number, Memo<T>>(
       parser,
-      { getKey: ({ position }) => position, cache },
+      { cache },
     );
   }
   generateParser(): (source: string) => ArrayResult<T> {
-    return (input) => {
+    return (source) => {
+      currentSource = source;
       for (const memo of allMemo) {
         const ref = memo.deref();
         if (ref == null) {
@@ -29,7 +30,7 @@ export class Parser<T> {
           ref.clear();
         }
       }
-      return this.rawParser({ source: input, position: 0 })
+      return this.rawParser(0)
         .map(({ value }) => value);
     };
   }
@@ -45,14 +46,11 @@ export class Parser<T> {
     );
   }
   then<U>(mapper: (value: T) => Parser<U>): Parser<U> {
-    return new Parser((input) =>
-      this.rawParser(input)
+    return new Parser((position) =>
+      this.rawParser(position)
         .flatMap(({ value, length }) =>
           mapper(value)
-            .rawParser({
-              source: input.source,
-              position: input.position + length,
-            })
+            .rawParser(position + length)
             .map(({ value, length: addedLength }) => ({
               value,
               length: length + addedLength,
@@ -207,8 +205,8 @@ export function matchCapture(
   description: string,
 ): Parser<RegExpMatchArray> {
   const newRegex = new RegExp(`^${regex.source}`, regex.flags);
-  return new Parser(({ source, position }) => {
-    const sourceString = source.slice(position);
+  return new Parser((position) => {
+    const sourceString = currentSource.slice(position);
     const match = sourceString.match(newRegex);
     if (match != null) {
       return new ArrayResult([{ value: match, length: match[0].length }]);
@@ -226,10 +224,10 @@ export function matchString(
   match: string,
   description = `"${match}"`,
 ): Parser<string> {
-  return new Parser(({ source, position }) => {
+  return new Parser((position) => {
     if (
-      source.length - position >= match.length &&
-      source.slice(position, position + match.length) === match
+      currentSource.length - position >= match.length &&
+      currentSource.slice(position, position + match.length) === match
     ) {
       return new ArrayResult([{
         value: match,
@@ -238,26 +236,26 @@ export function matchString(
     } else {
       return new ArrayResult(
         new UnexpectedError(
-          describeSource(source.slice(position)),
+          describeSource(currentSource.slice(position)),
           description,
         ),
       );
     }
   });
 }
-export const everything = new Parser(({ source, position }) =>
+export const everything = new Parser((position) =>
   new ArrayResult([{
-    value: source.slice(position),
-    length: source.length - position,
+    value: currentSource.slice(position),
+    length: currentSource.length - position,
   }])
 );
 export const character = match(/./us, "character");
-export const end = new Parser((input) =>
-  input.position === input.source.length
+export const end = new Parser((position) =>
+  position === currentSource.length
     ? new ArrayResult([{ value: null, length: 0 }])
     : new ArrayResult(
       new UnexpectedError(
-        describeSource(input.source.slice(input.position)),
+        describeSource(currentSource.slice(position)),
         "end of text",
       ),
     )
@@ -265,11 +263,11 @@ export const end = new Parser((input) =>
 export function withSource<T>(
   parser: Parser<T>,
 ): Parser<readonly [value: T, source: string]> {
-  return new Parser((input) =>
-    parser.rawParser(input).map(({ value, length }) => ({
+  return new Parser((position) =>
+    parser.rawParser(position).map(({ value, length }) => ({
       value: [
         value,
-        input.source.slice(input.position, input.position + length),
+        currentSource.slice(position, position + length),
       ] as const,
       length,
     }))
