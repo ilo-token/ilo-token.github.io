@@ -1,75 +1,34 @@
 import { assertGreater } from "@std/assert/greater";
-import { memoize } from "@std/cache/memoize";
+import { MemoizationCacheResult, memoize } from "@std/cache/memoize";
 import { ArrayResult, ArrayResultError } from "../array_result.ts";
 
 type Input = Readonly<{ source: string; position: number }>;
 type ParserResult<T> = ArrayResult<Readonly<{ value: T; length: number }>>;
 type InnerParser<T> = (input: Input) => ParserResult<T>;
+type Memo<T> = Map<number, MemoizationCacheResult<ParserResult<T>>>;
 
-let source = "";
-const allMemo: Set<WeakRef<SourceMemo<unknown>>> = new Set();
+const allMemo: Set<WeakRef<Memo<unknown>>> = new Set();
 
-function clearCache(): void {
-  for (const memo of allMemo) {
-    const ref = memo.deref();
-    if (ref == null) {
-      allMemo.delete(memo);
-    } else {
-      ref.clear();
-    }
-  }
-}
-class SourceMemo<T> {
-  readonly #map: Map<number, T> = new Map();
-  constructor() {
-    allMemo.add(new WeakRef(this));
-  }
-  set(key: Input, value: T): void {
-    if (source !== key.source) {
-      source = key.source;
-      clearCache();
-    }
-    this.#map.set(key.position, value);
-  }
-  get(key: Input): undefined | T {
-    if (source === key.source) {
-      return this.#map.get(key.position);
-    } else {
-      return undefined;
-    }
-  }
-  has(key: Input): boolean {
-    return source === key.source && this.#map.has(key.position);
-  }
-  delete(key: Input): void {
-    if (source === key.source) {
-      this.#map.delete(key.position);
-    }
-  }
-  clear(): void {
-    this.#map.clear();
-  }
-}
 export class Parser<T> {
   readonly rawParser: InnerParser<T>;
   constructor(parser: InnerParser<T>) {
-    // Turns out @std/cache@0.2.0 is buggy
-    const cache: SourceMemo<ParserResult<T>> = new SourceMemo();
+    const cache: Memo<T> = new Map();
     allMemo.add(new WeakRef(cache));
-    this.rawParser = (input) => {
-      if (cache.has(input)) {
-        return cache.get(input)!;
-      } else {
-        const result = parser(input);
-        cache.set(input, result);
-        return result;
-      }
-    };
+    this.rawParser = memoize<InnerParser<T>, number, Memo<T>>(
+      parser,
+      { getKey: ({ position }) => position, cache },
+    );
   }
   generateParser(): (source: string) => ArrayResult<T> {
     return (input) => {
-      source = input;
-      clearCache();
+      for (const memo of allMemo) {
+        const ref = memo.deref();
+        if (ref == null) {
+          allMemo.delete(memo);
+        } else {
+          ref.clear();
+        }
+      }
       return this.rawParser({ source: input, position: 0 })
         .map(({ value }) => value);
     };
