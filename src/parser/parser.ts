@@ -713,7 +713,7 @@ const sentence = choice<Sentence>(
     })),
 )
   .filter(filter(SENTENCE_RULE));
-export const parse = spaces
+export const parser = spaces
   .with(
     lookAhead(everything.filter((source) =>
       source.trimEnd().length <= 500 ||
@@ -728,5 +728,4 @@ export const parse = spaces
       .skip(end)
       .filter(filter(MULTIPLE_SENTENCES_RULE))
       .map((sentences) => ({ type: "sentences", sentences })),
-  ))
-  .generateParser();
+  ));

@@ -19,20 +19,17 @@ export class Parser<T> {
       { cache },
     );
   }
-  generateParser(): (source: string) => ArrayResult<T> {
-    return (source) => {
-      currentSource = source;
-      for (const memo of allMemo) {
-        const ref = memo.deref();
-        if (ref == null) {
-          allMemo.delete(memo);
-        } else {
-          ref.clear();
-        }
+  parse(source: string): ArrayResult<T> {
+    currentSource = source;
+    for (const memo of allMemo) {
+      const ref = memo.deref();
+      if (ref == null) {
+        allMemo.delete(memo);
+      } else {
+        ref.clear();
       }
-      return this.rawParser(0)
-        .map(({ value }) => value);
-    };
+    }
+    return this.rawParser(0).map(({ value }) => value);
   }
   map<U>(mapper: (value: T) => U): Parser<U> {
     return new Parser((input) =>

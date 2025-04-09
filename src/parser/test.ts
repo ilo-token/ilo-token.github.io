@@ -5,13 +5,13 @@ import { assertLess } from "@std/assert/less";
 import { assertNotEquals } from "@std/assert/not-equals";
 import { assertThrows } from "@std/assert/throws";
 import { EXAMPLE_SENTENCES, MALFORMED_SENTENCES } from "../examples.ts";
-import { parse } from "./parser.ts";
+import { parser } from "./parser.ts";
 import { all, end, many, match, matchString, sequence } from "./parser_lib.ts";
 import { KU_LILI, KU_SULI, PU } from "./ucsur.ts";
 
 Deno.test("AST all distinct", () => {
   for (const sentence of EXAMPLE_SENTENCES) {
-    const pairs = uniquePairs(parse(sentence).unwrap());
+    const pairs = uniquePairs(parser.parse(sentence).unwrap());
     for (const [a, b] of pairs) {
       assertNotEquals(a, b, `Error at "${sentence}"`);
     }
@@ -20,7 +20,7 @@ Deno.test("AST all distinct", () => {
 
 Deno.test("parser all error", () => {
   for (const sentence of MALFORMED_SENTENCES) {
-    assertThrows(() => parse(sentence).unwrap());
+    assertThrows(() => parser.parse(sentence).unwrap());
   }
 });
 
@@ -57,21 +57,18 @@ Deno.test("small parser", () => {
     match(/toki/, '"toki"').skip(space),
     matchString("pona").skip(space),
     match(/a/, '"a"').skip(end),
-  )
-    .generateParser();
-  assertEquals(parser("toki pona a").unwrap(), [["toki", "pona", "a"]]);
+  );
+  assertEquals(parser.parse("toki pona a").unwrap(), [["toki", "pona", "a"]]);
 });
 
 Deno.test("many", () => {
   const space = match(/\s*/, "space");
-  const parser = many(matchString("a").skip(space)).skip(end)
-    .generateParser();
-  assertEquals(parser("a a a").unwrap(), [["a", "a", "a"]]);
+  const parser = many(matchString("a").skip(space)).skip(end);
+  assertEquals(parser.parse("a a a").unwrap(), [["a", "a", "a"]]);
 });
 
 Deno.test("all", () => {
   const space = match(/\s*/, "space");
-  const parser = all(matchString("a").skip(space)).skip(end)
-    .generateParser();
-  assertEquals(parser("a a a").unwrap(), [["a", "a", "a"]]);
+  const parser = all(matchString("a").skip(space)).skip(end);
+  assertEquals(parser.parse("a a a").unwrap(), [["a", "a", "a"]]);
 });

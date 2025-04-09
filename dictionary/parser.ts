@@ -490,24 +490,22 @@ const dictionaryParser = spaces
         words.map((word) => [word, definition])
       ),
     )
-  )
-  .generateParser();
+  );
 
 const definitionExtractor = spaces
   .with(all(optionalAll(lex(head)).with(lex(match(/[^;]*;/, "definition")))))
-  .skip(end)
-  .generateParser();
-const definitionParser = spaces.with(definition).skip(end).generateParser();
+  .skip(end);
+const definitionParser = spaces.with(definition).skip(end);
 
 export function parseDictionary(sourceText: string): Dictionary {
-  const arrayResult = dictionaryParser(sourceText);
+  const arrayResult = dictionaryParser.parse(sourceText);
   if (!arrayResult.isError()) {
     return arrayResult.array[0];
   } else {
-    const definitions = definitionExtractor(sourceText);
+    const definitions = definitionExtractor.parse(sourceText);
     const errors = !definitions.isError()
       ? definitions.array[0].flatMap((definition) =>
-        definitionParser(definition).errors.map((error) =>
+        definitionParser.parse(definition).errors.map((error) =>
           new ArrayResultError(
             `${error.message} at ${definition.trim()}`,
             { cause: error },
