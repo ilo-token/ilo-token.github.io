@@ -10,7 +10,7 @@ type InnerParser<T> = (input: Input) => ParserResult<T>;
 let source = "";
 const allMemo: Set<WeakRef<SourceMemo<unknown>>> = new Set();
 
-export function clearCache(): void {
+function clearCache(): void {
   for (const memo of allMemo) {
     const ref = memo.deref();
     if (ref == null) {
@@ -68,9 +68,11 @@ export class Parser<T> {
     );
   }
   generateParser(): (source: string) => ArrayResult<T> {
-    return (input) =>
-      this.rawParser({ source: input, position: 0 })
+    return (input) => {
+      clearCache();
+      return this.rawParser({ source: input, position: 0 })
         .map(({ value }) => value);
+    };
   }
   map<U>(mapper: (value: T) => U): Parser<U> {
     return new Parser((input) =>

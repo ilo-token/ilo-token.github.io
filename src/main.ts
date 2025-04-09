@@ -16,7 +16,6 @@ import { ArrayResultError, isArrayResult } from "./array_result.ts";
 import { loadCustomDictionary } from "./dictionary.ts";
 import { checkLocalStorage, setIgnoreError } from "./local_storage.ts";
 import { translate } from "./mod.ts";
-import { clearCache } from "./parser/parser_lib.ts";
 import { settings } from "./settings.ts";
 import {
   loadFromElements,
@@ -219,7 +218,6 @@ function main(): void {
   confirmButton.addEventListener("click", () => {
     loadFromElements();
     updateLabel();
-    clearCache();
     settingsDialogBox.close();
   });
   cancelButton.addEventListener("click", () => {
@@ -271,7 +269,6 @@ function main(): void {
     try {
       loadCustomDictionary(value);
       setIgnoreError(DICTIONARY_KEY, value);
-      clearCache();
       customDictionaryDialogBox.close();
     } catch (error) {
       const errors = flattenError(error);
