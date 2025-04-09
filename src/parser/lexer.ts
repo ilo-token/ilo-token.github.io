@@ -94,12 +94,10 @@ const longWord = allAtLeastOnce(repeatingLetter)
   })
   .filter(({ word }) => /^[a-z]/.test(word))
   .filter(({ length }) => length > 1);
-const xAlaX = lazy(() =>
-  settings.xAlaXPartialParsing ? empty : word
-    .then(memoize((word) =>
-      sequence(specificWord("ala"), specificWord(word)).map(() => word)
-    ))
-)
+const alaX = memoize((word: string) =>
+  sequence(specificWord("ala"), specificWord(word)).map(() => word)
+);
+const xAlaX = lazy(() => settings.xAlaXPartialParsing ? empty : word.then(alaX))
   .map((word) => ({ type: "x ala x", word }) as const);
 const punctuation = choiceOnlyOne(
   allAtLeastOnce(
