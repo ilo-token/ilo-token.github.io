@@ -14,7 +14,6 @@ import {
   matchString,
   nothing,
   optionalAll,
-  Parser,
   sequence,
   sourceOnly,
   UnexpectedError,
@@ -51,12 +50,13 @@ const latinWord = match(/[a-z][a-zA-Z]*/, "word").skip(spaces);
 const variationSelector = match(/[\uFE00-\uFE0F]/, "variation selector");
 const ucsur = match(UCSUR_CHARACTER_REGEX, "UCSUR glyph")
   .map((ucsur) => UCSUR_TO_LATIN.get(ucsur)!);
-function specificSpecialUcsur(specialUcsur: string): Parser<string> {
-  return matchString(
+
+const specificSpecialUcsur = memoize((specialUcsur: string) =>
+  matchString(
     specialUcsur,
     SPECIAL_UCSUR_DESCRIPTIONS.get(specialUcsur)!,
-  );
-}
+  )
+);
 const singleUcsurWord = ucsur.skip(optionalAll(variationSelector)).skip(spaces);
 const joiner = choiceOnlyOne(
   matchString("\u200D", "zero width joiner"),
@@ -71,12 +71,12 @@ const properWords = allAtLeastOnce(
 )
   .map((array) => array.join(" "))
   .map((words) => ({ type: "proper word", words, kind: "latin" }) as const);
-function specificWord(thatWord: string): Parser<string> {
-  return word.filter((thisWord) =>
+const specificWord = memoize((thatWord: string) =>
+  word.filter((thisWord) =>
     thatWord === thisWord ||
     throwError(new UnexpectedError(`"${thisWord}"`, `"${thatWord}"`))
-  );
-}
+  )
+);
 const multipleA = specificWord("a")
   .with(count(allAtLeastOnce(specificWord("a"))))
   .map((count) => ({ type: "multiple a", count: count + 1 }) as const);
@@ -151,20 +151,9 @@ const cartouches = allAtLeastOnce(cartouche)
       kind: "cartouche",
     }) as const
   );
-function longContainer<T>(
-  left: string,
-  right: string,
-  inside: Parser<T>,
-): Parser<T> {
-  return specificSpecialUcsur(left)
-    .with(inside)
-    .skip(specificSpecialUcsur(right));
-}
-const longSpaceContainer = longContainer(
-  START_OF_LONG_GLYPH,
-  END_OF_LONG_GLYPH,
-  count(spacesWithoutNewline).filter((length) => length > 0),
-)
+const longSpaceContainer = specificSpecialUcsur(START_OF_LONG_GLYPH)
+  .with(count(spacesWithoutNewline).filter((length) => length > 0))
+  .skip(specificSpecialUcsur(END_OF_LONG_GLYPH))
   .skip(spaces);
 const longGlyphHead = choiceOnlyOne(
   combinedGlyphs,
