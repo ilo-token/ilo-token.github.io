@@ -26,6 +26,8 @@ ilo".
   be translated as "nicely, I ate".
 - Fix "nanpa" translation: Before it translated into just "position" instead of
   e.g. "position 1".
+- When telo misikeke is enabled, it won't mark words defined in the custom
+  dictionary.
 
 </details>
 
