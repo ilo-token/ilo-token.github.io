@@ -8,7 +8,6 @@ if (LIVE_RELOAD) {
   new EventSource("/esbuild")
     .addEventListener("change", () => location.reload());
 }
-
 import { dictionary } from "../dictionary/dictionary.ts";
 import { flattenError } from "../misc/misc.ts";
 import PROJECT_DATA from "../project_data.json" with { type: "json" };
@@ -289,13 +288,11 @@ function main(): void {
     }
   });
 }
-
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", main);
 } else {
   main();
 }
-
 // remove unused local storage data
 const used = [DICTIONARY_KEY, ...Object.keys(settings)];
 const unused = [...new Array(localStorage.length).keys()]
@@ -304,7 +301,6 @@ const unused = [...new Array(localStorage.length).keys()]
 for (const key of unused) {
   localStorage.removeItem(key);
 }
-
 function extractErrorMessage(error: unknown): string {
   if (error instanceof Error) {
     return error.message;

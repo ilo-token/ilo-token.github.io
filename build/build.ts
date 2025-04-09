@@ -9,7 +9,6 @@ const BUILD_OPTIONS: ESBuild.BuildOptions = {
   minify: true,
   define: { LIVE_RELOAD: "false" },
 };
-
 if (import.meta.main) {
   const start = performance.now();
   await Dictionary.build();

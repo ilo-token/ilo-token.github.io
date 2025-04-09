@@ -17,19 +17,16 @@ Deno.test("AST all distinct", () => {
     }
   }
 });
-
 Deno.test("parser all error", () => {
   for (const sentence of MALFORMED_SENTENCES) {
     assertThrows(() => parser.parse(sentence).unwrap());
   }
 });
-
 Deno.test("ucsur have proper length", () => {
   assertEquals(PU.length, 120);
   assertEquals(KU_SULI.length, 17);
   assertEquals(KU_LILI.length, 4);
 });
-
 Deno.test("ucsur ordered", () => {
   for (const [i, word] of PU.entries()) {
     if (i < PU.length - 1) {
@@ -38,19 +35,16 @@ Deno.test("ucsur ordered", () => {
     }
   }
 });
-
 Deno.test("no ali", () => {
   for (const word of PU) {
     assertNotEquals(word, "ali");
   }
 });
-
 function uniquePairs<T>(
   array: ReadonlyArray<T>,
 ): ReadonlyArray<readonly [T, T]> {
   return array.flatMap((a, i) => array.slice(i + 1).map((b) => [a, b]));
 }
-
 Deno.test("small parser", () => {
   const space = match(/\s*/, "space");
   const parser = sequence(
@@ -60,13 +54,11 @@ Deno.test("small parser", () => {
   );
   assertEquals(parser.parse("toki pona a").unwrap(), [["toki", "pona", "a"]]);
 });
-
 Deno.test("many", () => {
   const space = match(/\s*/, "space");
   const parser = many(matchString("a").skip(space)).skip(end);
   assertEquals(parser.parse("a a a").unwrap(), [["a", "a", "a"]]);
 });
-
 Deno.test("all", () => {
   const space = match(/\s*/, "space");
   const parser = all(matchString("a").skip(space)).skip(end);

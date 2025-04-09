@@ -189,7 +189,6 @@ export const EXAMPLE_SENTENCES = [
   "mi alasa sitelen e lipu pona",
   "jan sona li alasa sona e ijo mute",
 ];
-
 // Examples taken from https://telo-misikeke.gitlab.io/
 export const MALFORMED_SENTENCES = [
   "mi jan Nikola, li kama pana e lukin pi ilo ni tawa sini.",
