@@ -80,10 +80,7 @@ const unescapedWord = allAtLeastOnceWithCheck(
     ),
   ),
 )
-  .map((word) => word.join("").replaceAll(/\s+/g, " ").trim())
-  .filter((word) =>
-    word !== "" || throwError(new ArrayResultError("missing word"))
-  );
+  .map((word) => word.join("").replaceAll(/\s+/g, " ").trim());
 const word = unescapedWord.map(escapeHtml);
 const forms = sequence(
   word,
