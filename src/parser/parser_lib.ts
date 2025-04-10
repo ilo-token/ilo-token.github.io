@@ -294,38 +294,35 @@ export function checkedAsWhole<T>(parser: Parser<T>): CheckedParser<T> {
 }
 export function choiceWithCheck<T>(
   ...choices: ReadonlyArray<CheckedParser<T>>
-): CheckedParser<T> {
-  return new CheckedParser(
-    choiceOnlyOne(...choices.map(({ check }) => check)),
-    choices.reduceRight(
-      (right: Parser<T>, { check, parser }) =>
-        new Parser((position) => {
-          const arrayResult = check.rawParser(position);
-          if (arrayResult.isError()) {
-            return ArrayResult.concat(
-              arrayResult as ArrayResult<never>,
-              right.rawParser(position),
-            );
-          } else {
-            return parser.rawParser(position);
-          }
-        }),
-      empty,
-    ),
+): Parser<T> {
+  return choices.reduceRight(
+    (right: Parser<T>, { check, parser }) =>
+      new Parser((position) => {
+        const arrayResult = check.rawParser(position);
+        if (arrayResult.isError()) {
+          return ArrayResult.concat(
+            arrayResult as ArrayResult<never>,
+            right.rawParser(position),
+          );
+        } else {
+          return parser.rawParser(position);
+        }
+      }),
+    empty,
   );
 }
 export function optionalWithCheck<T>(
   parser: CheckedParser<T>,
-): CheckedParser<null | T> {
+): Parser<null | T> {
   return choiceWithCheck(parser, checkedAsWhole(nothing));
 }
 export const allWithCheck = memoize(<T>(
   parser: CheckedParser<T>,
-): CheckedParser<ReadonlyArray<T>> =>
+): Parser<ReadonlyArray<T>> =>
   choiceWithCheck(
     new CheckedParser(
       parser.check,
-      sequence(parser.parser, lazy(() => allWithCheck(parser).parser))
+      sequence(parser.parser, lazy(() => allWithCheck(parser)))
         .map(([first, rest]) => [first, ...rest]),
     ),
     checkedAsWhole(emptyArray),
@@ -333,10 +330,7 @@ export const allWithCheck = memoize(<T>(
 );
 export function allAtLeastOnceWithCheck<T>(
   parser: CheckedParser<T>,
-): CheckedParser<ReadonlyArray<T>> {
-  return new CheckedParser(
-    parser.check,
-    sequence(parser.parser, allWithCheck(parser).parser)
-      .map(([first, rest]) => [first, ...rest]),
-  );
+): Parser<ReadonlyArray<T>> {
+  return sequence(parser.parser, allWithCheck(parser))
+    .map(([first, rest]) => [first, ...rest]);
 }

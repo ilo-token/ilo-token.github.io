@@ -40,9 +40,13 @@ const spaces = checkedSequence(
   match(/\s*/, "space"),
 )
   .map(() => null);
-const ignore = allWithCheck(choiceWithCheck(spaces, comment))
-  .map(() => null)
-  .parser;
+const ignore = allWithCheck(
+  new CheckedParser(
+    choiceOnlyOne(comment.check, spaces.check),
+    choiceWithCheck(spaces, comment),
+  ),
+)
+  .map(() => null);
 const backtick = matchString("`", "backtick");
 const colon = matchString(":", "colon");
 const character = match(/./u, "character");
@@ -63,15 +67,19 @@ const keyword = memoize(<T extends string>(keyword: T) =>
       throwError(new UnexpectedError(`"${that}"`, `"${keyword}"`))
     ) as Parser<T>
 );
+const unreservedCharacter = match(UNRESERVED_CHARACTER, "word");
+const wordCheck = choiceOnlyOne(unreservedCharacter, backtick);
 const unescapedWord = allAtLeastOnceWithCheck(
-  choiceWithCheck(
-    checkedAsWhole(match(UNRESERVED_CHARACTER, "word")),
-    checkedSequence(backtick, character.skip(backtick))
-      .map(([_, character]) => character),
-    comment.map(() => ""),
+  new CheckedParser(
+    wordCheck,
+    choiceWithCheck(
+      checkedAsWhole(unreservedCharacter),
+      checkedSequence(backtick, character.skip(backtick))
+        .map(([_, character]) => character),
+      comment.map(() => ""),
+    ),
   ),
 )
-  .parser
   .map((word) => word.join("").replaceAll(/\s+/g, " ").trim())
   .filter((word) =>
     word !== "" || throwError(new ArrayResultError("missing word"))
@@ -79,8 +87,7 @@ const unescapedWord = allAtLeastOnceWithCheck(
 const word = unescapedWord.map(escapeHtml);
 const forms = sequence(
   word,
-  allWithCheck(checkedSequence(slash, word).map(([_, character]) => character))
-    .parser,
+  allWithCheck(checkedSequence(slash, word).map(([_, character]) => character)),
 )
   .map(([first, rest]) => [first, ...rest]);
 const number = choiceOnlyOne(keyword("singular"), keyword("plural"));
@@ -127,7 +134,6 @@ const nounOnly = checkedSequence(
     optionalWithCheck(
       checkedSequence(slash, word).map(([_, word]) => word),
     )
-      .parser
       .skip(openParenthesis)
       .skip(keyword("n")),
   ),
@@ -206,7 +212,6 @@ const determiner = checkedSequence(
   sequence(
     word,
     optionalWithCheck(checkedSequence(slash, word).map(([_, word]) => word))
-      .parser
       .skip(openParenthesis)
       .skip(keyword("d")),
   ),
@@ -234,8 +239,7 @@ const adjectiveKind = choiceWithCheck(
       keyword("qualifier"),
     ),
   ),
-)
-  .parser;
+);
 const adjective = checkedSequence(
   sequence(
     all(simpleUnit("adv")),
@@ -253,8 +257,8 @@ const adjective = checkedSequence(
     gerundLike: gerundLike != null,
   }));
 const noun = sequence(
-  allWithCheck(determiner).parser,
-  allWithCheck(adjective).parser,
+  allWithCheck(determiner),
+  allWithCheck(adjective),
   nounOnly.parser,
   optionalWithCheck(
     checkedSequence(
@@ -262,8 +266,7 @@ const noun = sequence(
       word.skip(tag(sequence(keyword("n"), keyword("proper")))),
     )
       .map(([adjective, name]) => ({ adjective, name })),
-  )
-    .parser,
+  ),
 )
   .map(([determiner, adjective, noun, postAdjective]) =>
     ({
@@ -340,8 +343,7 @@ function verbOnly(tagInside: Parser<unknown>): Parser<VerbForms> {
           past: escapeHtml(conjugations.PastTense),
         };
       }),
-  )
-    .parser;
+  );
 }
 const verb = verbOnly(keyword("v"));
 const linkingVerb = verbOnly(sequence(keyword("v"), keyword("linking")));
@@ -435,16 +437,15 @@ const twoFormPersonalPronounDefinition = checkedSequence(
   );
 const nounDefinition = new CheckedParser(
   sequence(
-    allWithCheck(determiner).parser,
-    allWithCheck(adjective).parser,
+    allWithCheck(determiner),
+    allWithCheck(adjective),
     nounOnly.check,
   ),
   sequence(
     noun,
     optionalWithCheck(
       simpleDefinitionWithTemplate(keyword("prep"), keyword("headword")),
-    )
-      .parser,
+    ),
   ),
 )
   .map(([noun, preposition]) =>
@@ -491,8 +492,7 @@ const verbDefinition = choiceOnlyOne<Definition>(
       checkedSequence(simpleUnit("prep"), noun)
         .map(([preposition, object]) => ({ preposition, object })),
     )
-      .map(nullableAsArray)
-      .parser,
+      .map(nullableAsArray),
   )
     .skip(semicolon)
     .map(([verb, forObject, indirectObject]) => ({
@@ -505,15 +505,14 @@ const verbDefinition = choiceOnlyOne<Definition>(
     })),
   sequence(
     verb,
-    optionalWithCheck(checkedNoun).parser,
+    optionalWithCheck(checkedNoun),
     optionalWithCheck(
       checkedSequence(
         simpleUnit("prep"),
         template(keyword("object")),
       )
         .map(([preposition]) => preposition),
-    )
-      .parser,
+    ),
   )
     .skip(semicolon)
     .map(([verb, directObject, preposition]) => ({
@@ -571,17 +570,22 @@ const definition = choiceWithCheck<Definition>(
   determiner.map((determiner) => ({ ...determiner, type: "determiner" })),
   checkedAsWhole(verbDefinition),
 );
-const definitionSemicolon = new CheckedParser(
-  definition.check,
-  definition.parser.skip(semicolon),
-);
 const head = sequence(all(tokiPonaWord.skip(comma)), tokiPonaWord)
   .skip(colon)
   .map(([init, last]) => [...init, last]);
-const entry = withSource(ignore.with(allWithCheck(definitionSemicolon).parser))
+const entry = withSource(
+  ignore.with(
+    allWithCheck(
+      new CheckedParser(
+        wordCheck,
+        definition.skip(semicolon),
+      ),
+    ),
+  ),
+)
   .map(([definitions, source]) => ({ definitions, source: source.trimEnd() }));
 const dictionaryParser = ignore
-  .with(allWithCheck(checkedSequence(head, entry)).parser)
+  .with(allWithCheck(checkedSequence(head, entry)))
   .skip(end)
   .map((entries) =>
     new Map(
