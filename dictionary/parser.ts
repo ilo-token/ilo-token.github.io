@@ -25,8 +25,8 @@ import {
   withSource,
 } from "../src/parser/parser_lib.ts";
 import { Definition, Dictionary, VerbForms } from "./type.ts";
+
 const RESERVED_SYMBOLS = "#()*+/:;<=>@[\\]^`{|}~";
-const UNRESERVED_CHARACTER = new RegExp(`[^${escapeRegex(RESERVED_SYMBOLS)}]`);
 
 function lex<T>(parser: Parser<T>): Parser<T> {
   return parser.skip(ignore);
@@ -51,7 +51,10 @@ const ignore = allWithCheck(
 const backtick = matchString("`", "backtick");
 const colon = matchString(":", "colon");
 const character = match(/./u, "character");
-
+const wordCharacter = match(
+  new RegExp(`[^${escapeRegex(RESERVED_SYMBOLS)}]`),
+  "word",
+);
 const tokiPonaWord = lex(match(/[a-z][a-zA-Z]*/, "word"));
 const openParenthesis = lex(matchString("(", "open parenthesis"));
 const closeParenthesis = lex(matchString(")", "close parenthesis"));
@@ -68,12 +71,11 @@ const keyword = memoize(<T extends string>(keyword: T) =>
       throwError(new UnexpectedError(`"${that}"`, `"${keyword}"`))
     ) as Parser<T>
 );
-const unreservedCharacter = match(UNRESERVED_CHARACTER, "word");
 const unescapedWord = allAtLeastOnceWithCheck(
   new CheckedParser(
-    choiceOnlyOne(unreservedCharacter, backtick),
+    choiceOnlyOne(wordCharacter, backtick),
     choiceWithCheck(
-      checkedAsWhole(unreservedCharacter),
+      checkedAsWhole(wordCharacter),
       checkedSequence(backtick, character.skip(backtick))
         .map(([_, character]) => character),
       comment.map(() => ""),
@@ -82,11 +84,6 @@ const unescapedWord = allAtLeastOnceWithCheck(
 )
   .map((word) => word.join("").replaceAll(/\s+/g, " ").trim());
 const word = unescapedWord.map(escapeHtml);
-const forms = sequence(
-  word,
-  allWithCheck(checkedSequence(slash, word).map(([_, character]) => character)),
-)
-  .map(([first, rest]) => [first, ...rest]);
 const number = choiceOnlyOne(keyword("singular"), keyword("plural"));
 const optionalNumber = optionalAll(number);
 const perspective = choiceOnlyOne(
@@ -102,29 +99,6 @@ function template<T>(parser: Parser<T>): Parser<T> {
 }
 const simpleUnit = memoize((kind: string) => word.skip(tag(keyword(kind))));
 
-function detectRepetition(
-  source: ReadonlyArray<string>,
-): Readonly<{ before: string; repeat: string; after: string }> {
-  if (source.length === 1) {
-    return { before: source[0], repeat: "", after: "" };
-  }
-  const [first, ...rest] = source;
-  for (let i = 0; i < first.length; i++) {
-    const before = first.slice(0, i);
-    const repeatString = first.slice(i, i + 1);
-    const after = first.slice(i + 1);
-    const passed = [...rest.entries()]
-      .every(([i, test]) =>
-        test === `${before}${repeatString.repeat(i + 2)}${after}`
-      );
-    if (passed) {
-      return { before, repeat: repeatString, after };
-    }
-  }
-  throw new ArrayResultError(
-    `"${source.join("/")}" has no repetition pattern found`,
-  );
-}
 const nounOnly = checkedSequence(
   sequence(
     unescapedWord,
@@ -382,15 +356,43 @@ const numeralDefinition = simpleDefinition(keyword("num"))
     }
   });
 const fillerDefinition = checkedSequence(
-  forms.skip(openParenthesis).skip(keyword("f")),
+  sequence(
+    word,
+    allWithCheck(
+      checkedSequence(slash, word).map(([_, character]) => character),
+    ),
+  )
+    .skip(openParenthesis)
+    .skip(keyword("f"))
+    .map(([first, rest]) => [first, ...rest]),
   closeParenthesis,
 )
-  .map(([forms]) =>
-    ({
-      ...detectRepetition(forms),
-      type: "filler",
-    }) as const
-  );
+  .map(([forms]) => {
+    if (forms.length === 1) {
+      return {
+        type: "filler",
+        before: forms[0],
+        repeat: "",
+        after: "",
+      } as const;
+    }
+    const [first, ...rest] = forms;
+    for (let i = 0; i < first.length; i++) {
+      const before = first.slice(0, i);
+      const repeatString = first.slice(i, i + 1);
+      const after = first.slice(i + 1);
+      const passed = [...rest.entries()]
+        .every(([i, test]) =>
+          test === `${before}${repeatString.repeat(i + 2)}${after}`
+        );
+      if (passed) {
+        return { type: "filler", before, repeat: repeatString, after } as const;
+      }
+    }
+    throw new ArrayResultError(
+      `"${forms.join("/")}" has no repetition pattern found`,
+    );
+  });
 const fourFormPersonalPronounDefinition = checkedSequence(
   sequence(
     word.skip(slash),
