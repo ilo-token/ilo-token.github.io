@@ -258,6 +258,11 @@ export const end = new Parser((position) =>
       ),
     )
 );
+export const notEnd = new Parser((position) =>
+  position < currentSource.length
+    ? new ArrayResult([{ value: null, length: 0 }])
+    : new ArrayResult(new UnexpectedError("end of text", "not end of text"))
+);
 export function withSource<T>(
   parser: Parser<T>,
 ): Parser<readonly [value: T, source: string]> {

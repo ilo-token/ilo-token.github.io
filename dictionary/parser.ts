@@ -13,10 +13,10 @@ import {
   checkedSequence,
   choiceOnlyOne,
   choiceWithCheck,
-  end,
   lookAhead,
   match,
   matchString,
+  notEnd,
   optionalAll,
   optionalWithCheck,
   Parser,
@@ -587,8 +587,7 @@ const entry = withSource(
 )
   .map(([definitions, source]) => ({ definitions, source: source.trimEnd() }));
 const dictionaryParser = ignore
-  .with(allWithCheck(checkedSequence(head, entry)))
-  .skip(end)
+  .with(allWithCheck(new CheckedParser(notEnd, sequence(head, entry))))
   .map((entries) =>
     new Map(
       entries.flatMap(([words, definition]) =>
