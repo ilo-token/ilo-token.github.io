@@ -274,3 +274,69 @@ export function withSource<T>(
 export function sourceOnly(parser: Parser<unknown>): Parser<string> {
   return withSource(parser).map(([_, source]) => source);
 }
+export class CheckedParser<T> {
+  constructor(public check: Parser<unknown>, public parser: Parser<T>) {}
+  map<U>(mapper: (value: T) => U): CheckedParser<U> {
+    return new CheckedParser(this.check, this.parser.map(mapper));
+  }
+  filter(check: (value: T) => boolean): CheckedParser<T> {
+    return new CheckedParser(this.check, this.parser.filter(check));
+  }
+}
+export function checkedSequence<T, U>(
+  check: Parser<T>,
+  rest: Parser<U>,
+): CheckedParser<readonly [T, U]> {
+  return new CheckedParser(check, sequence(check, rest));
+}
+export function checkedAsWhole<T>(parser: Parser<T>): CheckedParser<T> {
+  return new CheckedParser(parser, parser);
+}
+export function choiceWithCheck<T>(
+  ...choices: ReadonlyArray<CheckedParser<T>>
+): CheckedParser<T> {
+  return new CheckedParser(
+    choiceOnlyOne(...choices.map(({ check }) => check)),
+    choices.reduceRight(
+      (right: Parser<T>, { check, parser }) =>
+        new Parser((position) => {
+          const arrayResult = check.rawParser(position);
+          if (arrayResult.isError()) {
+            return ArrayResult.concat(
+              arrayResult as ArrayResult<never>,
+              right.rawParser(position),
+            );
+          } else {
+            return parser.rawParser(position);
+          }
+        }),
+      empty,
+    ),
+  );
+}
+export function optionalWithCheck<T>(
+  parser: CheckedParser<T>,
+): CheckedParser<null | T> {
+  return choiceWithCheck(parser, checkedAsWhole(nothing));
+}
+export const allWithCheck = memoize(<T>(
+  parser: CheckedParser<T>,
+): CheckedParser<ReadonlyArray<T>> =>
+  choiceWithCheck(
+    new CheckedParser(
+      parser.check,
+      sequence(parser.parser, lazy(() => allWithCheck(parser).parser))
+        .map(([first, rest]) => [first, ...rest]),
+    ),
+    checkedAsWhole(emptyArray),
+  )
+);
+export function allAtLeastOnceWithCheck<T>(
+  parser: CheckedParser<T>,
+): CheckedParser<ReadonlyArray<T>> {
+  return new CheckedParser(
+    parser.check,
+    sequence(parser.parser, allWithCheck(parser).parser)
+      .map(([first, rest]) => [first, ...rest]),
+  );
+}
