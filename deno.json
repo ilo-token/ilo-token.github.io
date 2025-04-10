@@ -18,7 +18,7 @@
     },
     "update": {
       "description": "Updates dependencies and telo misikeke",
-      "command": "deno outdated --update && deno run -N=api.linku.la,gitlab.com -W=./telo_misikeke/linku_data.json,./telo_misikeke/Parser.js,./telo_misikeke/rules.js --no-prompt --frozen --cached-only ./telo_misikeke/update.ts"
+      "command": "deno outdated --update && deno run -N=gitlab.com -W=./telo_misikeke/linku_data.json,./telo_misikeke/Parser.js,./telo_misikeke/rules.js --no-prompt --frozen --cached-only ./telo_misikeke/update.ts"
     },
     "build-dictionary": {
       "description": "Builds the dictionary at `./dictionary/dictionary.ts`",
