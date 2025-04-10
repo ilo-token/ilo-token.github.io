@@ -68,10 +68,9 @@ const keyword = memoize(<T extends string>(keyword: T) =>
     ) as Parser<T>
 );
 const unreservedCharacter = match(UNRESERVED_CHARACTER, "word");
-const wordCheck = choiceOnlyOne(unreservedCharacter, backtick);
 const unescapedWord = allAtLeastOnceWithCheck(
   new CheckedParser(
-    wordCheck,
+    choiceOnlyOne(unreservedCharacter, backtick),
     choiceWithCheck(
       checkedAsWhole(unreservedCharacter),
       checkedSequence(backtick, character.skip(backtick))
@@ -577,7 +576,7 @@ const entry = withSource(
   ignore.with(
     allWithCheck(
       new CheckedParser(
-        wordCheck,
+        sequence(word, choiceOnlyOne(openParenthesis, slash)),
         definition.skip(semicolon),
       ),
     ),
