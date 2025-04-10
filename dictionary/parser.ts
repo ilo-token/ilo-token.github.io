@@ -474,6 +474,13 @@ const compoundAdjectiveDefinition = checkedSequence(
 //       .skip(sequence(openParenthesis, keyword("v"))),
 //   ),
 // );
+
+// (v modal)
+// (v linking) [predicate]
+// (v) [predicate]
+// (v) [object] Noun?
+// (v) Noun? (prep)? [object]?
+
 const verbDefinition = choiceOnlyOne<Definition>(
   sequence(
     verb,
