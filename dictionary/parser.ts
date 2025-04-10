@@ -275,10 +275,6 @@ const noun = sequence(
       postAdjective,
     }) as const
   );
-const checkedNoun = new CheckedParser(
-  choiceOnlyOne(determiner.check, adjective.check, nounOnly.check),
-  noun,
-);
 function verbOnly(tagInside: Parser<unknown>): Parser<VerbForms> {
   return choiceWithCheck(
     checkedSequence(
@@ -504,7 +500,12 @@ const verbDefinition = choiceOnlyOne<Definition>(
     })),
   sequence(
     verb,
-    optionalWithCheck(checkedNoun),
+    optionalWithCheck(
+      new CheckedParser(
+        choiceOnlyOne(determiner.check, adjective.check, nounOnly.check),
+        noun,
+      ),
+    ),
     optionalWithCheck(
       checkedSequence(
         simpleUnit("prep"),
