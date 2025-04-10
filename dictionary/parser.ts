@@ -121,29 +121,21 @@ function detectRepetition(
     `"${source.join("/")}" has no repetition pattern found`,
   );
 }
-const nounOnly = choiceWithCheck(
-  checkedSequence(
-    word.skip(slash),
-    sequence(
-      word.skip(openParenthesis).skip(keyword("n")),
-      optionalAll(keyword("gerund")).skip(closeParenthesis),
-    ),
-  )
-    .map(([singular, [plural, gerund]]) => ({
-      singular,
-      plural,
-      gerund: gerund != null,
-    })),
-  checkedAsWhole(
-    sequence(
-      unescapedWord,
-      tag(
-        keyword("n")
-          .with(sequence(optionalAll(keyword("gerund")), optionalNumber)),
-      ),
-    ),
-  )
-    .map(([noun, [gerund, number]]) => {
+const nounOnly = checkedSequence(
+  sequence(
+    unescapedWord,
+    optionalWithCheck(
+      checkedSequence(slash, word).map(([_, word]) => word),
+    )
+      .parser
+      .skip(openParenthesis)
+      .skip(keyword("n")),
+  ),
+  sequence(optionalAll(keyword("gerund")), optionalNumber)
+    .skip(closeParenthesis),
+)
+  .map(([[noun, plural], [gerund, number]]) => {
+    if (plural == null) {
       if (number == null) {
         const sentence = nlp(noun);
         sentence.tag("Noun");
@@ -178,23 +170,28 @@ const nounOnly = choiceWithCheck(
         let plural: null | string;
         switch (number) {
           case "singular":
+            singular = escaped;
+            plural = null;
+            break;
           case "plural":
-            switch (number) {
-              case "singular":
-                singular = escaped;
-                plural = null;
-                break;
-              case "plural":
-                singular = null;
-                plural = escaped;
-                break;
-            }
+            singular = null;
+            plural = escaped;
             break;
         }
         return { singular, plural, gerund: gerund != null };
       }
-    }),
-);
+    } else {
+      if (number != null) {
+        // TODO: error message
+        throw new ArrayResultError("");
+      }
+      return {
+        singular: escapeHtml(noun),
+        plural,
+        gerund: gerund != null,
+      };
+    }
+  });
 const determinerType = choiceOnlyOne(
   keyword("article"),
   keyword("demonstrative"),
