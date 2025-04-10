@@ -95,7 +95,7 @@ const longWord = allAtLeastOnce(repeatingLetter)
   })
   .filter(({ word }) => /^[a-z]/.test(word))
   .filter(({ length }) => length > 1);
-  
+
 const alaX = memoize((word: string) =>
   sequence(specificWord("ala"), specificWord(word)).map(() => word)
 );
