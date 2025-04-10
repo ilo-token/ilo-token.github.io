@@ -185,8 +185,10 @@ const nounOnly = checkedSequence(
       }
     } else {
       if (number != null) {
-        // TODO: error message
-        throw new ArrayResultError("");
+        throw new ArrayResultError(
+          "plural or singular keyword within tag " +
+            "must not be provided when singular and plural forms are defined",
+        );
       }
       return {
         singular: escapeHtml(noun),
