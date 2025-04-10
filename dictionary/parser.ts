@@ -432,24 +432,21 @@ const twoFormPersonalPronounDefinition = checkedSequence(
       perspective,
     }) as const
   );
-const nounDefinition = checkedSequence(
-  noun.parser,
-  optionalWithCheck(
-    simpleDefinitionWithTemplate(keyword("prep"), keyword("headword")),
-  )
-    .parser,
+const nounDefinition = new CheckedParser(
+  noun.check,
+  sequence(
+    noun.parser,
+    optionalWithCheck(
+      simpleDefinitionWithTemplate(keyword("prep"), keyword("headword")),
+    )
+      .parser,
+  ),
 )
-  .map<Definition>(([noun, preposition]) => {
-    if (preposition == null) {
-      return { ...noun, type: "noun" };
-    } else {
-      return {
-        type: "noun preposition",
-        noun,
-        preposition,
-      };
-    }
-  });
+  .map(([noun, preposition]) =>
+    preposition == null
+      ? { ...noun, type: "noun" } as const
+      : { type: "noun preposition", noun, preposition } as const
+  );
 const compoundAdjectiveDefinition = checkedSequence(
   adjective
     .parser
