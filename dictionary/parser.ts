@@ -14,6 +14,7 @@ import {
   choiceOnlyOne,
   choiceWithCheck,
   end,
+  lookAhead,
   match,
   matchString,
   optionalAll,
@@ -493,7 +494,7 @@ const verbDefinition = choiceOnlyOne<Definition>(
     )
       .map(nullableAsArray),
   )
-    .skip(semicolon)
+    .skip(lookAhead(semicolon))
     .map(([verb, forObject, indirectObject]) => ({
       ...verb,
       type: "verb",
@@ -513,7 +514,7 @@ const verbDefinition = choiceOnlyOne<Definition>(
         .map(([preposition]) => preposition),
     ),
   )
-    .skip(semicolon)
+    .skip(lookAhead(semicolon))
     .map(([verb, directObject, preposition]) => ({
       ...verb,
       type: "verb",
@@ -524,7 +525,7 @@ const verbDefinition = choiceOnlyOne<Definition>(
     })),
   verb
     .skip(template(keyword("predicate")))
-    .skip(semicolon)
+    .skip(lookAhead(semicolon))
     .map((verb) => ({
       ...verb,
       type: "verb",
@@ -536,13 +537,15 @@ const verbDefinition = choiceOnlyOne<Definition>(
   word
     .skip(tag(sequence(keyword("v"), keyword("modal"))))
     .skip(template(keyword("predicate")))
-    .skip(semicolon).map((verb) => ({
+    .skip(lookAhead(semicolon))
+    .map((verb) => ({
       type: "modal verb",
       verb,
     })),
   linkingVerb
     .skip(template(keyword("predicate")))
-    .skip(semicolon).map((verb) => ({
+    .skip(lookAhead(semicolon))
+    .map((verb) => ({
       ...verb,
       type: "verb",
       directObject: null,
