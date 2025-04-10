@@ -24,7 +24,6 @@ import {
   withSource,
 } from "../src/parser/parser_lib.ts";
 import { Definition, Dictionary, VerbForms } from "./type.ts";
-
 const RESERVED_SYMBOLS = "#()*+/:;<=>@[\\]^`{|}~";
 const UNRESERVED_CHARACTER = new RegExp(`[^${escapeRegex(RESERVED_SYMBOLS)}]`);
 
@@ -348,25 +347,137 @@ function verbOnly(tagInside: Parser<unknown>): Parser<VerbForms> {
 }
 const verb = verbOnly(keyword("v"));
 const linkingVerb = verbOnly(sequence(keyword("v"), keyword("linking")));
-const definition = choiceOnlyOne<Definition>(
+function simpleDefinition(tag: Parser<unknown>): CheckedParser<string> {
+  return checkedSequence(
+    word.skip(openParenthesis).skip(tag),
+    closeParenthesis,
+  )
+    .map(([word]) => word);
+}
+function simpleDefinitionWithTemplate(
+  tag: Parser<unknown>,
+  templateInside: Parser<unknown>,
+): CheckedParser<string> {
+  return checkedSequence(
+    word.skip(openParenthesis).skip(tag),
+    closeParenthesis.skip(template(templateInside)),
+  )
+    .map(([word]) => word);
+}
+const interjectionDefinition = simpleDefinition(keyword("i"))
+  .map((interjection) => ({ type: "interjection", interjection }) as const);
+const particleDefinition = simpleDefinition(
+  sequence(keyword("particle"), keyword("def")),
+)
+  .map((definition) => ({ type: "particle definition", definition }) as const);
+const adverbDefinition = simpleDefinition(keyword("adv"))
+  .map((adverb) => ({ type: "adverb", adverb }) as const);
+const prepositionDefinition = simpleDefinitionWithTemplate(
+  keyword("prep"),
+  sequence(keyword("indirect"), keyword("object")),
+)
+  .map((preposition) => ({ type: "preposition", preposition }) as const);
+const numeralDefinition = simpleDefinition(keyword("num"))
+  .map((num) => {
+    const numeral = Number.parseInt(num);
+    if (Number.isNaN(numeral)) {
+      throw new ArrayResultError(`"${num}" is not a number`);
+    } else {
+      return { type: "numeral", numeral } as const;
+    }
+  });
+const fillerDefinition = checkedSequence(
+  forms.skip(openParenthesis).skip(keyword("f")),
+  closeParenthesis,
+)
+  .map(([forms]) =>
+    ({
+      ...detectRepetition(forms),
+      type: "filler",
+    }) as const
+  );
+const fourFormPersonalPronounDefinition = checkedSequence(
+  sequence(
+    word.skip(slash),
+    word.skip(slash),
+    word.skip(slash),
+    word.skip(openParenthesis).skip(keyword("personal")),
+  ),
+  keyword("pronoun").with(perspective).skip(closeParenthesis),
+)
+  .map(([
+    [singularSubject, singularObject, pluralSubject, pluralObject],
+    perspective,
+  ]) =>
+    ({
+      type: "personal pronoun",
+      singular: { subject: singularSubject, object: singularObject },
+      plural: { subject: pluralSubject, object: pluralObject },
+      perspective,
+    }) as const
+  );
+const twoFormPersonalPronounDefinition = checkedSequence(
+  sequence(
+    word.skip(slash),
+    word.skip(openParenthesis).skip(keyword("personal")),
+  ),
+  sequence(
+    keyword("pronoun").with(perspective),
+    number.skip(closeParenthesis),
+  ),
+)
+  .map(([[subject, object], [perspective, number]]) =>
+    ({
+      type: "personal pronoun",
+      singular: null,
+      plural: null,
+      [number]: { subject, object },
+      perspective,
+    }) as const
+  );
+const nounDefinition = checkedSequence(
+  noun.parser,
+  optionalWithCheck(
+    simpleDefinitionWithTemplate(keyword("prep"), keyword("headword")),
+  )
+    .parser,
+)
+  .map<Definition>(([noun, preposition]) => {
+    if (preposition == null) {
+      return { ...noun, type: "noun" };
+    } else {
+      return {
+        type: "noun preposition",
+        noun,
+        preposition,
+      };
+    }
+  });
+const compoundAdjectiveDefinition = checkedSequence(
   adjective
     .parser
-    .skip(semicolon)
-    .map((adjective) => ({ ...adjective, type: "adjective" })),
-  sequence(
-    adjective.parser.skip(keyword("and")).skip(tag(keyword("c"))),
-    adjective.parser,
-  )
-    .filter(([first, second]) =>
-      (first.adverb.length === 0 && second.adverb.length === 0) ||
-      throwError(new ArrayResultError("compound adjective cannot have adverb"))
-    )
-    .skip(semicolon)
-    .map((adjective) => ({ type: "compound adjective", adjective })),
-  noun
-    .parser
-    .skip(semicolon)
-    .map((noun) => ({ ...noun, type: "noun" })),
+    .skip(keyword("and"))
+    .skip(openParenthesis)
+    .skip(keyword("c")),
+  closeParenthesis.with(adjective.parser),
+)
+  .map((adjective) => ({ type: "compound adjective", adjective }) as const)
+  .filter(({ adjective }) =>
+    adjective.every((adjective) => adjective.adverb.length === 0) ||
+    throwError(new ArrayResultError("compound adjective cannot have adverb"))
+  );
+// const verbDefinition_ = checkedSequence(
+//   sequence(
+//     unescapedWord,
+//     optionalWithCheck(
+//       checkedSequence(slash, sequence(word.skip(slash), word))
+//         .map(([_, forms]) => forms),
+//     )
+//       .parser
+//       .skip(sequence(openParenthesis, keyword("v"))),
+//   ),
+// );
+const verbDefinition = choiceOnlyOne<Definition>(
   sequence(
     verb,
     optionalAll(template(keyword("object"))),
@@ -407,36 +518,6 @@ const definition = choiceOnlyOne<Definition>(
       forObject: preposition ?? false,
       predicateType: null,
     })),
-  simpleUnit("i")
-    .skip(semicolon)
-    .map((preposition) => ({
-      type: "interjection",
-      interjection: preposition,
-    })),
-  word.skip(tag(sequence(keyword("particle"), keyword("def"))))
-    .skip(semicolon)
-    .map((definition) => ({ type: "particle definition", definition })),
-  simpleUnit("adv")
-    .skip(semicolon)
-    .map((adverb) => ({ type: "adverb", adverb })),
-  determiner
-    .parser
-    .skip(semicolon)
-    .map((determiner) => ({ ...determiner, type: "determiner" })),
-  simpleUnit("prep")
-    .skip(template(sequence(keyword("indirect"), keyword("object"))))
-    .skip(semicolon)
-    .map((preposition) => ({ type: "preposition", preposition })),
-  simpleUnit("num")
-    .skip(semicolon)
-    .map((unit) => {
-      const numeral = Number.parseInt(unit);
-      if (Number.isNaN(numeral)) {
-        throw new ArrayResultError(`"${unit}" is not a number`);
-      } else {
-        return { type: "numeral", numeral };
-      }
-    }),
   verb
     .skip(template(keyword("predicate")))
     .skip(semicolon)
@@ -447,55 +528,6 @@ const definition = choiceOnlyOne<Definition>(
       indirectObject: [],
       forObject: false,
       predicateType: "verb",
-    })),
-  sequence(noun.parser, simpleUnit("prep"))
-    .skip(template(keyword("headword")))
-    .skip(semicolon)
-    .map(([noun, preposition]) => ({
-      type: "noun preposition",
-      noun,
-      preposition,
-    })),
-  sequence(
-    word.skip(slash),
-    word.skip(slash),
-    word.skip(slash),
-    word,
-    tag(
-      keyword("personal")
-        .with(keyword("pronoun"))
-        .with(perspective),
-    ),
-  )
-    .skip(semicolon)
-    .map(([
-      singularSubject,
-      singularObject,
-      pluralSubject,
-      pluralObject,
-      perspective,
-    ]) => ({
-      type: "personal pronoun",
-      singular: { subject: singularSubject, object: singularObject },
-      plural: { subject: pluralSubject, object: pluralObject },
-      perspective,
-    })),
-  sequence(
-    word.skip(slash),
-    word,
-    tag(
-      keyword("personal").with(keyword("pronoun")).with(
-        sequence(perspective, number),
-      ),
-    ),
-  )
-    .skip(semicolon)
-    .map(([subject, object, [perspective, number]]) => ({
-      type: "personal pronoun",
-      singular: null,
-      plural: null,
-      [number]: { subject, object },
-      perspective,
     })),
   word
     .skip(tag(sequence(keyword("v"), keyword("modal"))))
@@ -514,17 +546,33 @@ const definition = choiceOnlyOne<Definition>(
       forObject: false,
       predicateType: "noun adjective",
     })),
-  forms.skip(tag(keyword("f")))
-    .skip(semicolon)
-    .map((unit) => ({
-      ...detectRepetition(unit),
-      type: "filler",
-    })),
+);
+const definition = choiceWithCheck<Definition>(
+  interjectionDefinition,
+  particleDefinition,
+  prepositionDefinition,
+  numeralDefinition,
+  fillerDefinition,
+  fourFormPersonalPronounDefinition,
+  twoFormPersonalPronounDefinition,
+  // noun parser must come before adjective, compound adjective, and determiner parsers
+  nounDefinition,
+  // compound adjective parser must come before adjective parser
+  compoundAdjectiveDefinition,
+  // adjective parser must come before adverb parser
+  adjective.map((adjective) => ({ ...adjective, type: "adjective" })),
+  adverbDefinition,
+  determiner.map((determiner) => ({ ...determiner, type: "determiner" })),
+  checkedAsWhole(verbDefinition),
+);
+const definitionSemicolon = new CheckedParser(
+  definition.check,
+  definition.parser.skip(semicolon),
 );
 const head = sequence(all(tokiPonaWord.skip(comma)), tokiPonaWord)
   .skip(colon)
   .map(([init, last]) => [...init, last]);
-const entry = withSource(ignore.with(all(definition)))
+const entry = withSource(ignore.with(allWithCheck(definitionSemicolon).parser))
   .map(([definitions, source]) => ({ definitions, source: source.trimEnd() }));
 const dictionaryParser = ignore
   .with(allWithCheck(checkedSequence(head, entry)).parser)
