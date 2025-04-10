@@ -252,29 +252,30 @@ const adjective = checkedSequence(
     kind,
     gerundLike: gerundLike != null,
   }));
-const noun = new CheckedParser(
-  choiceOnlyOne(determiner.check, adjective.check, nounOnly.check),
-  sequence(
-    allWithCheck(determiner).parser,
-    allWithCheck(adjective).parser,
-    nounOnly.parser,
-    optionalWithCheck(
-      checkedSequence(
-        simpleUnit("adj"),
-        word.skip(tag(sequence(keyword("n"), keyword("proper")))),
-      )
-        .map(([adjective, name]) => ({ adjective, name })),
+const noun = sequence(
+  allWithCheck(determiner).parser,
+  allWithCheck(adjective).parser,
+  nounOnly.parser,
+  optionalWithCheck(
+    checkedSequence(
+      simpleUnit("adj"),
+      word.skip(tag(sequence(keyword("n"), keyword("proper")))),
     )
-      .parser,
+      .map(([adjective, name]) => ({ adjective, name })),
   )
-    .map(([determiner, adjective, noun, postAdjective]) =>
-      ({
-        ...noun,
-        determiner,
-        adjective,
-        postAdjective,
-      }) as const
-    ),
+    .parser,
+)
+  .map(([determiner, adjective, noun, postAdjective]) =>
+    ({
+      ...noun,
+      determiner,
+      adjective,
+      postAdjective,
+    }) as const
+  );
+const checkedNoun = new CheckedParser(
+  choiceOnlyOne(determiner.check, adjective.check, nounOnly.check),
+  noun,
 );
 function verbOnly(tagInside: Parser<unknown>): Parser<VerbForms> {
   return choiceWithCheck(
@@ -433,9 +434,13 @@ const twoFormPersonalPronounDefinition = checkedSequence(
     }) as const
   );
 const nounDefinition = new CheckedParser(
-  noun.parser,
   sequence(
-    noun.parser,
+    allWithCheck(determiner).parser,
+    allWithCheck(adjective).parser,
+    nounOnly.check,
+  ),
+  sequence(
+    noun,
     optionalWithCheck(
       simpleDefinitionWithTemplate(keyword("prep"), keyword("headword")),
     )
@@ -483,7 +488,7 @@ const verbDefinition = choiceOnlyOne<Definition>(
     verb,
     optionalAll(template(keyword("object"))),
     optionalWithCheck(
-      checkedSequence(simpleUnit("prep"), noun.parser)
+      checkedSequence(simpleUnit("prep"), noun)
         .map(([preposition, object]) => ({ preposition, object })),
     )
       .map(nullableAsArray)
@@ -500,7 +505,7 @@ const verbDefinition = choiceOnlyOne<Definition>(
     })),
   sequence(
     verb,
-    optionalWithCheck(noun).parser,
+    optionalWithCheck(checkedNoun).parser,
     optionalWithCheck(
       checkedSequence(
         simpleUnit("prep"),
