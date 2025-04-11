@@ -379,6 +379,7 @@ const nounDefinition = new CheckedParser(
       choiceOnlyOne(
         determiner.check,
         adjective.check,
+        nounOnly.check,
       ),
     ),
     checkedSequence(
