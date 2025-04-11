@@ -238,7 +238,7 @@ function generateError(
       }
     } else {
       source = `"${token}"`;
-      length = sourceString.length;
+      length = token.length;
     }
   }
   return new ArrayResult(
