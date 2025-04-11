@@ -37,10 +37,19 @@ export class Parser<T> {
         .map(({ value, length }) => ({ value: mapper(value), length }))
     );
   }
+  mapWithPositionedError<U>(mapper: (value: T) => U): Parser<U> {
+    return withPosition(this)
+      .map((value) => withPositionedError(() => mapper(value.value), value));
+  }
   filter(mapper: (value: T) => boolean): Parser<T> {
     return new Parser((input) =>
       this.rawParser(input).filter(({ value }) => mapper(value))
     );
+  }
+  filterWithPositionedError(mapper: (value: T) => boolean): Parser<T> {
+    return withPosition(this)
+      .filter((value) => withPositionedError(() => mapper(value.value), value))
+      .map(({ value }) => value);
   }
   then<U>(mapper: (value: T) => Parser<U>): Parser<U> {
     return new Parser((position) =>
@@ -71,13 +80,36 @@ export class Parser<T> {
     return sequence(this, parser).map(([arrayResult]) => arrayResult);
   }
 }
-export class UnexpectedError extends ArrayResultError {
-  constructor(unexpected: string, expected: string) {
-    super(`unexpected ${unexpected}. ${expected} were expected instead`);
+export type Position = Readonly<{ position: number; length: number }>;
+export class PositionedError extends ArrayResultError {
+  public position: null | Position;
+  constructor(message: string, position?: Position) {
+    super(message);
+    this.position = position ?? null;
+    this.name = "PositionedError";
+  }
+}
+function withPositionedError<T>(fn: () => T, position: Position): T {
+  try {
+    return fn();
+  } catch (error) {
+    if (typeof error === "string") {
+      throw new PositionedError(error, position);
+    } else {
+      throw error;
+    }
+  }
+}
+export class UnexpectedError extends PositionedError {
+  constructor(unexpected: string, expected: string, position?: Position) {
+    super(
+      `unexpected ${unexpected}. ${expected} were expected instead`,
+      position,
+    );
     this.name = "UnexpectedError";
   }
 }
-export class UnrecognizedError extends ArrayResultError {
+export class UnrecognizedError extends PositionedError {
   constructor(element: string) {
     super(`${element} is unrecognized`);
     this.name = "UnrecognizedError";
@@ -183,21 +215,35 @@ export function count(
 ): Parser<number> {
   return parser.map(({ length }) => length);
 }
-function describeSource(source: string): string {
-  if (source === "") {
-    return "end of text";
+function generateError(
+  position: number,
+  expected: string,
+): ArrayResult<never> {
+  let source: string;
+  let length: number;
+  if (position === currentSource.length) {
+    source = "end of text";
+    length = 0;
   } else {
-    const [token] = source.match(/\S*/)!;
+    const sourceString = currentSource.slice(position);
+    const [token] = sourceString.match(/\S*/)!;
     if (token === "") {
-      if (/^\r?\n/.test(source)) {
-        return "newline";
+      if (/^\r?\n/.test(sourceString)) {
+        source = "newline";
+        length = 0;
       } else {
-        return "space";
+        const [token] = sourceString.match(/\s*?(?=\r?\n)/)!;
+        source = "space";
+        length = token.length;
       }
     } else {
-      return `"${token}"`;
+      source = `"${token}"`;
+      length = sourceString.length;
     }
   }
+  return new ArrayResult(
+    new UnexpectedError(source, expected, { position, length }),
+  );
 }
 export function matchCapture(
   regex: RegExp,
@@ -205,14 +251,11 @@ export function matchCapture(
 ): Parser<RegExpMatchArray> {
   const newRegex = new RegExp(`^${regex.source}`, regex.flags);
   return new Parser((position) => {
-    const sourceString = currentSource.slice(position);
-    const match = sourceString.match(newRegex);
+    const match = currentSource.slice(position).match(newRegex);
     if (match != null) {
       return new ArrayResult([{ value: match, length: match[0].length }]);
     } else {
-      return new ArrayResult(
-        new UnexpectedError(describeSource(sourceString), description),
-      );
+      return generateError(position, description);
     }
   });
 }
@@ -233,12 +276,7 @@ export function matchString(
         length: match.length,
       }]);
     } else {
-      return new ArrayResult(
-        new UnexpectedError(
-          describeSource(currentSource.slice(position)),
-          description,
-        ),
-      );
+      return generateError(position, description);
     }
   });
 }
@@ -251,17 +289,18 @@ export const allRest = new Parser((position) =>
 export const end = new Parser((position) =>
   position === currentSource.length
     ? new ArrayResult([{ value: null, length: 0 }])
-    : new ArrayResult(
-      new UnexpectedError(
-        describeSource(currentSource.slice(position)),
-        "end of text",
-      ),
-    )
+    : generateError(position, "end of text")
 );
 export const notEnd = new Parser((position) =>
   position < currentSource.length
     ? new ArrayResult([{ value: null, length: 0 }])
-    : new ArrayResult(new UnexpectedError("end of text", "not end of text"))
+    : new ArrayResult(
+      new UnexpectedError(
+        "end of text",
+        "not end of text",
+        { position, length: currentSource.length - position },
+      ),
+    )
 );
 export function withSource<T>(
   parser: Parser<T>,
@@ -276,13 +315,35 @@ export function withSource<T>(
     }))
   );
 }
+export function withPosition<T>(
+  parser: Parser<T>,
+): Parser<Readonly<{ value: T }> & Position> {
+  return new Parser((position) =>
+    parser.rawParser(position).map(({ value, length }) => ({
+      value: { value, position, length },
+      length,
+    }))
+  );
+}
 export class CheckedParser<T> {
   constructor(public check: Parser<unknown>, public parser: Parser<T>) {}
   map<U>(mapper: (value: T) => U): CheckedParser<U> {
     return new CheckedParser(this.check, this.parser.map(mapper));
   }
+  mapWithPositionedError<U>(mapper: (value: T) => U): CheckedParser<U> {
+    return new CheckedParser(
+      this.check,
+      this.parser.mapWithPositionedError(mapper),
+    );
+  }
   filter(check: (value: T) => boolean): CheckedParser<T> {
     return new CheckedParser(this.check, this.parser.filter(check));
+  }
+  filterWithPositionedError(check: (value: T) => boolean): CheckedParser<T> {
+    return new CheckedParser(
+      this.check,
+      this.parser.filterWithPositionedError(check),
+    );
   }
 }
 export function checkedSequence<T, U>(

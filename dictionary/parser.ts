@@ -3,7 +3,6 @@ import { escape as escapeHtml } from "@std/html/entities";
 import { escape as escapeRegex } from "@std/regexp/escape";
 import nlp from "compromise/three";
 import { nullableAsArray, throwError } from "../misc/misc.ts";
-import { ArrayResultError } from "../src/array_result.ts";
 import {
   all,
   allAtLeastOnceWithCheck,
@@ -108,7 +107,7 @@ const nounOnly = checkedSequence(
   sequence(optionalAll(keyword("gerund")), optionalNumber)
     .skip(closeParenthesis),
 )
-  .map(([[noun, plural], [gerund, number]]) => {
+  .mapWithPositionedError(([[noun, plural], [gerund, number]]) => {
     if (plural == null) {
       if (number == null) {
         const sentence = nlp(noun);
@@ -122,16 +121,12 @@ const nounOnly = checkedSequence(
           .toPlural()
           .text();
         if (singular === "" || plural === "") {
-          throw new ArrayResultError(
-            `no singular or plural form found for "${noun}". consider ` +
-              "providing both singular and plural forms instead",
-          );
+          throw `no singular or plural form found for "${noun}". consider ` +
+            "providing both singular and plural forms instead";
         }
         if (noun !== singular) {
-          throw new ArrayResultError(
-            `conjugation error: "${noun}" is not "${singular}". ` +
-              "consider providing both singular and plural forms instead",
-          );
+          throw `conjugation error: "${noun}" is not "${singular}". ` +
+            "consider providing both singular and plural forms instead";
         }
         return {
           singular: escapeHtml(singular),
@@ -156,10 +151,8 @@ const nounOnly = checkedSequence(
       }
     } else {
       if (number != null) {
-        throw new ArrayResultError(
-          "plural or singular keyword within tag " +
-            "must not be provided when singular and plural forms are defined",
-        );
+        throw "plural or singular keyword within tag " +
+          "must not be provided when singular and plural forms are defined";
       }
       return {
         singular: escapeHtml(noun),
@@ -287,10 +280,10 @@ const prepositionDefinition = simpleDefinitionWithTemplate(
 )
   .map((preposition) => ({ type: "preposition", preposition }) as const);
 const numeralDefinition = simpleDefinition(keyword("num"))
-  .map((num) => {
+  .mapWithPositionedError((num) => {
     const numeral = Number.parseInt(num);
     if (Number.isNaN(numeral)) {
-      throw new ArrayResultError(`"${num}" is not a number`);
+      throw `"${num}" is not a number`;
     } else {
       return { type: "numeral", numeral } as const;
     }
@@ -307,7 +300,7 @@ const fillerDefinition = checkedSequence(
     .map(([first, rest]) => [first, ...rest]),
   closeParenthesis,
 )
-  .map(([forms]) => {
+  .mapWithPositionedError(([forms]) => {
     if (forms.length === 1) {
       return {
         type: "filler",
@@ -329,9 +322,7 @@ const fillerDefinition = checkedSequence(
         return { type: "filler", before, repeat: repeatString, after } as const;
       }
     }
-    throw new ArrayResultError(
-      `"${forms.join("/")}" has no repetition pattern found`,
-    );
+    throw `"${forms.join("/")}" has no repetition pattern found`;
   });
 const fourFormPersonalPronounDefinition = checkedSequence(
   sequence(
@@ -411,9 +402,9 @@ const compoundAdjectiveDefinition = checkedSequence(
   closeParenthesis.with(adjective.parser),
 )
   .map((adjective) => ({ type: "compound adjective", adjective }) as const)
-  .filter(({ adjective }) =>
+  .filterWithPositionedError(({ adjective }) =>
     adjective.every((adjective) => adjective.adverb.length === 0) ||
-    throwError(new ArrayResultError("compound adjective cannot have adverb"))
+    throwError("compound adjective cannot have adverb")
   );
 const verbDefinition = checkedSequence(
   sequence(
@@ -519,10 +510,10 @@ const verbDefinition = checkedSequence(
       }),
   ),
 )
-  .map<Definition>(([[verb, forms], rest]) => {
+  .mapWithPositionedError<Definition>(([[verb, forms], rest]) => {
     if (rest == null) {
       if (forms != null) {
-        throw new ArrayResultError("modal verbs shouldn't be conjugated");
+        throw "modal verbs shouldn't be conjugated";
       }
       return { type: "modal verb", verb: escapeHtml(verb) };
     } else {
@@ -540,17 +531,13 @@ const verbDefinition = checkedSequence(
           FutureTense: string;
         };
         if (conjugations == null) {
-          throw new ArrayResultError(
-            `no verb conjugation found for "${verb}". consider providing ` +
-              "all conjugations instead",
-          );
+          throw `no verb conjugation found for "${verb}". consider providing ` +
+            "all conjugations instead";
         }
         if (verb !== conjugations.Infinitive) {
-          throw new ArrayResultError(
-            `conjugation error: "${verb}" is not ` +
-              `"${conjugations.Infinitive}". consider providing all ` +
-              "conjugations instead",
-          );
+          throw `conjugation error: "${verb}" is not ` +
+            `"${conjugations.Infinitive}". consider providing all ` +
+            "conjugations instead";
         }
         presentPlural = escapeHtml(conjugations.Infinitive);
         presentSingular = escapeHtml(conjugations.PresentTense);
