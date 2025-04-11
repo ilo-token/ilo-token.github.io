@@ -13,10 +13,10 @@ import {
   checkedSequence,
   choiceOnlyOne,
   choiceWithCheck,
-  lookAhead,
   match,
   matchString,
   notEnd,
+  nothing,
   optionalAll,
   optionalWithCheck,
   Parser,
@@ -24,7 +24,7 @@ import {
   UnexpectedError,
   withSource,
 } from "../src/parser/parser_lib.ts";
-import { Definition, Dictionary, VerbForms } from "./type.ts";
+import { Definition, Dictionary, Noun, PartialVerb } from "./type.ts";
 
 const RESERVED_SYMBOLS = "#()*+/:;<=>@[\\]^`{|}~";
 
@@ -249,88 +249,31 @@ const noun = sequence(
       postAdjective,
     }) as const
   );
-function verbOnly(tagInside: Parser<unknown>): Parser<VerbForms> {
-  return choiceWithCheck(
-    checkedSequence(
-      word.skip(slash),
-      sequence(
-        word.skip(slash),
-        word.skip(tag(tagInside)),
-      ),
-    )
-      .map(([presentPlural, [presentSingular, past]]) => ({
-        presentPlural,
-        presentSingular,
-        past,
-      }))
-      .filter(({ presentPlural, presentSingular, past }) => {
-        const [_, ...pluralParticles] = presentPlural.split(" ");
-        const [_1, ...singularParticles] = presentSingular.split(" ");
-        const [_2, ...pastParticles] = past.split(" ");
-        const allMatched =
-          pluralParticles.length === singularParticles.length &&
-          pluralParticles.length === pastParticles.length &&
-          pluralParticles.every((particle, i) =>
-            particle === singularParticles[i] && particle === pastParticles[i]
-          );
-        if (allMatched) {
-          return true;
-        } else {
-          throw new ArrayResultError(
-            "mismatched verb particles " +
-              `"${presentPlural}/${presentSingular}/${past}"`,
-          );
-        }
-      }),
-    checkedAsWhole(unescapedWord.skip(tag(tagInside)))
-      .map((verb) => {
-        const sentence = nlp(verb);
-        sentence.tag("Verb");
-        const conjugations = sentence.verbs().conjugate()[0] as undefined | {
-          Infinitive: string;
-          PastTense: string;
-          PresentTense: string;
-          Gerund: string;
-          FutureTense: string;
-        };
-        if (conjugations == null) {
-          throw new ArrayResultError(
-            `no verb conjugation found for "${verb}". consider providing ` +
-              "all conjugations instead",
-          );
-        }
-        if (verb !== conjugations.Infinitive) {
-          throw new ArrayResultError(
-            `conjugation error: "${verb}" is not ` +
-              `"${conjugations.Infinitive}". consider providing all ` +
-              "conjugations instead",
-          );
-        }
-        return {
-          presentPlural: escapeHtml(conjugations.Infinitive),
-          presentSingular: escapeHtml(conjugations.PresentTense),
-          past: escapeHtml(conjugations.PastTense),
-        };
-      }),
-  );
-}
-const verb = verbOnly(keyword("v"));
-const linkingVerb = verbOnly(sequence(keyword("v"), keyword("linking")));
-function simpleDefinition(tag: Parser<unknown>): CheckedParser<string> {
+const checkedNoun = new CheckedParser(
+  choiceOnlyOne(
+    determiner.check,
+    adjective.check,
+    nounOnly.check,
+  ),
+  noun,
+);
+function simpleDefinitionWith<T>(
+  tag: Parser<unknown>,
+  after: Parser<T>,
+): CheckedParser<readonly [string, T]> {
   return checkedSequence(
     word.skip(openParenthesis).skip(tag),
-    closeParenthesis,
-  )
-    .map(([word]) => word);
+    closeParenthesis.with(after),
+  );
+}
+function simpleDefinition(tag: Parser<unknown>): CheckedParser<string> {
+  return simpleDefinitionWith(tag, nothing).map(([word]) => word);
 }
 function simpleDefinitionWithTemplate(
   tag: Parser<unknown>,
   templateInside: Parser<unknown>,
 ): CheckedParser<string> {
-  return checkedSequence(
-    word.skip(openParenthesis).skip(tag),
-    closeParenthesis.skip(template(templateInside)),
-  )
+  return simpleDefinitionWith(tag, template(templateInside))
     .map(([word]) => word);
 }
 const interjectionDefinition = simpleDefinition(keyword("i"))
@@ -463,99 +406,153 @@ const compoundAdjectiveDefinition = checkedSequence(
     adjective.every((adjective) => adjective.adverb.length === 0) ||
     throwError(new ArrayResultError("compound adjective cannot have adverb"))
   );
-// const verbDefinition_ = checkedSequence(
-//   sequence(
-//     unescapedWord,
-//     optionalWithCheck(
-//       checkedSequence(slash, sequence(word.skip(slash), word))
-//         .map(([_, forms]) => forms),
-//     )
-//       .parser
-//       .skip(sequence(openParenthesis, keyword("v"))),
-//   ),
-// );
-
-// (v modal)
-// (v linking) [predicate]
-// (v) [predicate]
-// (v) [object] Noun?
-// (v) Noun? (prep)? [object]?
-
-const verbDefinition = choiceOnlyOne<Definition>(
+const verbDefinition = checkedSequence(
   sequence(
-    verb,
-    optionalAll(template(keyword("object"))),
+    unescapedWord,
     optionalWithCheck(
-      checkedSequence(simpleUnit("prep"), noun)
-        .map(([preposition, object]) => ({ preposition, object })),
+      checkedSequence(slash, sequence(word.skip(slash), word))
+        .map(([_, forms]) => forms),
     )
-      .map(nullableAsArray),
-  )
-    .skip(lookAhead(semicolon))
-    .map(([verb, forObject, indirectObject]) => ({
-      ...verb,
-      type: "verb",
-      directObject: null,
-      indirectObject,
-      forObject: forObject != null,
-      predicateType: null,
-    })),
-  sequence(
-    verb,
-    optionalWithCheck(
-      new CheckedParser(
-        choiceOnlyOne(determiner.check, adjective.check, nounOnly.check),
-        noun,
+      .skip(sequence(openParenthesis, keyword("v"))),
+  ),
+  choiceWithCheck<null | PartialVerb>(
+    checkedSequence(
+      keyword("modal"),
+      sequence(closeParenthesis, template(keyword("predicate"))),
+    )
+      .map(() => null),
+    checkedSequence(
+      keyword("linking"),
+      sequence(closeParenthesis, template(keyword("predicate"))),
+    )
+      .map(() => ({
+        directObject: null,
+        indirectObject: [],
+        forObject: false,
+        predicateType: "noun adjective",
+      })),
+    checkedSequence(
+      sequence(closeParenthesis, openBracket, keyword("predicate")),
+      closeBracket,
+    )
+      .map(() => ({
+        directObject: null,
+        indirectObject: [],
+        forObject: false,
+        predicateType: "verb",
+      })),
+    checkedSequence(
+      sequence(closeParenthesis, openBracket, keyword("object")),
+      closeBracket
+        .with(optionalWithCheck(
+          simpleDefinitionWith(keyword("prep"), noun)
+            .map(([preposition, object]) => ({ preposition, object }) as const),
+        ))
+        .map(nullableAsArray),
+    )
+      .map(([_, indirectObject]) => ({
+        directObject: null,
+        indirectObject,
+        forObject: true,
+        predicateType: null,
+      })),
+    new CheckedParser(
+      nothing,
+      sequence(
+        closeParenthesis
+          .with(
+            optionalWithCheck(checkedNoun),
+          ),
+        optionalWithCheck(
+          simpleDefinitionWith(
+            keyword("prep"),
+            choiceWithCheck<"template" | Noun>(
+              checkedSequence(
+                openBracket,
+                sequence(keyword("object"), closeBracket),
+              )
+                .map(() => "template" as const),
+              checkedNoun,
+            ),
+          ),
+        ),
       ),
-    ),
-    optionalWithCheck(
-      checkedSequence(
-        simpleUnit("prep"),
-        template(keyword("object")),
-      )
-        .map(([preposition]) => preposition),
-    ),
-  )
-    .skip(lookAhead(semicolon))
-    .map(([verb, directObject, preposition]) => ({
-      ...verb,
-      type: "verb",
-      directObject,
-      indirectObject: [],
-      forObject: preposition ?? false,
-      predicateType: null,
-    })),
-  verb
-    .skip(template(keyword("predicate")))
-    .skip(lookAhead(semicolon))
-    .map((verb) => ({
-      ...verb,
-      type: "verb",
-      directObject: null,
-      indirectObject: [],
-      forObject: false,
-      predicateType: "verb",
-    })),
-  word
-    .skip(tag(sequence(keyword("v"), keyword("modal"))))
-    .skip(template(keyword("predicate")))
-    .skip(lookAhead(semicolon))
-    .map((verb) => ({
-      type: "modal verb",
-      verb,
-    })),
-  linkingVerb
-    .skip(template(keyword("predicate")))
-    .skip(lookAhead(semicolon))
-    .map((verb) => ({
-      ...verb,
-      type: "verb",
-      directObject: null,
-      indirectObject: [],
-      forObject: false,
-      predicateType: "noun adjective",
-    })),
-);
+    )
+      .map<PartialVerb>(([directObject, rawIndirectObject]) => {
+        if (rawIndirectObject == null) {
+          return {
+            directObject,
+            indirectObject: [],
+            forObject: false,
+            predicateType: null,
+          };
+        } else {
+          const [preposition, indirectObject] = rawIndirectObject;
+          if (indirectObject === "template") {
+            return {
+              directObject,
+              indirectObject: [],
+              forObject: preposition,
+              predicateType: null,
+            };
+          } else {
+            return {
+              directObject,
+              indirectObject: [{
+                preposition,
+                object: indirectObject,
+              }],
+              forObject: false,
+              predicateType: null,
+            };
+          }
+        }
+      }),
+  ),
+)
+  .map<Definition>(([[verb, forms], rest]) => {
+    if (rest == null) {
+      if (forms != null) {
+        throw new ArrayResultError("modal verbs shouldn't be conjugated");
+      }
+      return { type: "modal verb", verb: escapeHtml(verb) };
+    } else {
+      let presentPlural: string;
+      let presentSingular: string;
+      let past: string;
+      if (forms == null) {
+        const sentence = nlp(verb);
+        sentence.tag("Verb");
+        const conjugations = sentence.verbs().conjugate()[0] as undefined | {
+          Infinitive: string;
+          PastTense: string;
+          PresentTense: string;
+          Gerund: string;
+          FutureTense: string;
+        };
+        if (conjugations == null) {
+          throw new ArrayResultError(
+            `no verb conjugation found for "${verb}". consider providing ` +
+              "all conjugations instead",
+          );
+        }
+        if (verb !== conjugations.Infinitive) {
+          throw new ArrayResultError(
+            `conjugation error: "${verb}" is not ` +
+              `"${conjugations.Infinitive}". consider providing all ` +
+              "conjugations instead",
+          );
+        }
+        presentPlural = escapeHtml(conjugations.Infinitive);
+        presentSingular = escapeHtml(conjugations.PresentTense);
+        past = escapeHtml(conjugations.PastTense);
+      } else {
+        presentPlural = escapeHtml(verb);
+        [presentSingular, past] = forms;
+      }
+      return { ...rest, type: "verb", presentPlural, presentSingular, past };
+    }
+  });
 const definition = choiceWithCheck<Definition>(
   interjectionDefinition,
   particleDefinition,
@@ -572,7 +569,7 @@ const definition = choiceWithCheck<Definition>(
   adjective.map((adjective) => ({ ...adjective, type: "adjective" })),
   adverbDefinition,
   determiner.map((determiner) => ({ ...determiner, type: "determiner" })),
-  checkedAsWhole(verbDefinition),
+  verbDefinition,
 );
 const head = sequence(all(tokiPonaWord.skip(comma)), tokiPonaWord)
   .skip(colon)
