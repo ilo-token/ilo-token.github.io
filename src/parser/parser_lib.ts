@@ -297,21 +297,18 @@ export function checkedAsWhole<T>(parser: Parser<T>): CheckedParser<T> {
 export function choiceWithCheck<T>(
   ...choices: ReadonlyArray<CheckedParser<T>>
 ): Parser<T> {
-  return choices.reduceRight(
-    (right: Parser<T>, { check, parser }) =>
-      new Parser((position) => {
-        const arrayResult = check.rawParser(position);
-        if (arrayResult.isError()) {
-          return ArrayResult.concat(
-            arrayResult as ArrayResult<never>,
-            right.rawParser(position),
-          );
-        } else {
-          return parser.rawParser(position);
-        }
-      }),
-    empty,
-  );
+  return new Parser((position) => {
+    const errors: Array<ArrayResultError> = [];
+    for (const { check, parser } of choices) {
+      const result = check.rawParser(position);
+      if (result.isError()) {
+        errors.push(...result.errors);
+      } else {
+        return parser.rawParser(position);
+      }
+    }
+    return ArrayResult.errors(errors);
+  });
 }
 export function optionalWithCheck<T>(
   parser: CheckedParser<T>,
