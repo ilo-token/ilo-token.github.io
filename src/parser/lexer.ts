@@ -15,7 +15,6 @@ import {
   nothing,
   optionalAll,
   sequence,
-  sourceOnly,
   UnexpectedError,
   UnrecognizedError,
 } from "./parser_lib.ts";
@@ -43,9 +42,7 @@ import {
 
 const spacesWithoutNewline = match(/[^\S\n]*?(?=\S|\r?\n|$)/, "spaces");
 const newline = match(/\r?\n\s*/, "newline");
-const spaces = sourceOnly(
-  sequence(spacesWithoutNewline, choice(nothing, newline)),
-);
+const spaces = sequence(spacesWithoutNewline, choice(nothing, newline));
 const latinWord = match(/[a-z][a-zA-Z]*/, "word").skip(spaces);
 const variationSelector = match(/[\uFE00-\uFE0F]/, "variation selector");
 const ucsur = match(UCSUR_CHARACTER_REGEX, "UCSUR glyph")

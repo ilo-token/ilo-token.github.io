@@ -34,20 +34,17 @@ function lex<T>(parser: Parser<T>): Parser<T> {
 const comment = checkedSequence(
   matchString("#", "hash sign"),
   match(/[^\n]*?(?=\r?\n)/, "comment content"),
-)
-  .map(() => null);
+);
 const spaces = checkedSequence(
   match(/\s/, "space"),
   match(/\s*/, "space"),
-)
-  .map(() => null);
+);
 const ignore = allWithCheck(
   new CheckedParser(
     choiceOnlyOne(comment.check, spaces.check),
     choiceWithCheck(spaces, comment),
   ),
-)
-  .map(() => null);
+);
 const backtick = matchString("`", "backtick");
 const colon = matchString(":", "colon");
 const character = match(/./u, "character");

@@ -276,9 +276,6 @@ export function withSource<T>(
     }))
   );
 }
-export function sourceOnly(parser: Parser<unknown>): Parser<string> {
-  return withSource(parser).map(([_, source]) => source);
-}
 export class CheckedParser<T> {
   constructor(public check: Parser<unknown>, public parser: Parser<T>) {}
   map<U>(mapper: (value: T) => U): CheckedParser<U> {
