@@ -376,24 +376,22 @@ const twoFormPersonalPronounDefinition = checkedSequence(
     }) as const
   );
 const nounDefinition = new CheckedParser(
-  choiceOnlyOne(
-    sequence(
+  choiceWithCheck(
+    checkedSequence(
       determiner.parser,
       choiceOnlyOne(
         determiner.check,
         adjective.check,
       ),
-    )
-      .map(() => null),
-    sequence(
+    ) as CheckedParser<unknown>,
+    checkedSequence(
       adjective.parser,
       choiceOnlyOne(
         adjective.check,
         nounOnly.check,
       ),
-    )
-      .map(() => null),
-    nounOnly.check,
+    ),
+    checkedAsWhole(nounOnly.check),
   ),
   sequence(
     noun,
