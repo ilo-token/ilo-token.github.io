@@ -417,31 +417,6 @@ const verbDefinition = checkedSequence(
   ),
   choiceWithCheck<null | PartialVerb>(
     checkedSequence(
-      keyword("modal"),
-      sequence(closeParenthesis, template(keyword("predicate"))),
-    )
-      .map(() => null),
-    checkedSequence(
-      keyword("linking"),
-      sequence(closeParenthesis, template(keyword("predicate"))),
-    )
-      .map(() => ({
-        directObject: null,
-        indirectObject: [],
-        forObject: false,
-        predicateType: "noun adjective",
-      })),
-    checkedSequence(
-      sequence(closeParenthesis, openBracket, keyword("predicate")),
-      closeBracket,
-    )
-      .map(() => ({
-        directObject: null,
-        indirectObject: [],
-        forObject: false,
-        predicateType: "verb",
-      })),
-    checkedSequence(
       sequence(closeParenthesis, openBracket, keyword("object")),
       closeBracket
         .with(optionalWithCheck(
@@ -455,6 +430,31 @@ const verbDefinition = checkedSequence(
         indirectObject,
         forObject: true,
         predicateType: null,
+      })),
+    checkedSequence(
+      sequence(closeParenthesis, openBracket, keyword("predicate")),
+      closeBracket,
+    )
+      .map(() => ({
+        directObject: null,
+        indirectObject: [],
+        forObject: false,
+        predicateType: "verb",
+      })),
+    checkedSequence(
+      keyword("modal"),
+      sequence(closeParenthesis, template(keyword("predicate"))),
+    )
+      .map(() => null),
+    checkedSequence(
+      keyword("linking"),
+      sequence(closeParenthesis, template(keyword("predicate"))),
+    )
+      .map(() => ({
+        directObject: null,
+        indirectObject: [],
+        forObject: false,
+        predicateType: "noun adjective",
       })),
     new CheckedParser(
       nothing,
@@ -554,22 +554,22 @@ const verbDefinition = checkedSequence(
     }
   });
 const definition = choiceWithCheck<Definition>(
-  interjectionDefinition,
-  particleDefinition,
-  prepositionDefinition,
-  numeralDefinition,
-  fillerDefinition,
-  fourFormPersonalPronounDefinition,
-  twoFormPersonalPronounDefinition,
   // noun parser must come before adjective, compound adjective, and determiner parsers
   nounDefinition,
   // compound adjective parser must come before adjective parser
   compoundAdjectiveDefinition,
   // adjective parser must come before adverb parser
   adjective.map((adjective) => ({ ...adjective, type: "adjective" })),
-  adverbDefinition,
-  determiner.map((determiner) => ({ ...determiner, type: "determiner" })),
   verbDefinition,
+  adverbDefinition,
+  interjectionDefinition,
+  particleDefinition,
+  determiner.map((determiner) => ({ ...determiner, type: "determiner" })),
+  prepositionDefinition,
+  numeralDefinition,
+  fillerDefinition,
+  twoFormPersonalPronounDefinition,
+  fourFormPersonalPronounDefinition,
 );
 const head = sequence(all(tokiPonaWord.skip(comma)), tokiPonaWord)
   .skip(colon)
