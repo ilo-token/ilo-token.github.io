@@ -578,7 +578,7 @@ const entry = withSource(
   ignore.with(
     allWithCheck(
       new CheckedParser(
-        sequence(word, choiceOnlyOne(openParenthesis, slash)),
+        sequence(unescapedWord, choiceOnlyOne(openParenthesis, slash)),
         definition.skip(semicolon),
       ),
     ),
