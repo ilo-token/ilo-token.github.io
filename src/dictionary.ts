@@ -1,5 +1,5 @@
 import { dictionary as globalDictionary } from "../dictionary/dictionary.ts";
-import { parseDictionary } from "../dictionary/parser.ts";
+import { dictionaryParser } from "../dictionary/parser.ts";
 import { Definition, Dictionary } from "../dictionary/type.ts";
 import { load } from "../telo_misikeke/telo_misikeke.js";
 
@@ -18,7 +18,7 @@ export const tokiPonaWordSet: Set<string> = new Set();
 update();
 
 export function loadCustomDictionary(dictionaryText: string): void {
-  const dictionary = parseDictionary(dictionaryText);
+  const dictionary = dictionaryParser.parse(dictionaryText).unwrap()[0];
   customDictionary.clear();
   for (const [key, value] of dictionary) {
     customDictionary.set(key, value);

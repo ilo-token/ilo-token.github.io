@@ -23,7 +23,7 @@ import {
   UnexpectedError,
   withSource,
 } from "../src/parser/parser_lib.ts";
-import { Definition, Dictionary, Noun, PartialVerb } from "./type.ts";
+import { Definition, Noun, PartialVerb } from "./type.ts";
 
 const RESERVED_SYMBOLS = "#()*+/:;<=>@[\\]^`{|}~";
 
@@ -581,7 +581,7 @@ const entry = withSource(
   ),
 )
   .map(([definitions, source]) => ({ definitions, source: source.trimEnd() }));
-const dictionaryParser = ignore
+export const dictionaryParser = ignore
   .with(allWithCheck(new CheckedParser(notEnd, sequence(head, entry))))
   .map((entries) =>
     new Map(
@@ -590,6 +590,3 @@ const dictionaryParser = ignore
       ),
     )
   );
-export function parseDictionary(sourceText: string): Dictionary {
-  return dictionaryParser.parse(sourceText).unwrap()[0];
-}

@@ -23,6 +23,7 @@ async function watchDictionary(): Promise<number> {
   const command = new Deno.Command(Deno.execPath(), {
     args: [
       "run",
+      "-E=NO_COLOR",
       "-R=./dictionary/dictionary",
       "-W=./dictionary/dictionary.ts",
       "--no-prompt",
@@ -42,18 +43,20 @@ async function watchDictionary(): Promise<number> {
   assert(!status.success);
   return status.code;
 }
-if (import.meta.main) {
-  let statusCode: number;
-  {
-    if (
-      !await exists(new URL("../dictionary/dictionary.ts", import.meta.url))
-    ) {
-      const Dictionary = await import("../dictionary/build.ts");
-      await Dictionary.build();
+async function main(): Promise<void> {
+  if (
+    !await exists(new URL("../dictionary/dictionary.ts", import.meta.url))
+  ) {
+    const Dictionary = await import("../dictionary/build.ts");
+    if (!await Dictionary.build()) {
+      Deno.exitCode = 1;
+      return;
     }
-    const statusCodePromise = watchDictionary();
-    await using _ = await watchMain();
-    statusCode = await statusCodePromise;
   }
-  Deno.exit(statusCode);
+  const statusCodePromise = watchDictionary();
+  await using _ = await watchMain();
+  Deno.exitCode = await statusCodePromise;
+}
+if (import.meta.main) {
+  await main();
 }
