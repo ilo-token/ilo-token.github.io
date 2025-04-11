@@ -232,7 +232,7 @@ function generateError(
         source = "newline";
         length = 0;
       } else {
-        const [token] = sourceString.match(/\s*?(?=\r?\n)/)!;
+        const [token] = sourceString.match(/\s*?(?=\r?\n|$)/)!;
         source = "space";
         length = token.length;
       }
