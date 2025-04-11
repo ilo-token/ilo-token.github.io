@@ -59,9 +59,10 @@ function displayError(
       throw error;
     }
   }
+  const red = color ? "color: red" : "";
   const sourceStyle = color ? "color: blue" : "";
   for (const error of errors) {
-    console.error(`Error: ${error.message}`);
+    console.error(`%cError%c: ${error.message}`, red, "");
     if (error instanceof PositionedError) {
       const position = error.position;
       const lines = source.slice(0, position?.position).split(/\r?\n/);
