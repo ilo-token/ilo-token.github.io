@@ -59,6 +59,7 @@ function displayError(
       throw error;
     }
   }
+  const sourceStyle = color ? "color: blue" : "";
   for (const error of errors) {
     console.error(`Error: ${error.message}`);
     if (error instanceof PositionedError) {
@@ -66,7 +67,7 @@ function displayError(
       const lines = source.slice(0, position?.position).split(/\r?\n/);
       const line = lines.length;
       const column = lines[lines.length - 1].length + 1;
-      console.error(`    at ${SOURCE}:${line}:${column}`);
+      console.error(`    at %c${SOURCE}:${line}:${column}`, sourceStyle);
       console.error();
     }
   }
