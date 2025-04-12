@@ -76,7 +76,10 @@ function displayError(
         const nextLine = index === -1 ? source.length : index + 1;
         const line = source.slice(currentLine, nextLine).trimEnd();
         console.error(line);
-        let relativeStart = currentPosition - currentLine;
+        let relativeStart = Math.min(
+          currentPosition - currentLine,
+          line.length,
+        );
         let relativeEnd = Math.min(end - currentLine, line.length);
         if (relativeEnd - relativeStart === 0) {
           if (relativeStart !== 0) {
