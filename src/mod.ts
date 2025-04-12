@@ -6,15 +6,6 @@ import { ArrayResultError } from "./array_result.ts";
 import { settings } from "./settings.ts";
 import { translate as rawTranslate } from "./translator/translator.ts";
 
-export { ArrayResultError, type ArrayResultOptions } from "./array_result.ts";
-export { loadCustomDictionary } from "./dictionary.ts";
-export {
-  defaultSettings,
-  type RedundancySettings,
-  type Settings,
-  settings,
-} from "./settings.ts";
-
 export function translate(tokiPona: string): ReadonlyArray<string> {
   const arrayResult = rawTranslate(tokiPona);
   if (!arrayResult.isError()) {

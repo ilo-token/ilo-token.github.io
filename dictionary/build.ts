@@ -2,7 +2,7 @@
 
 // deno-lint-ignore-file no-console
 
-import { ArrayResultError } from "../src/mod.ts";
+import { ArrayResultError } from "../src/array_result.ts";
 import { PositionedError } from "../src/parser/parser_lib.ts";
 import { dictionaryParser } from "./parser.ts";
 import { Dictionary } from "./type.ts";
