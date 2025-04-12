@@ -63,11 +63,43 @@ function displayError(
   const sourceStyle = color ? "color: blue" : "";
   for (const error of errors) {
     console.error(`%cError%c: ${error.message}`, red, "");
-    if (error instanceof PositionedError) {
-      const position = error.position;
-      const lines = source.slice(0, position?.position).split(/\r?\n/);
-      const line = lines.length;
-      const column = lines[lines.length - 1].length + 1;
+    if (error instanceof PositionedError && error.position != null) {
+      const { position, length } = error.position;
+      const end = position + length;
+      // The only instance returning -1 is useful
+      const startLine = source.lastIndexOf("\n", position) + 1;
+      let currentLine = startLine;
+      let currentPosition = position;
+
+      while (true) {
+        const index = source.indexOf("\n", currentLine);
+        const nextLine = index === -1 ? source.length : index + 1;
+        const line = source.slice(currentLine, nextLine).trimEnd();
+        console.error(line);
+        let relativeStart = currentPosition - currentLine;
+        let relativeEnd = Math.min(end - currentLine, line.length);
+        if (relativeEnd - relativeStart === 0) {
+          if (relativeStart !== 0) {
+            relativeStart--;
+          }
+          if (relativeEnd !== line.length) {
+            relativeEnd++;
+          }
+        }
+        console.error(
+          `${" ".repeat(relativeStart)}%c${
+            "^".repeat(relativeEnd - relativeStart)
+          }`,
+          red,
+        );
+        if (end <= nextLine) {
+          break;
+        } else {
+          currentLine = currentPosition = nextLine;
+        }
+      }
+      const line = source.slice(0, startLine).split(/\n(?!$)/).length;
+      const column = position - startLine + 1;
       console.error(`    at %c${SOURCE}:${line}:${column}`, sourceStyle);
       console.error();
     }
