@@ -98,7 +98,7 @@ function displayError(
           currentLine = currentPosition = nextLine;
         }
       }
-      const line = source.slice(0, startLine).split(/\n(?!$)/).length;
+      const line = source.slice(0, startLine).split(/\n(?!$)/).length + 1;
       const column = position - startLine + 1;
       console.error(`    at %c${SOURCE}:${line}:${column}`, sourceStyle);
       console.error();
