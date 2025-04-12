@@ -6,6 +6,8 @@ import { BuildOptions, context } from "esbuild";
 import { AsyncDisposableStack } from "../misc/async_disposable_stack.ts";
 import { OPTIONS } from "./config.ts";
 
+const DICTIONARY = new URL("../dictionary/dictionary.ts", import.meta.url);
+
 const BUILD_OPTIONS: BuildOptions = {
   ...OPTIONS,
   minify: false,
@@ -44,14 +46,8 @@ async function watchDictionary(): Promise<number> {
   return status.code;
 }
 async function main(): Promise<void> {
-  if (
-    !await exists(new URL("../dictionary/dictionary.ts", import.meta.url))
-  ) {
-    const Dictionary = await import("../dictionary/build.ts");
-    if (!await Dictionary.build()) {
-      Deno.exitCode = 1;
-      return;
-    }
+  if (!await exists(DICTIONARY)) {
+    await Deno.create(DICTIONARY);
   }
   const statusCodePromise = watchDictionary();
   await using _ = await watchMain();
