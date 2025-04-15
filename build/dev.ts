@@ -45,14 +45,11 @@ async function watchDictionary(): Promise<number> {
   assert(!status.success);
   return status.code;
 }
-async function main(): Promise<void> {
+if (import.meta.main) {
   if (!await exists(DICTIONARY)) {
     await Deno.create(DICTIONARY);
   }
   const statusCodePromise = watchDictionary();
   await using _ = await watchMain();
   Deno.exitCode = await statusCodePromise;
-}
-if (import.meta.main) {
-  await main();
 }
