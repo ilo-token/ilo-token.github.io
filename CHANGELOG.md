@@ -28,10 +28,10 @@ ilo".
   e.g. "position 1".
 - When telo misikeke is enabled, it won't mark words defined in the custom
   dictionary.
-- Improve non-user error messages e.g. mistakes by us programmers. A detailed
-  instruction for bug reporting is now shown.
-- Improve errors from importing words to custom dictionary. A dialog is now
-  shown instead of appending a message at custom dictionary.
+- Improve error messages for bugs. A detailed instruction for bug reporting is
+  now shown.
+- Improve custom dictionary error messages. There is now a dedicated space for
+  displaying errors.
 
 </details>
 
