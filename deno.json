@@ -68,7 +68,7 @@
     "@std/async": "jsr:@std/async@^1.0.12",
     "@std/cache": "jsr:@std/cache@^0.2.0",
     "@std/collections": "jsr:@std/collections@^1.0.10",
-    "@std/fs": "jsr:@std/fs@^1.0.15",
+    "@std/fs": "jsr:@std/fs@^1.0.16",
     "@std/html": "jsr:@std/html@^1.0.3",
     "@std/random": "jsr:@std/random@^0.1.0",
     "@std/regexp": "jsr:@std/regexp@^1.0.1",
