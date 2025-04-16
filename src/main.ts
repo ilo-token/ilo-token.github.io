@@ -9,10 +9,12 @@ if (LIVE_RELOAD) {
     .addEventListener("change", () => location.reload());
 }
 import { dictionary } from "../dictionary/dictionary.ts";
+import { dictionaryParser } from "../dictionary/parser.ts";
 import PROJECT_DATA from "../project_data.json" with { type: "json" };
 import { loadCustomDictionary } from "./dictionary.ts";
 import { checkLocalStorage, setIgnoreError } from "./local_storage.ts";
 import { translate } from "./mod.ts";
+import { PositionedError } from "./parser/parser_lib.ts";
 import { settings } from "./settings.ts";
 import {
   loadFromElements,
@@ -20,6 +22,11 @@ import {
   resetElementsToCurrent,
   resetElementsToDefault,
 } from "./settings_frontend.ts";
+
+const DICTIONARY_AUTO_PARSE_THRESHOLD = 9000;
+
+// never change this
+const DICTIONARY_KEY = "dictionary";
 
 const TRANSLATE_LABEL = "Translate";
 const TRANSLATE_LABEL_MULTILINE = "Translate (Ctrl + Enter)";
@@ -31,18 +38,19 @@ const SINGULAR_ERROR_MESSAGE = "An error has been found:";
 const MULTIPLE_ERROR_MESSAGE = "Multiple errors has been found:";
 
 const DEFAULT_CUSTOM_DICTIONARY_MESSAGE = `\
-====================================
-Welcome to Custom Dictionary Editor!
-====================================
-
-Here you can customize the dictionary
-used in ilo Token. You may change the
-definitions of existing words and
-even extend ilo Token with more
-non-pu words. Just know that the
-custom dictionary comes with
-limitations. Press Help above to get
-started.`;
+# ====================================
+# Welcome to Custom Dictionary Editor!
+# ====================================
+#
+# Here you can customize the dictionary
+# used in ilo Token. You may change the
+# definitions of existing words and
+# even extend ilo Token with more
+# non-pu words. Just know that the
+# custom dictionary comes with
+# limitations. Press Help above to get
+# started.
+`;
 
 const DICTIONARY_LOADING_FAILED_MESSAGE =
   "Failed to load custom dictionary. This is mostly likely because the " +
@@ -50,12 +58,7 @@ const DICTIONARY_LOADING_FAILED_MESSAGE =
   "syntax. Please fix it. Apologies for the inconvenience.";
 const NO_WORD_MESSAGE = "Please provide a word";
 const WORD_NOT_FOUND_MESSAGE = "Word not found";
-
-const DICTIONARY_ERROR_MESSAGE =
-  "Please fix these errors before saving.\n(You may remove these when fixed)";
-
-// never change this
-const DICTIONARY_KEY = "dictionary";
+const DICTIONARY_ERROR_MESSAGE = "Please fix the errors before saving";
 
 function main(): void {
   // load elements
@@ -106,6 +109,12 @@ function main(): void {
   const customDictionaryTextBox = document.getElementById(
     "custom-dictionary",
   ) as HTMLTextAreaElement;
+  const customDictionaryErrorSummary = document.getElementById(
+    "custom-dictionary-error-summary",
+  ) as HTMLElement;
+  const customDictionaryErrorList = document.getElementById(
+    "custom-dictionary-error-list",
+  ) as HTMLUListElement;
   const discardButton = document.getElementById(
     "discard-button",
   ) as HTMLButtonElement;
@@ -151,14 +160,21 @@ function main(): void {
   // load settings
   loadFromLocalStorage();
 
-  // load custom dictionary
-  const customDictionary = checkLocalStorage()
+  // states for storing previous dictionary states for discarding dictionary edits
+  let lastSavedText = checkLocalStorage()
     ? localStorage.getItem(DICTIONARY_KEY) ?? ""
     : customDictionaryTextBox.value;
-  if (customDictionary.trim() !== "") {
-    if (loadCustomDictionary(customDictionary) != null) {
-      showMessage(DICTIONARY_LOADING_FAILED_MESSAGE);
-    }
+  let lastSavedDictionary = dictionaryParser.parse(lastSavedText);
+
+  // this variable also holds error messages
+  let currentDictionary = lastSavedDictionary;
+
+  // load custom dictionary
+  if (!currentDictionary.isError()) {
+    loadCustomDictionary(currentDictionary.array[0]);
+  } else {
+    showDictionaryError();
+    showMessage(DICTIONARY_LOADING_FAILED_MESSAGE);
   }
 
   // initial text area size
@@ -176,6 +192,29 @@ function main(): void {
       : TRANSLATE_LABEL;
   }
 
+  // show custom dictionary errors
+  function showDictionaryError(): void {
+    customDictionaryErrorSummary.innerText =
+      `Errors (${currentDictionary.errors.length}):`;
+    customDictionaryErrorList.innerHTML = "";
+    for (const error of currentDictionary.errors) {
+      const element = document.createElement("li");
+      element.innerText = error.message;
+      if (error instanceof PositionedError && error.position != null) {
+        const { position, length } = error.position;
+        element.addEventListener("click", () => {
+          customDictionaryTextBox.focus();
+          customDictionaryTextBox.setSelectionRange(
+            position,
+            position + length,
+          );
+        });
+      } else {
+        throw new Error("error without position");
+      }
+      customDictionaryErrorList.appendChild(element);
+    }
+  }
   // add all event listener
   translateButton.addEventListener("click", updateOutput);
   inputTextBox.addEventListener("input", resizeTextarea);
@@ -239,7 +278,7 @@ function main(): void {
     customDictionaryDialogBox.showModal();
     if (checkLocalStorage()) {
       customDictionaryTextBox.value = localStorage.getItem(DICTIONARY_KEY) ??
-        `${asComment(DEFAULT_CUSTOM_DICTIONARY_MESSAGE)}\n`;
+        DEFAULT_CUSTOM_DICTIONARY_MESSAGE;
     }
   });
   importWordButton.addEventListener("click", importWord);
@@ -249,13 +288,6 @@ function main(): void {
       importWord();
     }
   });
-  function displayToCustomDictionary(message: string): void {
-    const original = customDictionaryTextBox.value.trimEnd();
-    const append = original === "" ? "" : "\n\n";
-    customDictionaryTextBox.value =
-      `${original}${append}${message.trimEnd()}\n`;
-    customDictionaryTextBox.scrollTo(0, customDictionaryTextBox.scrollHeight);
-  }
   function importWord(): void {
     const word = importWordTextBox.value.trim();
     if (word === "") {
@@ -263,29 +295,54 @@ function main(): void {
     } else {
       const definitions = dictionary.get(word)?.source;
       if (definitions != null) {
-        displayToCustomDictionary(`${word}:${definitions}`);
+        const original = customDictionaryTextBox.value.trimEnd();
+        const append = original === "" ? "" : "\n\n";
+        customDictionaryTextBox.value =
+          `${original}${append}${word}:${definitions.trimEnd()}\n`;
+        customDictionaryTextBox.scrollTo(
+          0,
+          customDictionaryTextBox.scrollHeight,
+        );
       } else {
         showMessage(WORD_NOT_FOUND_MESSAGE);
       }
     }
   }
-  discardButton.addEventListener("click", () => {
-    customDictionaryDialogBox.close();
-  });
-  saveButton.addEventListener("click", () => {
-    const { value } = customDictionaryTextBox;
-    const errors = loadCustomDictionary(value);
-    if (errors == null) {
-      setIgnoreError(DICTIONARY_KEY, value);
-      customDictionaryDialogBox.close();
-    } else {
-      const errorListMessage = errors
-        .map((error) => `\n- ${error.message.replaceAll(/\r?\n/g, "$&  ")}`);
-      displayToCustomDictionary(
-        asComment(`${DICTIONARY_ERROR_MESSAGE}${errorListMessage}`),
-      );
+  customDictionaryTextBox.addEventListener("input", () => {
+    if (
+      customDictionaryTextBox.value.length <= DICTIONARY_AUTO_PARSE_THRESHOLD
+    ) {
+      updateDictionary();
     }
   });
+  discardButton.addEventListener("click", () => {
+    customDictionaryTextBox.value = lastSavedText;
+    currentDictionary = lastSavedDictionary;
+    tryCloseDictionary();
+  });
+  saveButton.addEventListener("click", () => {
+    if (
+      customDictionaryTextBox.value.length > DICTIONARY_AUTO_PARSE_THRESHOLD
+    ) {
+      updateDictionary();
+    }
+    tryCloseDictionary();
+  });
+  function updateDictionary(): void {
+    currentDictionary = dictionaryParser.parse(customDictionaryTextBox.value);
+    showDictionaryError();
+  }
+  function tryCloseDictionary(): void {
+    if (!currentDictionary.isError()) {
+      lastSavedText = customDictionaryTextBox.value;
+      lastSavedDictionary = currentDictionary;
+      loadCustomDictionary(currentDictionary.array[0]);
+      setIgnoreError(DICTIONARY_KEY, customDictionaryTextBox.value);
+      customDictionaryDialogBox.close();
+    } else {
+      showMessage(DICTIONARY_ERROR_MESSAGE);
+    }
+  }
   closeButton.addEventListener("click", () => {
     alertBox.close();
   });
@@ -310,9 +367,4 @@ const unused = [...new Array(localStorage.length).keys()]
   .filter((key) => !used.includes(key));
 for (const key of unused) {
   localStorage.removeItem(key);
-}
-export function asComment(text: string): string {
-  return text
-    .replaceAll(/^/mg, "# ")
-    .replaceAll(/^#\s+$/mg, "#");
 }

@@ -54,6 +54,7 @@ dialog.flex:modal {
 #custom-dictionary-box {
   box-sizing: border-box;
   height: 100%;
+  width: 100%;
 }
 dialog.flex details {
   margin: 0;
@@ -89,6 +90,12 @@ dialog.flex > div {
 dialog.flex > div > div,
 dialog.flex > div > input[type="text"] {
   flex-grow: 1;
+}
+#custom-dictionary-error-list li {
+  cursor: pointer;
+}
+#custom-dictionary-error-list li:hover {
+  text-decoration: underline;
 }
 @media (min-width: 800px) {
   body {
