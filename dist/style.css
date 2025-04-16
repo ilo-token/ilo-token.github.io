@@ -59,8 +59,10 @@ dialog.flex:modal {
 dialog.flex details {
   margin: 0;
   padding: 0;
-  flex-direction: column;
   resize: both;
+}
+dialog.flex details:flex {
+  flex-direction: column;
   display: flex;
 }
 dialog.flex label,
