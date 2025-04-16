@@ -93,7 +93,7 @@
         - <a href="https://github.com/ilo-token/ilo-token.github.io">GitHub</a>
       </p>
     </footer>
-    <dialog id="settings-box">
+    <dialog id="settings-box" class="flex">
       <h1>
         Settings
         <a
@@ -133,7 +133,7 @@
         <button id="confirm-button">Confirm</button>
       </div>
     </dialog>
-    <dialog id="custom-dictionary-box">
+    <dialog id="custom-dictionary-box" class="flex">
       <h1>
         Custom Dictionary
         <a
@@ -154,6 +154,46 @@
         <button id="discard-button">Discard Changes and Close</button>
         <button id="save-button">Save and Close</button>
       </div>
+    </dialog>
+    <dialog id="alert-box">
+      <p id="message"></p>
+      <button id="close-button">Close</button>
+    </dialog>
+    <dialog id="error-box">
+      <h1>An error has occurred</h1>
+      <p>
+        This is not supposed to happen. If you're using an outdated browser,
+        please consider updating it. Otherwise please consider reporting this.
+        We respect user's privacy and so we rely on user-submitted bug reports.
+        Here are the contact options:
+      </p>
+      <ul>
+        <li>
+          <a href="https://github.com/ilo-token/ilo-token.github.io/issues/new"
+          >GitHub</a>
+          (public)
+        </li>
+        <li>
+          <a
+            href="https://conlangsfrom.space/t/ilo-token-a-wip-rule-based-toki-pona-to-english-translator/452"
+          >Conlangs from Space</a>
+          (public)
+        </li>
+        <li>
+          <a
+            href="https://docs.google.com/forms/d/e/1FAIpQLSfdDEMbde9mieybZdbZr8haRzNzGsg0BVkuTIzuHaATCdcrlw/viewform?usp=sf_link"
+          >Google forms</a>
+          (private)
+        </li>
+        <li><a href="mailto:neverrare@proton.me">Email</a> (private)</li>
+      </ul>
+      <p>Please provide the following useful information:</p>
+      <ul>
+        <li>What did you do before this error occurred.</li>
+        <li>The following error message: <code id="error-code"></code></li>
+        <li>Your browser and its version (optional).</li>
+      </ul>
+      <button id="error-close-button">Close</button>
     </dialog>
   </body>
 </html>

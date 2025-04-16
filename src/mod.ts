@@ -2,18 +2,18 @@ import { distinct } from "@std/collections/distinct";
 import { shuffle } from "@std/random/shuffle";
 import { deduplicateErrors } from "../misc/deduplicate_errors.ts";
 import { errors } from "../telo_misikeke/telo_misikeke.js";
-import { ArrayResultError } from "./array_result.ts";
+import { ArrayResult, ArrayResultError } from "./array_result.ts";
 import { settings } from "./settings.ts";
 import { translate as rawTranslate } from "./translator/translator.ts";
 
-export function translate(tokiPona: string): ReadonlyArray<string> {
+export function translate(tokiPona: string): ArrayResult<string> {
   const arrayResult = rawTranslate(tokiPona);
   if (!arrayResult.isError()) {
     const values = distinct(arrayResult.array);
     if (settings.randomize) {
-      return shuffle(values);
+      return new ArrayResult(shuffle(values));
     } else {
-      return values;
+      return new ArrayResult(values);
     }
   } else {
     const teloMisikekeErrors = settings.teloMisikeke
@@ -23,6 +23,6 @@ export function translate(tokiPona: string): ReadonlyArray<string> {
     const error = teloMisikekeErrors.length === 0
       ? deduplicateErrors(arrayResult.errors)
       : teloMisikekeErrors;
-    throw new AggregateError(error);
+    return ArrayResult.errors(error);
   }
 }

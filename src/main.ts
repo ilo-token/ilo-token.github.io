@@ -9,9 +9,7 @@ if (LIVE_RELOAD) {
     .addEventListener("change", () => location.reload());
 }
 import { dictionary } from "../dictionary/dictionary.ts";
-import { flattenError } from "../misc/misc.ts";
 import PROJECT_DATA from "../project_data.json" with { type: "json" };
-import { ArrayResultError, isArrayResult } from "./array_result.ts";
 import { loadCustomDictionary } from "./dictionary.ts";
 import { checkLocalStorage, setIgnoreError } from "./local_storage.ts";
 import { translate } from "./mod.ts";
@@ -46,19 +44,15 @@ custom dictionary comes with
 limitations. Press Help above to get
 started.`;
 
-const DICTIONARY_LOADING_FAILED_FIXABLE_MESSAGE =
+const DICTIONARY_LOADING_FAILED_MESSAGE =
   "Failed to load custom dictionary. This is mostly likely because the " +
   "syntax has been updated and your custom dictionary still uses the old " +
   "syntax. Please fix it. Apologies for the inconvenience.";
-const DICTIONARY_LOADING_FAILED_UNFIXABLE_MESSAGE =
-  "Failed to load custom dictionary. Please report this.";
-const WORD_NOT_FOUND_MESSAGE = "Error: Word not found.";
-const INVALID_WORD_ERROR =
-  "Error: Invalid word to add (You may remove this line).";
-const DICTIONARY_ERROR_FIXABLE_MESSAGE =
+const NO_WORD_MESSAGE = "Please provide a word";
+const WORD_NOT_FOUND_MESSAGE = "Word not found";
+
+const DICTIONARY_ERROR_MESSAGE =
   "Please fix these errors before saving.\n(You may remove these when fixed)";
-const DICTIONARY_ERROR_UNFIXABLE_MESSAGE =
-  "Unable to save dictionary due to error. Please report this.";
 
 // never change this
 const DICTIONARY_KEY = "dictionary";
@@ -119,9 +113,33 @@ function main(): void {
     "save-button",
   ) as HTMLButtonElement;
 
+  const alertBox = document.getElementById("alert-box") as HTMLDialogElement;
+  const message = document.getElementById("message") as HTMLParagraphElement;
+  const closeButton = document.getElementById(
+    "close-button",
+  ) as HTMLButtonElement;
+
+  const errorBox = document.getElementById("error-box") as HTMLDialogElement;
+  const errorCode = document.getElementById("error-code") as HTMLElement;
+  const errorCloseButton = document.getElementById(
+    "error-close-button",
+  ) as HTMLButtonElement;
+
   const versionDisplay = document.getElementById(
     "version",
   ) as HTMLAnchorElement;
+
+  // emulates `window.alert`
+  function showMessage(useMessage: string): void {
+    message.innerText = useMessage;
+    alertBox.showModal();
+  }
+
+  // handle error
+  addEventListener("error", (event) => {
+    errorCode.innerText = event.message;
+    errorBox.showModal();
+  });
 
   // set version
   const displayDate = PROJECT_DATA.onDevelopment
@@ -138,14 +156,8 @@ function main(): void {
     ? localStorage.getItem(DICTIONARY_KEY) ?? ""
     : customDictionaryTextBox.value;
   if (customDictionary.trim() !== "") {
-    try {
-      loadCustomDictionary(customDictionary);
-    } catch (error) {
-      errorDisplay.innerText = isArrayResult(flattenError(error))
-        ? DICTIONARY_LOADING_FAILED_FIXABLE_MESSAGE
-        : DICTIONARY_LOADING_FAILED_UNFIXABLE_MESSAGE;
-      // deno-lint-ignore no-console
-      console.error(error);
+    if (loadCustomDictionary(customDictionary) != null) {
+      showMessage(DICTIONARY_LOADING_FAILED_MESSAGE);
     }
   }
 
@@ -180,14 +192,15 @@ function main(): void {
     outputList.innerHTML = "";
     errorList.innerHTML = "";
     errorDisplay.innerText = "";
-    try {
-      for (const translation of translate(inputTextBox.value)) {
+    const result = translate(inputTextBox.value);
+    if (!result.isError()) {
+      for (const translation of result.array) {
         const list = document.createElement("li");
         list.innerHTML = translation;
         outputList.appendChild(list);
       }
-    } catch (error) {
-      const errors = flattenError(error);
+    } else {
+      const errors = result.errors;
       switch (errors.length) {
         case 0:
           errorDisplay.innerText = UNKNOWN_ERROR_MESSAGE;
@@ -200,15 +213,11 @@ function main(): void {
           break;
       }
       for (const item of errors) {
-        const property = item instanceof ArrayResultError && item.isHtml
-          ? "innerHTML"
-          : "innerText";
+        const property = item.isHtml ? "innerHTML" : "innerText";
         const list = document.createElement("li");
-        list[property] = extractErrorMessage(item);
+        list[property] = item.message;
         errorList.appendChild(list);
       }
-      // deno-lint-ignore no-console
-      console.error(error);
     }
   }
   settingsButton.addEventListener("click", () => {
@@ -249,15 +258,15 @@ function main(): void {
   }
   function importWord(): void {
     const word = importWordTextBox.value.trim();
-    if (/^[a-z][a-zA-Z]*$/.test(word)) {
+    if (word === "") {
+      showMessage(NO_WORD_MESSAGE);
+    } else {
       const definitions = dictionary.get(word)?.source;
       if (definitions != null) {
         displayToCustomDictionary(`${word}:${definitions}`);
       } else {
-        displayToCustomDictionary(asComment(WORD_NOT_FOUND_MESSAGE));
+        showMessage(WORD_NOT_FOUND_MESSAGE);
       }
-    } else {
-      displayToCustomDictionary(asComment(INVALID_WORD_ERROR));
     }
   }
   discardButton.addEventListener("click", () => {
@@ -265,22 +274,23 @@ function main(): void {
   });
   saveButton.addEventListener("click", () => {
     const { value } = customDictionaryTextBox;
-    try {
-      loadCustomDictionary(value);
+    const errors = loadCustomDictionary(value);
+    if (errors == null) {
       setIgnoreError(DICTIONARY_KEY, value);
       customDictionaryDialogBox.close();
-    } catch (error) {
-      const errors = flattenError(error);
-      const message = isArrayResult(errors)
-        ? DICTIONARY_ERROR_FIXABLE_MESSAGE
-        : DICTIONARY_ERROR_UNFIXABLE_MESSAGE;
+    } else {
       const errorListMessage = errors
-        .map(extractErrorMessage)
-        .map((message) => `\n- ${message.replaceAll(/\r?\n/g, "$&  ")}`);
-      displayToCustomDictionary(asComment(`${message}${errorListMessage}`));
-      // deno-lint-ignore no-console
-      console.error(error);
+        .map((error) => `\n- ${error.message.replaceAll(/\r?\n/g, "$&  ")}`);
+      displayToCustomDictionary(
+        asComment(`${DICTIONARY_ERROR_MESSAGE}${errorListMessage}`),
+      );
     }
+  });
+  closeButton.addEventListener("click", () => {
+    alertBox.close();
+  });
+  errorCloseButton.addEventListener("click", () => {
+    errorBox.close();
   });
   addEventListener("beforeunload", (event) => {
     if (customDictionaryDialogBox.open) {
@@ -300,13 +310,6 @@ const unused = [...new Array(localStorage.length).keys()]
   .filter((key) => !used.includes(key));
 for (const key of unused) {
   localStorage.removeItem(key);
-}
-function extractErrorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message;
-  } else {
-    return `${error}`;
-  }
 }
 export function asComment(text: string): string {
   return text

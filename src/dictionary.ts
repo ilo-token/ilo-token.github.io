@@ -2,6 +2,7 @@ import { dictionary as globalDictionary } from "../dictionary/dictionary.ts";
 import { dictionaryParser } from "../dictionary/parser.ts";
 import { Definition, Dictionary } from "../dictionary/type.ts";
 import { load } from "../telo_misikeke/telo_misikeke.js";
+import { ArrayResultError } from "./array_result.ts";
 
 // All of these global constants are mutable
 
@@ -17,13 +18,20 @@ export const tokiPonaWordSet: Set<string> = new Set();
 
 update();
 
-export function loadCustomDictionary(dictionaryText: string): void {
-  const dictionary = dictionaryParser.parse(dictionaryText).unwrap()[0];
+export function loadCustomDictionary(
+  dictionaryText: string,
+): null | ReadonlyArray<ArrayResultError> {
+  const result = dictionaryParser.parse(dictionaryText);
+  if (result.isError()) {
+    return result.errors;
+  }
+  const dictionary = result.array[0];
   customDictionary.clear();
   for (const [key, value] of dictionary) {
     customDictionary.set(key, value);
   }
   update();
+  return null;
 }
 function update(): void {
   dictionary.clear();
