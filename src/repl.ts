@@ -3,7 +3,7 @@
 import { unescape } from "@std/html/entities";
 import entityList from "@std/html/named-entity-list.json" with { type: "json" };
 import { repeatArray } from "../misc/misc.ts";
-import { translate } from "./mod.ts";
+import { translate } from "./translator.ts";
 
 if (import.meta.main) {
   // deno-lint-ignore no-console

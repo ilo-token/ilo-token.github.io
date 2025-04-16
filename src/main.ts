@@ -13,7 +13,7 @@ import { dictionaryParser } from "../dictionary/parser.ts";
 import PROJECT_DATA from "../project_data.json" with { type: "json" };
 import { loadCustomDictionary } from "./dictionary.ts";
 import { checkLocalStorage, setIgnoreError } from "./local_storage.ts";
-import { translate } from "./mod.ts";
+import { translate } from "./translator.ts";
 import { PositionedError } from "./parser/parser_lib.ts";
 import { settings } from "./settings.ts";
 import {
