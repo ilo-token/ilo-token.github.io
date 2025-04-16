@@ -3,7 +3,6 @@
 import { assert } from "@std/assert/assert";
 import { exists } from "@std/fs/exists";
 import { BuildOptions, context } from "esbuild";
-import { AsyncDisposableStack } from "../misc/async_disposable_stack.ts";
 import { OPTIONS } from "./config.ts";
 
 const DICTIONARY = new URL("../dictionary/dictionary.ts", import.meta.url);
@@ -15,11 +14,16 @@ const BUILD_OPTIONS: BuildOptions = {
 };
 async function watchMain(): Promise<AsyncDisposable> {
   await using stack = new AsyncDisposableStack();
-  const buildContext = await context(BUILD_OPTIONS);
-  stack.defer(async () => await buildContext.dispose());
-  buildContext.watch();
-  buildContext.serve({ servedir: "./dist/" });
-  return stack.move();
+  const buildContext = stack.use({
+    context: await context(BUILD_OPTIONS),
+    async [Symbol.asyncDispose](): Promise<void> {
+      await this.context.dispose();
+    },
+  });
+  buildContext.context.watch();
+  buildContext.context.serve({ servedir: "./dist/" });
+  stack.move();
+  return buildContext;
 }
 async function watchDictionary(): Promise<number> {
   const command = new Deno.Command(Deno.execPath(), {
