@@ -221,30 +221,30 @@ function generateError(
   position: number,
   expected: string,
 ): ArrayResult<never> {
-  let source: string;
+  let unexpected: string;
   let length: number;
   if (position === currentSource.length) {
-    source = "end of text";
+    unexpected = "end of text";
     length = 0;
   } else {
     const sourceString = currentSource.slice(position);
     const [token] = sourceString.match(/^\S*/)!;
     if (token === "") {
       if (/^\r?\n/.test(sourceString)) {
-        source = "newline";
+        unexpected = "newline";
         length = 0;
       } else {
         const [token] = sourceString.match(/^\s+?(?=\S|\r?\n|$)/)!;
-        source = "space";
+        unexpected = "space";
         length = token.length;
       }
     } else {
-      source = `"${token}"`;
+      unexpected = `"${token}"`;
       length = token.length;
     }
   }
   return new ArrayResult(
-    new UnexpectedError(source, expected, { position, length }),
+    new UnexpectedError(unexpected, expected, { position, length }),
   );
 }
 export function matchCapture(
