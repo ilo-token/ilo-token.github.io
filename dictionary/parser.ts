@@ -49,7 +49,7 @@ const colon = matchString(":", "colon");
 const character = match(/./u, "character");
 const wordCharacter = match(
   new RegExp(`[^${escapeRegex(RESERVED_SYMBOLS)}]`),
-  "word",
+  "word character",
 );
 const tokiPonaWord = lex(match(/[a-z][a-zA-Z]*/, "word"));
 const openParenthesis = lex(matchString("(", "open parenthesis"));
