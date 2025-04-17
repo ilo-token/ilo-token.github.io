@@ -1,8 +1,6 @@
 import { assertGreater } from "@std/assert/greater";
 import { MemoizationCacheResult, memoize } from "@std/cache/memoize";
 import { ArrayResult, ArrayResultError } from "../array_result.ts";
-import { assert } from "@std/assert/assert";
-import { assertNotEquals } from "@std/assert/not-equals";
 
 type ParserResult<T> = ArrayResult<Readonly<{ value: T; length: number }>>;
 type InnerParser<T> = (input: number) => ParserResult<T>;
