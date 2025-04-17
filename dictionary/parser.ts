@@ -294,8 +294,8 @@ const prepositionDefinition = checkedSimpleUnitWithTemplate(
   .map((preposition) => ({ type: "preposition", preposition }) as const);
 const numeralDefinition = checkedSimpleUnit("num")
   .mapWithPositionedError((num) => {
-    const numeral = Number.parseInt(num, 10);
-    if (Number.isNaN(numeral)) {
+    const numeral = +num;
+    if (!Number.isInteger(numeral)) {
       throw `"${num}" is not a number`;
     } else {
       return { type: "numeral", numeral } as const;
