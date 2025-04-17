@@ -40,11 +40,6 @@ Deno.test("no ali", () => {
     assertNotEquals(word, "ali");
   }
 });
-function uniquePairs<T>(
-  array: ReadonlyArray<T>,
-): ReadonlyArray<readonly [T, T]> {
-  return array.flatMap((a, i) => array.slice(i + 1).map((b) => [a, b]));
-}
 Deno.test("small parser", () => {
   const space = match(/\s*/, "space");
   const parser = sequence(
@@ -64,3 +59,8 @@ Deno.test("all", () => {
   const parser = all(matchString("a").skip(space)).skip(end);
   assertEquals(parser.parse("a a a").unwrap(), [["a", "a", "a"]]);
 });
+function uniquePairs<T>(
+  array: ReadonlyArray<T>,
+): ReadonlyArray<readonly [T, T]> {
+  return array.flatMap((a, i) => array.slice(i + 1).map((b) => [a, b]));
+}

@@ -109,18 +109,16 @@ export function verb(phrase: English.VerbPhrase, depth: number): string {
   ]
     .join(" ");
 }
-function defaultClause(clause: English.Clause & { type: "default" }): string {
-  const subject = !clause.hideSubject ? [noun(clause.subject, 0)] : [];
-  return [
-    ...subject,
-    verb(clause.verb, 0),
-  ]
-    .join(" ");
-}
 function clause(ast: English.Clause): string {
   switch (ast.type) {
-    case "default":
-      return defaultClause(ast);
+    case "default": {
+      const subject = !ast.hideSubject ? [noun(ast.subject, 0)] : [];
+      return [
+        ...subject,
+        verb(ast.verb, 0),
+      ]
+        .join(" ");
+    }
     case "interjection":
       return word(ast.interjection);
     case "subject phrase":

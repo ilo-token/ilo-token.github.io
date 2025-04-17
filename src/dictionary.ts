@@ -37,9 +37,7 @@ function update(): void {
   }
   redefineSet(
     contentWordSet,
-    ({ type }) =>
-      type !== "filler" &&
-      type !== "particle definition",
+    ({ type }) => !["filler", "particle definition"].includes(type),
   );
   redefineSetWithType(prepositionSet, "preposition");
   redefineSet(

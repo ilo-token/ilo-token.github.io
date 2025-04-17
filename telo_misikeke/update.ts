@@ -29,7 +29,10 @@ async function buildCode(
   destination: URL,
   exportItems: ReadonlyArray<string>,
 ): Promise<void> {
-  const response = assertOk(await retry(() => fetch(source)));
+  const response = await retry(() => fetch(source));
+  if (!response.ok) {
+    throw new Error(`unable to fetch ${response.url} (${response.statusText})`);
+  }
   const rawCode = await response.text();
   const withoutCjs = rawCode.replaceAll(COMMONJS_EXPORT, "");
   if (withoutCjs.includes("module.exports")) {
@@ -59,14 +62,4 @@ if (import.meta.main) {
   );
   // deno-lint-ignore no-console
   console.log("Updated telo misikeke.");
-}
-function assertOk(response: Response): Response {
-  if (!response.ok) {
-    const { url, status, statusText } = response;
-    throw new Error(
-      `unable to fetch ${url} (${status} ${statusText})`,
-    );
-  } else {
-    return response;
-  }
 }

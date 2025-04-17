@@ -257,7 +257,7 @@ const checkedNoun = new CheckedParser(
   ),
   noun,
 );
-function simpleDefinitionWith<T>(
+function checkedSimpleUnitWith<T>(
   tag: Parser<unknown>,
   after: Parser<T>,
 ): CheckedParser<readonly [string, T]> {
@@ -266,30 +266,33 @@ function simpleDefinitionWith<T>(
     closeParenthesis.with(after),
   );
 }
-function simpleDefinition(tag: Parser<unknown>): CheckedParser<string> {
-  return simpleDefinitionWith(tag, nothing).map(([word]) => word);
+function checkedSimpleUnit(tag: Parser<unknown>): CheckedParser<string> {
+  return checkedSimpleUnitWith(tag, nothing).map(([word]) => word);
 }
-function simpleDefinitionWithTemplate(
+function checkedSimpleUnitWithTemplate(
   tag: Parser<unknown>,
   templateInside: Parser<unknown>,
 ): CheckedParser<string> {
-  return simpleDefinitionWith(tag, template(templateInside))
+  return checkedSimpleUnitWith(tag, template(templateInside))
     .map(([word]) => word);
 }
-const interjectionDefinition = simpleDefinition(keyword("i"))
+const interjectionDefinition = checkedSimpleUnit(keyword("i"))
   .map((interjection) => ({ type: "interjection", interjection }) as const);
-const particleDefinition = simpleDefinition(
-  sequence(keyword("particle"), keyword("def")),
+const particleDefinition = checkedSequence(
+  word.skip(openParenthesis).skip(keyword("particle")),
+  sequence(keyword("def"), closeParenthesis),
 )
-  .map((definition) => ({ type: "particle definition", definition }) as const);
-const adverbDefinition = simpleDefinition(keyword("adv"))
+  .map(([definition]) =>
+    ({ type: "particle definition", definition }) as const
+  );
+const adverbDefinition = checkedSimpleUnit(keyword("adv"))
   .map((adverb) => ({ type: "adverb", adverb }) as const);
-const prepositionDefinition = simpleDefinitionWithTemplate(
+const prepositionDefinition = checkedSimpleUnitWithTemplate(
   keyword("prep"),
   sequence(keyword("indirect"), keyword("object")),
 )
   .map((preposition) => ({ type: "preposition", preposition }) as const);
-const numeralDefinition = simpleDefinition(keyword("num"))
+const numeralDefinition = checkedSimpleUnit(keyword("num"))
   .mapWithPositionedError((num) => {
     const numeral = Number.parseInt(num);
     if (Number.isNaN(numeral)) {
@@ -394,7 +397,7 @@ const nounDefinition = new CheckedParser(
   sequence(
     noun,
     optionalWithCheck(
-      simpleDefinitionWithTemplate(keyword("prep"), keyword("headword")),
+      checkedSimpleUnitWithTemplate(keyword("prep"), keyword("headword")),
     ),
   ),
 )
@@ -430,7 +433,7 @@ const verbDefinition = checkedSequence(
       sequence(closeParenthesis, openBracket, keyword("object")),
       closeBracket
         .with(optionalWithCheck(
-          simpleDefinitionWith(keyword("prep"), noun)
+          checkedSimpleUnitWith(keyword("prep"), noun)
             .map(([preposition, object]) => ({ preposition, object }) as const),
         ))
         .map(nullableAsArray),
@@ -474,7 +477,7 @@ const verbDefinition = checkedSequence(
             optionalWithCheck(checkedNoun),
           ),
         optionalWithCheck(
-          simpleDefinitionWith(
+          checkedSimpleUnitWith(
             keyword("prep"),
             choiceWithCheck<"template" | Noun>(
               checkedSequence(
