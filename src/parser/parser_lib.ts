@@ -110,8 +110,8 @@ export class UnexpectedError extends PositionedError {
   }
 }
 export class UnrecognizedError extends PositionedError {
-  constructor(element: string) {
-    super(`${element} is unrecognized`);
+  constructor(element: string, position?: Position) {
+    super(`${element} is unrecognized`, position);
     this.name = "UnrecognizedError";
   }
 }

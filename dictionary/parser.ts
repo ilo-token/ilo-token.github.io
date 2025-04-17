@@ -20,6 +20,7 @@ import {
   Parser,
   sequence,
   UnexpectedError,
+  UnrecognizedError,
   withPosition,
   withSource,
 } from "../src/parser/parser_lib.ts";
@@ -53,7 +54,9 @@ const ignore = allWithCheck(
 function lex<T>(parser: Parser<T>): Parser<T> {
   return parser.skip(ignore);
 }
-const tokiPonaWord = lex(match(/[a-z][a-zA-Z]*/, "word"));
+const wordWithPosition = lex(
+  withPosition(match(/[a-z][a-zA-Z]*/, "Toki Pona word")),
+);
 const openParenthesis = lex(matchString("(", "open parenthesis"));
 const closeParenthesis = lex(matchString(")", "close parenthesis"));
 const openBracket = lex(matchString("[", "open bracket"));
@@ -577,7 +580,10 @@ const definition = choiceWithCheck<Definition>(
   twoFormPersonalPronounDefinition,
   fourFormPersonalPronounDefinition,
 );
-const head = sequence(all(tokiPonaWord.skip(comma)), tokiPonaWord)
+const positionedHead = sequence(
+  all(wordWithPosition.skip(comma)),
+  wordWithPosition,
+)
   .skip(colon)
   .map(([init, last]) => [...init, last]);
 const entry = withSource(
@@ -592,11 +598,32 @@ const entry = withSource(
 )
   .map(([definitions, source]) => ({ definitions, source: source.trimEnd() }));
 export const dictionaryParser = ignore
-  .with(allWithCheck(new CheckedParser(notEnd, sequence(head, entry))))
-  .map((entries) =>
-    new Map(
-      entries.flatMap(([words, definition]) =>
-        words.map((word) => [word, definition])
-      ),
-    )
-  );
+  .with(
+    allWithCheck(new CheckedParser(notEnd, sequence(positionedHead, entry))),
+  )
+  .map((allEntries) => {
+    const entries = allEntries.flatMap(([words, definition]) =>
+      words.map((word) => [word, definition] as const)
+    );
+    const recorded: Set<string> = new Set();
+    const errors: Array<UnrecognizedError> = [];
+    for (const [head] of entries) {
+      if (recorded.has(head.value)) {
+        errors.push(
+          new UnrecognizedError(
+            `duplicate Toki Pona word "${head.value}"`,
+            head,
+          ),
+        );
+      } else {
+        recorded.add(head.value);
+      }
+    }
+    if (errors.length > 0) {
+      throw new AggregateError(errors);
+    } else {
+      return new Map(
+        entries.map(([head, definition]) => [head.value, definition]),
+      );
+    }
+  });
