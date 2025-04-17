@@ -258,25 +258,25 @@ const checkedNoun = new CheckedParser(
   noun,
 );
 function checkedSimpleUnitWith<T>(
-  tag: Parser<unknown>,
+  tag: string,
   after: Parser<T>,
 ): CheckedParser<readonly [string, T]> {
   return checkedSequence(
-    word.skip(openParenthesis).skip(tag),
+    word.skip(openParenthesis).skip(keyword(tag)),
     closeParenthesis.with(after),
   );
 }
-function checkedSimpleUnit(tag: Parser<unknown>): CheckedParser<string> {
+function checkedSimpleUnit(tag: string): CheckedParser<string> {
   return checkedSimpleUnitWith(tag, nothing).map(([word]) => word);
 }
 function checkedSimpleUnitWithTemplate(
-  tag: Parser<unknown>,
+  tag: string,
   templateInside: Parser<unknown>,
 ): CheckedParser<string> {
   return checkedSimpleUnitWith(tag, template(templateInside))
     .map(([word]) => word);
 }
-const interjectionDefinition = checkedSimpleUnit(keyword("i"))
+const interjectionDefinition = checkedSimpleUnit("i")
   .map((interjection) => ({ type: "interjection", interjection }) as const);
 const particleDefinition = checkedSequence(
   word.skip(openParenthesis).skip(keyword("particle")),
@@ -285,14 +285,14 @@ const particleDefinition = checkedSequence(
   .map(([definition]) =>
     ({ type: "particle definition", definition }) as const
   );
-const adverbDefinition = checkedSimpleUnit(keyword("adv"))
+const adverbDefinition = checkedSimpleUnit("adv")
   .map((adverb) => ({ type: "adverb", adverb }) as const);
 const prepositionDefinition = checkedSimpleUnitWithTemplate(
-  keyword("prep"),
+  "prep",
   sequence(keyword("indirect"), keyword("object")),
 )
   .map((preposition) => ({ type: "preposition", preposition }) as const);
-const numeralDefinition = checkedSimpleUnit(keyword("num"))
+const numeralDefinition = checkedSimpleUnit("num")
   .mapWithPositionedError((num) => {
     const numeral = Number.parseInt(num);
     if (Number.isNaN(numeral)) {
@@ -397,7 +397,7 @@ const nounDefinition = new CheckedParser(
   sequence(
     noun,
     optionalWithCheck(
-      checkedSimpleUnitWithTemplate(keyword("prep"), keyword("headword")),
+      checkedSimpleUnitWithTemplate("prep", keyword("headword")),
     ),
   ),
 )
@@ -433,7 +433,7 @@ const verbDefinition = checkedSequence(
       sequence(closeParenthesis, openBracket, keyword("object")),
       closeBracket
         .with(optionalWithCheck(
-          checkedSimpleUnitWith(keyword("prep"), noun)
+          checkedSimpleUnitWith("prep", noun)
             .map(([preposition, object]) => ({ preposition, object }) as const),
         ))
         .map(nullableAsArray),
@@ -478,7 +478,7 @@ const verbDefinition = checkedSequence(
           ),
         optionalWithCheck(
           checkedSimpleUnitWith(
-            keyword("prep"),
+            "prep",
             choiceWithCheck<"template" | Noun>(
               checkedSequence(
                 openBracket,
