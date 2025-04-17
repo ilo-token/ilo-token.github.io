@@ -21,6 +21,7 @@ import {
   Parser,
   sequence,
   UnexpectedError,
+  withPosition,
   withSource,
 } from "../src/parser/parser_lib.ts";
 import { Definition, Noun, PartialVerb } from "./type.ts";
@@ -61,10 +62,15 @@ const semicolon = lex(matchString(";", "semicolon"));
 const slash = lex(matchString("/", "slash"));
 
 const keyword = memoize(<T extends string>(keyword: T) =>
-  lex(match(/[a-z\-]+/, keyword))
-    .filter((that) =>
-      keyword === that ||
-      throwError(new UnexpectedError(`"${that}"`, `"${keyword}"`))
+  lex(withPosition(match(/[a-z\-]+/, keyword)))
+    .map((positioned) =>
+      positioned.value === keyword ? positioned.value : throwError(
+        new UnexpectedError(
+          `"${positioned.value}"`,
+          `"${keyword}"`,
+          positioned,
+        ),
+      )
     ) as Parser<T>
 );
 const unescapedWord = allAtLeastOnceWithCheck(
