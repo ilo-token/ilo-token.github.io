@@ -90,8 +90,7 @@ const longWord = allAtLeastOnce(repeatingLetter)
     const length = sumOf(letters, ([_, count]) => count) - word.length + 1;
     return { type: "long word", word, length } as const;
   })
-  .filter(({ word }) => /^[a-z]/.test(word))
-  .filter(({ length }) => length > 1);
+  .filter(({ word, length }) => /^[a-z]/.test(word) && length > 1);
 
 const alaX = memoize((word: string) =>
   sequence(specificWord("ala"), specificWord(word)).map(() => word)
