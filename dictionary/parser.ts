@@ -5,7 +5,6 @@ import nlp from "compromise/three";
 import { nullableAsArray, throwError } from "../misc/misc.ts";
 import {
   all,
-  allAtLeastOnceWithCheck,
   allWithCheck,
   checkedAsWhole,
   CheckedParser,
@@ -73,18 +72,21 @@ const keyword = memoize(<T extends string>(keyword: T) =>
       )
     ) as Parser<T>
 );
-const unescapedWord = allAtLeastOnceWithCheck(
-  new CheckedParser(
-    choiceOnlyOne(wordCharacter, backtick),
-    choiceWithCheck(
-      checkedAsWhole(wordCharacter),
-      checkedSequence(backtick, character.skip(backtick))
-        .map(([_, character]) => character),
-      comment.map(() => ""),
+const checkedCharacter = checkedAsWhole(wordCharacter);
+const escape = checkedSequence(backtick, character.skip(backtick))
+  .map(([_, character]) => character);
+const unescapedWord = sequence(
+  choiceWithCheck(checkedCharacter, escape),
+  allWithCheck(
+    new CheckedParser(
+      choiceOnlyOne(wordCharacter, backtick, comment.check),
+      choiceWithCheck(checkedCharacter, escape, comment.map(() => "")),
     ),
   ),
 )
-  .map((word) => word.join("").replaceAll(/\s+/g, " ").trim());
+  .map(([first, rest]) =>
+    `${first}${rest.join("")}`.replaceAll(/\s+/g, " ").trim()
+  );
 const word = unescapedWord.map(escapeHtml);
 const number = choiceOnlyOne(keyword("singular"), keyword("plural"));
 const optionalNumber = optionalAll(number);
