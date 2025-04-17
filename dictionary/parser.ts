@@ -31,15 +31,6 @@ const hashSign = matchString("#", "hash sign");
 const backtick = matchString("`", "backtick");
 const colon = matchString(":", "colon");
 
-const tokiPonaWord = lex(match(/[a-z][a-zA-Z]*/, "word"));
-const openParenthesis = lex(matchString("(", "open parenthesis"));
-const closeParenthesis = lex(matchString(")", "close parenthesis"));
-const openBracket = lex(matchString("[", "open bracket"));
-const closeBracket = lex(matchString("]", "close bracket"));
-const comma = lex(matchString(",", "comma"));
-const semicolon = lex(matchString(";", "semicolon"));
-const slash = lex(matchString("/", "slash"));
-
 const character = match(/./u, "character");
 const wordCharacter = match(
   new RegExp(`[^${escapeRegex(RESERVED_SYMBOLS)}]`),
@@ -62,6 +53,15 @@ const ignore = allWithCheck(
 function lex<T>(parser: Parser<T>): Parser<T> {
   return parser.skip(ignore);
 }
+const tokiPonaWord = lex(match(/[a-z][a-zA-Z]*/, "word"));
+const openParenthesis = lex(matchString("(", "open parenthesis"));
+const closeParenthesis = lex(matchString(")", "close parenthesis"));
+const openBracket = lex(matchString("[", "open bracket"));
+const closeBracket = lex(matchString("]", "close bracket"));
+const comma = lex(matchString(",", "comma"));
+const semicolon = lex(matchString(";", "semicolon"));
+const slash = lex(matchString("/", "slash"));
+
 const keyword = memoize(<T extends string>(keyword: T) =>
   lex(withPosition(match(/[a-z\-]+/, `"${keyword}"`)))
     .map((positioned) =>
@@ -294,7 +294,7 @@ const prepositionDefinition = checkedSimpleUnitWithTemplate(
   .map((preposition) => ({ type: "preposition", preposition }) as const);
 const numeralDefinition = checkedSimpleUnit("num")
   .mapWithPositionedError((num) => {
-    const numeral = Number.parseInt(num);
+    const numeral = Number.parseInt(num, 10);
     if (Number.isNaN(numeral)) {
       throw `"${num}" is not a number`;
     } else {
