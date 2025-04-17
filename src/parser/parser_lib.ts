@@ -1,6 +1,8 @@
 import { assertGreater } from "@std/assert/greater";
 import { MemoizationCacheResult, memoize } from "@std/cache/memoize";
 import { ArrayResult, ArrayResultError } from "../array_result.ts";
+import { assert } from "@std/assert/assert";
+import { assertNotEquals } from "@std/assert/not-equals";
 
 type ParserResult<T> = ArrayResult<Readonly<{ value: T; length: number }>>;
 type InnerParser<T> = (input: number) => ParserResult<T>;
@@ -226,13 +228,13 @@ function generateError(
     length = 0;
   } else {
     const sourceString = currentSource.slice(position);
-    const [token] = sourceString.match(/\S*/)!;
+    const [token] = sourceString.match(/^\S*/)!;
     if (token === "") {
       if (/^\r?\n/.test(sourceString)) {
         source = "newline";
         length = 0;
       } else {
-        const [token] = sourceString.match(/\s+?(?=\r?\n|$)/)!;
+        const [token] = sourceString.match(/^\s+?(?=\S|\r?\n|$)/)!;
         source = "space";
         length = token.length;
       }
