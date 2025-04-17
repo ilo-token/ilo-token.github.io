@@ -1,4 +1,4 @@
-import { compound, flattenError, throwError } from "../../misc/misc.ts";
+import { compound, throwError } from "../../misc/misc.ts";
 import { extractArrayResultError } from "../array_result.ts";
 import { settings } from "../settings.ts";
 import {
@@ -373,23 +373,18 @@ export function filter<T>(
             return [];
           }
         } catch (error) {
-          return flattenError(error);
+          return extractArrayResultError(error);
         }
       },
     );
     if (result.every((result) => result == null)) {
       return true;
     } else {
-      const errors = extractArrayResultError(
-        result.flatMap((result) => result ?? []),
-      );
-      switch (errors.length) {
-        case 0:
-          return false;
-        case 1:
-          throw errors[0];
-        default:
-          throw new AggregateError(errors);
+      const errors = result.flatMap((result) => result ?? []);
+      if (errors.length === 0) {
+        return false;
+      } else {
+        throw new AggregateError(errors);
       }
     }
   };

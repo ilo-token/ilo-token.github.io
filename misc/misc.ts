@@ -24,13 +24,6 @@ export function repeatArray<T>(element: T, count: number): ReadonlyArray<T> {
 export function repeatWithSpace(text: string, count: number): string {
   return repeatArray(text, count).join(" ");
 }
-export function flattenError(error: unknown): ReadonlyArray<unknown> {
-  if (error instanceof AggregateError) {
-    return error.errors.flatMap(flattenError);
-  } else {
-    return [error];
-  }
-}
 export function throwError(error: unknown): never {
   throw error;
 }
