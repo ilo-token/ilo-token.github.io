@@ -200,18 +200,16 @@ function main(): void {
     for (const error of currentDictionary.errors) {
       const element = document.createElement("li");
       element.innerText = error.message;
-      if (error instanceof PositionedError && error.position != null) {
-        const { position, length } = error.position;
-        element.addEventListener("click", () => {
-          customDictionaryTextBox.focus();
-          customDictionaryTextBox.setSelectionRange(
-            position,
-            position + length,
-          );
-        });
-      } else {
-        throw new Error("error without position");
-      }
+      const { position: { position, length } } = error as PositionedError & {
+        position: { position: number; length: number };
+      };
+      element.addEventListener("click", () => {
+        customDictionaryTextBox.focus();
+        customDictionaryTextBox.setSelectionRange(
+          position,
+          position + length,
+        );
+      });
       customDictionaryErrorList.appendChild(element);
     }
   }
