@@ -144,7 +144,7 @@ export function extractArrayResultError(
   } else if (error instanceof AggregateError) {
     const { errors } = error;
     if (
-      errors.length > 1 &&
+      errors.length > 0 &&
       errors.every((error) => error instanceof ArrayResultError)
     ) {
       return errors;
