@@ -27,30 +27,10 @@ import { Definition, Noun, PartialVerb } from "./type.ts";
 
 const RESERVED_SYMBOLS = "#()*+/:;<=>@[\\]^`{|}~";
 
-function lex<T>(parser: Parser<T>): Parser<T> {
-  return parser.skip(ignore);
-}
-const comment = checkedSequence(
-  matchString("#", "hash sign"),
-  match(/[^\n]*?(?=\r?\n|$)/, "comment content"),
-);
-const spaces = checkedSequence(
-  match(/\s/, "space"),
-  match(/\s*/, "space"),
-);
-const ignore = allWithCheck(
-  new CheckedParser(
-    choiceOnlyOne(comment.check, spaces.check),
-    choiceWithCheck(spaces, comment),
-  ),
-);
+const hashSign = matchString("#", "hash sign");
 const backtick = matchString("`", "backtick");
 const colon = matchString(":", "colon");
-const character = match(/./u, "character");
-const wordCharacter = match(
-  new RegExp(`[^${escapeRegex(RESERVED_SYMBOLS)}]`),
-  "word character",
-);
+
 const tokiPonaWord = lex(match(/[a-z][a-zA-Z]*/, "word"));
 const openParenthesis = lex(matchString("(", "open parenthesis"));
 const closeParenthesis = lex(matchString(")", "close parenthesis"));
@@ -60,6 +40,28 @@ const comma = lex(matchString(",", "comma"));
 const semicolon = lex(matchString(";", "semicolon"));
 const slash = lex(matchString("/", "slash"));
 
+const character = match(/./u, "character");
+const wordCharacter = match(
+  new RegExp(`[^${escapeRegex(RESERVED_SYMBOLS)}]`),
+  "word character",
+);
+const comment = checkedSequence(
+  hashSign,
+  match(/[^\n]*?(?=\r?\n|$)/, "comment content"),
+);
+const spaces = checkedSequence(
+  match(/\s/, "space"),
+  match(/\s*/, "space"),
+);
+const ignore = allWithCheck(
+  new CheckedParser(
+    choiceOnlyOne(hashSign, spaces.check),
+    choiceWithCheck(spaces, comment),
+  ),
+);
+function lex<T>(parser: Parser<T>): Parser<T> {
+  return parser.skip(ignore);
+}
 const keyword = memoize(<T extends string>(keyword: T) =>
   lex(withPosition(match(/[a-z\-]+/, `"${keyword}"`)))
     .map((positioned) =>
@@ -79,7 +81,7 @@ const unescapedWord = sequence(
   choiceWithCheck(checkedCharacter, escape),
   allWithCheck(
     new CheckedParser(
-      choiceOnlyOne(wordCharacter, backtick, comment.check),
+      choiceOnlyOne(wordCharacter, backtick, hashSign),
       choiceWithCheck(checkedCharacter, escape, comment.map(() => "")),
     ),
   ),
