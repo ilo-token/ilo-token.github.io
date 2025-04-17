@@ -62,7 +62,7 @@ const semicolon = lex(matchString(";", "semicolon"));
 const slash = lex(matchString("/", "slash"));
 
 const keyword = memoize(<T extends string>(keyword: T) =>
-  lex(withPosition(match(/[a-z\-]+/, keyword)))
+  lex(withPosition(match(/[a-z\-]+/, `"${keyword}"`)))
     .map((positioned) =>
       positioned.value === keyword ? positioned.value : throwError(
         new UnexpectedError(
