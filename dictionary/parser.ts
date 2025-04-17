@@ -32,7 +32,7 @@ function lex<T>(parser: Parser<T>): Parser<T> {
 }
 const comment = checkedSequence(
   matchString("#", "hash sign"),
-  match(/[^\n]*?(?=\r?\n)/, "comment content"),
+  match(/[^\n]*?(?=\r?\n|$)/, "comment content"),
 );
 const spaces = checkedSequence(
   match(/\s/, "space"),
