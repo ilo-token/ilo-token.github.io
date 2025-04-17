@@ -51,7 +51,14 @@ async function watchDictionary(): Promise<number> {
 }
 if (import.meta.main) {
   if (!await exists(DICTIONARY)) {
-    await Deno.create(DICTIONARY);
+    const Dictionary = await import("../dictionary/build.ts");
+    if (!await Dictionary.build()) {
+      await Dictionary.buildWithDictionary(new Map());
+      // deno-lint-ignore no-console
+      console.error(
+        "Dictionary failed to build. Empty dictionary is used instead. Please fix it.",
+      );
+    }
   }
   const statusCodePromise = watchDictionary();
   await using _ = await watchMain();
