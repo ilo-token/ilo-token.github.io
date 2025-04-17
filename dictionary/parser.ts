@@ -469,13 +469,10 @@ const verbDefinition = checkedSequence(
         forObject: false,
         predicateType: "noun adjective",
       })),
-    new CheckedParser(
-      nothing,
+    checkedSequence(
+      closeParenthesis,
       sequence(
-        closeParenthesis
-          .with(
-            optionalWithCheck(checkedNoun),
-          ),
+        optionalWithCheck(checkedNoun),
         optionalWithCheck(
           checkedSimpleUnitWith(
             "prep",
@@ -491,7 +488,7 @@ const verbDefinition = checkedSequence(
         ),
       ),
     )
-      .map<PartialVerb>(([directObject, rawIndirectObject]) => {
+      .map<PartialVerb>(([_, [directObject, rawIndirectObject]]) => {
         if (rawIndirectObject == null) {
           return {
             directObject,
