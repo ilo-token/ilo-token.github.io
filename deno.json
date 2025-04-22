@@ -18,11 +18,11 @@
     },
     "update": {
       "description": "Updates dependencies and telo misikeke",
-      "command": "deno outdated --update && deno run -N=api.linku.la,gitlab.com -W=./telo_misikeke/linku_data.json,./telo_misikeke/Parser.js,./telo_misikeke/rules.js --no-prompt --frozen --cached-only ./telo_misikeke/update.ts"
+      "command": "deno outdated --update && deno run -N=gitlab.com -W=./telo_misikeke/linku_data.json,./telo_misikeke/Parser.js,./telo_misikeke/rules.js --no-prompt --frozen --cached-only ./telo_misikeke/update.ts"
     },
     "build-dictionary": {
       "description": "Builds the dictionary at `./dictionary/dictionary.ts`",
-      "command": "deno run -R=./dictionary/dictionary -W=./dictionary/dictionary.ts --no-prompt --frozen --cached-only ./dictionary/build.ts"
+      "command": "deno run -E=NO_COLOR -R=./dictionary/dictionary -W=./dictionary/dictionary.ts --no-prompt --frozen --cached-only ./dictionary/build.ts"
     }
   },
   "fmt": {
@@ -55,7 +55,6 @@
         "no-self-compare",
         "no-sparse-arrays",
         "no-sync-fn-in-async-fn",
-        "no-throw-literal",
         "no-useless-rename",
         "prefer-ascii",
         "single-var-declarator"
@@ -69,7 +68,7 @@
     "@std/async": "jsr:@std/async@^1.0.12",
     "@std/cache": "jsr:@std/cache@^0.2.0",
     "@std/collections": "jsr:@std/collections@^1.0.10",
-    "@std/fs": "jsr:@std/fs@^1.0.15",
+    "@std/fs": "jsr:@std/fs@^1.0.16",
     "@std/html": "jsr:@std/html@^1.0.3",
     "@std/random": "jsr:@std/random@^0.1.0",
     "@std/regexp": "jsr:@std/regexp@^1.0.1",

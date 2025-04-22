@@ -76,8 +76,11 @@ ante:
 
     difference(n);
 
+    differently(adv);
+
 anu:
-    `[`separates multiple possibilities, replacing another particle`]`(particle def);
+    `[`separates multiple possibilities, replacing another particle`]`
+        (particle def);
     or(particle def);
 
     # # These are no longer in Linku
@@ -89,7 +92,9 @@ anu:
 
 awen:
     # stay(v);
-    remain(v linking) [predicate]; # Thanks to ilo Tani for telling me this is supposed to be a linking verb
+    remain(v linking) [predicate];
+        # Thanks to ilo Tani for telling me this is supposed to be a linking
+        # verb
     # wait(v);
     pause(v) [object];
 
@@ -126,6 +131,8 @@ epiku:
 
     # coolness(n);
     awesomeness(n);
+
+    amazingly(adv);
 
 esun:
     # trade(v) [object];
@@ -205,6 +212,8 @@ jaki:
     grossness(n);
     # toxicity(n);
     # rottenness(n);
+
+    disgustingly(adv);
 
 jan:
     person(n);
@@ -391,7 +400,8 @@ ko:
     sticky(adj material);
 
 kokosila:
-    speak(v) a(d article singular) non-Toki Pona(adj qualifier) language(n singular);
+    speak(v) a(d article singular) non-Toki Pona(adj qualifier)
+        language(n singular);
 
 kon:
     air(n);
@@ -422,7 +432,8 @@ kon:
     # ghost-related(adj opinion);
 
 ku:
-    interact(v) with(prep) the(d article) Toki Pona(adj qualifier) Dictionary(n singular);
+    interact(v) with(prep) the(d article) Toki Pona(adj qualifier)
+        Dictionary(n singular);
     the(d article) Toki Pona(adj qualifier) Dictionary(n);
 
 kule:
@@ -434,6 +445,8 @@ kule:
 
     colorful(adj color);
     diverse(adj qualifier);
+
+    colorfully(adv);
 
 kulupu:
     group(n);
@@ -472,7 +485,8 @@ kute:
     obeying(adj qualifier gerund-like);
 
 la:
-    `[`mark the previous statement as context to a following statement`]`(particle def);
+    `[`mark the previous statement as context to a following statement`]`
+        (particle def);
 
 lanpan:
     take(v) [object];
@@ -559,6 +573,8 @@ len:
 
     cover(v) [object];
     hide(v) [object];
+
+    secretly(adv);
 
 lete:
     cold(adj material);
@@ -688,7 +704,9 @@ lupa:
     # window(n);
     # portal(n);
 
-    # TODO adjectives
+    holey(adj physical quality);
+
+    hole-related(adj opinion);
 
 ma:
     earth(n singular);
@@ -906,6 +924,9 @@ musi:
 
     have(v) fun(n singular);
 
+    amusingly(adv);
+    comically(adv);
+
 mute:
     many(d quantifier plural);
     # several(d quantifier plural);
@@ -1008,12 +1029,15 @@ noka:
     root-related(adj opinion);
 
 o:
-    `[`marks the end of a vocative `(`who is being spoken to`)``]`(particle def);
-    `[`marks the start of an imperative `(`command, wish, instruction`)``]`(particle def);
+    `[`marks the end of a vocative `(`who is being spoken to`)``]`
+        (particle def);
+    `[`marks the start of an imperative `(`command, wish, instruction`)``]`
+        (particle def);
     should(particle def);
 
 olin:
-    have(v) strong(adj opinion) emotional(adj opinion) bond(n singular) with(prep) [object];
+    have(v) strong(adj opinion) emotional(adj opinion) bond(n singular)
+        with(prep) [object];
     respect(v) [object];
 
     affection(n singular);
@@ -1023,6 +1047,10 @@ olin:
     platonic(adj qualifier);
     romantic(adj qualifier);
     familial(adj qualifier);
+
+    respectfully(adv);
+    platonically(adv);
+    romantically(adv);
 
 ona:
     they/them(personal pronoun third plural);
@@ -1054,6 +1082,8 @@ pakala:
     # botch(v) [object];
     # harm(v) [object];
     # mess up(v) [object];
+
+    incorrectly(adv);
 
 pali:
     # work(n);
@@ -1209,8 +1239,10 @@ pona:
     nicely(adv);
 
 pu:
-    interact(v) with(prep) the(d article) book(n singular) titled(adj) Toki Pona`:` The Language of Good(n proper);
-    the(d article) book(n) titled(adj) Toki Pona`:` The Language of Good(n proper);
+    interact(v) with(prep) the(d article) book(n singular) titled(adj)
+        Toki Pona`:` The Language of Good(n proper);
+    the(d article) book(n) titled(adj)
+        Toki Pona`:` The Language of Good(n proper);
 
 sama:
     same(adj opinion);
@@ -1223,6 +1255,8 @@ sama:
     # same as(prep) [indirect object];
 
     similarity(n);
+
+    equally(adv);
 
 seli:
     hot(adj material);
@@ -1249,7 +1283,8 @@ selo:
     boundary-related(adj opinion);
 
 seme:
-    `[`indicate a question by marking missing info in a sentence`]`(particle def);
+    `[`indicate a question by marking missing info in a sentence`]`
+        (particle def);
     what/what(n);
     which/which(n);
     what(d interrogative);
@@ -1387,7 +1422,8 @@ soweli:
     beast-related(adj opinion);
 
 su:
-    interact(v) with(prep) Sonja's(d possessive) story(adj qualifier) book(adj qualifier) series(n singular);
+    interact(v) with(prep) Sonja's(d possessive) story(adj qualifier)
+        book(adj qualifier) series(n singular);
     Sonja's(d possessive) story(adj qualifier) book(adj qualifier) series(n);
 
 suli:
@@ -1438,6 +1474,8 @@ suwi:
     sweetness(n);
     fragrance(n);
     cuteness(n);
+
+    charmingly(adv);
 
 tan:
     from(prep) [indirect object];
@@ -1556,6 +1594,8 @@ unpa:
 
     sexual(adj qualifier);
 
+    sexually(adv);
+
 uta:
     mouth(n);
     lip(n);
@@ -1633,7 +1673,7 @@ weka:
     distant(adj origin);
 
     remove(v) [object];
-    # TODO: get rid of
+    # get rid of
 
     absence(n);
     removal(n);

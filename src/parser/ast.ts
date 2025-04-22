@@ -74,18 +74,19 @@ export type Clause =
     type: "o clause";
     subjects: null | MultiplePhrases;
     predicates: Predicate;
-  }>
-  | Readonly<
-    { type: "prepositions"; prepositions: ReadonlyArray<Preposition> }
-  >;
+  }>;
 export type ContextClause =
   | Clause
-  | (Readonly<{ type: "nanpa" }> & Nanpa);
+  | Readonly<
+    { type: "prepositions"; prepositions: ReadonlyArray<Preposition> }
+  >
+  | (Readonly<{ type: "nanpa" }> & Nanpa)
+  | (Readonly<{ type: "anu"; anu: HeadedWordUnit }>);
 export type Sentence =
   | Readonly<{
     type: "default";
-    kinOrTaso: null | HeadedWordUnit;
-    laClauses: ReadonlyArray<ContextClause>;
+    startingParticle: null | HeadedWordUnit;
+    contextClauses: ReadonlyArray<ContextClause>;
     finalClause: Clause;
     anuSeme: null | HeadedWordUnit;
     emphasis: null | Emphasis;

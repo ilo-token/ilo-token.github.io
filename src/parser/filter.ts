@@ -1,8 +1,9 @@
+import { compound, throwError } from "../../misc/misc.ts";
 import { extractArrayResultError } from "../array_result.ts";
-import { flattenError, throwError } from "../../misc/misc.ts";
 import { settings } from "../settings.ts";
 import {
   Clause,
+  ContextClause,
   Modifier,
   MultiplePhrases,
   Nanpa,
@@ -148,11 +149,19 @@ export const MULTIPLE_MODIFIERS_RULES: ReadonlyArray<
             return [];
         }
       });
-      const duplicate = findDuplicate(words);
-      if (duplicate == null) {
+      const duplicate = getDuplicate(words);
+      if (duplicate.size === 0) {
         return true;
       } else {
-        throw new UnrecognizedError(`duplicate "${duplicate}" in modifier`);
+        const repeatConjunction = false;
+        const list = compound(
+          [...duplicate].map((word) => `"${word}"`),
+          "and",
+          repeatConjunction,
+        );
+        throw new UnrecognizedError(
+          `duplicate ${list} in modifier`,
+        );
       }
     }
   },
@@ -184,17 +193,11 @@ export const PHRASE_RULE: ReadonlyArray<(phrase: Phrase) => boolean> = [
     !phraseHasTopLevelEmphasis(phrase.phrase),
 
   // Emphasis must not be nested
-  (phrase) => {
-    if (
-      phrase.emphasis == null ||
-      everyWordUnitInPhrase(phrase)
-        .every(({ emphasis }) => emphasis == null)
-    ) {
-      return true;
-    } else {
-      throw new UnrecognizedError("nested emphasis");
-    }
-  },
+  (phrase) =>
+    phrase.emphasis == null ||
+    everyWordUnitInPhrase(phrase)
+      .every(({ emphasis }) => emphasis == null) ||
+    throwError(new UnrecognizedError("nested emphasis")),
 ];
 export const PREPOSITION_RULE: ReadonlyArray<(phrase: Preposition) => boolean> =
   [
@@ -227,6 +230,14 @@ export const PREPOSITION_RULE: ReadonlyArray<(phrase: Preposition) => boolean> =
         .every(({ emphasis }) => emphasis == null) ||
       throwError(new UnrecognizedError("nested emphasis")),
   ];
+export const CONTEXT_CLAUSE_RULE: ReadonlyArray<
+  (contextClause: ContextClause) => boolean
+> = [
+  // Prevent "anu ala anu la"
+  (clause) =>
+    clause.type !== "anu" || clause.anu.type !== "x ala x" ||
+    throwError(new UnrecognizedError('"anu ala anu la"')),
+];
 export const CLAUSE_RULE: ReadonlyArray<(clause: Clause) => boolean> = [
   // disallow preposition in subject
   (clause) => {
@@ -244,8 +255,6 @@ export const CLAUSE_RULE: ReadonlyArray<(clause: Clause) => boolean> = [
           return true;
         }
         break;
-      case "prepositions":
-        return true;
     }
     if (
       everyPhraseInMultiplePhrases(phrases).some(hasPrepositionInPhrase)
@@ -301,20 +310,21 @@ export const SENTENCE_RULE: ReadonlyArray<(sentence: Sentence) => boolean> = [
   (sentence) => {
     if (sentence.type === "default") {
       if (
-        sentence.kinOrTaso != null && sentence.kinOrTaso.type === "x ala x"
+        sentence.startingParticle != null &&
+        sentence.startingParticle.type === "x ala x"
       ) {
-        const { kinOrTaso: { word } } = sentence;
+        const { startingParticle: { word } } = sentence;
         throw new UnrecognizedError(`"${word} ala ${word}"`);
       }
     }
     return true;
   },
-  // If there is "la", there can't be "taso" or "kin"
+  // If there is "la", there can't be starting particle e.g. taso
   (sentence) =>
-    sentence.type !== "default" || sentence.laClauses.length === 0 ||
-    sentence.kinOrTaso == null || throwError(
+    sentence.type !== "default" || sentence.contextClauses.length === 0 ||
+    sentence.startingParticle == null || throwError(
       new UnrecognizedError(
-        `${sentence.kinOrTaso.word} particle with "la"`,
+        `${sentence.startingParticle.word} particle with "la"`,
       ),
     ),
 
@@ -354,7 +364,7 @@ export function filter<T>(
   rules: ReadonlyArray<(value: T) => boolean>,
 ): (value: T) => boolean {
   return (value) => {
-    const result: ReadonlyArray<null | ReadonlyArray<unknown>> = rules.map(
+    const result = rules.map(
       (rule) => {
         try {
           if (rule(value)) {
@@ -363,23 +373,18 @@ export function filter<T>(
             return [];
           }
         } catch (error) {
-          return flattenError(error);
+          return extractArrayResultError(error);
         }
       },
     );
     if (result.every((result) => result == null)) {
       return true;
     } else {
-      const errors = extractArrayResultError(
-        result.flatMap((result) => result ?? []),
-      );
-      switch (errors.length) {
-        case 0:
-          return false;
-        case 1:
-          throw errors[0];
-        default:
-          throw new AggregateError(errors);
+      const errors = result.flatMap((result) => result ?? []);
+      if (errors.length === 0) {
+        return false;
+      } else {
+        throw new AggregateError(errors);
       }
     }
   };
@@ -418,14 +423,15 @@ function phraseHasTopLevelEmphasis(phrase: Phrase): boolean {
       return phrase.emphasis != null;
   }
 }
-function findDuplicate<T>(iterable: Iterable<T>): null | T {
-  const set = new Set();
+function getDuplicate<T>(iterable: Iterable<T>): Set<T> {
+  const unique = new Set<T>();
+  const duplicates = new Set<T>();
   for (const value of iterable) {
-    if (set.has(value)) {
-      return value;
+    if (unique.has(value)) {
+      duplicates.add(value);
     } else {
-      set.add(value);
+      unique.add(value);
     }
   }
-  return null;
+  return duplicates;
 }

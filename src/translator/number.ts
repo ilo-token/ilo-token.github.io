@@ -1,7 +1,7 @@
 import { sumOf } from "@std/collections/sum-of";
+import { nullableAsArray } from "../../misc/misc.ts";
 import { ArrayResult } from "../array_result.ts";
 import { dictionary } from "../dictionary.ts";
-import { nullableAsArray, throwError } from "../../misc/misc.ts";
 import { FilteredError } from "./error.ts";
 
 function singleNumber(word: string): ArrayResult<number> {
@@ -64,16 +64,16 @@ function nasinNanpaPona(number: ReadonlyArray<number>): null | number {
   }
 }
 function combineNumbers(numbers: ReadonlyArray<number>): ArrayResult<number> {
-  return ArrayResult.from(() =>
-    numbers.length === 1 || !numbers.includes(0)
-      ? ArrayResult.concat(
-        ArrayResult.from(() =>
-          new ArrayResult(nullableAsArray(nasinNanpaPona(numbers)))
-        ),
-        ArrayResult.from(() => new ArrayResult([regularNumber(numbers)])),
-      )
-      : throwError(new FilteredError('"ala" along with other numeral'))
-  );
+  if (numbers.length === 1 || !numbers.includes(0)) {
+    return ArrayResult.concat(
+      ArrayResult.from(() =>
+        new ArrayResult(nullableAsArray(nasinNanpaPona(numbers)))
+      ),
+      ArrayResult.from(() => new ArrayResult([regularNumber(numbers)])),
+    );
+  } else {
+    return new ArrayResult(new FilteredError('"ala" along with other numeral'));
+  }
 }
 export function number(number: ReadonlyArray<string>): ArrayResult<number> {
   return ArrayResult.combine(...number.map(singleNumber))

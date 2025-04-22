@@ -1,4 +1,4 @@
-import { Lazy } from "./cache.ts";
+import { lazy } from "../misc/misc.ts";
 
 export const checkLocalStorage = lazy(() => {
   // https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
@@ -27,8 +27,4 @@ export function setIgnoreError(key: string, value: string): void {
       }
     }
   }
-}
-function lazy<T>(fn: () => T): () => T {
-  const cache = new Lazy(fn);
-  return () => cache.getValue();
 }

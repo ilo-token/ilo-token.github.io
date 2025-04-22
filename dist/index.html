@@ -71,6 +71,12 @@
         </li>
         <li>
           <a
+            href="https://conlangsfrom.space/t/ilo-token-a-wip-rule-based-toki-pona-to-english-translator/452"
+          >Conlangs from Space</a>
+          (public)
+        </li>
+        <li>
+          <a
             href="https://docs.google.com/forms/d/e/1FAIpQLSfdDEMbde9mieybZdbZr8haRzNzGsg0BVkuTIzuHaATCdcrlw/viewform?usp=sf_link"
           >Google forms</a>
           (private)
@@ -87,7 +93,7 @@
         - <a href="https://github.com/ilo-token/ilo-token.github.io">GitHub</a>
       </p>
     </footer>
-    <dialog id="settings-box">
+    <dialog id="settings-box" class="flex">
       <h1>
         Settings
         <a
@@ -95,16 +101,12 @@
           target="_blank"
         >(Help)</a>
       </h1>
-      <label>
-        Use telo misikeke error messages
-        <input type="checkbox" id="telo-misikeke" />
-      </label>
-      <label>
-        Randomize output order <input type="checkbox" id="randomize" />
-      </label>
-      <label>
-        Multiline input <input type="checkbox" id="multiline" />
-      </label>
+      <label><input type="checkbox" id="telo-misikeke" />
+        Use telo misikeke error messages</label>
+      <label><input type="checkbox" id="randomize" />
+        Randomize output order</label>
+      <label><input type="checkbox" id="multiline" />
+        Multiline input</label>
       <label for="quantity">Singular and plural forms</label>
       <select id="quantity">
         <option value="both">Show all</option>
@@ -117,16 +119,12 @@
         <option value="condensed">Condensed</option>
         <option value="default only">Show present only</option>
       </select>
-      <details>
+      <details class="flex">
         <summary>Advance settings</summary>
-        <label>
-          Allow X ala X partial parsing
-          <input type="checkbox" id="x-ala-x-partial-parsing" />
-        </label>
-        <label>
-          Allow separate repeated modifiers
-          <input type="checkbox" id="separate-repeated-modifiers" />
-        </label>
+        <label><input type="checkbox" id="x-ala-x-partial-parsing" />
+          Allow X ala X partial parsing</label>
+        <label><input type="checkbox" id="separate-repeated-modifiers" />
+          Allow separate repeated modifiers</label>
       </details>
       <div>
         <button id="reset-button">Reset to default</button>
@@ -135,7 +133,7 @@
         <button id="confirm-button">Confirm</button>
       </div>
     </dialog>
-    <dialog id="custom-dictionary-box">
+    <dialog id="custom-dictionary-box" class="flex">
       <h1>
         Custom Dictionary
         <a
@@ -151,11 +149,55 @@
         id="custom-dictionary"
         placeholder="Type here custom dictionary. Press Help above to get started."
       ></textarea>
+      <details>
+        <summary id="custom-dictionary-error-summary">Errors (0):</summary>
+        <ul id="custom-dictionary-error-list"></ul>
+      </details>
       <div>
         <div></div>
         <button id="discard-button">Discard Changes and Close</button>
         <button id="save-button">Save and Close</button>
       </div>
+    </dialog>
+    <dialog id="alert-box">
+      <p id="message"></p>
+      <button id="close-button">Close</button>
+    </dialog>
+    <dialog id="error-box">
+      <h1>An error has occurred</h1>
+      <p>
+        This is not supposed to happen. If you're using an outdated browser,
+        please consider updating it. Otherwise please consider reporting this.
+        We respect user's privacy and so we rely on user-submitted bug reports.
+        Here are the contact options:
+      </p>
+      <ul>
+        <li>
+          <a href="https://github.com/ilo-token/ilo-token.github.io/issues/new"
+          >GitHub</a>
+          (public)
+        </li>
+        <li>
+          <a
+            href="https://conlangsfrom.space/t/ilo-token-a-wip-rule-based-toki-pona-to-english-translator/452"
+          >Conlangs from Space</a>
+          (public)
+        </li>
+        <li>
+          <a
+            href="https://docs.google.com/forms/d/e/1FAIpQLSfdDEMbde9mieybZdbZr8haRzNzGsg0BVkuTIzuHaATCdcrlw/viewform?usp=sf_link"
+          >Google forms</a>
+          (private)
+        </li>
+        <li><a href="mailto:neverrare@proton.me">Email</a> (private)</li>
+      </ul>
+      <p>Please provide the following useful information:</p>
+      <ul>
+        <li>What did you do before this error occurred.</li>
+        <li>The following error message: <code id="error-code"></code></li>
+        <li>Your browser and its version (optional).</li>
+      </ul>
+      <button id="error-close-button">Close</button>
     </dialog>
   </body>
 </html>

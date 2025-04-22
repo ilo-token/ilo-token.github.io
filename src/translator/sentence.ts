@@ -1,12 +1,13 @@
+import { nullableAsArray } from "../../misc/misc.ts";
 import { ArrayResult } from "../array_result.ts";
 import { dictionary } from "../dictionary.ts";
-import { nullableAsArray, repeatWithSpace } from "../../misc/misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { definitionAsPlainString } from "./as_string.ts";
 import * as English from "./ast.ts";
-import { clause, contextClause } from "./clause.ts";
-import { FilteredError, TranslationTodoError } from "./error.ts";
-import { noEmphasis } from "./word.ts";
+import { clause, contextClause, unwrapSingleWord } from "./clause.ts";
+import { TranslationTodoError } from "./error.ts";
+import { noEmphasis, word } from "./word.ts";
+import { fromSimpleDefinition, getReduplicationCount } from "./word_unit.ts";
 
 function filler(filler: TokiPona.Filler): ArrayResult<string> {
   switch (filler.type) {
@@ -49,74 +50,19 @@ function emphasisAsPunctuation(
     } else {
       return originalPunctuation;
     }
-  }
-  const questionMark = interrogative ? "?" : "";
-  let exclamationMark: string;
-  switch (emphasis.type) {
-    case "word":
-      exclamationMark = "!";
-      break;
-    case "long word":
-      exclamationMark = "!".repeat(emphasis.length);
-      break;
-  }
-  return `${questionMark}${exclamationMark}`;
-}
-function interjection(clause: TokiPona.Clause): ArrayResult<English.Clause> {
-  if (clause.type === "phrases" && clause.phrases.type === "single") {
-    const { phrases: { phrase } } = clause;
-    if (phrase.type === "default" && phrase.modifiers.length === 0) {
-      const { headWord } = phrase;
-      switch (headWord.type) {
-        case "default":
-        case "reduplication":
-          return new ArrayResult(dictionary.get(headWord.word)!.definitions)
-            .filterMap((definition) => {
-              if (definition.type === "interjection") {
-                switch (headWord.type) {
-                  case "default":
-                    return definition.interjection;
-                  case "reduplication":
-                    return repeatWithSpace(
-                      definition.interjection,
-                      headWord.count,
-                    );
-                }
-              } else {
-                return null;
-              }
-            })
-            .map<English.Clause>((interjection) => ({
-              type: "interjection",
-              interjection: {
-                word: interjection,
-                emphasis: headWord.emphasis != null,
-              },
-            }));
-      }
+  } else {
+    const questionMark = interrogative ? "?" : "";
+    let exclamationMark: string;
+    switch (emphasis.type) {
+      case "word":
+        exclamationMark = "!";
+        break;
+      case "long word":
+        exclamationMark = "!".repeat(emphasis.length);
+        break;
     }
+    return `${questionMark}${exclamationMark}`;
   }
-  return new ArrayResult();
-}
-function anuSeme(seme: TokiPona.HeadedWordUnit): English.Clause {
-  let interjection: string;
-  switch (seme.type) {
-    case "default":
-      interjection = "right";
-      break;
-    case "reduplication":
-      interjection = repeatWithSpace("right", seme.count);
-      break;
-    case "x ala x":
-      throw new FilteredError('"seme ala seme"');
-  }
-  return {
-    type: "interjection",
-    interjection: {
-      word: interjection,
-      emphasis: seme.emphasis != null,
-    },
-  };
 }
 function sentence(
   sentence: TokiPona.Sentence,
@@ -130,56 +76,66 @@ function sentence(
     : sentence.punctuation;
   switch (sentence.type) {
     case "default": {
-      const laClauses = sentence.laClauses;
-      const givenClauses = ArrayResult.combine(
-        ...laClauses.map(contextClause),
-      )
-        .map((clauses) =>
-          clauses.map<English.Clause>((clause) => ({
-            type: "dependent",
-            conjunction: {
-              word: "given",
-              emphasis: false,
-            },
-            clause,
-          }))
-        );
-      if (sentence.kinOrTaso != null) {
+      if (sentence.startingParticle != null) {
         return new ArrayResult(
           new TranslationTodoError(
-            `"${sentence.kinOrTaso.word}" starting particle`,
+            `"${sentence.startingParticle.word}" starting particle`,
           ),
         );
       }
-      const lastEngClause = clause(sentence.finalClause);
-      const right = nullableAsArray(sentence.anuSeme).map(anuSeme);
-      const interjectionClause =
-        sentence.laClauses.length === 0 && sentence.kinOrTaso == null &&
-          sentence.kinOrTaso == null
-          ? interjection(sentence.finalClause)
-          : new ArrayResult<English.Clause>();
-      const engClauses = ArrayResult.combine(
-        givenClauses,
-        ArrayResult.concat(interjectionClause, lastEngClause),
+      const useAnuSeme = nullableAsArray(sentence.anuSeme)
+        .map((seme) =>
+          ({
+            type: "interjection",
+            interjection: word({
+              word: "right",
+              reduplicationCount: getReduplicationCount(seme),
+              emphasis: seme.emphasis != null,
+            }),
+          }) as const
+        );
+      const interjectionClause: ArrayResult<English.Clause> =
+        sentence.contextClauses.length === 0 &&
+          sentence.startingParticle == null
+          ? new ArrayResult(
+            nullableAsArray(unwrapSingleWord(sentence.finalClause)),
+          )
+            .flatMap((wordUnit) =>
+              fromSimpleDefinition(
+                wordUnit,
+                (definition) =>
+                  definition.type === "interjection"
+                    ? definition.interjection
+                    : null,
+              )
+            )
+            .map((interjection) => ({ type: "interjection", interjection }))
+          : new ArrayResult();
+      const clauses = ArrayResult.combine(
+        ArrayResult.combine(...sentence.contextClauses.map(contextClause))
+          .map((clause) => clause.flat()),
+        ArrayResult.concat(interjectionClause, clause(sentence.finalClause)),
       )
-        .map(([givenClauses, lastClause]) => [
-          ...givenClauses,
+        .map(([contextClauses, lastClause]) => [
+          ...contextClauses,
           lastClause,
-          ...right,
+          ...useAnuSeme,
         ]);
       const usePunctuation = emphasisAsPunctuation({
         emphasis: sentence.emphasis,
         interrogative: sentence.interrogative != null,
         originalPunctuation: punctuation,
       });
-      return engClauses.map((clauses) => ({
+      return clauses.map((clauses) => ({
+        type: "sentence",
         clauses,
         punctuation: usePunctuation,
       }));
     }
     case "filler":
       return filler(sentence.filler)
-        .map<English.Sentence>((interjection) => ({
+        .map((interjection) => ({
+          type: "sentence",
           clauses: [{
             type: "interjection",
             interjection: noEmphasis(interjection),
@@ -190,23 +146,23 @@ function sentence(
 }
 export function multipleSentences(
   sentences: TokiPona.MultipleSentences,
-): ArrayResult<ReadonlyArray<English.Sentence>> {
+): ArrayResult<English.MultipleSentences> {
   switch (sentences.type) {
     case "single word": {
       const { word } = sentences;
       return new ArrayResult(dictionary.get(word)!.definitions)
         .flatMap(definitionAsPlainString)
-        .map<English.Sentence>((definition) => ({
-          clauses: [{ type: "free form", text: definition }],
-          punctuation: "",
-        }))
-        .map((definition) => [definition]);
+        .map((definition) => ({
+          type: "free form",
+          text: definition,
+        }));
     }
     case "sentences":
       return ArrayResult.combine(
         ...sentences.sentences.map((value, i) =>
           sentence(value, i === sentences.sentences.length - 1)
         ),
-      );
+      )
+        .map((sentences) => ({ type: "sentences", sentences }));
   }
 }

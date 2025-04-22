@@ -26,25 +26,21 @@ function check(
   return quantities.some((quantity) => quantity === some) &&
     quantities.every((quantity) => quantity !== not);
 }
-export function findNumber(
+export function getNumber(
   determiners: ReadonlyArray<English.Determiner>,
 ): Dictionary.Quantity {
   const quantities = determiners.map(({ quantity }) => quantity);
-  if (quantities.every((quantity) => quantity === `both`)) {
+  if (quantities.every((quantity) => quantity === "both")) {
     return "both";
   } else if (check(quantities, "singular", "plural")) {
     return "singular";
   } else if (check(quantities, "plural", "singular")) {
     return "plural";
   } else {
-    const singular = prettyPrintDeterminers(
-      filterQuantity(determiners, "singular"),
-    );
-    const plural = prettyPrintDeterminers(
-      filterQuantity(determiners, "plural"),
-    );
+    const singular = filterQuantity(determiners, "singular");
+    const plural = filterQuantity(determiners, "plural");
     throw new FilteredError(
-      `determiner for singular nouns ${singular} with determiner for plural nouns ${plural}`,
+      encodeDeterminer`determiner for singular nouns ${singular} with determiner for plural nouns ${plural}`(),
     );
   }
 }
@@ -68,18 +64,18 @@ export function determiner(
 export function fixDeterminer(
   determiner: ReadonlyArray<English.Determiner>,
 ): ReadonlyArray<English.Determiner> {
-  const negative = filterKind(determiner, [`negative`]);
+  const negative = filterKind(determiner, ["negative"]);
   const first = filterKind(determiner, [
-    `article`,
-    `demonstrative`,
-    `possessive`,
+    "article",
+    "demonstrative",
+    "possessive",
   ]);
-  const article = filterKind(determiner, [`article`]);
-  const demonstrative = filterKind(determiner, [`demonstrative`]);
-  const possessive = filterKind(determiner, [`possessive`]);
-  const distributive = filterKind(determiner, [`distributive`]);
-  const interrogative = filterKind(determiner, [`interrogative`]);
-  const quantitative = filterKind(determiner, [`numeral`, `quantifier`]);
+  const article = filterKind(determiner, ["article"]);
+  const demonstrative = filterKind(determiner, ["demonstrative"]);
+  const possessive = filterKind(determiner, ["possessive"]);
+  const distributive = filterKind(determiner, ["distributive"]);
+  const interrogative = filterKind(determiner, ["interrogative"]);
+  const quantitative = filterKind(determiner, ["numeral", "quantifier"]);
   const errors = filterSet([
     [
       negative.length > 1,
@@ -140,7 +136,7 @@ export function fixDeterminer(
 function prettyPrintDeterminers(
   determiners: ReadonlyArray<English.Determiner>,
 ): string {
-  return `(${determiners.map(({ determiner }) => determiner).join(` `)})`;
+  return `(${determiners.map(({ determiner }) => determiner).join(" ")})`;
 }
 function encodeDeterminer(
   strings: TemplateStringsArray,
@@ -152,7 +148,7 @@ function encodeDeterminer(
       .join("");
 }
 function filterSet<T>(
-  set: Iterable<readonly [condition: boolean, value: T]>,
+  set: ReadonlyArray<readonly [condition: boolean, value: T]>,
 ): ReadonlyArray<T> {
-  return [...set].filter(([condition]) => condition).map(([_, value]) => value);
+  return set.filter(([condition]) => condition).map(([_, value]) => value);
 }

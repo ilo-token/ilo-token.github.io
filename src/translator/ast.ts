@@ -14,6 +14,7 @@ export type NounPhrase =
     quantity: Quantity;
     perspective: Dictionary.Perspective;
     postAdjective: null | Readonly<{ adjective: string; name: string }>;
+    postCompound: null | NounPhrase;
     preposition: ReadonlyArray<Preposition>;
     emphasis: boolean;
   }>
@@ -73,7 +74,6 @@ export type VerbPhrase =
     preposition: ReadonlyArray<Preposition>;
   }>;
 export type Clause =
-  | Readonly<{ type: "free form"; text: string }>
   | Readonly<{
     type: "default";
     subject: NounPhrase;
@@ -83,13 +83,19 @@ export type Clause =
   | Readonly<{ type: "subject phrase"; subject: NounPhrase }>
   | Readonly<{ type: "interjection"; interjection: Word }>
   | Readonly<{ type: "vocative"; call: string; addressee: NounPhrase }>
+  | (Readonly<{ type: "preposition" }> & Preposition)
+  | Readonly<{ type: "adverb"; adverb: Word }>
   | Readonly<{ type: "dependent"; conjunction: Word; clause: Clause }>;
 export type Preposition = Readonly<{
   adverb: ReadonlyArray<Word>;
   preposition: Word;
   object: NounPhrase;
+  emphasis: boolean;
 }>;
 export type Sentence = Readonly<{
   clauses: ReadonlyArray<Clause>;
   punctuation: string;
 }>;
+export type MultipleSentences =
+  | Readonly<{ type: "free form"; text: string }>
+  | Readonly<{ type: "sentences"; sentences: ReadonlyArray<Sentence> }>;

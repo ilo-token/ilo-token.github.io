@@ -10,10 +10,34 @@ NOTE: Before publishing:
 <!--
 <details>
 <summary>On development changelog</summary>
+
+## (On development)
+
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
 </details>
 -->
+
+## 0.6.0
+
+Released 22 April 2025
+
+ilo Token can now translate prepositions. This includes preposition before "la"
+such as "tawa mi la sina pona" and prepositional predicate such as "mi kepeken
+ilo".
+
+- Implement translation of preposition.
+- Implement "nanpa X la" translation.
+- Context clauses can now be translated into adverbs e.g. "pona la mi moku" will
+  be translated as "nicely, I ate".
+- Fix "nanpa" translation: Before it translated into just "position" instead of
+  e.g. "position 1".
+- When telo misikeke is enabled, it won't mark words defined in the custom
+  dictionary.
+- Improve error messages for bugs. A detailed instruction for bug reporting is
+  now shown.
+- Improve custom dictionary error messages. There is now a dedicated space for
+  displaying errors.
 
 ## 0.5.3
 

@@ -94,16 +94,18 @@ export function everyWordUnitInClause(clause: Clause): ReadonlyArray<WordUnit> {
           .flatMap(everyWordUnitInMultiplePhrases),
         ...everyWordUnitInMultiplePredicates(clause.predicates),
       ];
-    case "prepositions":
-      return clause.prepositions.flatMap(everyWordUnitInPreposition);
   }
 }
 export function everyWordUnitInContextClause(
   contextClause: ContextClause,
 ): ReadonlyArray<WordUnit> {
   switch (contextClause.type) {
+    case "prepositions":
+      return contextClause.prepositions.flatMap(everyWordUnitInPreposition);
     case "nanpa":
       return everyWordUnitInNanpa(contextClause);
+    case "anu":
+      return [contextClause.anu];
     default:
       return everyWordUnitInClause(contextClause);
   }
@@ -114,8 +116,8 @@ export function everyWordUnitInSentence(
   switch (sentence.type) {
     case "default":
       return [
-        ...nullableAsArray(sentence.kinOrTaso),
-        ...sentence.laClauses.flatMap(everyWordUnitInContextClause),
+        ...nullableAsArray(sentence.startingParticle),
+        ...sentence.contextClauses.flatMap(everyWordUnitInContextClause),
         ...everyWordUnitInClause(sentence.finalClause),
         ...nullableAsArray(sentence.anuSeme),
       ];

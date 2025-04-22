@@ -1,4 +1,4 @@
-import { flattenError, nullableAsArray } from "../misc/misc.ts";
+import { nullableAsArray } from "../misc/misc.ts";
 
 export type ArrayResultOptions = {
   cause: unknown;
@@ -132,44 +132,23 @@ export class ArrayResult<T> {
     try {
       return arrayResult();
     } catch (error) {
-      return ArrayResult.errors(extractArrayResultError(flattenError(error)));
+      return ArrayResult.errors(extractArrayResultError(error));
     }
   }
 }
-type Errors =
-  | Readonly<{ type: "array result"; errors: ReadonlyArray<ArrayResultError> }>
-  | Readonly<{ type: "outside"; errors: ReadonlyArray<unknown> }>;
 export function extractArrayResultError(
-  errors: ReadonlyArray<unknown>,
+  error: unknown,
 ): ReadonlyArray<ArrayResultError> {
-  const aggregate = errors.reduce<Errors>(
-    (errors, error) => {
-      switch (errors.type) {
-        case "array result":
-          if (error instanceof ArrayResultError) {
-            return { type: "array result", errors: [...errors.errors, error] };
-          } else {
-            return { type: "outside", errors: [error] };
-          }
-        case "outside": {
-          const moreError = error instanceof ArrayResultError ? [] : [error];
-          return { type: "outside", errors: [...errors.errors, ...moreError] };
-        }
-      }
-    },
-    {
-      type: "array result",
-      errors: [],
-    },
-  );
-  switch (aggregate.type) {
-    case "array result":
-      return aggregate.errors;
-    case "outside":
-      if (aggregate.errors.length === 1) {
-        throw aggregate.errors[0];
-      } else {
-        throw new AggregateError(aggregate.errors);
-      }
+  if (error instanceof ArrayResultError) {
+    return [error];
+  } else if (error instanceof AggregateError) {
+    const { errors } = error;
+    if (
+      errors.length > 0 &&
+      errors.every((error) => error instanceof ArrayResultError)
+    ) {
+      return errors;
+    }
   }
+  throw error;
 }

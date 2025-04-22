@@ -1,6 +1,6 @@
 import * as Dictionary from "../../dictionary/type.ts";
-import { ArrayResult } from "../array_result.ts";
 import { mapNullable, nullableAsArray } from "../../misc/misc.ts";
+import { ArrayResult } from "../array_result.ts";
 import { settings } from "../settings.ts";
 import * as English from "./ast.ts";
 import { FilteredError } from "./error.ts";
@@ -19,7 +19,6 @@ export type PartialVerb =
   & Readonly<{
     modal: null | English.AdverbVerb;
     adverb: ReadonlyArray<English.Word>;
-    // TODO: better name other than first and rest
     first: null | Dictionary.VerbForms;
     reduplicationCount: number;
     wordEmphasis: boolean;
@@ -221,7 +220,7 @@ export function verb(
           perspective,
           quantity,
         })
-          .map<English.VerbPhrase>((verb) => ({
+          .map((verb) => ({
             ...partialVerb,
             type: "default",
             verb: {

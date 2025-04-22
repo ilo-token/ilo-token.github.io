@@ -90,16 +90,19 @@ export function phrase(value: Phrase): string {
       return preposition(value);
   }
 }
-function particle(type: "and conjunction" | "anu", particle: string): string {
+function particle(
+  type: "and conjunction" | "anu",
+  particle: null | string,
+): string {
   if (type === "and conjunction") {
-    return particle;
+    return particle!;
   } else {
     return "anu;";
   }
 }
 export function multiplePhrases(
   phrases: MultiplePhrases,
-  andParticle: string,
+  andParticle: null | string,
 ): string {
   switch (phrases.type) {
     case "single":
@@ -168,14 +171,16 @@ export function clause(clause: Clause): string {
         multiplePredicates(clause.predicates, "o"),
       ]
         .join(" ");
-    case "prepositions":
-      return clause.prepositions.map(preposition).join(" ");
   }
 }
 export function contextClause(contextClause: ContextClause): string {
   switch (contextClause.type) {
+    case "prepositions":
+      return contextClause.prepositions.map(preposition).join(" ");
     case "nanpa":
       return nanpa(contextClause);
+    case "anu":
+      return wordUnit(contextClause.anu);
     default:
       return clause(contextClause);
   }
@@ -185,8 +190,8 @@ export function sentence(sentence: Sentence): string {
   switch (sentence.type) {
     case "default":
       text = [
-        ...nullableAsArray(sentence.kinOrTaso).map(wordUnit),
-        ...sentence.laClauses
+        ...nullableAsArray(sentence.startingParticle).map(wordUnit),
+        ...sentence.contextClauses
           .map(contextClause)
           .map((clause) => `${clause} la`),
         clause(sentence.finalClause),

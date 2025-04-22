@@ -1,5 +1,5 @@
+import { nullableAsArray } from "../../misc/misc.ts";
 import { ArrayResult } from "../array_result.ts";
-import { nullableAsArray, throwError } from "../../misc/misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { AdjectiveWithInWay } from "./adjective.ts";
 import * as English from "./ast.ts";
@@ -127,17 +127,18 @@ function associatedPredicate(
   object: null | PhraseTranslation,
   preposition: ReadonlyArray<English.Preposition>,
 ): ArrayResult<PartialCompoundVerb> {
-  return ArrayResult.from(() => {
-    const verbObject = object == null
-      ? new ArrayResult([phraseAsVerb(predicate)])
-      : object.type === "noun"
-      ? predicateVerb(predicate, object.noun)
-      : throwError(new UntranslatableError(object.type, "object"));
-    return verbObject.map((verbObject) => ({
-      ...verbObject,
-      preposition: [...verbObject.preposition, ...preposition],
-    }));
-  });
+  let verbObject: ArrayResult<PartialCompoundVerb>;
+  if (object == null) {
+    verbObject = new ArrayResult([phraseAsVerb(predicate)]);
+  } else if (object.type === "noun") {
+    verbObject = predicateVerb(predicate, object.noun);
+  } else {
+    return new ArrayResult(new UntranslatableError(object.type, "object"));
+  }
+  return verbObject.map((verbObject) => ({
+    ...verbObject,
+    preposition: [...verbObject.preposition, ...preposition],
+  }));
 }
 export function predicate(
   tokiPonaPredicate: TokiPona.Predicate,
@@ -179,19 +180,17 @@ export function predicate(
         ...tokiPonaPredicate.prepositions.map(preposition),
       );
       return ArrayResult.combine(predicatePhrase, object, prepositionPhrase)
-        .flatMap(
-          ([predicate, object, preposition]) =>
-            associatedPredicate(predicate, object, preposition),
+        .flatMap(([predicate, object, preposition]) =>
+          associatedPredicate(predicate, object, preposition)
         );
     }
-    // TODO: combine adjectives and nouns
     case "and conjunction":
     case "anu":
       return ArrayResult.combine(
         ...tokiPonaPredicate.predicates
           .map((predicates) => predicate(predicates, andParticle)),
       )
-        .map<PartialCompoundVerb>((predicates) => ({
+        .map((predicates) => ({
           type: "compound",
           conjunction: CONJUNCTION[tokiPonaPredicate.type],
           verb: predicates,

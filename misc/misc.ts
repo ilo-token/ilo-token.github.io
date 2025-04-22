@@ -24,13 +24,32 @@ export function repeatArray<T>(element: T, count: number): ReadonlyArray<T> {
 export function repeatWithSpace(text: string, count: number): string {
   return repeatArray(text, count).join(" ");
 }
-export function flattenError(error: unknown): ReadonlyArray<unknown> {
-  if (error instanceof AggregateError) {
-    return error.errors.flatMap(flattenError);
-  } else {
-    return [error];
-  }
-}
 export function throwError(error: unknown): never {
   throw error;
+}
+export function compound(
+  elements: ReadonlyArray<string>,
+  conjunction: string,
+  repeat: boolean,
+): string {
+  if (repeat || elements.length <= 2) {
+    return elements.join(` ${conjunction} `);
+  } else {
+    const lastIndex = elements.length - 1;
+    const init = elements.slice(0, lastIndex);
+    const last = elements[lastIndex];
+    const initText = init.map((item) => `${item},`).join(" ");
+    return `${initText} ${conjunction} ${last}`;
+  }
+}
+export function lazy<T>(fn: () => T): () => T {
+  let defined = false;
+  let value: null | T;
+  return () => {
+    if (!defined) {
+      defined = true;
+      value = fn();
+    }
+    return value!;
+  };
 }

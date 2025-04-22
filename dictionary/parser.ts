@@ -2,45 +2,61 @@ import { memoize } from "@std/cache/memoize";
 import { escape as escapeHtml } from "@std/html/entities";
 import { escape as escapeRegex } from "@std/regexp/escape";
 import nlp from "compromise/three";
-import { deduplicateErrors } from "../misc/deduplicate_errors.ts";
-import { mapNullable, nullableAsArray, throwError } from "../misc/misc.ts";
-import { ArrayResultError } from "../src/array_result.ts";
+import { nullableAsArray, throwError } from "../misc/misc.ts";
 import {
   all,
-  allAtLeastOnce,
-  character,
+  allWithCheck,
+  checkedAsWhole,
+  CheckedParser,
+  checkedSequence,
   choiceOnlyOne,
-  end,
+  choiceWithCheck,
   match,
   matchString,
+  notEnd,
+  nothing,
   optionalAll,
+  optionalWithCheck,
   Parser,
   sequence,
-  sourceOnly,
   UnexpectedError,
+  UnrecognizedError,
+  withPosition,
   withSource,
 } from "../src/parser/parser_lib.ts";
-import {
-  Definition,
-  Determiner,
-  Dictionary,
-  Noun,
-  NounForms,
-  VerbForms,
-} from "./type.ts";
+import { Definition, Noun, PartialVerb } from "./type.ts";
 
 const RESERVED_SYMBOLS = "#()*+/:;<=>@[\\]^`{|}~";
-const WORDS = new RegExp(`[^${escapeRegex(RESERVED_SYMBOLS)}]`);
 
-function lex<T>(parser: Parser<T>): Parser<T> {
-  return parser.skip(spaces);
-}
-const comment = match(/#[^\n]*\n?/, "comment");
-const spaces = sourceOnly(all(choiceOnlyOne(match(/\s/, "space"), comment)));
+const hashSign = matchString("#", "hash sign");
 const backtick = matchString("`", "backtick");
 const colon = matchString(":", "colon");
 
-const tokiPonaWord = lex(match(/[a-z][a-zA-Z]*/, "word"));
+const character = match(/./u, "character");
+const wordCharacter = match(
+  new RegExp(`[^${escapeRegex(RESERVED_SYMBOLS)}]`),
+  "word character",
+);
+const comment = checkedSequence(
+  hashSign,
+  match(/[^\n]*?(?=\r?\n|$)/, "comment content"),
+);
+const spaces = checkedSequence(
+  match(/\s/, "space"),
+  match(/\s*/, "space"),
+);
+const ignore = allWithCheck(
+  new CheckedParser(
+    choiceOnlyOne(hashSign, spaces.check),
+    choiceWithCheck(spaces, comment),
+  ),
+);
+function lex<T>(parser: Parser<T>): Parser<T> {
+  return parser.skip(ignore);
+}
+const wordWithPosition = lex(
+  withPosition(match(/[a-z][a-zA-Z]*/, "Toki Pona word")),
+);
 const openParenthesis = lex(matchString("(", "open parenthesis"));
 const closeParenthesis = lex(matchString(")", "close parenthesis"));
 const openBracket = lex(matchString("[", "open bracket"));
@@ -49,29 +65,34 @@ const comma = lex(matchString(",", "comma"));
 const semicolon = lex(matchString(";", "semicolon"));
 const slash = lex(matchString("/", "slash"));
 
-const keyword = memoize(<T extends string>(keyword: T): Parser<T> =>
-  lex(match(/[a-z\-]+/, keyword))
-    .filter((that) =>
-      keyword === that ||
-      throwError(new UnexpectedError(`"${that}"`, `"${keyword}"`))
+const keyword = memoize(<T extends string>(keyword: T) =>
+  lex(withPosition(match(/[a-z\-]+/, `"${keyword}"`)))
+    .map((positioned) =>
+      positioned.value === keyword ? positioned.value : throwError(
+        new UnexpectedError(
+          `"${positioned.value}"`,
+          `"${keyword}"`,
+          positioned,
+        ),
+      )
     ) as Parser<T>
 );
-const unescapedWord = allAtLeastOnce(
-  choiceOnlyOne(
-    match(WORDS, "word"),
-    backtick
-      .with(character)
-      .skip(backtick),
-    comment.map(() => ""),
+const checkedCharacter = checkedAsWhole(wordCharacter);
+const escape = checkedSequence(backtick, character.skip(backtick))
+  .map(([_, character]) => character);
+const unescapedWord = sequence(
+  choiceWithCheck(checkedCharacter, escape),
+  allWithCheck(
+    new CheckedParser(
+      choiceOnlyOne(wordCharacter, backtick, hashSign),
+      choiceWithCheck(checkedCharacter, escape, comment.map(() => "")),
+    ),
   ),
 )
-  .map((word) => word.join("").replaceAll(/\s+/g, " ").trim())
-  .filter((word) =>
-    word !== "" || throwError(new ArrayResultError("missing word"))
+  .map(([first, rest]) =>
+    `${first}${rest.join("")}`.replaceAll(/\s+/g, " ").trim()
   );
 const word = unescapedWord.map(escapeHtml);
-const forms = sequence(word, all(slash.with(word)))
-  .map(([first, rest]) => [first, ...rest]);
 const number = choiceOnlyOne(keyword("singular"), keyword("plural"));
 const optionalNumber = optionalAll(number);
 const perspective = choiceOnlyOne(
@@ -86,39 +107,22 @@ function template<T>(parser: Parser<T>): Parser<T> {
   return openBracket.with(parser).skip(closeBracket);
 }
 const simpleUnit = memoize((kind: string) => word.skip(tag(keyword(kind))));
-function detectRepetition(
-  source: ReadonlyArray<string>,
-): { before: string; repeat: string; after: string } {
-  if (source.length === 1) {
-    return { before: source[0], repeat: "", after: "" };
-  }
-  const [first, ...rest] = source;
-  for (let i = 0; i < first.length; i++) {
-    const before = first.slice(0, i);
-    const repeatString = first.slice(i, i + 1);
-    const after = first.slice(i + 1);
-    const passed = [...rest.entries()]
-      .every(([i, test]) =>
-        test === `${before}${repeatString.repeat(i + 2)}${after}`
-      );
-    if (passed) {
-      return { before, repeat: repeatString, after };
-    }
-  }
-  throw new ArrayResultError(
-    `"${source.join("/")}" has no repetition pattern found`,
-  );
-}
-const nounOnly = choiceOnlyOne(
+
+const nounOnly = checkedSequence(
   sequence(
     unescapedWord,
-    tag(
-      keyword("n")
-        .with(optionalAll(keyword("gerund"))),
-    ),
-  )
-    .map<NounForms & { gerund: boolean }>(
-      ([noun, gerund]) => {
+    optionalWithCheck(
+      checkedSequence(slash, word).map(([_, word]) => word),
+    )
+      .skip(openParenthesis)
+      .skip(keyword("n")),
+  ),
+  sequence(optionalAll(keyword("gerund")), optionalNumber)
+    .skip(closeParenthesis),
+)
+  .mapWithPositionedError(([[noun, plural], [gerund, number]]) => {
+    if (plural == null) {
+      if (number == null) {
         const sentence = nlp(noun);
         sentence.tag("Noun");
         const singular = sentence
@@ -130,69 +134,46 @@ const nounOnly = choiceOnlyOne(
           .toPlural()
           .text();
         if (singular === "" || plural === "") {
-          throw new ArrayResultError(
-            `no singular or plural form found for "${noun}". consider ` +
-              "providing both singular and plural forms instead",
-          );
+          throw `no singular or plural form found for "${noun}". consider ` +
+            "providing both singular and plural forms instead";
         }
         if (noun !== singular) {
-          throw new ArrayResultError(
-            `conjugation error: "${noun}" is not "${singular}". ` +
-              "consider providing both singular and plural forms instead",
-          );
+          throw `conjugation error: "${noun}" is not "${singular}". ` +
+            "consider providing both singular and plural forms instead";
         }
         return {
           singular: escapeHtml(singular),
           plural: escapeHtml(plural),
           gerund: gerund != null,
         };
-      },
-    ),
-  sequence(
-    word,
-    tag(
-      keyword("n")
-        .with(sequence(optionalAll(keyword("gerund")), number)),
-    ),
-  )
-    .map<NounForms & { gerund: boolean }>(
-      ([noun, [gerund, number]]) => {
+      } else {
+        const escaped = escapeHtml(noun);
         let singular: null | string;
         let plural: null | string;
         switch (number) {
           case "singular":
+            singular = escaped;
+            plural = null;
+            break;
           case "plural":
-            switch (number) {
-              case "singular":
-                singular = noun;
-                plural = null;
-                break;
-              case "plural":
-                singular = null;
-                plural = noun;
-                break;
-            }
+            singular = null;
+            plural = escaped;
             break;
         }
         return { singular, plural, gerund: gerund != null };
-      },
-    ),
-  sequence(
-    word,
-    optionalAll(slash.with(word)),
-    tag(
-      keyword("n")
-        .with(optionalAll(keyword("gerund"))),
-    ),
-  )
-    .map<NounForms & { gerund: boolean }>(
-      ([singular, plural, gerund]) => ({
-        singular,
+      }
+    } else {
+      if (number != null) {
+        throw "plural or singular keyword within tag " +
+          "must not be provided when singular and plural forms are defined";
+      }
+      return {
+        singular: escapeHtml(noun),
         plural,
         gerund: gerund != null,
-      }),
-    ),
-);
+      };
+    }
+  });
 const determinerType = choiceOnlyOne(
   keyword("article"),
   keyword("demonstrative"),
@@ -203,98 +184,356 @@ const determinerType = choiceOnlyOne(
   keyword("negative"),
   keyword("numeral"),
 );
-const determiner = sequence(
-  word,
-  optionalAll(slash.with(word)),
-  tag(keyword("d").with(sequence(determinerType, optionalNumber))),
+const determiner = checkedSequence(
+  sequence(
+    word,
+    optionalWithCheck(checkedSequence(slash, word).map(([_, word]) => word))
+      .skip(openParenthesis)
+      .skip(keyword("d")),
+  ),
+  sequence(determinerType, optionalNumber.skip(closeParenthesis)),
 )
-  .map<Determiner>(([determiner, plural, [kind, quantity]]) => ({
-    determiner,
-    plural,
-    kind,
-    quantity: quantity ?? "both",
-  }));
-const adjectiveKind = choiceOnlyOne(
-  keyword("opinion"),
-  keyword("size"),
-  sequence(keyword("physical"), keyword("quality"))
-    .map<"physical quality">(() => "physical quality"),
-  keyword("age"),
-  keyword("color"),
-  keyword("origin"),
-  keyword("material"),
-  keyword("qualifier"),
-);
-const adjective = sequence(
-  all(simpleUnit("adv")),
-  word,
-  tag(
-    keyword("adj").with(
-      sequence(adjectiveKind, optionalAll(keyword("gerund-like"))),
+  .map(([[determiner, plural], [kind, quantity]]) =>
+    ({
+      determiner,
+      plural,
+      kind,
+      quantity: quantity ?? "both",
+    }) as const
+  );
+const adjectiveKind = choiceWithCheck(
+  checkedSequence(keyword("physical"), keyword("quality"))
+    .map(() => "physical quality" as const),
+  checkedAsWhole(
+    choiceOnlyOne(
+      keyword("opinion"),
+      keyword("size"),
+      keyword("age"),
+      keyword("color"),
+      keyword("origin"),
+      keyword("material"),
+      keyword("qualifier"),
     ),
   ),
+);
+const adjective = checkedSequence(
+  sequence(
+    all(simpleUnit("adv")),
+    word.skip(openParenthesis).skip(keyword("adj")),
+  ),
+  sequence(
+    adjectiveKind,
+    optionalAll(keyword("gerund-like")).skip(closeParenthesis),
+  ),
 )
-  .map(([adverb, adjective, [kind, gerundLike]]) => ({
+  .map(([[adverb, adjective], [kind, gerundLike]]) => ({
     adverb,
     adjective,
     kind,
     gerundLike: gerundLike != null,
   }));
 const noun = sequence(
-  all(determiner),
-  all(adjective),
-  nounOnly,
-  optionalAll(
-    sequence(simpleUnit("adj"), word)
-      .skip(tag(sequence(keyword("n"), keyword("proper")))),
+  allWithCheck(determiner),
+  allWithCheck(adjective),
+  nounOnly.parser,
+  optionalWithCheck(
+    checkedSequence(
+      simpleUnit("adj"),
+      word.skip(tag(sequence(keyword("n"), keyword("proper")))),
+    )
+      .map(([adjective, name]) => ({ adjective, name })),
   ),
 )
-  .map<Noun>(([determiner, adjective, noun, post]) => {
-    return {
+  .map(([determiner, adjective, noun, postAdjective]) =>
+    ({
       ...noun,
       determiner,
       adjective,
-      postAdjective: mapNullable(
-        post,
-        ([adjective, name]) => ({ adjective, name }),
-      ),
-    };
+      postAdjective,
+    }) as const
+  );
+const checkedNoun = new CheckedParser(
+  choiceOnlyOne(
+    determiner.check,
+    adjective.check,
+    nounOnly.check,
+  ),
+  noun,
+);
+function checkedSimpleUnitWith<T>(
+  tag: string,
+  after: Parser<T>,
+): CheckedParser<readonly [string, T]> {
+  return checkedSequence(
+    word.skip(openParenthesis).skip(keyword(tag)),
+    closeParenthesis.with(after),
+  );
+}
+function checkedSimpleUnit(tag: string): CheckedParser<string> {
+  return checkedSimpleUnitWith(tag, nothing).map(([word]) => word);
+}
+function checkedSimpleUnitWithTemplate(
+  tag: string,
+  templateInside: Parser<unknown>,
+): CheckedParser<string> {
+  return checkedSimpleUnitWith(tag, template(templateInside))
+    .map(([word]) => word);
+}
+const interjectionDefinition = checkedSimpleUnit("i")
+  .map((interjection) => ({ type: "interjection", interjection }) as const);
+const particleDefinition = checkedSequence(
+  word.skip(openParenthesis).skip(keyword("particle")),
+  sequence(keyword("def"), closeParenthesis),
+)
+  .map(([definition]) =>
+    ({ type: "particle definition", definition }) as const
+  );
+const adverbDefinition = checkedSimpleUnit("adv")
+  .map((adverb) => ({ type: "adverb", adverb }) as const);
+const prepositionDefinition = checkedSimpleUnitWithTemplate(
+  "prep",
+  sequence(keyword("indirect"), keyword("object")),
+)
+  .map((preposition) => ({ type: "preposition", preposition }) as const);
+const numeralDefinition = checkedSimpleUnit("num")
+  .mapWithPositionedError((num) => {
+    const numeral = +num;
+    if (!Number.isInteger(numeral)) {
+      throw `"${num}" is not a number`;
+    } else {
+      return { type: "numeral", numeral } as const;
+    }
   });
-function verbOnly(tagInside: Parser<unknown>): Parser<VerbForms> {
-  return choiceOnlyOne(
-    sequence(
-      word.skip(slash),
-      word.skip(slash),
-      word,
+const fillerDefinition = checkedSequence(
+  sequence(
+    word,
+    allWithCheck(
+      checkedSequence(slash, word).map(([_, character]) => character),
+    ),
+  )
+    .skip(openParenthesis)
+    .skip(keyword("f"))
+    .map(([first, rest]) => [first, ...rest]),
+  closeParenthesis,
+)
+  .mapWithPositionedError(([forms]) => {
+    if (forms.length === 1) {
+      return {
+        type: "filler",
+        before: forms[0],
+        repeat: "",
+        after: "",
+      } as const;
+    }
+    const [first, ...rest] = forms;
+    for (let i = 0; i < first.length; i++) {
+      const before = first.slice(0, i);
+      const repeatString = first.slice(i, i + 1);
+      const after = first.slice(i + 1);
+      const passed = [...rest.entries()]
+        .every(([i, test]) =>
+          test === `${before}${repeatString.repeat(i + 2)}${after}`
+        );
+      if (passed) {
+        return { type: "filler", before, repeat: repeatString, after } as const;
+      }
+    }
+    throw `"${forms.join("/")}" has no repetition pattern found`;
+  });
+const fourFormPersonalPronounDefinition = checkedSequence(
+  sequence(
+    word.skip(slash),
+    word.skip(slash),
+    word.skip(slash),
+    word.skip(openParenthesis).skip(keyword("personal")),
+  ),
+  keyword("pronoun").with(perspective).skip(closeParenthesis),
+)
+  .map(([
+    [singularSubject, singularObject, pluralSubject, pluralObject],
+    perspective,
+  ]) =>
+    ({
+      type: "personal pronoun",
+      singular: { subject: singularSubject, object: singularObject },
+      plural: { subject: pluralSubject, object: pluralObject },
+      perspective,
+    }) as const
+  );
+const twoFormPersonalPronounDefinition = checkedSequence(
+  sequence(
+    word.skip(slash),
+    word.skip(openParenthesis).skip(keyword("personal")),
+  ),
+  sequence(
+    keyword("pronoun").with(perspective),
+    number.skip(closeParenthesis),
+  ),
+)
+  .map(([[subject, object], [perspective, number]]) =>
+    ({
+      type: "personal pronoun",
+      singular: null,
+      plural: null,
+      [number]: { subject, object },
+      perspective,
+    }) as const
+  );
+const nounDefinition = new CheckedParser(
+  choiceWithCheck(
+    new CheckedParser(
+      determiner.check,
+      sequence(
+        determiner.parser,
+        choiceOnlyOne(determiner.check, adjective.check, nounOnly.check),
+      ),
+    ),
+    new CheckedParser(
+      adjective.check,
+      sequence(
+        adjective.parser,
+        choiceOnlyOne(adjective.check, nounOnly.check),
+      ),
+    ),
+    checkedAsWhole(nounOnly.check),
+  ),
+  sequence(
+    noun,
+    optionalWithCheck(
+      checkedSimpleUnitWithTemplate("prep", keyword("headword")),
+    ),
+  ),
+)
+  .map(([noun, preposition]) =>
+    preposition == null
+      ? { ...noun, type: "noun" } as const
+      : { type: "noun preposition", noun, preposition } as const
+  );
+const compoundAdjectiveDefinition = checkedSequence(
+  adjective
+    .parser
+    .skip(keyword("and"))
+    .skip(openParenthesis)
+    .skip(keyword("c")),
+  closeParenthesis.with(adjective.parser),
+)
+  .map((adjective) => ({ type: "compound adjective", adjective }) as const)
+  .filterWithPositionedError(({ adjective }) =>
+    adjective.every((adjective) => adjective.adverb.length === 0) ||
+    throwError("compound adjective cannot have adverb")
+  );
+const verbDefinition = checkedSequence(
+  sequence(
+    unescapedWord,
+    optionalWithCheck(
+      checkedSequence(slash, sequence(word.skip(slash), word))
+        .map(([_, forms]) => forms),
     )
-      .skip(tag(tagInside))
-      .filter(([presentPlural, presentSingular, past]) => {
-        const [_, ...pluralParticles] = presentPlural.split(" ");
-        const [_1, ...singularParticles] = presentSingular.split(" ");
-        const [_2, ...pastParticles] = past.split(" ");
-        const allMatched =
-          pluralParticles.length === singularParticles.length &&
-          pluralParticles.length === pastParticles.length &&
-          pluralParticles.every((particle, i) =>
-            particle === singularParticles[i] && particle === pastParticles[i]
-          );
-        if (allMatched) {
-          return true;
-        } else {
-          throw new ArrayResultError(
-            "mismatched verb particles " +
-              `"${presentPlural}/${presentSingular}/${past}"`,
-          );
-        }
-      })
-      .map(([presentPlural, presentSingular, past]) => ({
-        presentPlural,
-        presentSingular,
-        past,
+      .skip(sequence(openParenthesis, keyword("v"))),
+  ),
+  choiceWithCheck<null | PartialVerb>(
+    checkedSequence(
+      sequence(closeParenthesis, openBracket, keyword("object")),
+      closeBracket
+        .with(optionalWithCheck(
+          checkedSimpleUnitWith("prep", noun)
+            .map(([preposition, object]) => ({ preposition, object }) as const),
+        ))
+        .map(nullableAsArray),
+    )
+      .map(([_, indirectObject]) => ({
+        directObject: null,
+        indirectObject,
+        forObject: true,
+        predicateType: null,
       })),
-    unescapedWord
-      .skip(tag(tagInside))
-      .map((verb) => {
+    checkedSequence(
+      sequence(closeParenthesis, openBracket, keyword("predicate")),
+      closeBracket,
+    )
+      .map(() => ({
+        directObject: null,
+        indirectObject: [],
+        forObject: false,
+        predicateType: "verb",
+      })),
+    checkedSequence(
+      keyword("modal"),
+      sequence(closeParenthesis, template(keyword("predicate"))),
+    )
+      .map(() => null),
+    checkedSequence(
+      keyword("linking"),
+      sequence(closeParenthesis, template(keyword("predicate"))),
+    )
+      .map(() => ({
+        directObject: null,
+        indirectObject: [],
+        forObject: false,
+        predicateType: "noun adjective",
+      })),
+    checkedSequence(
+      closeParenthesis,
+      sequence(
+        optionalWithCheck(checkedNoun),
+        optionalWithCheck(
+          checkedSimpleUnitWith(
+            "prep",
+            choiceWithCheck<"template" | Noun>(
+              checkedSequence(
+                openBracket,
+                sequence(keyword("object"), closeBracket),
+              )
+                .map(() => "template" as const),
+              checkedNoun,
+            ),
+          ),
+        ),
+      ),
+    )
+      .map<PartialVerb>(([_, [directObject, rawIndirectObject]]) => {
+        if (rawIndirectObject == null) {
+          return {
+            directObject,
+            indirectObject: [],
+            forObject: false,
+            predicateType: null,
+          };
+        } else {
+          const [preposition, indirectObject] = rawIndirectObject;
+          if (indirectObject === "template") {
+            return {
+              directObject,
+              indirectObject: [],
+              forObject: preposition,
+              predicateType: null,
+            };
+          } else {
+            return {
+              directObject,
+              indirectObject: [{
+                preposition,
+                object: indirectObject,
+              }],
+              forObject: false,
+              predicateType: null,
+            };
+          }
+        }
+      }),
+  ),
+)
+  .mapWithPositionedError<Definition>(([[verb, forms], rest]) => {
+    if (rest == null) {
+      if (forms != null) {
+        throw "modal verbs shouldn't be conjugated";
+      }
+      return { type: "modal verb", verb: escapeHtml(verb) };
+    } else {
+      let presentPlural: string;
+      let presentSingular: string;
+      let past: string;
+      if (forms == null) {
         const sentence = nlp(verb);
         sentence.tag("Verb");
         const conjugations = sentence.verbs().conjugate()[0] as undefined | {
@@ -305,232 +544,86 @@ function verbOnly(tagInside: Parser<unknown>): Parser<VerbForms> {
           FutureTense: string;
         };
         if (conjugations == null) {
-          throw new ArrayResultError(
-            `no verb conjugation found for "${verb}". consider providing all ` +
-              "conjugations instead",
-          );
+          throw `no verb conjugation found for "${verb}". consider providing ` +
+            "all conjugations instead";
         }
         if (verb !== conjugations.Infinitive) {
-          throw new ArrayResultError(
-            `conjugation error: "${verb}" is not ` +
-              `"${conjugations.Infinitive}". consider providing all ` +
-              "conjugations instead",
-          );
+          throw `conjugation error: "${verb}" is not ` +
+            `"${conjugations.Infinitive}". consider providing all ` +
+            "conjugations instead";
         }
-        return {
-          presentPlural: escapeHtml(conjugations.Infinitive),
-          presentSingular: escapeHtml(conjugations.PresentTense),
-          past: escapeHtml(conjugations.PastTense),
-        };
-      }),
-  );
-}
-const definition = choiceOnlyOne<Definition>(
-  adjective
-    .skip(semicolon)
-    .map((adjective) => ({ ...adjective, type: "adjective" })),
-  sequence(
-    adjective.skip(keyword("and")).skip(tag(keyword("c"))),
-    adjective,
-  )
-    .filter(([first, second]) => {
-      if (first.adverb.length === 0 && second.adverb.length === 0) {
-        return true;
+        presentPlural = escapeHtml(conjugations.Infinitive);
+        presentSingular = escapeHtml(conjugations.PresentTense);
+        past = escapeHtml(conjugations.PastTense);
       } else {
-        throw new ArrayResultError("compound adjective cannot have adverb");
+        presentPlural = escapeHtml(verb);
+        [presentSingular, past] = forms;
       }
-    })
-    .skip(semicolon)
-    .map((adjective) => ({ type: "compound adjective", adjective })),
-  noun
-    .skip(semicolon)
-    .map((noun) => ({ ...noun, type: "noun" })),
-  sequence(
-    verbOnly(keyword("v")),
-    optionalAll(template(keyword("object"))),
-    optionalAll(
-      sequence(simpleUnit("prep"), noun)
-        .map(([preposition, object]) => ({ preposition, object })),
-    )
-      .map(nullableAsArray),
-  )
-    .skip(semicolon)
-    .map(([verb, forObject, indirectObject]) => ({
-      ...verb,
-      type: "verb",
-      directObject: null,
-      indirectObject,
-      forObject: forObject != null,
-      predicateType: null,
-    })),
-  sequence(
-    verbOnly(keyword("v")),
-    optionalAll(noun),
-    optionalAll(simpleUnit("prep").skip(template(keyword("object")))),
-  )
-    .skip(semicolon)
-    .map(([verb, directObject, preposition]) => ({
-      ...verb,
-      type: "verb",
-      directObject,
-      indirectObject: [],
-      forObject: preposition ?? false,
-      predicateType: null,
-    })),
-  simpleUnit("i")
-    .skip(semicolon)
-    .map((preposition) => ({
-      type: "interjection",
-      interjection: preposition,
-    })),
-  word.skip(tag(sequence(keyword("particle"), keyword("def"))))
-    .skip(semicolon)
-    .map((definition) => ({ type: "particle definition", definition })),
-  simpleUnit("adv")
-    .skip(semicolon)
-    .map((adverb) => ({ type: "adverb", adverb })),
-  determiner
-    .skip(semicolon)
-    .map((determiner) => ({ ...determiner, type: "determiner" })),
-  simpleUnit("prep")
-    .skip(template(sequence(keyword("indirect"), keyword("object"))))
-    .skip(semicolon)
-    .map((preposition) => ({ type: "preposition", preposition })),
-  simpleUnit("num")
-    .skip(semicolon)
-    .map((unit) => {
-      const numeral = Number.parseInt(unit);
-      if (Number.isNaN(numeral)) {
-        throw new ArrayResultError(`"${unit}" is not a number`);
-      } else {
-        return { type: "numeral", numeral };
-      }
-    }),
-  verbOnly(keyword("v"))
-    .skip(template(keyword("predicate")))
-    .skip(semicolon)
-    .map((verb) => ({
-      ...verb,
-      type: "verb",
-      directObject: null,
-      indirectObject: [],
-      forObject: false,
-      predicateType: "verb",
-    })),
-  sequence(noun, simpleUnit("prep"))
-    .skip(template(keyword("headword")))
-    .skip(semicolon)
-    .map(([noun, preposition]) => ({
-      type: "noun preposition",
-      noun,
-      preposition,
-    })),
-  sequence(
-    word.skip(slash),
-    word.skip(slash),
-    word.skip(slash),
-    word,
-    tag(
-      keyword("personal")
-        .with(keyword("pronoun"))
-        .with(perspective),
-    ),
-  )
-    .skip(semicolon)
-    .map((
-      [
-        singularSubject,
-        singularObject,
-        pluralSubject,
-        pluralObject,
-        perspective,
-      ],
-    ) => ({
-      type: "personal pronoun",
-      singular: { subject: singularSubject, object: singularObject },
-      plural: { subject: pluralSubject, object: pluralObject },
-      perspective,
-    })),
-  sequence(
-    word.skip(slash),
-    word,
-    tag(
-      keyword("personal").with(keyword("pronoun")).with(
-        sequence(perspective, number),
-      ),
-    ),
-  )
-    .skip(semicolon)
-    .map(([subject, object, [perspective, number]]) => ({
-      type: "personal pronoun",
-      singular: null,
-      plural: null,
-      [number]: { subject, object },
-      perspective,
-    })),
-  word
-    .skip(tag(sequence(keyword("v"), keyword("modal"))))
-    .skip(template(keyword("predicate")))
-    .skip(semicolon).map((verb) => ({
-      type: "modal verb",
-      verb,
-    })),
-  verbOnly(sequence(keyword("v"), keyword("linking")))
-    .skip(template(keyword("predicate")))
-    .skip(semicolon).map((verb) => ({
-      ...verb,
-      type: "verb",
-      directObject: null,
-      indirectObject: [],
-      forObject: false,
-      predicateType: "noun adjective",
-    })),
-  forms.skip(tag(keyword("f")))
-    .skip(semicolon)
-    .map((unit) => ({
-      ...detectRepetition(unit),
-      type: "filler",
-    })),
+      return { ...rest, type: "verb", presentPlural, presentSingular, past };
+    }
+  });
+const definition = choiceWithCheck<Definition>(
+  // noun parser must come before adjective, compound adjective, and determiner parsers
+  nounDefinition,
+  // compound adjective parser must come before adjective parser
+  compoundAdjectiveDefinition,
+  // adjective parser must come before adverb parser
+  adjective.map((adjective) => ({ ...adjective, type: "adjective" })),
+  verbDefinition,
+  adverbDefinition,
+  interjectionDefinition,
+  particleDefinition,
+  determiner.map((determiner) => ({ ...determiner, type: "determiner" })),
+  prepositionDefinition,
+  numeralDefinition,
+  fillerDefinition,
+  twoFormPersonalPronounDefinition,
+  fourFormPersonalPronounDefinition,
 );
-const head = sequence(all(tokiPonaWord.skip(comma)), tokiPonaWord)
+const positionedHead = sequence(
+  all(wordWithPosition.skip(comma)),
+  wordWithPosition,
+)
   .skip(colon)
   .map(([init, last]) => [...init, last]);
-const entry = withSource(spaces.with(all(definition)))
-  .map(([definitions, src]) => ({ definitions, src: src.trimEnd() }));
-const dictionaryParser = spaces
-  .with(all(sequence(head, entry)))
-  .skip(end)
-  .map((entries) =>
-    new Map(
-      entries.flatMap(([words, definition]) =>
-        words.map((word) => [word, definition])
+const entry = withSource(
+  ignore.with(
+    allWithCheck(
+      new CheckedParser(
+        sequence(unescapedWord, choiceOnlyOne(openParenthesis, slash)),
+        definition.skip(semicolon),
       ),
-    )
+    ),
+  ),
+)
+  .map(([definitions, source]) => ({ definitions, source: source.trimEnd() }));
+export const dictionaryParser = ignore
+  .with(
+    allWithCheck(new CheckedParser(notEnd, sequence(positionedHead, entry))),
   )
-  .parser();
-
-const definitionExtractor = spaces
-  .with(all(optionalAll(lex(head)).with(lex(match(/[^;]*;/, "definition")))))
-  .skip(end)
-  .parser();
-const definitionParser = spaces.with(definition).skip(end).parser();
-
-export function parseDictionary(sourceText: string): Dictionary {
-  const arrayResult = dictionaryParser(sourceText);
-  if (!arrayResult.isError()) {
-    return arrayResult.array[0];
-  } else {
-    const definitions = definitionExtractor(sourceText);
-    const errors = !definitions.isError()
-      ? definitions.array[0].flatMap((definition) =>
-        definitionParser(definition).errors.map((error) =>
-          new ArrayResultError(
-            `${error.message} at ${definition.trim()}`,
-            { cause: error },
-          )
-        )
-      )
-      : arrayResult.errors;
-    throw new AggregateError(deduplicateErrors(errors));
-  }
-}
+  .map((allEntries) => {
+    const entries = allEntries.flatMap(([words, definition]) =>
+      words.map((word) => [word, definition] as const)
+    );
+    const recorded: Set<string> = new Set();
+    const errors: Array<UnrecognizedError> = [];
+    for (const [head] of entries) {
+      if (recorded.has(head.value)) {
+        errors.push(
+          new UnrecognizedError(
+            `duplicate Toki Pona word "${head.value}"`,
+            head,
+          ),
+        );
+      } else {
+        recorded.add(head.value);
+      }
+    }
+    if (errors.length > 0) {
+      throw new AggregateError(errors);
+    } else {
+      return new Map(
+        entries.map(([head, definition]) => [head.value, definition]),
+      );
+    }
+  });

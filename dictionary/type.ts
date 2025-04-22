@@ -57,19 +57,18 @@ export type VerbForms = Readonly<{
   presentSingular: string;
   past: string;
 }>;
-export type Verb =
-  & VerbForms
-  & Readonly<{
-    directObject: null | Noun;
-    indirectObject: ReadonlyArray<
-      Readonly<{
-        preposition: string;
-        object: Noun;
-      }>
-    >;
-    forObject: boolean | string;
-    predicateType: null | "verb" | "noun adjective";
-  }>;
+export type PartialVerb = Readonly<{
+  directObject: null | Noun;
+  indirectObject: ReadonlyArray<
+    Readonly<{
+      preposition: string;
+      object: Noun;
+    }>
+  >;
+  forObject: boolean | string;
+  predicateType: null | "verb" | "noun adjective";
+}>;
+export type Verb = VerbForms & PartialVerb;
 export type Definition =
   | Readonly<{ type: "filler"; before: string; repeat: string; after: string }>
   | Readonly<{ type: "particle definition"; definition: string }>
@@ -94,6 +93,6 @@ export type Definition =
   | Readonly<{ type: "interjection"; interjection: string }>;
 export type Entry = Readonly<{
   definitions: ReadonlyArray<Definition>;
-  src: string;
+  source: string;
 }>;
 export type Dictionary = Map<string, Entry>;

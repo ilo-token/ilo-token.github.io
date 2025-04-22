@@ -13,7 +13,7 @@ interpretation of the text. No machine learning involved.
 
 After using `git clone`, you'll need [Deno](https://deno.com/) for this project.
 Then you'll need to install the dependencies before running any command:
-`deno install`.
+`deno install --frozen`.
 
 After this, you can start away by running `deno task start` then open the link
 provided by the stdout to open a local copy of ilo Token. The server will

@@ -3,8 +3,9 @@
 import { assert } from "@std/assert/assert";
 import { exists } from "@std/fs/exists";
 import { BuildOptions, context } from "esbuild";
-import { AsyncDisposableStack } from "../misc/async_disposable_stack.ts";
 import { OPTIONS } from "./config.ts";
+
+const DICTIONARY = new URL("../dictionary/dictionary.ts", import.meta.url);
 
 const BUILD_OPTIONS: BuildOptions = {
   ...OPTIONS,
@@ -13,16 +14,22 @@ const BUILD_OPTIONS: BuildOptions = {
 };
 async function watchMain(): Promise<AsyncDisposable> {
   await using stack = new AsyncDisposableStack();
-  const buildContext = await context(BUILD_OPTIONS);
-  stack.defer(async () => await buildContext.dispose());
-  buildContext.watch();
-  buildContext.serve({ servedir: "./dist/" });
-  return stack.move();
+  const buildContext = stack.use({
+    context: await context(BUILD_OPTIONS),
+    async [Symbol.asyncDispose](): Promise<void> {
+      await this.context.dispose();
+    },
+  });
+  buildContext.context.watch();
+  buildContext.context.serve({ servedir: "./dist/" });
+  stack.move();
+  return buildContext;
 }
 async function watchDictionary(): Promise<number> {
   const command = new Deno.Command(Deno.execPath(), {
     args: [
       "run",
+      "-E=NO_COLOR",
       "-R=./dictionary/dictionary",
       "-W=./dictionary/dictionary.ts",
       "--no-prompt",
@@ -43,17 +50,17 @@ async function watchDictionary(): Promise<number> {
   return status.code;
 }
 if (import.meta.main) {
-  let statusCode: number;
-  {
-    if (
-      !await exists(new URL("../dictionary/dictionary.ts", import.meta.url))
-    ) {
-      const Dictionary = await import("../dictionary/build.ts");
-      await Dictionary.build();
+  if (!await exists(DICTIONARY)) {
+    const Dictionary = await import("../dictionary/build.ts");
+    if (!await Dictionary.build()) {
+      await Dictionary.buildWithDictionary(new Map());
+      // deno-lint-ignore no-console
+      console.error(
+        "Dictionary failed to build. Empty dictionary is used instead. Please fix it.",
+      );
     }
-    const statusCodePromise = watchDictionary();
-    await using _ = await watchMain();
-    statusCode = await statusCodePromise;
   }
-  Deno.exit(statusCode);
+  const statusCodePromise = watchDictionary();
+  await using _ = await watchMain();
+  Deno.exitCode = await statusCodePromise;
 }

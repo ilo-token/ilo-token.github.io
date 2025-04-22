@@ -22,7 +22,6 @@ export const SENTENCE_TERMINATOR_TO_ASCII = new Map([
   [ELLIPSIS, "..."] as const,
   [MIDDLE_DOT, "."] as const,
 ]);
-
 export const SENTENCE_TERMINATOR = characterClass(
   SENTENCE_TERMINATOR_TO_ASCII.keys(),
 );

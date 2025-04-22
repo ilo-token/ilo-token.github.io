@@ -1,15 +1,16 @@
-import { ArrayResult } from "../array_result.ts";
 import { mapNullable, nullableAsArray } from "../../misc/misc.ts";
+import { ArrayResult } from "../array_result.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as Composer from "../parser/composer.ts";
 import { AdjectiveWithInWay, fixAdjective } from "./adjective.ts";
 import { fixAdverb } from "./adverb.ts";
 import * as English from "./ast.ts";
-import { findNumber, fixDeterminer } from "./determiner.ts";
+import { fixDeterminer, getNumber } from "./determiner.ts";
 import {
   ExhaustedError,
   FilteredError,
   TranslationTodoError,
+  UntranslatableError,
 } from "./error.ts";
 import { CONJUNCTION } from "./misc.ts";
 import {
@@ -18,16 +19,17 @@ import {
   multipleModifiers,
 } from "./modifier.ts";
 import { fromNounForms, PartialNoun } from "./noun.ts";
-import { nounAsPreposition } from "./preposition.ts";
+import { nounAsPreposition, preposition } from "./preposition.ts";
 import { Place } from "./pronoun.ts";
 import { PartialCompoundVerb, PartialVerb } from "./verb.ts";
-import { wordUnit } from "./word_unit.ts";
 import { word } from "./word.ts";
+import { wordUnit } from "./word_unit.ts";
 
 export type PhraseTranslation =
   | Readonly<{ type: "noun"; noun: English.NounPhrase }>
   | (Readonly<{ type: "adjective" }> & AdjectiveWithInWay)
   | Readonly<{ type: "verb"; verb: PartialCompoundVerb }>;
+
 function nounPhrase(
   options: Readonly<{
     emphasis: boolean;
@@ -41,7 +43,7 @@ function nounPhrase(
       ...[...modifier.determiner].reverse(),
       ...partialNoun.determiner,
     ]);
-    const quantity = findNumber(determiner);
+    const quantity = getNumber(determiner);
     const adjective = fixAdjective([
       ...[...modifier.adjective].reverse(),
       ...partialNoun.adjective,
@@ -192,7 +194,7 @@ function defaultPhrase(
       } else if (
         includeVerb && headWord.type === "verb" && modifier.type === "adverbial"
       ) {
-        return new ArrayResult<PhraseTranslation>([{
+        return new ArrayResult([{
           type: "verb",
           verb: {
             ...verbPhrase({ emphasis, verb: headWord, modifier }),
@@ -205,6 +207,27 @@ function defaultPhrase(
     })
     .addErrorWhenNone(() => new ExhaustedError(Composer.phrase(phrase)));
 }
+function prepositionAsVerb(preposition: English.Preposition): PartialVerb {
+  return {
+    modal: null,
+    adverb: [],
+    first: {
+      presentPlural: "are",
+      presentSingular: "is",
+      past: "were",
+    },
+    reduplicationCount: 1,
+    wordEmphasis: false,
+    rest: [],
+    subjectComplement: null,
+    object: null,
+    objectComplement: null,
+    preposition: [preposition],
+    forObject: false,
+    predicateType: null,
+    phraseEmphasis: false,
+  };
+}
 export function phrase(
   options: Readonly<{
     phrase: TokiPona.Phrase;
@@ -213,12 +236,24 @@ export function phrase(
     includeVerb: boolean;
   }>,
 ): ArrayResult<PhraseTranslation> {
-  const { phrase } = options;
+  const { phrase, includeVerb } = options;
   switch (phrase.type) {
     case "default":
       return defaultPhrase({ ...options, phrase });
-    case "preverb":
     case "preposition":
+      if (includeVerb) {
+        return preposition(phrase)
+          .map(prepositionAsVerb)
+          .map((verb) => ({
+            type: "verb",
+            verb: { ...verb, type: "simple" },
+          }));
+      } else {
+        return new ArrayResult(
+          new UntranslatableError("preposition", "noun or adjective"),
+        );
+      }
+    case "preverb":
       return new ArrayResult(new TranslationTodoError(phrase.type));
   }
 }
@@ -325,7 +360,7 @@ export function multiplePhrases(
     phrases: TokiPona.MultiplePhrases;
     place: Place;
     includeGerund: boolean;
-    andParticle: string;
+    andParticle: null | string;
     includeVerb: boolean;
   }>,
 ): ArrayResult<PhraseTranslation> {
@@ -346,7 +381,9 @@ export function multiplePhrases(
               phrase.type === "adjective" && phrase.inWayPhrase != null
             )
           ) {
-            throw new FilteredError("in way phrase within compound");
+            throw new FilteredError(
+              "in [adjective] way phrase within compound",
+            );
           }
           if (phrase.every((phrase) => phrase.type === "noun")) {
             return {

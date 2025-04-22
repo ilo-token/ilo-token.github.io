@@ -1,3 +1,4 @@
+import { Definition } from "../../dictionary/type.ts";
 import { ArrayResult } from "../array_result.ts";
 import { dictionary } from "../dictionary.ts";
 import * as TokiPona from "../parser/ast.ts";
@@ -8,11 +9,13 @@ import { PartialNoun, partialNoun } from "./noun.ts";
 import { number } from "./number.ts";
 import { partialPronoun, Place } from "./pronoun.ts";
 import { PartialVerb, partialVerb } from "./verb.ts";
+import { word } from "./word.ts";
 
 export type WordUnitTranslation =
   | (Readonly<{ type: "noun" }> & PartialNoun)
   | Readonly<{ type: "adjective"; adjective: English.AdjectivePhrase }>
   | (Readonly<{ type: "verb" }> & PartialVerb);
+
 function defaultWordUnit(
   options: Readonly<{
     word: string;
@@ -35,10 +38,10 @@ function defaultWordUnit(
               definition,
               emphasis: emphasis != null,
             })
-              .map<WordUnitTranslation>((noun) => ({ ...noun, type: "noun" }));
+              .map((noun) => ({ ...noun, type: "noun" }));
           }
         case "personal pronoun":
-          return new ArrayResult<WordUnitTranslation>([{
+          return new ArrayResult([{
             ...partialPronoun({
               ...options,
               pronoun: definition,
@@ -51,7 +54,7 @@ function defaultWordUnit(
             return new ArrayResult();
           } else {
             return adjective({ ...options, definition })
-              .map<WordUnitTranslation>((adjective) => ({
+              .map((adjective) => ({
                 type: "adjective",
                 adjective,
               }));
@@ -61,7 +64,7 @@ function defaultWordUnit(
             ...options,
             adjectives: definition.adjective,
           })
-            .map<WordUnitTranslation>((adjective) => ({
+            .map((adjective) => ({
               type: "adjective",
               adjective,
             }));
@@ -71,7 +74,7 @@ function defaultWordUnit(
             definition,
             emphasis: emphasis != null,
           })
-            .map<WordUnitTranslation>((verb) => ({ ...verb, type: "verb" }));
+            .map((verb) => ({ ...verb, type: "verb" }));
         default:
           return new ArrayResult();
       }
@@ -88,7 +91,7 @@ export function wordUnit(
   switch (wordUnit.type) {
     case "number":
       return number(wordUnit.words)
-        .map<WordUnitTranslation>((number) => ({
+        .map((number) => ({
           type: "noun",
           determiner: [],
           adjective: [],
@@ -111,6 +114,28 @@ export function wordUnit(
         emphasis: wordUnit.emphasis,
       });
     }
+  }
+}
+export function fromSimpleDefinition(
+  wordUnit: TokiPona.WordUnit,
+  mapper: (definition: Definition) => null | string,
+): ArrayResult<English.Word> {
+  switch (wordUnit.type) {
+    case "default":
+    case "reduplication":
+      return new ArrayResult(dictionary.get(wordUnit.word)!.definitions)
+        .filterMap(mapper)
+        .map((useWord) =>
+          word({
+            word: useWord,
+            reduplicationCount: getReduplicationCount(wordUnit),
+            emphasis: wordUnit.emphasis != null,
+          })
+        );
+    case "number":
+      return new ArrayResult();
+    case "x ala x":
+      return new ArrayResult(new TranslationTodoError("x ala x"));
   }
 }
 export function getReduplicationCount(wordUnit: TokiPona.WordUnit): number {

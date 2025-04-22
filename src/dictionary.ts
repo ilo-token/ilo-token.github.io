@@ -1,6 +1,6 @@
 import { dictionary as globalDictionary } from "../dictionary/dictionary.ts";
-import { parseDictionary } from "../dictionary/parser.ts";
 import { Definition, Dictionary } from "../dictionary/type.ts";
+import { load } from "../telo_misikeke/telo_misikeke.js";
 
 // All of these global constants are mutable
 
@@ -16,8 +16,7 @@ export const tokiPonaWordSet: Set<string> = new Set();
 
 update();
 
-export function loadCustomDictionary(dictionaryText: string): void {
-  const dictionary = parseDictionary(dictionaryText);
+export function loadCustomDictionary(dictionary: Dictionary): void {
   customDictionary.clear();
   for (const [key, value] of dictionary) {
     customDictionary.set(key, value);
@@ -38,9 +37,7 @@ function update(): void {
   }
   redefineSet(
     contentWordSet,
-    ({ type }) =>
-      type !== "filler" &&
-      type !== "particle definition",
+    ({ type }) => !["filler", "particle definition"].includes(type),
   );
   redefineSetWithType(prepositionSet, "preposition");
   redefineSet(
@@ -52,6 +49,7 @@ function update(): void {
   redefineSetWithType(fillerSet, "filler");
   redefineSetWithType(numeralSet, "numeral");
   redefineSet(tokiPonaWordSet, () => true);
+  load([...words]);
 }
 function redefineSet(
   set: Set<string>,

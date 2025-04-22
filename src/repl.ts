@@ -3,7 +3,7 @@
 import { unescape } from "@std/html/entities";
 import entityList from "@std/html/named-entity-list.json" with { type: "json" };
 import { repeatArray } from "../misc/misc.ts";
-import { translate } from "./mod.ts";
+import { translate } from "./translator/translator.ts";
 
 if (import.meta.main) {
   // deno-lint-ignore no-console
@@ -15,9 +15,13 @@ if (import.meta.main) {
     if (input == null) {
       break;
     }
-    try {
-      const arrayResult = translate(input);
-      for (const translation of arrayResult) {
+    const result = translate(input);
+    if (result.isError()) {
+      // deno-lint-ignore no-console
+      console.error(new AggregateError(result.errors));
+    } else {
+      const translations = result.array;
+      for (const translation of translations) {
         const count = translation.match(/<strong>/g)?.length ?? 0;
         const text = unescape(
           translation.replaceAll(/<\/?strong>/g, "%c"),
@@ -29,9 +33,6 @@ if (import.meta.main) {
           ...repeatArray(["font-weight: bold", ""], count).flat(),
         );
       }
-    } catch (error) {
-      // deno-lint-ignore no-console
-      console.error(error);
     }
   }
 }

@@ -1,6 +1,6 @@
 import * as Dictionary from "../../dictionary/type.ts";
+import { nullableAsArray } from "../../misc/misc.ts";
 import { ArrayResult } from "../array_result.ts";
-import { nullableAsArray, throwError } from "../../misc/misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
 import { UntranslatableError } from "./error.ts";
@@ -55,27 +55,24 @@ export function compoundAdjective(
   }>,
 ): ArrayResult<English.AdjectivePhrase & { type: "compound" }> {
   const { adjectives, reduplicationCount, emphasis } = options;
-  return ArrayResult.from(() =>
-    reduplicationCount === 1
-      ? ArrayResult.combine(
-        ...adjectives
-          .map((definition) =>
-            adjective({ definition, reduplicationCount: 1, emphasis })
-          ),
-      )
-        .map((adjective) => ({
-          type: "compound",
-          conjunction: "and",
-          adjective,
-          emphasis: false,
-        }))
-      : throwError(
-        new UntranslatableError(
-          "reduplication",
-          "compound adjective",
+  if (reduplicationCount === 1) {
+    return ArrayResult.combine(
+      ...adjectives
+        .map((definition) =>
+          adjective({ definition, reduplicationCount: 1, emphasis })
         ),
-      )
-  );
+    )
+      .map((adjective) => ({
+        type: "compound",
+        conjunction: "and",
+        adjective,
+        emphasis: false,
+      }));
+  } else {
+    return new ArrayResult(
+      new UntranslatableError("reduplication", "compound adjective"),
+    );
+  }
 }
 export function rankAdjective(kind: Dictionary.AdjectiveType): number {
   return [
@@ -94,7 +91,7 @@ export function fixAdjective(
   adjective: ReadonlyArray<English.AdjectivePhrase>,
 ): ReadonlyArray<English.AdjectivePhrase> {
   return adjective
-    .flatMap<English.AdjectivePhrase & { type: "simple" }>((adjective) => {
+    .flatMap((adjective) => {
       switch (adjective.type) {
         case "simple":
           return [adjective];
