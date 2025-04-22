@@ -5,7 +5,7 @@ import * as Composer from "../parser/composer.ts";
 import { AdjectiveWithInWay, fixAdjective } from "./adjective.ts";
 import { fixAdverb } from "./adverb.ts";
 import * as English from "./ast.ts";
-import { getNumber, fixDeterminer } from "./determiner.ts";
+import { fixDeterminer, getNumber } from "./determiner.ts";
 import {
   ExhaustedError,
   FilteredError,
