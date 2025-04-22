@@ -5,7 +5,7 @@ import * as Composer from "../parser/composer.ts";
 import { AdjectiveWithInWay, fixAdjective } from "./adjective.ts";
 import { fixAdverb } from "./adverb.ts";
 import * as English from "./ast.ts";
-import { findNumber, fixDeterminer } from "./determiner.ts";
+import { getNumber, fixDeterminer } from "./determiner.ts";
 import {
   ExhaustedError,
   FilteredError,
@@ -43,7 +43,7 @@ function nounPhrase(
       ...[...modifier.determiner].reverse(),
       ...partialNoun.determiner,
     ]);
-    const quantity = findNumber(determiner);
+    const quantity = getNumber(determiner);
     const adjective = fixAdjective([
       ...[...modifier.adjective].reverse(),
       ...partialNoun.adjective,

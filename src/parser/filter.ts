@@ -149,7 +149,7 @@ export const MULTIPLE_MODIFIERS_RULES: ReadonlyArray<
             return [];
         }
       });
-      const duplicate = findDuplicate(words);
+      const duplicate = getDuplicate(words);
       if (duplicate.size === 0) {
         return true;
       } else {
@@ -423,7 +423,7 @@ function phraseHasTopLevelEmphasis(phrase: Phrase): boolean {
       return phrase.emphasis != null;
   }
 }
-function findDuplicate<T>(iterable: Iterable<T>): Set<T> {
+function getDuplicate<T>(iterable: Iterable<T>): Set<T> {
   const unique = new Set<T>();
   const duplicates = new Set<T>();
   for (const value of iterable) {

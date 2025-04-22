@@ -26,7 +26,7 @@ function check(
   return quantities.some((quantity) => quantity === some) &&
     quantities.every((quantity) => quantity !== not);
 }
-export function findNumber(
+export function getNumber(
   determiners: ReadonlyArray<English.Determiner>,
 ): Dictionary.Quantity {
   const quantities = determiners.map(({ quantity }) => quantity);
