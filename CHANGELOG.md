@@ -7,14 +7,20 @@ NOTE: Before publishing:
 - update this very document, don't forget to add release date
 -->
 
+<!--
 <details>
-
 <summary>On development changelog</summary>
 
-## 0.6.0 (On development)
+## (On development)
 
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
+</details>
+-->
+
+## 0.6.0
+
+Released 22 April 2025
 
 ilo Token can now translate prepositions. This includes preposition before "la"
 such as "tawa mi la sina pona" and prepositional predicate such as "mi kepeken
@@ -32,8 +38,6 @@ ilo".
   now shown.
 - Improve custom dictionary error messages. There is now a dedicated space for
   displaying errors.
-
-</details>
 
 ## 0.5.3
 
