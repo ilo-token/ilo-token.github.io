@@ -1,13 +1,13 @@
-import { nullableAsArray, repeatWithSpace } from "../../misc/misc.ts";
+import { nullableAsArray } from "../../misc/misc.ts";
 import { ArrayResult } from "../array_result.ts";
 import { dictionary } from "../dictionary.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { definitionAsPlainString } from "./as_string.ts";
 import * as English from "./ast.ts";
 import { clause, contextClause, unwrapSingleWord } from "./clause.ts";
-import { FilteredError, TranslationTodoError } from "./error.ts";
-import { noEmphasis } from "./word.ts";
-import { fromSimpleDefinition } from "./word_unit.ts";
+import { TranslationTodoError } from "./error.ts";
+import { noEmphasis, word } from "./word.ts";
+import { fromSimpleDefinition, getReduplicationCount } from "./word_unit.ts";
 
 function filler(filler: TokiPona.Filler): ArrayResult<string> {
   switch (filler.type) {
@@ -64,26 +64,6 @@ function emphasisAsPunctuation(
     return `${questionMark}${exclamationMark}`;
   }
 }
-function anuSeme(seme: TokiPona.HeadedWordUnit): English.Clause {
-  let interjection: string;
-  switch (seme.type) {
-    case "default":
-      interjection = "right";
-      break;
-    case "reduplication":
-      interjection = repeatWithSpace("right", seme.count);
-      break;
-    case "x ala x":
-      throw new FilteredError('"seme ala seme"');
-  }
-  return {
-    type: "interjection",
-    interjection: {
-      word: interjection,
-      emphasis: seme.emphasis != null,
-    },
-  };
-}
 function sentence(
   sentence: TokiPona.Sentence,
   isFinal: boolean,
@@ -103,7 +83,17 @@ function sentence(
           ),
         );
       }
-      const useAnuSeme = nullableAsArray(sentence.anuSeme).map(anuSeme);
+      const useAnuSeme = nullableAsArray(sentence.anuSeme)
+        .map((seme) =>
+          ({
+            type: "interjection",
+            interjection: word({
+              word: "right",
+              reduplicationCount: getReduplicationCount(seme),
+              emphasis: seme.emphasis != null,
+            }),
+          }) as const
+        );
       const interjectionClause: ArrayResult<English.Clause> =
         sentence.contextClauses.length === 0 &&
           sentence.startingParticle == null
