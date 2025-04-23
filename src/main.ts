@@ -302,7 +302,7 @@ function main(): void {
         const original = customDictionaryTextBox.value.trimEnd();
         const append = original === "" ? "" : "\n\n";
         customDictionaryTextBox.value =
-          `${original}${append}${word}:${definitions.trimEnd()}\n`;
+          `${original}${append}${word}:${definitions}\n`;
         customDictionaryTextBox.scrollTo(
           0,
           customDictionaryTextBox.scrollHeight,
