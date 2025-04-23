@@ -17,6 +17,7 @@
     "jsr:@std/random@0.1": "0.1.0",
     "jsr:@std/regexp@^1.0.1": "1.0.1",
     "jsr:@std/text@^1.0.12": "1.0.12",
+    "npm:browser-dtector@^4.1.0": "4.1.0",
     "npm:compromise@^14.14.3": "14.14.4",
     "npm:esbuild@~0.25.2": "0.25.2"
   },
@@ -154,6 +155,9 @@
     "@esbuild/win32-x64@0.25.2": {
       "integrity": "sha512-kM3HKb16VIXZyIeVrM1ygYmZBKybX8N4p754bw390wGO3Tf2j4L2/WYL+4suWujpgf6GBYs3jv7TyUivdd05JA=="
     },
+    "browser-dtector@4.1.0": {
+      "integrity": "sha512-ZnLAE4aknz8f7UWJ9/QJ9rNlHjBi59aVu6a73WGnUUAIXak6+2AbY/I1fnRPJhuqn94Lce63u9ecKNP+D9f71w=="
+    },
     "compromise@14.14.4": {
       "integrity": "sha512-QdbJwronwxeqb7a5KFK/+Y5YieZ4PE1f7ai0vU58Pp4jih+soDCBMuKVbhDEPQ+6+vI3vSiG4UAAjTAXLJw1Qw==",
       "dependencies": [
@@ -214,6 +218,7 @@
       "jsr:@std/random@0.1",
       "jsr:@std/regexp@^1.0.1",
       "jsr:@std/text@^1.0.12",
+      "npm:browser-dtector@^4.1.0",
       "npm:compromise@^14.14.3",
       "npm:esbuild@~0.25.2"
     ]

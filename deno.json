@@ -73,6 +73,7 @@
     "@std/random": "jsr:@std/random@^0.1.0",
     "@std/regexp": "jsr:@std/regexp@^1.0.1",
     "@std/text": "jsr:@std/text@^1.0.12",
+    "browser-dtector": "npm:browser-dtector@^4.1.0",
     "compromise": "npm:compromise@^14.14.3",
     "esbuild": "npm:esbuild@^0.25.2"
   }

@@ -8,6 +8,7 @@ if (LIVE_RELOAD) {
   new EventSource("/esbuild")
     .addEventListener("change", () => location.reload());
 }
+import BrowserDetector from "browser-dtector";
 import { dictionary } from "../dictionary/dictionary.ts";
 import { dictionaryParser } from "../dictionary/parser.ts";
 import PROJECT_DATA from "../project_data.json" with { type: "json" };
@@ -130,6 +131,9 @@ function main(): void {
 
   const errorBox = document.getElementById("error-box") as HTMLDialogElement;
   const errorCode = document.getElementById("error-code") as HTMLElement;
+  const browserDetails = document.getElementById(
+    "browser-details",
+  ) as HTMLElement;
   const errorCloseButton = document.getElementById(
     "error-close-button",
   ) as HTMLButtonElement;
@@ -147,6 +151,8 @@ function main(): void {
   // handle error
   addEventListener("error", (event) => {
     errorCode.innerText = event.message;
+    const details = new BrowserDetector(navigator.userAgent).getBrowserInfo();
+    browserDetails.innerText = `${details.name} ${details.version}`;
     errorBox.showModal();
   });
 
