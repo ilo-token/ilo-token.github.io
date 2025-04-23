@@ -233,6 +233,9 @@ export const PREPOSITION_RULE: ReadonlyArray<(phrase: Preposition) => boolean> =
 export const CONTEXT_CLAUSE_RULE: ReadonlyArray<
   (contextClause: ContextClause) => boolean
 > = [
+  // Only allow "anu la" when allowed by the settings
+  (clause) => clause.type !== "anu" || settings.hardcodedAnuLa,
+
   // Prevent "anu ala anu la"
   (clause) =>
     clause.type !== "anu" || clause.anu.type !== "x ala x" ||
