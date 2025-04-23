@@ -1,5 +1,6 @@
 import { assertGreater } from "@std/assert/greater";
 import { MemoizationCacheResult, memoize } from "@std/cache/memoize";
+import { lazy as lazyEval } from "../../misc/misc.ts";
 import { ArrayResult, ArrayResultError } from "../array_result.ts";
 
 type ParserResult<T> = ArrayResult<Readonly<{ value: T; length: number }>>;
@@ -188,7 +189,7 @@ export function sequence<T extends ReadonlyArray<unknown>>(
 }
 export const many = memoize(<T>(parser: Parser<T>): Parser<ReadonlyArray<T>> =>
   choice(
-    sequence(parser, lazy(() => many(parser)))
+    sequence(parser, lazy(lazyEval(() => many(parser))))
       .map(([first, rest]) => [first, ...rest]),
     emptyArray,
   )
@@ -201,7 +202,7 @@ export function manyAtLeastOnce<T>(
 }
 export const all = memoize(<T>(parser: Parser<T>): Parser<ReadonlyArray<T>> =>
   choiceOnlyOne(
-    sequence(parser, lazy(() => all(parser)))
+    sequence(parser, lazy(lazyEval(() => all(parser))))
       .map(([first, rest]) => [first, ...rest]),
     emptyArray,
   )
@@ -382,7 +383,7 @@ export const allWithCheck = memoize(<T>(
   choiceWithCheck(
     new CheckedParser(
       parser.check,
-      sequence(parser.parser, lazy(() => allWithCheck(parser)))
+      sequence(parser.parser, lazy(lazyEval(() => allWithCheck(parser))))
         .map(([first, rest]) => [first, ...rest]),
     ),
     checkedAsWhole(emptyArray),
