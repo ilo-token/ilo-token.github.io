@@ -59,7 +59,10 @@ const DICTIONARY_LOADING_FAILED_MESSAGE =
   "syntax. Please fix it. Apologies for the inconvenience.";
 const NO_WORD_MESSAGE = "Please provide a word";
 const WORD_NOT_FOUND_MESSAGE = "Word not found";
-const DICTIONARY_ERROR_MESSAGE = "Please fix the errors before saving";
+const WORD_ALREADY_IMPORTED_MESSAGE = "The word is already imported";
+const DICTIONARY_ERROR_MESSAGE_ON_IMPORT =
+  "Please fix the errors before adding words";
+const DICTIONARY_ERROR_MESSAGE_ON_SAVE = "Please fix the errors before saving";
 
 function main(): void {
   // load elements
@@ -296,6 +299,12 @@ function main(): void {
     const word = importWordTextBox.value.trim();
     if (word === "") {
       showMessage(NO_WORD_MESSAGE);
+    } else if (currentDictionary.isError()) {
+      showMessage(WORD_ALREADY_IMPORTED_MESSAGE);
+    } else if (
+      currentDictionary.unwrap()[0].has(word)
+    ) {
+      showMessage(DICTIONARY_ERROR_MESSAGE_ON_IMPORT);
     } else {
       const definitions = dictionary.get(word)?.source;
       if (definitions != null) {
@@ -307,6 +316,7 @@ function main(): void {
           0,
           customDictionaryTextBox.scrollHeight,
         );
+        updateDictionary();
       } else {
         showMessage(WORD_NOT_FOUND_MESSAGE);
       }
@@ -344,7 +354,7 @@ function main(): void {
       setIgnoreError(DICTIONARY_KEY, customDictionaryTextBox.value);
       customDictionaryDialogBox.close();
     } else {
-      showMessage(DICTIONARY_ERROR_MESSAGE);
+      showMessage(DICTIONARY_ERROR_MESSAGE_ON_SAVE);
     }
   }
   closeButton.addEventListener("click", () => {
