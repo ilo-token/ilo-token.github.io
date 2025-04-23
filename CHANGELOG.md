@@ -7,7 +7,7 @@ NOTE: Before publishing:
 - update this very document, don't forget to add release date
 -->
 
-<!-- TODO: add "Allow hardcoded anu la translation" on wiki -->
+<!-- TODO: add "Allow hardcoded anu la translation" setting on wiki -->
 
 <details>
 
@@ -18,8 +18,8 @@ NOTE: Before publishing:
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
 
-- Added "Allow hardcoded anu la translation" anticipating "anu la" translation
-  which isn't implemented yet.
+- Added "Allow hardcoded anu la translation" setting anticipating "anu la"
+  translation which isn't implemented yet.
 
 </details>
 
