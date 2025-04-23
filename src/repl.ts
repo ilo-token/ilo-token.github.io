@@ -20,7 +20,7 @@ if (import.meta.main) {
       // deno-lint-ignore no-console
       console.error(new AggregateError(result.errors));
     } else {
-      const translations = result.array;
+      const translations = result.unwrap();
       for (const translation of translations) {
         const count = translation.match(/<strong>/g)?.length ?? 0;
         const text = unescape(

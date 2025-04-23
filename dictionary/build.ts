@@ -36,7 +36,7 @@ export async function build(): Promise<boolean> {
   const endDictionary = performance.now();
   let dictionary: Dictionary;
   if (!result.isError()) {
-    dictionary = result.array[0];
+    dictionary = result.unwrap()[0];
   } else {
     displayError(text, result.errors);
     return false;

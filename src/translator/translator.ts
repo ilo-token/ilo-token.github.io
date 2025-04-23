@@ -14,7 +14,7 @@ export function translate(tokiPona: string): ArrayResult<string> {
     .flatMap(multipleSentences)
     .map(EnglishComposer.multipleSentences);
   if (!arrayResult.isError()) {
-    const values = distinct(arrayResult.array);
+    const values = distinct(arrayResult.unwrap());
     if (settings.randomize) {
       return new ArrayResult(shuffle(values));
     } else {

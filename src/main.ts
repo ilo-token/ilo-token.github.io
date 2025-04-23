@@ -180,7 +180,7 @@ function main(): void {
 
   // load custom dictionary
   if (!currentDictionary.isError()) {
-    loadCustomDictionary(currentDictionary.array[0]);
+    loadCustomDictionary(currentDictionary.unwrap()[0]);
   } else {
     showDictionaryError();
     showMessage(DICTIONARY_LOADING_FAILED_MESSAGE);
@@ -240,7 +240,7 @@ function main(): void {
     errorDisplay.innerText = "";
     const result = translate(inputTextBox.value);
     if (!result.isError()) {
-      for (const translation of result.array) {
+      for (const translation of result.unwrap()) {
         const list = document.createElement("li");
         list.innerHTML = translation;
         outputList.appendChild(list);
@@ -350,7 +350,7 @@ function main(): void {
     if (!currentDictionary.isError()) {
       lastSavedText = customDictionaryTextBox.value;
       lastSavedDictionary = currentDictionary;
-      loadCustomDictionary(currentDictionary.array[0]);
+      loadCustomDictionary(currentDictionary.unwrap()[0]);
       setIgnoreError(DICTIONARY_KEY, customDictionaryTextBox.value);
       customDictionaryDialogBox.close();
     } else {
