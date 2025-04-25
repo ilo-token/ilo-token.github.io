@@ -145,6 +145,12 @@ function main(): void {
     "version",
   ) as HTMLAnchorElement;
 
+  // determines whether the dictionary can be automatically parsed
+  function autoParse(): boolean {
+    return customDictionaryTextBox.value.length <=
+      DICTIONARY_AUTO_PARSE_THRESHOLD;
+  }
+
   // emulates `window.alert`
   function showMessage(useMessage: string): void {
     message.innerText = useMessage;
@@ -334,10 +340,6 @@ function main(): void {
     }
     tryCloseDictionary();
   });
-  function autoParse(): boolean {
-    return customDictionaryTextBox.value.length <=
-      DICTIONARY_AUTO_PARSE_THRESHOLD;
-  }
   function updateDictionary(): void {
     currentDictionary = dictionaryParser.parse(customDictionaryTextBox.value);
     showDictionaryError();
