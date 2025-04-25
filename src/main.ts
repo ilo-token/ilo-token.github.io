@@ -299,10 +299,10 @@ function main(): void {
     const word = importWordTextBox.value.trim();
     if (word === "") {
       showMessage(NO_WORD_MESSAGE);
-    } else if (currentDictionary.isError()) {
+    } else if (autoParse() && currentDictionary.isError()) {
       showMessage(DICTIONARY_ERROR_MESSAGE_ON_IMPORT);
     } else if (
-      currentDictionary.unwrap()[0].has(word)
+      autoParse() && currentDictionary.unwrap()[0].has(word)
     ) {
       showMessage(WORD_ALREADY_IMPORTED_MESSAGE);
     } else {
@@ -316,35 +316,36 @@ function main(): void {
           0,
           customDictionaryTextBox.scrollHeight,
         );
-        updateDictionary();
+        updateIfCanAutoParse();
       } else {
         showMessage(WORD_NOT_FOUND_MESSAGE);
       }
     }
   }
-  customDictionaryTextBox.addEventListener("input", () => {
-    if (
-      customDictionaryTextBox.value.length <= DICTIONARY_AUTO_PARSE_THRESHOLD
-    ) {
-      updateDictionary();
-    }
-  });
+  customDictionaryTextBox.addEventListener("input", updateIfCanAutoParse);
   discardButton.addEventListener("click", () => {
     customDictionaryTextBox.value = lastSavedText;
     currentDictionary = lastSavedDictionary;
     tryCloseDictionary();
   });
   saveButton.addEventListener("click", () => {
-    if (
-      customDictionaryTextBox.value.length > DICTIONARY_AUTO_PARSE_THRESHOLD
-    ) {
+    if (!autoParse()) {
       updateDictionary();
     }
     tryCloseDictionary();
   });
+  function autoParse(): boolean {
+    return customDictionaryTextBox.value.length <=
+      DICTIONARY_AUTO_PARSE_THRESHOLD;
+  }
   function updateDictionary(): void {
     currentDictionary = dictionaryParser.parse(customDictionaryTextBox.value);
     showDictionaryError();
+  }
+  function updateIfCanAutoParse(): void {
+    if (autoParse()) {
+      updateDictionary();
+    }
   }
   function tryCloseDictionary(): void {
     if (!currentDictionary.isError()) {
