@@ -300,11 +300,11 @@ function main(): void {
     if (word === "") {
       showMessage(NO_WORD_MESSAGE);
     } else if (currentDictionary.isError()) {
-      showMessage(WORD_ALREADY_IMPORTED_MESSAGE);
+      showMessage(DICTIONARY_ERROR_MESSAGE_ON_IMPORT);
     } else if (
       currentDictionary.unwrap()[0].has(word)
     ) {
-      showMessage(DICTIONARY_ERROR_MESSAGE_ON_IMPORT);
+      showMessage(WORD_ALREADY_IMPORTED_MESSAGE);
     } else {
       const definitions = dictionary.get(word)?.source;
       if (definitions != null) {
