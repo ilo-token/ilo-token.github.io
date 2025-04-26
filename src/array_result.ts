@@ -29,7 +29,7 @@ export class ArrayResult<T> {
     return new ArrayResult(undefined, errors);
   }
   static empty(): ArrayResult<never> {
-    return ArrayResult.empty();
+    return new ArrayResult();
   }
   isError(): boolean {
     return this.array.length === 0;
