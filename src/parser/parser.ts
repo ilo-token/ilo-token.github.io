@@ -696,7 +696,7 @@ const sentence = choice<Sentence>(
     })),
 )
   .filter(filter(SENTENCE_RULE));
-export const parser = spaces
+export const parser: Parser<MultipleSentences> = spaces
   .with(
     lookAhead(allRest.filter((source) =>
       source.trimEnd().length <= 500 ||

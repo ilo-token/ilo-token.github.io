@@ -119,11 +119,11 @@ export class UnrecognizedError extends PositionedError {
 export function error(error: ArrayResultError): Parser<never> {
   return new Parser(() => ArrayResult.errors([error]));
 }
-export const empty = new Parser<never>(() => ArrayResult.empty());
-export const nothing = new Parser(() =>
+export const empty: Parser<never> = new Parser(() => ArrayResult.empty());
+export const nothing: Parser<null> = new Parser(() =>
   new ArrayResult([{ value: null, length: 0 }])
 );
-export const emptyArray = nothing.map(() => []);
+export const emptyArray: Parser<ReadonlyArray<never>> = nothing.map(() => []);
 export function lookAhead<T>(parser: Parser<T>): Parser<T> {
   return new Parser((input) =>
     parser.rawParser(input)
@@ -188,7 +188,7 @@ export function sequence<T extends ReadonlyArray<unknown>>(
   ) as Parser<any>;
 }
 export const many = memoize(<T>(parser: Parser<T>): Parser<ReadonlyArray<T>> =>
-  choice(
+  choice<ReadonlyArray<T>>(
     sequence(parser, lazy(lazyEval(() => many(parser))))
       .map(([first, rest]) => [first, ...rest]),
     emptyArray,
@@ -201,7 +201,7 @@ export function manyAtLeastOnce<T>(
     .map(([first, rest]) => [first, ...rest]);
 }
 export const all = memoize(<T>(parser: Parser<T>): Parser<ReadonlyArray<T>> =>
-  choiceOnlyOne(
+  choiceOnlyOne<ReadonlyArray<T>>(
     sequence(parser, lazy(lazyEval(() => all(parser))))
       .map(([first, rest]) => [first, ...rest]),
     emptyArray,
@@ -278,18 +278,18 @@ export function matchString(
     }
   });
 }
-export const allRest = new Parser((position) =>
+export const allRest: Parser<string> = new Parser((position) =>
   new ArrayResult([{
     value: currentSource.slice(position),
     length: currentSource.length - position,
   }])
 );
-export const end = new Parser((position) =>
+export const end: Parser<null> = new Parser((position) =>
   position === currentSource.length
     ? new ArrayResult([{ value: null, length: 0 }])
     : generateError(position, "end of text")
 );
-export const notEnd = new Parser((position) =>
+export const notEnd: Parser<null> = new Parser((position) =>
   position < currentSource.length
     ? new ArrayResult([{ value: null, length: 0 }])
     : ArrayResult.errors([
@@ -377,7 +377,7 @@ export function optionalWithCheck<T>(
 export const allWithCheck = memoize(<T>(
   parser: CheckedParser<T>,
 ): Parser<ReadonlyArray<T>> =>
-  choiceWithCheck(
+  choiceWithCheck<ReadonlyArray<T>>(
     new CheckedParser(
       parser.check,
       sequence(parser.parser, lazy(lazyEval(() => allWithCheck(parser))))

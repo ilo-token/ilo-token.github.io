@@ -14,6 +14,7 @@ import {
   matchString,
   nothing,
   optionalAll,
+  Parser,
   sequence,
   UnexpectedError,
   UnrecognizedError,
@@ -192,7 +193,7 @@ const combinedGlyphsToken = combinedGlyphs
   .map((words) => ({ type: "combined glyphs", words }) as const);
 const wordToken = word.map((word) => ({ type: "word", word }) as const);
 
-export const token = choiceOnlyOne<Token>(
+export const token: Parser<Token> = choiceOnlyOne<Token>(
   xAlaX,
   multipleA,
   choice<Token>(longWord, wordToken),

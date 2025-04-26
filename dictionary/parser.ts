@@ -24,7 +24,7 @@ import {
   withPosition,
   withSource,
 } from "../src/parser/parser_lib.ts";
-import { Definition, Noun, PartialVerb } from "./type.ts";
+import { Definition, Dictionary, Noun, PartialVerb } from "./type.ts";
 
 const RESERVED_SYMBOLS = "#()*+/:;<=>@[\\]^`{|}~";
 
@@ -594,7 +594,7 @@ const entry = withSource(
   ),
 )
   .map(([definitions, source]) => ({ definitions, source: source.trimEnd() }));
-export const dictionaryParser = ignore
+export const dictionaryParser: Parser<Dictionary> = ignore
   .with(
     allWithCheck(new CheckedParser(notEnd, sequence(positionedHead, entry))),
   )
