@@ -33,6 +33,7 @@ import {
   END_OF_REVERSE_LONG_GLYPH,
   SCALING_JOINER,
   SPECIAL_UCSUR_DESCRIPTIONS,
+  SpecialUcsur,
   STACKING_JOINER,
   START_OF_CARTOUCHE,
   START_OF_LONG_GLYPH,
@@ -49,11 +50,8 @@ const variationSelector = match(/[\uFE00-\uFE0F]/, "variation selector");
 const ucsur = match(UCSUR_CHARACTER_REGEX, "UCSUR glyph")
   .map((ucsur) => UCSUR_TO_LATIN.get(ucsur)!);
 
-const specificSpecialUcsur = memoize((specialUcsur: string) =>
-  matchString(
-    specialUcsur,
-    SPECIAL_UCSUR_DESCRIPTIONS.get(specialUcsur)!,
-  )
+const specificSpecialUcsur = memoize((specialUcsur: SpecialUcsur) =>
+  matchString(specialUcsur, SPECIAL_UCSUR_DESCRIPTIONS[specialUcsur])
 );
 const singleUcsurWord = ucsur.skip(optionalAll(variationSelector)).skip(spaces);
 const joiner = choiceOnlyOne(

@@ -15,24 +15,25 @@ export const END_OF_REVERSE_LONG_GLYPH = "\u{F199B}";
 export const UCSUR_MIDDLE_DOT = "\u{F199C}";
 export const UCSUR_COLON = "\u{F199D}";
 
-export const SPECIAL_UCSUR_DESCRIPTIONS = new Map(
-  Object.entries({
-    [START_OF_CARTOUCHE]: "start of cartouche",
-    [END_OF_CARTOUCHE]: "end of cartouche",
-    [COMBINING_CARTOUCHE_EXTENSION]: "combining cartouche extension",
-    [START_OF_LONG_PI]: "start of long pi",
-    [COMBINING_LONG_PI_EXTENSION]: "combining long pi extension",
-    [STACKING_JOINER]: "stacking joiner",
-    [SCALING_JOINER]: "scaling joiner",
-    [START_OF_LONG_GLYPH]: "start of long glyph",
-    [END_OF_LONG_GLYPH]: "end of long glyph",
-    [COMBINING_LONG_GLYPH_EXTENSION]: "combining long glyph extension",
-    [START_OF_REVERSE_LONG_GLYPH]: "start of reverse long glyph",
-    [END_OF_REVERSE_LONG_GLYPH]: "end of reverse long glyph",
-    [UCSUR_MIDDLE_DOT]: "middle dot",
-    [UCSUR_COLON]: "colon",
-  }),
-);
+export const SPECIAL_UCSUR_DESCRIPTIONS = {
+  [START_OF_CARTOUCHE]: "start of cartouche",
+  [END_OF_CARTOUCHE]: "end of cartouche",
+  [COMBINING_CARTOUCHE_EXTENSION]: "combining cartouche extension",
+  [START_OF_LONG_PI]: "start of long pi",
+  [COMBINING_LONG_PI_EXTENSION]: "combining long pi extension",
+  [STACKING_JOINER]: "stacking joiner",
+  [SCALING_JOINER]: "scaling joiner",
+  [START_OF_LONG_GLYPH]: "start of long glyph",
+  [END_OF_LONG_GLYPH]: "end of long glyph",
+  [COMBINING_LONG_GLYPH_EXTENSION]: "combining long glyph extension",
+  [START_OF_REVERSE_LONG_GLYPH]: "start of reverse long glyph",
+  [END_OF_REVERSE_LONG_GLYPH]: "end of reverse long glyph",
+  [UCSUR_MIDDLE_DOT]: "middle dot",
+  [UCSUR_COLON]: "colon",
+} as const;
+
+export type SpecialUcsur = keyof typeof SPECIAL_UCSUR_DESCRIPTIONS;
+
 export const PU = [
   "a",
   "akesi",
