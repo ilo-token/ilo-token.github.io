@@ -100,7 +100,7 @@ function nounPhrase(
       }));
     } else {
       // will be filled by ExhaustedError on `defaultPhrase`
-      return new ArrayResult<never>();
+      return ArrayResult.empty();
     }
   });
 }
@@ -202,7 +202,7 @@ function defaultPhrase(
           },
         }]);
       } else {
-        return new ArrayResult();
+        return ArrayResult.empty();
       }
     })
     .addErrorWhenNone(() => new ExhaustedError(Composer.phrase(phrase)));
@@ -249,12 +249,12 @@ export function phrase(
             verb: { ...verb, type: "simple" },
           }));
       } else {
-        return new ArrayResult(
+        return ArrayResult.errors([
           new UntranslatableError("preposition", "noun or adjective"),
-        );
+        ]);
       }
     case "preverb":
-      return new ArrayResult(new TranslationTodoError(phrase.type));
+      return ArrayResult.errors([new TranslationTodoError(phrase.type)]);
   }
 }
 function compoundNoun(

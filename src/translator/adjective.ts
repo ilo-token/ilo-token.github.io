@@ -69,9 +69,9 @@ export function compoundAdjective(
         emphasis: false,
       }));
   } else {
-    return new ArrayResult(
+    return ArrayResult.errors([
       new UntranslatableError("reduplication", "compound adjective"),
-    );
+    ]);
   }
 }
 export function rankAdjective(kind: Dictionary.AdjectiveType): number {

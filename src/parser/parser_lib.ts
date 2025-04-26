@@ -117,9 +117,9 @@ export class UnrecognizedError extends PositionedError {
   }
 }
 export function error(error: ArrayResultError): Parser<never> {
-  return new Parser(() => new ArrayResult(error));
+  return new Parser(() => ArrayResult.errors([error]));
 }
-export const empty = new Parser<never>(() => new ArrayResult());
+export const empty = new Parser<never>(() => ArrayResult.empty());
 export const nothing = new Parser(() =>
   new ArrayResult([{ value: null, length: 0 }])
 );
@@ -239,9 +239,9 @@ function generateError(position: number, expected: string) {
       length = token.length;
     }
   }
-  return new ArrayResult<never>(
+  return ArrayResult.errors([
     new UnexpectedError(unexpected, expected, { position, length }),
-  );
+  ]);
 }
 export function matchCapture(
   regex: RegExp,
@@ -292,13 +292,13 @@ export const end = new Parser((position) =>
 export const notEnd = new Parser((position) =>
   position < currentSource.length
     ? new ArrayResult([{ value: null, length: 0 }])
-    : new ArrayResult(
+    : ArrayResult.errors([
       new UnexpectedError(
         "end of text",
         "not end of text",
         { position, length: currentSource.length - position },
       ),
-    )
+    ])
 );
 export function withSource<T>(
   parser: Parser<T>,

@@ -66,7 +66,7 @@ function emphasisAsPunctuation(
 }
 function sentence(sentence: TokiPona.Sentence, isFinal: boolean) {
   if (sentence.interrogative === "x ala x") {
-    return new ArrayResult<never>(new TranslationTodoError("x ala x"));
+    return ArrayResult.errors([new TranslationTodoError("x ala x")]);
   }
   const punctuation = !isFinal && sentence.punctuation === ""
     ? ","
@@ -74,11 +74,11 @@ function sentence(sentence: TokiPona.Sentence, isFinal: boolean) {
   switch (sentence.type) {
     case "default": {
       if (sentence.startingParticle != null) {
-        return new ArrayResult<never>(
+        return ArrayResult.errors([
           new TranslationTodoError(
             `"${sentence.startingParticle.word}" starting particle`,
           ),
-        );
+        ]);
       }
       const useAnuSeme = nullableAsArray(sentence.anuSeme)
         .map((seme) =>
@@ -107,7 +107,7 @@ function sentence(sentence: TokiPona.Sentence, isFinal: boolean) {
               )
             )
             .map((interjection) => ({ type: "interjection", interjection }))
-          : new ArrayResult();
+          : ArrayResult.empty();
       const clauses = ArrayResult.combine(
         ArrayResult.combine(...sentence.contextClauses.map(contextClause))
           .map((clause) => clause.flat()),

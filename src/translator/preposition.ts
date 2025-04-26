@@ -52,9 +52,9 @@ function prepositionAsWord(
 ): ArrayResult<English.Word> {
   switch (preposition.type) {
     case "x ala x":
-      return new ArrayResult(
+      return ArrayResult.errors([
         new TranslationTodoError("preposition ala preposition"),
-      );
+      ]);
     case "default":
     case "reduplication":
       return new ArrayResult(

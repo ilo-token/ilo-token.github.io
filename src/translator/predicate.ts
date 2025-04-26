@@ -121,9 +121,7 @@ function associatedPredicate(
   } else if (object.type === "noun") {
     verbObject = predicateVerb(predicate, object.noun);
   } else {
-    return new ArrayResult<never>(
-      new UntranslatableError(object.type, "object"),
-    );
+    return ArrayResult.errors([new UntranslatableError(object.type, "object")]);
   }
   return verbObject.map((verbObject) => ({
     ...verbObject,

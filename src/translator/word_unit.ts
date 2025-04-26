@@ -31,7 +31,7 @@ function defaultWordUnit(
       switch (definition.type) {
         case "noun":
           if (!includeGerund && definition.gerund) {
-            return new ArrayResult<never>();
+            return ArrayResult.empty();
           } else {
             return partialNoun({
               ...options,
@@ -53,7 +53,7 @@ function defaultWordUnit(
           ]);
         case "adjective":
           if (!includeGerund && definition.gerundLike) {
-            return new ArrayResult<never>();
+            return ArrayResult.empty();
           } else {
             return adjective({ ...options, definition })
               .map((adjective) =>
@@ -82,7 +82,7 @@ function defaultWordUnit(
           })
             .map((verb) => ({ ...verb, type: "verb" }) as const);
         default:
-          return new ArrayResult<never>();
+          return ArrayResult.empty();
       }
     });
 }
@@ -109,7 +109,7 @@ export function wordUnit(
           postAdjective: null,
         }));
     case "x ala x":
-      return new ArrayResult(new TranslationTodoError("x ala x"));
+      return ArrayResult.errors([new TranslationTodoError("x ala x")]);
     case "default":
     case "reduplication": {
       const reduplicationCount = getReduplicationCount(wordUnit);
@@ -139,9 +139,9 @@ export function fromSimpleDefinition(
           })
         );
     case "number":
-      return new ArrayResult();
+      return ArrayResult.empty();
     case "x ala x":
-      return new ArrayResult(new TranslationTodoError("x ala x"));
+      return ArrayResult.errors([new TranslationTodoError("x ala x")]);
   }
 }
 export function getReduplicationCount(wordUnit: TokiPona.WordUnit): number {

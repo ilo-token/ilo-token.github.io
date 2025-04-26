@@ -72,9 +72,9 @@ function combineNumbers(numbers: ReadonlyArray<number>) {
       ArrayResult.from(() => new ArrayResult([regularNumber(numbers)])),
     );
   } else {
-    return new ArrayResult<never>(
+    return ArrayResult.errors([
       new FilteredError('"ala" along with other numeral'),
-    );
+    ]);
   }
 }
 export function number(number: ReadonlyArray<string>): ArrayResult<number> {

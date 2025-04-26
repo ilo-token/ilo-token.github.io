@@ -65,12 +65,12 @@ export function defaultModifier(
         };
       });
     case "x ala x":
-      return new ArrayResult(new TranslationTodoError("x ala x"));
+      return ArrayResult.errors([new TranslationTodoError("x ala x")]);
     case "default":
     case "reduplication": {
       const reduplicationCount = getReduplicationCount(wordUnit);
       return new ArrayResult(dictionary.get(wordUnit.word)!.definitions)
-        .flatMap((definition) => {
+        .flatMap<ModifierTranslation>((definition) => {
           switch (definition.type) {
             case "noun":
               return noun({ definition, reduplicationCount, emphasis })
@@ -137,7 +137,7 @@ export function defaultModifier(
                 }),
               }]);
             default:
-              return new ArrayResult();
+              return ArrayResult.empty();
           }
         });
     }
@@ -224,7 +224,7 @@ export function multipleModifiers(
           inPositionPhrase: inPositionPhrase[0] ?? null,
         }]);
       } else {
-        adjectival = new ArrayResult();
+        adjectival = ArrayResult.empty();
       }
       let adverbial: ArrayResult<MultipleModifierTranslation>;
       if (
@@ -255,7 +255,7 @@ export function multipleModifiers(
           inWayPhrase,
         }]);
       } else {
-        adverbial = new ArrayResult();
+        adverbial = ArrayResult.empty();
       }
       return ArrayResult.concat(adjectival, adverbial);
     })

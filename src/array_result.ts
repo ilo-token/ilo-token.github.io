@@ -19,31 +19,17 @@ export class TodoError extends ArrayResultError {
   }
 }
 export class ArrayResult<T> {
-  readonly array: ReadonlyArray<T>;
-  readonly errors: ReadonlyArray<ArrayResultError>;
-  constructor(array?: ReadonlyArray<T> | ArrayResultError);
+  constructor(array?: ReadonlyArray<T>);
   constructor(array: undefined, errors: ReadonlyArray<ArrayResultError>);
   constructor(
-    array: ReadonlyArray<T> | ArrayResultError = [],
-    errors: ReadonlyArray<ArrayResultError> = [],
-  ) {
-    if (Array.isArray(array)) {
-      this.array = array;
-    } else {
-      this.array = [];
-    }
-    if (this.array.length === 0) {
-      if (array instanceof ArrayResultError) {
-        this.errors = [array];
-      } else {
-        this.errors = errors;
-      }
-    } else {
-      this.errors = [];
-    }
-  }
+    public readonly array: ReadonlyArray<T> = [],
+    public readonly errors: ReadonlyArray<ArrayResultError> = [],
+  ) {}
   static errors(errors: ReadonlyArray<ArrayResultError>): ArrayResult<never> {
     return new ArrayResult(undefined, errors);
+  }
+  static empty(): ArrayResult<never> {
+    return ArrayResult.empty();
   }
   isError(): boolean {
     return this.array.length === 0;
@@ -57,7 +43,7 @@ export class ArrayResult<T> {
   }
   filter(mapper: (value: T) => boolean): ArrayResult<T> {
     return this.flatMap((value) =>
-      mapper(value) ? new ArrayResult([value]) : new ArrayResult()
+      mapper(value) ? new ArrayResult([value]) : ArrayResult.empty()
     );
   }
   map<U>(mapper: (value: T) => U): ArrayResult<U> {
@@ -70,7 +56,7 @@ export class ArrayResult<T> {
       return this.array.reduce(
         (rest, value) =>
           ArrayResult.concat(rest, ArrayResult.from(() => mapper(value))),
-        new ArrayResult<U>(),
+        ArrayResult.empty() as ArrayResult<U>,
       );
     }
   }
@@ -91,7 +77,7 @@ export class ArrayResult<T> {
   }
   addErrorWhenNone(error: () => ArrayResultError): ArrayResult<T> {
     if (this.isError() && this.errors.length === 0) {
-      return new ArrayResult(error());
+      return ArrayResult.errors([error()]);
     } else {
       return this;
     }
@@ -104,7 +90,7 @@ export class ArrayResult<T> {
         left.isError() && right.isError()
           ? ArrayResult.errors([...left.errors, ...right.errors])
           : new ArrayResult([...left.array, ...right.array]),
-      new ArrayResult<T>(),
+      ArrayResult.empty(),
     );
   }
   static combine<T extends ReadonlyArray<unknown>>(

@@ -224,9 +224,9 @@ export function contextClause(
           emphasis: false,
         }]);
     case "anu":
-      return new ArrayResult(
+      return ArrayResult.errors([
         new TranslationTodoError(`${contextClause.type} context clause`),
-      );
+      ]);
     default:
       return ArrayResult.concat<ReadonlyArray<English.Clause>>(
         new ArrayResult(nullableAsArray(unwrapSingleWord(contextClause)))
