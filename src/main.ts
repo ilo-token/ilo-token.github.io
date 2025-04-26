@@ -161,7 +161,8 @@ function main(): void {
   addEventListener("error", (event) => {
     errorCode.innerText = event.message;
     const details = new BrowserDetector(navigator.userAgent).getBrowserInfo();
-    browserDetails.innerText = `${details.name} ${details.version}`;
+    browserDetails.innerText =
+      `${details.name} ${details.version} ${details.platform}`;
     errorBox.showModal();
   });
 
