@@ -28,6 +28,6 @@ export const SENTENCE_TERMINATOR = characterClass(
 export const NSK_PERIOD = characterClass(NSK_PERIOD_SET);
 export const NSK_COLON = characterClass(FULL_WIDTH_COLON);
 
-function characterClass(characters: Iterable<string>): RegExp {
+function characterClass(characters: Iterable<string>) {
   return new RegExp(`[${escape([...characters].join(""))}]`, "u");
 }

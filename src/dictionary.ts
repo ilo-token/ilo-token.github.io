@@ -23,7 +23,7 @@ export function loadCustomDictionary(dictionary: Dictionary): void {
   }
   update();
 }
-function update(): void {
+function update() {
   dictionary.clear();
   const words = new Set([
     ...globalDictionary.keys(),
@@ -54,7 +54,7 @@ function update(): void {
 function redefineSet(
   set: Set<string>,
   filter: (definition: Definition) => boolean,
-): void {
+) {
   set.clear();
   for (const [word, { definitions }] of dictionary) {
     if (definitions.some(filter)) {
@@ -62,9 +62,6 @@ function redefineSet(
     }
   }
 }
-function redefineSetWithType(
-  set: Set<string>,
-  type: Definition["type"],
-): void {
+function redefineSetWithType(set: Set<string>, type: Definition["type"]) {
   redefineSet(set, ({ type: compareType }) => compareType === type);
 }

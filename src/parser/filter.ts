@@ -392,10 +392,10 @@ export function filter<T>(
     }
   };
 }
-function modifierIsNumeric(modifier: Modifier): boolean {
+function modifierIsNumeric(modifier: Modifier) {
   return modifier.type === "default" && modifier.word.type === "number";
 }
-function modifiersIsAlaOrNone(modifiers: ReadonlyArray<Modifier>): boolean {
+function modifiersIsAlaOrNone(modifiers: ReadonlyArray<Modifier>) {
   switch (modifiers.length) {
     case 0:
       return true;
@@ -408,7 +408,7 @@ function modifiersIsAlaOrNone(modifiers: ReadonlyArray<Modifier>): boolean {
       return false;
   }
 }
-function hasPrepositionInPhrase(phrase: Phrase): boolean {
+function hasPrepositionInPhrase(phrase: Phrase) {
   switch (phrase.type) {
     case "default":
       return false;
@@ -418,7 +418,7 @@ function hasPrepositionInPhrase(phrase: Phrase): boolean {
       return hasPrepositionInPhrase(phrase.phrase);
   }
 }
-function phraseHasTopLevelEmphasis(phrase: Phrase): boolean {
+function phraseHasTopLevelEmphasis(phrase: Phrase) {
   switch (phrase.type) {
     case "default":
     case "preverb":
@@ -426,7 +426,7 @@ function phraseHasTopLevelEmphasis(phrase: Phrase): boolean {
       return phrase.emphasis != null;
   }
 }
-function getDuplicate<T>(iterable: Iterable<T>): Set<T> {
+function getDuplicate<T>(iterable: Iterable<T>) {
   const unique = new Set<T>();
   const duplicates = new Set<T>();
   for (const value of iterable) {

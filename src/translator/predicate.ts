@@ -14,10 +14,7 @@ import {
 import { nounAsPreposition, preposition } from "./preposition.ts";
 import { forObject, PartialCompoundVerb } from "./verb.ts";
 
-function verbObject(
-  verb: PartialCompoundVerb,
-  object: English.NounPhrase,
-): PartialCompoundVerb {
+function verbObject(verb: PartialCompoundVerb, object: English.NounPhrase) {
   const useForObject = forObject(verb);
   if (useForObject === false) {
     throw new FilteredError("intransitive verb with object");
@@ -28,10 +25,7 @@ function verbObject(
     return { ...verb, object: englishObject, preposition };
   }
 }
-function applyTo(
-  predicate: English.NounPhrase,
-  object: English.NounPhrase,
-): PartialCompoundVerb {
+function applyTo(predicate: English.NounPhrase, object: English.NounPhrase) {
   return {
     type: "simple",
     adverb: [],
@@ -40,7 +34,7 @@ function applyTo(
       presentPlural: "apply",
       presentSingular: "applies",
       past: "applied",
-    },
+    } as const,
     reduplicationCount: 1,
     wordEmphasis: false,
     rest: [],
@@ -51,12 +45,9 @@ function applyTo(
     forObject: false,
     predicateType: null,
     phraseEmphasis: false,
-  };
+  } as const;
 }
-function turnInto(
-  predicate: English.NounPhrase,
-  object: English.NounPhrase,
-): PartialCompoundVerb {
+function turnInto(predicate: English.NounPhrase, object: English.NounPhrase) {
   return {
     type: "simple",
     adverb: [],
@@ -65,7 +56,7 @@ function turnInto(
       presentPlural: "turn",
       presentSingular: "turns",
       past: "turned",
-    },
+    } as const,
     reduplicationCount: 1,
     wordEmphasis: false,
     rest: [],
@@ -76,12 +67,9 @@ function turnInto(
     forObject: false,
     predicateType: null,
     phraseEmphasis: false,
-  };
+  } as const;
 }
-function make(
-  predicate: AdjectiveWithInWay,
-  object: English.NounPhrase,
-): PartialCompoundVerb {
+function make(predicate: AdjectiveWithInWay, object: English.NounPhrase) {
   return {
     type: "simple",
     adverb: [],
@@ -90,7 +78,7 @@ function make(
       presentPlural: "make",
       presentSingular: "makes",
       past: "made",
-    },
+    } as const,
     reduplicationCount: 1,
     wordEmphasis: false,
     rest: [],
@@ -102,12 +90,12 @@ function make(
     forObject: false,
     predicateType: null,
     phraseEmphasis: false,
-  };
+  } as const;
 }
 function predicateVerb(
   predicate: PhraseTranslation,
   object: English.NounPhrase,
-): ArrayResult<PartialCompoundVerb> {
+) {
   switch (predicate.type) {
     case "noun":
       return new ArrayResult([
@@ -126,14 +114,16 @@ function associatedPredicate(
   predicate: PhraseTranslation,
   object: null | PhraseTranslation,
   preposition: ReadonlyArray<English.Preposition>,
-): ArrayResult<PartialCompoundVerb> {
+) {
   let verbObject: ArrayResult<PartialCompoundVerb>;
   if (object == null) {
     verbObject = new ArrayResult([phraseAsVerb(predicate)]);
   } else if (object.type === "noun") {
     verbObject = predicateVerb(predicate, object.noun);
   } else {
-    return new ArrayResult(new UntranslatableError(object.type, "object"));
+    return new ArrayResult<never>(
+      new UntranslatableError(object.type, "object"),
+    );
   }
   return verbObject.map((verbObject) => ({
     ...verbObject,

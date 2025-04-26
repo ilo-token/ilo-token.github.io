@@ -26,7 +26,6 @@ import {
   Preposition,
   Sentence,
   SimpleHeadedWordUnit,
-  SimpleWordUnit,
 } from "./ast.ts";
 import { everyWordUnitInSentence } from "./extract.ts";
 import {
@@ -84,7 +83,7 @@ const optionalComma = optional(comma);
 const word = specificToken("word").map(({ word }) => word);
 const properWords = specificToken("proper word").map(({ words }) => words);
 
-function wordFrom(set: Set<string>, description: string): Parser<string> {
+function wordFrom(set: Set<string>, description: string) {
   return word.filter((word) =>
     set.has(word) ||
     throwError(new UnrecognizedError(`"${word}" as ${description}`))
@@ -96,10 +95,7 @@ const specificWord = memoize((thatWord: string) =>
     throwError(new UnexpectedError(`"${thisWord}"`, `"${thatWord}"`))
   )
 );
-function filterCombinedGlyphs(
-  words: ReadonlyArray<string>,
-  expected: string,
-): boolean {
+function filterCombinedGlyphs(words: ReadonlyArray<string>, expected: string) {
   const description = `"${expected}"`;
   if (words.length !== 1) {
     throw new UnexpectedError(
@@ -139,10 +135,7 @@ const alaX = memoize((word: string) =>
   sequence(specificWord("ala"), specificWord(word))
     .map(() => ({ type: "x ala x", word }) as const)
 );
-function xAlaX(
-  useWord: Set<string>,
-  description: string,
-): Parser<SimpleWordUnit & { type: "x ala x" }> {
+function xAlaX(useWord: Set<string>, description: string) {
   return choice(
     specificToken("headless long glyph start")
       .with(wordFrom(useWord, description))
@@ -152,7 +145,7 @@ function xAlaX(
       )
       .then(alaXLongGlyph),
     specificToken("x ala x")
-      .map(({ word }) => ({ type: "x ala x", word })),
+      .map(({ word }) => ({ type: "x ala x", word }) as const),
     word
       .then(alaX),
   );
@@ -167,10 +160,7 @@ const reduplicateRest = memoize((word: string) =>
       }) as const
     )
 );
-function simpleWordUnit(
-  word: Set<string>,
-  description: string,
-): Parser<SimpleHeadedWordUnit> {
+function simpleWordUnit(word: Set<string>, description: string) {
   return choice<SimpleHeadedWordUnit>(
     wordFrom(word, description)
       .then(reduplicateRest),
@@ -179,10 +169,7 @@ function simpleWordUnit(
       .map((word) => ({ type: "default", word })),
   );
 }
-function wordUnit(
-  word: Set<string>,
-  description: string,
-): Parser<HeadedWordUnit> {
+function wordUnit(word: Set<string>, description: string) {
   return sequence(
     simpleWordUnit(word, description),
     optionalEmphasis,
@@ -193,10 +180,7 @@ function wordUnit(
     }))
     .filter(filter(WORD_UNIT_RULES));
 }
-function binaryWords(
-  word: Set<string>,
-  description: string,
-): Parser<readonly [bottom: string, top: string]> {
+function binaryWords(word: Set<string>, description: string) {
   return specificToken("combined glyphs").map(({ words }) => {
     if (words.length > 2) {
       throw new UnrecognizedError(`combined glyphs of ${words.length} words`);
@@ -209,10 +193,7 @@ function binaryWords(
     }
   });
 }
-function optionalCombined(
-  word: Set<string>,
-  description: string,
-): Parser<readonly [headWord: HeadedWordUnit, modifier: null | Modifier]> {
+function optionalCombined(word: Set<string>, description: string) {
   return choice<readonly [HeadedWordUnit, null | Modifier]>(
     wordUnit(word, description)
       .map((wordUnit) => [wordUnit, null]),
@@ -340,7 +321,7 @@ const longAnu = sequence(
 
 function nestedPhrasesOnly(
   nestingRule: ReadonlyArray<"en" | "li" | "o" | "e" | "anu">,
-): Parser<MultiplePhrases> {
+) {
   if (nestingRule.length === 0) {
     return singlePhrase;
   } else {
@@ -352,7 +333,7 @@ function nestedPhrasesOnly(
         phrases: phrases.map((phrase) => ({ type: "single", phrase })),
       }))
       : empty;
-    return choice(
+    return choice<MultiplePhrases>(
       longAnuParser,
       sequence(
         nestedPhrases(rest),
@@ -475,9 +456,7 @@ const preposition = choice<Preposition>(
 )
   .filter(filter(PREPOSITION_RULE));
 
-function associatedPredicates(
-  nestingRule: ReadonlyArray<"li" | "o" | "anu">,
-): Parser<Predicate> {
+function associatedPredicates(nestingRule: ReadonlyArray<"li" | "o" | "anu">) {
   return sequence(
     nestedPhrasesOnly(nestingRule),
     optional(
@@ -504,9 +483,9 @@ function multiplePredicates(
   nestingRule: ReadonlyArray<"li" | "o" | "anu">,
 ): Parser<Predicate> {
   if (nestingRule.length === 0) {
-    return choice(
+    return choice<Predicate>(
       associatedPredicates([]),
-      phrase.map((predicate) => ({ type: "single", predicate })),
+      phrase.map((predicate) => ({ type: "single", predicate }) as const),
     );
   } else {
     const [first, ...rest] = nestingRule;

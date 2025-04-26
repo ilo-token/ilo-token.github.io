@@ -160,19 +160,17 @@ export function pi(
       modifier.type !== "adjective" || modifier.inWayPhrase == null
     ) as ArrayResult<ModifierTranslation>;
 }
-function modifier(
-  modifier: TokiPona.Modifier,
-): ArrayResult<ModifierTranslation> {
+function modifier(modifier: TokiPona.Modifier) {
   switch (modifier.type) {
     case "default":
       return defaultModifier(modifier.word);
     case "proper words":
-      return new ArrayResult([{ type: "name", name: modifier.words }]);
+      return new ArrayResult([{ type: "name", name: modifier.words } as const]);
     case "pi":
       return pi(modifier.phrase);
     case "nanpa":
       return nanpa(modifier)
-        .map((noun) => ({ type: "position phrase", noun }));
+        .map((noun) => ({ type: "position phrase", noun }) as const);
   }
 }
 export function multipleModifiers(

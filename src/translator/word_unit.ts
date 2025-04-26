@@ -24,59 +24,65 @@ function defaultWordUnit(
     place: Place;
     includeGerund: boolean;
   }>,
-): ArrayResult<WordUnitTranslation> {
+) {
   const { word, emphasis, includeGerund } = options;
   return new ArrayResult(dictionary.get(word)!.definitions)
-    .flatMap((definition) => {
+    .flatMap<WordUnitTranslation>((definition) => {
       switch (definition.type) {
         case "noun":
           if (!includeGerund && definition.gerund) {
-            return new ArrayResult();
+            return new ArrayResult<never>();
           } else {
             return partialNoun({
               ...options,
               definition,
               emphasis: emphasis != null,
             })
-              .map((noun) => ({ ...noun, type: "noun" }));
+              .map((noun) => ({ ...noun, type: "noun" }) as const);
           }
         case "personal pronoun":
-          return new ArrayResult([{
-            ...partialPronoun({
-              ...options,
-              pronoun: definition,
-              emphasis: emphasis != null,
-            }),
-            type: "noun",
-          }]);
+          return new ArrayResult([
+            {
+              ...partialPronoun({
+                ...options,
+                pronoun: definition,
+                emphasis: emphasis != null,
+              }),
+              type: "noun",
+            } as const,
+          ]);
         case "adjective":
           if (!includeGerund && definition.gerundLike) {
-            return new ArrayResult();
+            return new ArrayResult<never>();
           } else {
             return adjective({ ...options, definition })
-              .map((adjective) => ({
-                type: "adjective",
-                adjective,
-              }));
+              .map((adjective) =>
+                ({
+                  type: "adjective",
+                  adjective,
+                }) as const
+              );
           }
         case "compound adjective":
           return compoundAdjective({
             ...options,
             adjectives: definition.adjective,
           })
-            .map((adjective) => ({
-              type: "adjective",
-              adjective,
-            }));
+            .map((adjective) =>
+              ({
+                type: "adjective",
+                adjective,
+              }) as const
+            );
         case "verb":
           return partialVerb({
             ...options,
             definition,
             emphasis: emphasis != null,
           })
-            .map((verb) => ({ ...verb, type: "verb" }));
+            .map((verb) => ({ ...verb, type: "verb" }) as const);
         default:
-          return new ArrayResult();
+          return new ArrayResult<never>();
       }
     });
 }

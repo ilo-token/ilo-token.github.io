@@ -90,7 +90,7 @@ export class PositionedError extends ArrayResultError {
     this.name = "PositionedError";
   }
 }
-function withPositionedError<T>(fn: () => T, position: Position): T {
+function withPositionedError<T>(fn: () => T, position: Position) {
   try {
     return fn();
   } catch (error) {
@@ -216,10 +216,7 @@ export function count(
 ): Parser<number> {
   return parser.map(({ length }) => length);
 }
-function generateError(
-  position: number,
-  expected: string,
-): ArrayResult<never> {
+function generateError(position: number, expected: string) {
   let unexpected: string;
   let length: number;
   if (position === currentSource.length) {
@@ -242,7 +239,7 @@ function generateError(
       length = token.length;
     }
   }
-  return new ArrayResult(
+  return new ArrayResult<never>(
     new UnexpectedError(unexpected, expected, { position, length }),
   );
 }

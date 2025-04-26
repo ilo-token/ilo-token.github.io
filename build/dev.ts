@@ -12,11 +12,11 @@ const BUILD_OPTIONS: BuildOptions = {
   minify: false,
   define: { LIVE_RELOAD: "true" },
 };
-async function watchMain(): Promise<AsyncDisposable> {
+async function watchMain() {
   await using stack = new AsyncDisposableStack();
   const buildContext = stack.use({
     context: await context(BUILD_OPTIONS),
-    async [Symbol.asyncDispose](): Promise<void> {
+    async [Symbol.asyncDispose]() {
       await this.context.dispose();
     },
   });
@@ -25,7 +25,7 @@ async function watchMain(): Promise<AsyncDisposable> {
   stack.move();
   return buildContext;
 }
-async function watchDictionary(): Promise<number> {
+async function watchDictionary() {
   const command = new Deno.Command(Deno.execPath(), {
     args: [
       "run",

@@ -6,10 +6,7 @@ import { word } from "./word.ts";
 
 export type Place = "subject" | "object";
 
-function pronounForms(
-  pronoun: Dictionary.PronounForms,
-  place: Place,
-): Dictionary.NounForms {
+function pronounForms(pronoun: Dictionary.PronounForms, place: Place) {
   switch (place) {
     case "subject":
       return {

@@ -9,20 +9,20 @@ import { word } from "./word.ts";
 function filterKind(
   determiners: ReadonlyArray<English.Determiner>,
   kinds: ReadonlyArray<Dictionary.DeterminerType>,
-): ReadonlyArray<English.Determiner> {
+) {
   return determiners.filter(({ kind }) => kinds.includes(kind));
 }
 function filterQuantity(
   determiners: ReadonlyArray<English.Determiner>,
   targetQuantity: Dictionary.Quantity,
-): ReadonlyArray<English.Determiner> {
+) {
   return determiners.filter(({ quantity }) => quantity === targetQuantity);
 }
 function check(
   quantities: ReadonlyArray<Dictionary.Quantity>,
   some: Dictionary.Quantity,
   not: Dictionary.Quantity,
-): boolean {
+) {
   return quantities.some((quantity) => quantity === some) &&
     quantities.every((quantity) => quantity !== not);
 }
@@ -135,13 +135,13 @@ export function fixDeterminer(
 }
 function prettyPrintDeterminers(
   determiners: ReadonlyArray<English.Determiner>,
-): string {
+) {
   return `(${determiners.map(({ determiner }) => determiner).join(" ")})`;
 }
 function encodeDeterminer(
   strings: TemplateStringsArray,
   ...determiners: ReadonlyArray<ReadonlyArray<English.Determiner>>
-): () => string {
+) {
   return () =>
     zip(strings, [...determiners.map(prettyPrintDeterminers), ""])
       .flat()
@@ -149,6 +149,6 @@ function encodeDeterminer(
 }
 function filterSet<T>(
   set: ReadonlyArray<readonly [condition: boolean, value: T]>,
-): ReadonlyArray<T> {
+) {
   return set.filter(([condition]) => condition).map(([_, value]) => value);
 }

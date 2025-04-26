@@ -51,7 +51,7 @@ const ignore = allWithCheck(
     choiceWithCheck(spaces, comment),
   ),
 );
-function lex<T>(parser: Parser<T>): Parser<T> {
+function lex<T>(parser: Parser<T>) {
   return parser.skip(ignore);
 }
 const wordWithPosition = lex(
@@ -100,10 +100,10 @@ const perspective = choiceOnlyOne(
   keyword("second"),
   keyword("third"),
 );
-function tag<T>(parser: Parser<T>): Parser<T> {
+function tag<T>(parser: Parser<T>) {
   return openParenthesis.with(parser).skip(closeParenthesis);
 }
-function template<T>(parser: Parser<T>): Parser<T> {
+function template<T>(parser: Parser<T>) {
   return openBracket.with(parser).skip(closeBracket);
 }
 const simpleUnit = memoize((kind: string) => word.skip(tag(keyword(kind))));
@@ -260,22 +260,19 @@ const checkedNoun = new CheckedParser(
   ),
   noun,
 );
-function checkedSimpleUnitWith<T>(
-  tag: string,
-  after: Parser<T>,
-): CheckedParser<readonly [string, T]> {
+function checkedSimpleUnitWith<T>(tag: string, after: Parser<T>) {
   return checkedSequence(
     word.skip(openParenthesis).skip(keyword(tag)),
     closeParenthesis.with(after),
   );
 }
-function checkedSimpleUnit(tag: string): CheckedParser<string> {
+function checkedSimpleUnit(tag: string) {
   return checkedSimpleUnitWith(tag, nothing).map(([word]) => word);
 }
 function checkedSimpleUnitWithTemplate(
   tag: string,
   templateInside: Parser<unknown>,
-): CheckedParser<string> {
+) {
   return checkedSimpleUnitWith(tag, template(templateInside))
     .map(([word]) => word);
 }

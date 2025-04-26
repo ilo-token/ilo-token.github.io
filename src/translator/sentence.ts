@@ -9,7 +9,7 @@ import { TranslationTodoError } from "./error.ts";
 import { noEmphasis, word } from "./word.ts";
 import { fromSimpleDefinition, getReduplicationCount } from "./word_unit.ts";
 
-function filler(filler: TokiPona.Filler): ArrayResult<string> {
+function filler(filler: TokiPona.Filler) {
   switch (filler.type) {
     case "word":
     case "long word": {
@@ -42,7 +42,7 @@ function emphasisAsPunctuation(
     interrogative: boolean;
     originalPunctuation: string;
   }>,
-): string {
+) {
   const { emphasis, interrogative, originalPunctuation } = options;
   if (emphasis == null) {
     if (interrogative) {
@@ -64,12 +64,9 @@ function emphasisAsPunctuation(
     return `${questionMark}${exclamationMark}`;
   }
 }
-function sentence(
-  sentence: TokiPona.Sentence,
-  isFinal: boolean,
-): ArrayResult<English.Sentence> {
+function sentence(sentence: TokiPona.Sentence, isFinal: boolean) {
   if (sentence.interrogative === "x ala x") {
-    return new ArrayResult(new TranslationTodoError("x ala x"));
+    return new ArrayResult<never>(new TranslationTodoError("x ala x"));
   }
   const punctuation = !isFinal && sentence.punctuation === ""
     ? ","
@@ -77,7 +74,7 @@ function sentence(
   switch (sentence.type) {
     case "default": {
       if (sentence.startingParticle != null) {
-        return new ArrayResult(
+        return new ArrayResult<never>(
           new TranslationTodoError(
             `"${sentence.startingParticle.word}" starting particle`,
           ),
@@ -126,22 +123,28 @@ function sentence(
         interrogative: sentence.interrogative != null,
         originalPunctuation: punctuation,
       });
-      return clauses.map((clauses) => ({
-        type: "sentence",
-        clauses,
-        punctuation: usePunctuation,
-      }));
+      return clauses.map((clauses) =>
+        ({
+          type: "sentence",
+          clauses,
+          punctuation: usePunctuation,
+        }) as const
+      );
     }
     case "filler":
       return filler(sentence.filler)
-        .map((interjection) => ({
-          type: "sentence",
-          clauses: [{
-            type: "interjection",
-            interjection: noEmphasis(interjection),
-          }],
-          punctuation,
-        }));
+        .map((interjection) =>
+          ({
+            type: "sentence",
+            clauses: [
+              {
+                type: "interjection",
+                interjection: noEmphasis(interjection),
+              } as const,
+            ],
+            punctuation,
+          }) as const
+        );
   }
 }
 export function multipleSentences(

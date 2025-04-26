@@ -50,10 +50,7 @@ export async function build(): Promise<boolean> {
   );
   return true;
 }
-function displayError(
-  source: string,
-  errors: ReadonlyArray<ArrayResultError>,
-): void {
+function displayError(source: string, errors: ReadonlyArray<ArrayResultError>) {
   let color: boolean;
   try {
     color = Deno.env.get("NO_COLOR") !== "1";

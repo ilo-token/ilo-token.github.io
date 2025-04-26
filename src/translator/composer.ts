@@ -4,7 +4,7 @@ import * as English from "./ast.ts";
 const EMPHASIS_STARTING_TAG = "<strong>";
 const EMPHASIS_ENDING_TAG = "</strong>";
 
-function word(word: English.Word): string {
+function word(word: English.Word) {
   if (word.emphasis) {
     return `${EMPHASIS_STARTING_TAG}${word.word}${EMPHASIS_ENDING_TAG}`;
   } else {
@@ -54,15 +54,13 @@ export function adjective(
   }
   return word({ word: text, emphasis: phrases.emphasis });
 }
-function preposition(preposition: English.Preposition): string {
+function preposition(preposition: English.Preposition) {
   return word({
     word: `${word(preposition.preposition)} ${noun(preposition.object, 0)}`,
     emphasis: preposition.emphasis,
   });
 }
-function complement(
-  complement: English.Complement,
-): string {
+function complement(complement: English.Complement) {
   switch (complement.type) {
     case "noun":
       return noun(complement.noun, 0);
@@ -147,7 +145,7 @@ export function multipleSentences(
       return sentences.sentences.map(sentence).join(" ");
   }
 }
-function capitalize(text: string): string {
+function capitalize(text: string) {
   return text.replace(
     /(?<![<&\p{Alpha}\p{Nd}\p{Nl}\p{No}])[\p{Alpha}\p{Nd}\p{Nl}\p{No}]/u,
     (character) => character.toLocaleUpperCase(),

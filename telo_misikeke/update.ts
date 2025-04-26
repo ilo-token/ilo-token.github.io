@@ -28,7 +28,7 @@ async function buildCode(
   source: URL,
   destination: URL,
   exportItems: ReadonlyArray<string>,
-): Promise<void> {
+) {
   const response = await retry(() => fetch(source));
   if (!response.ok) {
     throw new Error(`unable to fetch ${response.url} (${response.statusText})`);

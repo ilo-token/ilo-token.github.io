@@ -12,9 +12,7 @@ import { addModalToAll, noAdverbs, verb } from "./verb.ts";
 import { noEmphasis } from "./word.ts";
 import { fromSimpleDefinition } from "./word_unit.ts";
 
-function phraseClause(
-  phrases: TokiPona.MultiplePhrases,
-): ArrayResult<English.Clause> {
+function phraseClause(phrases: TokiPona.MultiplePhrases) {
   return multiplePhrases({
     phrases,
     place: "object",
@@ -22,7 +20,7 @@ function phraseClause(
     andParticle: "en",
     includeVerb: false,
   })
-    .map((phrase) => {
+    .map<English.Clause>((phrase) => {
       switch (phrase.type) {
         case "noun":
           return {
@@ -72,9 +70,7 @@ function phraseClause(
       }
     });
 }
-function liClause(
-  clause: TokiPona.Clause & { type: "li clause" },
-): ArrayResult<English.Clause> {
+function liClause(clause: TokiPona.Clause & { type: "li clause" }) {
   return ArrayResult.combine(
     multiplePhrasesAsNoun({
       phrases: clause.subjects,
@@ -86,18 +82,17 @@ function liClause(
   )
     .flatMap(([subject, predicate]) =>
       verb(predicate, perspective(subject), subject.quantity)
-        .map((verb) => ({
-          type: "default",
-          subject,
-          verb,
-          hideSubject: false,
-        }))
+        .map((verb) =>
+          ({
+            type: "default",
+            subject,
+            verb,
+            hideSubject: false,
+          }) as const
+        )
     );
 }
-function iWish(
-  subject: English.NounPhrase,
-  verb: English.VerbPhrase,
-): English.Clause {
+function iWish(subject: English.NounPhrase, verb: English.VerbPhrase) {
   return {
     type: "default",
     subject: {
@@ -111,31 +106,29 @@ function iWish(
       postCompound: null,
       preposition: [],
       emphasis: false,
-    },
+    } as const,
     verb: {
       type: "default",
       verb: {
         modal: null,
         verb: [noAdverbs(noEmphasis("wish"))],
-      },
+      } as const,
       subjectComplement: null,
       contentClause: {
         type: "default",
         subject,
         verb,
         hideSubject: false,
-      },
+      } as const,
       object: null,
       objectComplement: null,
       preposition: [],
       hideVerb: false,
     },
     hideSubject: false,
-  };
+  } as const;
 }
-function oClause(
-  clause: TokiPona.Clause & { type: "o clause" },
-): ArrayResult<English.Clause> {
+function oClause(clause: TokiPona.Clause & { type: "o clause" }) {
   const subject = clause.subjects != null
     ? multiplePhrasesAsNoun({
       phrases: clause.subjects,
@@ -173,12 +166,14 @@ function oClause(
             subject.quantity,
           )
         )
-          .map((verb) => ({
-            type: "default",
-            subject,
-            verb,
-            hideSubject: false,
-          })),
+          .map((verb) =>
+            ({
+              type: "default",
+              subject,
+              verb,
+              hideSubject: false,
+            }) as const
+          ),
       );
     });
 }

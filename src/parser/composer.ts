@@ -32,7 +32,7 @@ export function filler(filler: Filler): string {
       return emphasis(filler);
   }
 }
-function emphasisAsArray(value: null | Emphasis): ReadonlyArray<string> {
+function emphasisAsArray(value: null | Emphasis) {
   return nullableAsArray(value).map(emphasis);
 }
 export function simpleWordUnit(wordUnit: SimpleWordUnit): string {
@@ -90,10 +90,7 @@ export function phrase(value: Phrase): string {
       return preposition(value);
   }
 }
-function particle(
-  type: "and conjunction" | "anu",
-  particle: null | string,
-): string {
+function particle(type: "and conjunction" | "anu", particle: null | string) {
   if (type === "and conjunction") {
     return particle!;
   } else {

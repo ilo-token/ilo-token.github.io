@@ -62,7 +62,7 @@ const WORD_NOT_FOUND_MESSAGE = "Word not found";
 const WORD_ALREADY_IMPORTED_MESSAGE = "The word is already imported";
 const DICTIONARY_ERROR_MESSAGE = "Please fix the errors before saving";
 
-function main(): void {
+function main() {
   // load elements
   const inputTextBox = document.getElementById(
     "input",
@@ -144,13 +144,13 @@ function main(): void {
   ) as HTMLAnchorElement;
 
   // determines whether the dictionary can be automatically parsed
-  function autoParse(): boolean {
+  function autoParse() {
     return customDictionaryTextBox.value.length <=
       DICTIONARY_AUTO_PARSE_THRESHOLD;
   }
 
   // emulates `window.alert`
-  function showMessage(useMessage: string): void {
+  function showMessage(useMessage: string) {
     message.innerText = useMessage;
     alertBox.showModal();
   }
@@ -193,21 +193,21 @@ function main(): void {
 
   // initial text area size
   resizeTextarea();
-  function resizeTextarea(): void {
+  function resizeTextarea() {
     inputTextBox.style.height = "auto";
     inputTextBox.style.height = `${inputTextBox.scrollHeight + 14}px`;
   }
 
   // initialize button label
   updateLabel();
-  function updateLabel(): void {
+  function updateLabel() {
     translateButton.innerText = settings.multiline
       ? TRANSLATE_LABEL_MULTILINE
       : TRANSLATE_LABEL;
   }
 
   // show custom dictionary errors
-  function showDictionaryError(): void {
+  function showDictionaryError() {
     customDictionaryErrorSummary.innerText =
       `Errors (${currentDictionary.errors.length}):`;
     customDictionaryErrorList.innerHTML = "";
@@ -239,7 +239,7 @@ function main(): void {
       updateOutput();
     }
   });
-  function updateOutput(): void {
+  function updateOutput() {
     outputList.innerHTML = "";
     errorList.innerHTML = "";
     errorDisplay.innerText = "";
@@ -300,7 +300,7 @@ function main(): void {
       importWord();
     }
   });
-  function importWord(): void {
+  function importWord() {
     const word = importWordTextBox.value.trim();
     if (word === "") {
       showMessage(NO_WORD_MESSAGE);
@@ -338,16 +338,16 @@ function main(): void {
     }
     tryCloseDictionary();
   });
-  function updateDictionary(): void {
+  function updateDictionary() {
     currentDictionary = dictionaryParser.parse(customDictionaryTextBox.value);
     showDictionaryError();
   }
-  function updateIfCanAutoParse(): void {
+  function updateIfCanAutoParse() {
     if (autoParse()) {
       updateDictionary();
     }
   }
-  function tryCloseDictionary(): void {
+  function tryCloseDictionary() {
     if (!currentDictionary.isError()) {
       lastSavedText = customDictionaryTextBox.value;
       lastSavedDictionary = currentDictionary;

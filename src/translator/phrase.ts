@@ -36,7 +36,7 @@ function nounPhrase(
     partialNoun: PartialNoun;
     modifier: AdjectivalModifier;
   }>,
-): ArrayResult<English.NounPhrase> {
+) {
   const { emphasis, partialNoun, modifier } = options;
   return ArrayResult.from(() => {
     const determiner = fixDeterminer([
@@ -100,7 +100,7 @@ function nounPhrase(
       }));
     } else {
       // will be filled by ExhaustedError on `defaultPhrase`
-      return new ArrayResult();
+      return new ArrayResult<never>();
     }
   });
 }
@@ -110,7 +110,7 @@ function adjectivePhrase(
     adjective: English.AdjectivePhrase;
     modifier: AdverbialModifier;
   }>,
-): AdjectiveWithInWay {
+) {
   const { emphasis, adjective, modifier } = options;
   switch (adjective.type) {
     case "simple": {
@@ -144,7 +144,7 @@ function verbPhrase(
     verb: PartialVerb;
     modifier: AdverbialModifier;
   }>,
-): PartialVerb {
+) {
   const { emphasis, verb, modifier } = options;
   const adverb = fixAdverb([
     ...[...modifier.adverb].reverse(),
@@ -169,7 +169,7 @@ function defaultPhrase(
     includeGerund: boolean;
     includeVerb: boolean;
   }>,
-): ArrayResult<PhraseTranslation> {
+) {
   const { phrase, includeVerb } = options;
   const emphasis = phrase.emphasis != null;
   return ArrayResult.combine(
@@ -207,7 +207,7 @@ function defaultPhrase(
     })
     .addErrorWhenNone(() => new ExhaustedError(Composer.phrase(phrase)));
 }
-function prepositionAsVerb(preposition: English.Preposition): PartialVerb {
+function prepositionAsVerb(preposition: English.Preposition) {
   return {
     modal: null,
     adverb: [],
@@ -260,7 +260,7 @@ export function phrase(
 function compoundNoun(
   conjunction: "and" | "or",
   phrase: ReadonlyArray<English.NounPhrase>,
-): English.NounPhrase {
+) {
   const nouns = phrase
     .flatMap((noun) => {
       if (
@@ -286,12 +286,12 @@ function compoundNoun(
     conjunction,
     nouns,
     quantity,
-  };
+  } as const;
 }
 function compoundAdjective(
   conjunction: "and" | "or",
   phrase: ReadonlyArray<English.AdjectivePhrase>,
-): English.AdjectivePhrase {
+) {
   return {
     type: "compound",
     conjunction,
@@ -307,7 +307,7 @@ function compoundAdjective(
         }
       }),
     emphasis: false,
-  };
+  } as const;
 }
 export function phraseAsVerb(
   phrase: PhraseTranslation,

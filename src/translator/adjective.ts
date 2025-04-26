@@ -10,7 +10,7 @@ export type AdjectiveWithInWay = Readonly<{
   adjective: English.AdjectivePhrase;
   inWayPhrase: null | English.NounPhrase;
 }>;
-function so(emphasis: null | TokiPona.Emphasis): string {
+function so(emphasis: null | TokiPona.Emphasis) {
   if (emphasis == null) {
     throw new UntranslatableError("missing emphasis", "adverb");
   } else {

@@ -4,13 +4,13 @@ import { ArrayResult } from "../array_result.ts";
 import { dictionary } from "../dictionary.ts";
 import { FilteredError } from "./error.ts";
 
-function singleNumber(word: string): ArrayResult<number> {
+function singleNumber(word: string) {
   return new ArrayResult(dictionary.get(word)!.definitions)
     .filterMap((definition) =>
       definition.type === "numeral" ? definition.numeral : null
     );
 }
-function regularNumber(number: ReadonlyArray<number>): number {
+function regularNumber(number: ReadonlyArray<number>) {
   const duplicate = number.some((a, i) =>
     i < number.length - 1 && number[i + 1] !== a &&
     number.slice(i + 2).some((b) => a === b)
@@ -21,7 +21,7 @@ function regularNumber(number: ReadonlyArray<number>): number {
     return sumOf(number, (number) => number);
   }
 }
-function subHundred(number: ReadonlyArray<number>): number {
+function subHundred(number: ReadonlyArray<number>) {
   const total = regularNumber(number);
   if (total >= 100) {
     throw new FilteredError("nasin nanpa pona position exceeding 99");
@@ -56,14 +56,14 @@ function unfilteredNasinNanpaPona(
     }
   }
 }
-function nasinNanpaPona(number: ReadonlyArray<number>): null | number {
+function nasinNanpaPona(number: ReadonlyArray<number>) {
   if (number.includes(0) || !number.includes(100) || number[0] === 100) {
     return null;
   } else {
     return unfilteredNasinNanpaPona(number, Infinity);
   }
 }
-function combineNumbers(numbers: ReadonlyArray<number>): ArrayResult<number> {
+function combineNumbers(numbers: ReadonlyArray<number>) {
   if (numbers.length === 1 || !numbers.includes(0)) {
     return ArrayResult.concat(
       ArrayResult.from(() =>
@@ -72,7 +72,9 @@ function combineNumbers(numbers: ReadonlyArray<number>): ArrayResult<number> {
       ArrayResult.from(() => new ArrayResult([regularNumber(numbers)])),
     );
   } else {
-    return new ArrayResult(new FilteredError('"ala" along with other numeral'));
+    return new ArrayResult<never>(
+      new FilteredError('"ala" along with other numeral'),
+    );
   }
 }
 export function number(number: ReadonlyArray<string>): ArrayResult<number> {
