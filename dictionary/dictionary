@@ -83,13 +83,6 @@ anu:
         (particle def);
     or(particle def);
 
-    # # These are no longer in Linku
-    # choose(v) [object];
-    # decide(v);
-
-    # choosing(n gerund);
-    # deciding(n gerund);
-
 awen:
     # stay(v);
     remain(v linking) [predicate];
