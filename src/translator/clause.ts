@@ -82,14 +82,12 @@ function liClause(clause: TokiPona.Clause & { type: "li clause" }) {
   )
     .flatMap(([subject, predicate]) =>
       verb(predicate, perspective(subject), subject.quantity)
-        .map((verb) =>
-          ({
-            type: "default",
-            subject,
-            verb,
-            hideSubject: false,
-          }) as const
-        )
+        .map((verb) => ({
+          type: "default",
+          subject,
+          verb,
+          hideSubject: false,
+        }))
     );
 }
 function iWish(subject: English.NounPhrase, verb: English.VerbPhrase) {
@@ -106,20 +104,20 @@ function iWish(subject: English.NounPhrase, verb: English.VerbPhrase) {
       postCompound: null,
       preposition: [],
       emphasis: false,
-    } as const,
+    },
     verb: {
       type: "default",
       verb: {
         modal: null,
         verb: [noAdverbs(noEmphasis("wish"))],
-      } as const,
+      },
       subjectComplement: null,
       contentClause: {
         type: "default",
         subject,
         verb,
         hideSubject: false,
-      } as const,
+      },
       object: null,
       objectComplement: null,
       preposition: [],
@@ -148,7 +146,7 @@ function oClause(clause: TokiPona.Clause & { type: "o clause" }) {
         postCompound: null,
         preposition: [],
         emphasis: false,
-      } as const,
+      },
     ]);
   return ArrayResult.combine(subject, predicate(clause.predicates, "o"))
     .flatMap(([subject, predicate]) => {
@@ -166,14 +164,12 @@ function oClause(clause: TokiPona.Clause & { type: "o clause" }) {
             subject.quantity,
           )
         )
-          .map((verb) =>
-            ({
-              type: "default",
-              subject,
-              verb,
-              hideSubject: false,
-            }) as const
-          ),
+          .map((verb) => ({
+            type: "default",
+            subject,
+            verb,
+            hideSubject: false,
+          })),
       );
     });
 }

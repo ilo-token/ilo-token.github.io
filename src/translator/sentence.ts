@@ -123,28 +123,24 @@ function sentence(sentence: TokiPona.Sentence, isFinal: boolean) {
         interrogative: sentence.interrogative != null,
         originalPunctuation: punctuation,
       });
-      return clauses.map((clauses) =>
-        ({
-          type: "sentence",
-          clauses,
-          punctuation: usePunctuation,
-        }) as const
-      );
+      return clauses.map((clauses) => ({
+        type: "sentence",
+        clauses,
+        punctuation: usePunctuation,
+      }));
     }
     case "filler":
       return filler(sentence.filler)
-        .map((interjection) =>
-          ({
-            type: "sentence",
-            clauses: [
-              {
-                type: "interjection",
-                interjection: noEmphasis(interjection),
-              } as const,
-            ],
-            punctuation,
-          }) as const
-        );
+        .map((interjection) => ({
+          type: "sentence",
+          clauses: [
+            {
+              type: "interjection",
+              interjection: noEmphasis(interjection),
+            },
+          ],
+          punctuation,
+        }));
   }
 }
 export function multipleSentences(

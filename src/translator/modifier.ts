@@ -165,12 +165,12 @@ function modifier(modifier: TokiPona.Modifier) {
     case "default":
       return defaultModifier(modifier.word);
     case "proper words":
-      return new ArrayResult([{ type: "name", name: modifier.words } as const]);
+      return new ArrayResult([{ type: "name", name: modifier.words }]);
     case "pi":
       return pi(modifier.phrase);
     case "nanpa":
       return nanpa(modifier)
-        .map((noun) => ({ type: "position phrase", noun }) as const);
+        .map((noun) => ({ type: "position phrase", noun }) );
   }
 }
 export function multipleModifiers(

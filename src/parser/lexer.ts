@@ -66,7 +66,7 @@ const properWords = allAtLeastOnce(
   match(/[A-Z][a-zA-Z]*/, "proper word").skip(spaces),
 )
   .map((array) => array.join(" "))
-  .map((words) => ({ type: "proper word", words, kind: "latin" }) as const);
+  .map((words) => ({ type: "proper word", words, kind: "latin" }) );
 
 const specificWord = memoize((thatWord: string) =>
   word.filter((thisWord) =>
@@ -76,7 +76,7 @@ const specificWord = memoize((thatWord: string) =>
 );
 const multipleA = specificWord("a")
   .with(count(allAtLeastOnce(specificWord("a"))))
-  .map((count) => ({ type: "multiple a", count: count + 1 }) as const);
+  .map((count) => ({ type: "multiple a", count: count + 1 }) );
 const repeatingLetter = match(/[a-zA-Z]/, "latin letter")
   .then(memoize((letter) =>
     count(all(matchString(letter)))
@@ -87,7 +87,7 @@ const longWord = allAtLeastOnce(repeatingLetter)
   .map((letters) => {
     const word = letters.map(([letter]) => letter).join("");
     const length = sumOf(letters, ([_, count]) => count) - word.length + 1;
-    return { type: "long word", word, length } as const;
+    return { type: "long word", word, length } ;
   })
   .filter(({ word, length }) => /^[a-z]/.test(word) && length > 1);
 
@@ -95,7 +95,7 @@ const alaX = memoize((word: string) =>
   sequence(specificWord("ala"), specificWord(word)).map(() => word)
 );
 const xAlaX = lazy(() => settings.xAlaXPartialParsing ? empty : word.then(alaX))
-  .map((word) => ({ type: "x ala x", word }) as const);
+  .map((word) => ({ type: "x ala x", word }) );
 const punctuation = choiceOnlyOne(
   allAtLeastOnce(
     match(SENTENCE_TERMINATOR, "punctuation")
@@ -105,7 +105,7 @@ const punctuation = choiceOnlyOne(
     .map((punctuation) => punctuation.join("").replaceAll("...", ELLIPSIS)),
   newline.map(() => "."),
 )
-  .map((punctuation) => ({ type: "punctuation", punctuation }) as const);
+  .map((punctuation) => ({ type: "punctuation", punctuation }) );
 const cartoucheElement = choiceOnlyOne(
   singleUcsurWord
     .skip(match(NSK_COLON, "full width colon").skip(spaces)),
@@ -146,7 +146,7 @@ const cartouches = allAtLeastOnce(cartouche)
       type: "proper word",
       words,
       kind: "cartouche",
-    }) as const
+    }) 
   );
 const longSpaceContainer = specificSpecialUcsur(START_OF_LONG_GLYPH)
   .with(count(spacesWithoutNewline).filter((length) => length > 0))
@@ -165,31 +165,31 @@ const spaceLongGlyph = sequence(
       type: "space long glyph",
       words,
       spaceLength,
-    }) as const
+    }) 
   );
 const headedLongGlyphStart = longGlyphHead
   .skip(specificSpecialUcsur(START_OF_LONG_GLYPH))
   .skip(spaces)
-  .map((words) => ({ type: "headed long glyph start", words }) as const);
+  .map((words) => ({ type: "headed long glyph start", words }) );
 const headlessLongGlyphEnd = specificSpecialUcsur(END_OF_LONG_GLYPH)
   .skip(spaces)
-  .map(() => ({ type: "headless long glyph end" }) as const);
+  .map(() => ({ type: "headless long glyph end" }) );
 const headlessLongGlyphStart = specificSpecialUcsur(START_OF_REVERSE_LONG_GLYPH)
   .skip(spaces)
-  .map(() => ({ type: "headless long glyph end" }) as const);
+  .map(() => ({ type: "headless long glyph end" }) );
 const headedLongGlyphEnd = specificSpecialUcsur(END_OF_REVERSE_LONG_GLYPH)
   .with(longGlyphHead)
   .skip(spaces)
-  .map((words) => ({ type: "headed long glyph start", words }) as const);
+  .map((words) => ({ type: "headed long glyph start", words }) );
 const insideLongGlyph = specificSpecialUcsur(END_OF_REVERSE_LONG_GLYPH)
   .with(longGlyphHead)
   .skip(specificSpecialUcsur(START_OF_LONG_GLYPH))
   .skip(spaces)
-  .map((words) => ({ type: "inside long glyph", words }) as const);
+  .map((words) => ({ type: "inside long glyph", words }) );
 const combinedGlyphsToken = combinedGlyphs
   .skip(spaces)
-  .map((words) => ({ type: "combined glyphs", words }) as const);
-const wordToken = word.map((word) => ({ type: "word", word }) as const);
+  .map((words) => ({ type: "combined glyphs", words }) );
+const wordToken = word.map((word) => ({ type: "word", word }) );
 
 export const token: Parser<Token> = choiceOnlyOne<Token>(
   xAlaX,

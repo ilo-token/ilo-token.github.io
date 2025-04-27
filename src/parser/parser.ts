@@ -129,11 +129,11 @@ const optionalEmphasis = optional(emphasis);
 const alaXLongGlyph = memoize((word: string) =>
   specificWord(word)
     .skip(specificToken("headless long glyph end"))
-    .map(() => ({ type: "x ala x", word }) as const)
+    .map(() => ({ type: "x ala x", word }))
 );
 const alaX = memoize((word: string) =>
   sequence(specificWord("ala"), specificWord(word))
-    .map(() => ({ type: "x ala x", word }) as const)
+    .map(() => ({ type: "x ala x", word }))
 );
 function xAlaX(useWord: Set<string>, description: string) {
   return choice(
@@ -145,20 +145,18 @@ function xAlaX(useWord: Set<string>, description: string) {
       )
       .then(alaXLongGlyph),
     specificToken("x ala x")
-      .map(({ word }) => ({ type: "x ala x", word }) as const),
+      .map(({ word }) => ({ type: "x ala x", word })),
     word
       .then(alaX),
   );
 }
 const reduplicateRest = memoize((word: string) =>
   count(manyAtLeastOnce(specificWord(word)))
-    .map((count) =>
-      ({
-        type: "reduplication",
-        word,
-        count: count + 1,
-      }) as const
-    )
+    .map((count) => ({
+      type: "reduplication",
+      word,
+      count: count + 1,
+    }))
 );
 function simpleWordUnit(word: Set<string>, description: string) {
   return choice<SimpleHeadedWordUnit>(
@@ -277,25 +275,23 @@ const modifiers = sequence(
   many(
     choice<Modifier>(
       sequence(number, optionalEmphasis)
-        .map(([words, emphasis]) =>
-          ({
-            type: "default",
-            word: { type: "number", words, emphasis },
-          }) as const
-        )
+        .map(([words, emphasis]) => ({
+          type: "default",
+          word: { type: "number", words, emphasis },
+        }))
         .filter(filter(MODIFIER_RULES)),
       wordUnit(contentWordSet, "modifier")
-        .map((word) => ({ type: "default", word }) as const)
+        .map((word) => ({ type: "default", word }))
         .filter(filter(MODIFIER_RULES)),
       properWords
-        .map((words) => ({ type: "proper words", words }) as const)
+        .map((words) => ({ type: "proper words", words }))
         .filter(filter(MODIFIER_RULES)),
     ),
   ),
-  many(nanpa.map((nanpa) => ({ ...nanpa, type: "nanpa" }) as const)),
+  many(nanpa.map((nanpa) => ({ ...nanpa, type: "nanpa" }))),
   many(
     pi
-      .map((phrase) => ({ type: "pi", phrase }) as const)
+      .map((phrase) => ({ type: "pi", phrase }))
       .filter(filter(MODIFIER_RULES)),
   ),
 )
@@ -307,7 +303,7 @@ const modifiers = sequence(
   ])
   .filter(filter(MULTIPLE_MODIFIERS_RULES));
 const singlePhrase = phrase
-  .map((phrase) => ({ type: "single", phrase }) as const);
+  .map((phrase) => ({ type: "single", phrase }));
 const longAnu = sequence(
   specificToken("headless long glyph start").with(phrase),
   manyAtLeastOnce(
@@ -466,14 +462,12 @@ function associatedPredicates(nestingRule: ReadonlyArray<"li" | "o" | "anu">) {
     ),
     many(optionalComma.with(preposition)),
   )
-    .map(([predicates, objects, prepositions]) =>
-      ({
-        type: "associated",
-        predicates,
-        objects,
-        prepositions,
-      }) as const
-    )
+    .map(([predicates, objects, prepositions]) => ({
+      type: "associated",
+      predicates,
+      objects,
+      prepositions,
+    }))
     .filter(({ objects, prepositions }) =>
       objects != null || prepositions.length > 0
     )
@@ -485,7 +479,7 @@ function multiplePredicates(
   if (nestingRule.length === 0) {
     return choice<Predicate>(
       associatedPredicates([]),
-      phrase.map((predicate) => ({ type: "single", predicate }) as const),
+      phrase.map((predicate) => ({ type: "single", predicate })),
     );
   } else {
     const [first, ...rest] = nestingRule;
@@ -684,7 +678,7 @@ const sentence = choice<Sentence>(
           )
         ? "seme"
         : null;
-      return { ...sentence, interrogative } as const;
+      return { ...sentence, interrogative };
     })
     .sortBy(({ anuSeme }) => anuSeme == null ? 1 : 0),
   sequence(filler, optional(punctuation))
