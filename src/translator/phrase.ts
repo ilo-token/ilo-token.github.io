@@ -1,5 +1,5 @@
 import { mapNullable, nullableAsArray } from "../../misc/misc.ts";
-import { ArrayResult } from "../compound.ts";
+import { IterableResult } from "../compound.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as Composer from "../parser/composer.ts";
 import { AdjectiveWithInWay, fixAdjective } from "./adjective.ts";
@@ -38,7 +38,7 @@ function nounPhrase(
   }>,
 ) {
   const { emphasis, partialNoun, modifier } = options;
-  return ArrayResult.from<English.NounPhrase>(() => {
+  return IterableResult.from<English.NounPhrase>(() => {
     const determiner = fixDeterminer([
       ...[...modifier.determiner].reverse(),
       ...partialNoun.determiner,
@@ -100,7 +100,7 @@ function nounPhrase(
       }));
     } else {
       // will be filled by ExhaustedError on `defaultPhrase`
-      return ArrayResult.empty();
+      return IterableResult.empty();
     }
   });
 }
@@ -191,7 +191,7 @@ function defaultPhrase(
 ) {
   const { phrase, includeVerb } = options;
   const emphasis = phrase.emphasis != null;
-  return ArrayResult.combine(
+  return IterableResult.combine(
     wordUnit({ ...options, wordUnit: phrase.headWord }),
     multipleModifiers(phrase.modifiers),
   )
@@ -202,28 +202,28 @@ function defaultPhrase(
       } else if (
         headWord.type === "adjective" && modifier.type === "adverbial"
       ) {
-        return new ArrayResult([{
+        return IterableResult.single({
           ...adjectivePhrase({
             emphasis,
             adjective: headWord.adjective,
             modifier,
           }),
           type: "adjective",
-        }]);
+        });
       } else if (
         includeVerb && headWord.type === "verb" && modifier.type === "adverbial"
       ) {
-        return ArrayResult.from(() =>
-          new ArrayResult([{
+        return IterableResult.from(() =>
+          IterableResult.single({
             type: "verb",
             verb: {
               ...verbPhrase({ emphasis, verb: headWord, modifier }),
               type: "simple",
             },
-          }])
+          })
         );
       } else {
-        return ArrayResult.empty();
+        return IterableResult.empty();
       }
     })
     .addErrorWhenNone(() => new ExhaustedError(Composer.phrase(phrase)));
@@ -256,7 +256,7 @@ export function phrase(
     includeGerund: boolean;
     includeVerb: boolean;
   }>,
-): ArrayResult<PhraseTranslation> {
+): IterableResult<PhraseTranslation> {
   const { phrase, includeVerb } = options;
   switch (phrase.type) {
     case "default":
@@ -270,12 +270,12 @@ export function phrase(
             verb: { ...verb, type: "simple" },
           }));
       } else {
-        return ArrayResult.errors([
+        return IterableResult.errors([
           new UntranslatableError("preposition", "noun or adjective"),
         ]);
       }
     case "preverb":
-      return ArrayResult.errors([new TranslationTodoError(phrase.type)]);
+      return IterableResult.errors([new TranslationTodoError(phrase.type)]);
   }
 }
 function compoundNoun(
@@ -384,7 +384,7 @@ export function multiplePhrases(
     andParticle: null | string;
     includeVerb: boolean;
   }>,
-): ArrayResult<PhraseTranslation> {
+): IterableResult<PhraseTranslation> {
   const { phrases, andParticle, includeVerb } = options;
   switch (phrases.type) {
     case "single":
@@ -392,7 +392,7 @@ export function multiplePhrases(
     case "and conjunction":
     case "anu": {
       const conjunction = CONJUNCTION[phrases.type];
-      return ArrayResult.combine(
+      return IterableResult.combine(
         ...phrases.phrases
           .map((phrases) => multiplePhrases({ ...options, phrases })),
       )
@@ -456,7 +456,7 @@ export function multiplePhrasesAsNoun(
     includeGerund: boolean;
     andParticle: string;
   }>,
-): ArrayResult<English.NounPhrase> {
+): IterableResult<English.NounPhrase> {
   return multiplePhrases({ ...options, includeVerb: false })
     .filterMap((phrase) => phrase.type === "noun" ? phrase.noun : null);
 }

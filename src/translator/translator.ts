@@ -1,36 +1,54 @@
-import { distinct } from "@std/collections/distinct";
-import { distinctBy } from "@std/collections/distinct-by";
-import { shuffle } from "@std/random/shuffle";
 import { errors } from "../../telo_misikeke/telo_misikeke.js";
-import { ArrayResult, ResultError } from "../compound.ts";
+import { IterableResult, ResultError } from "../compound.ts";
 import { parser } from "../parser/parser.ts";
 import { settings } from "../settings.ts";
 import * as EnglishComposer from "./composer.ts";
 import { multipleSentences } from "./sentence.ts";
 
-export function translate(tokiPona: string): ArrayResult<string> {
-  const arrayResult = parser
-    .parse(tokiPona)
-    .flatMap(multipleSentences)
-    .map(EnglishComposer.multipleSentences);
-  if (!arrayResult.isError()) {
-    const values = distinct(arrayResult.unwrap());
-    if (settings.randomize) {
-      return new ArrayResult(shuffle(values));
-    } else {
-      return new ArrayResult(values);
+export function translate(tokiPona: string): IterableResult<string> {
+  return new IterableResult(function* () {
+    const iterableResult = parser
+      .parse(tokiPona)
+      .asIterableResult()
+      .flatMap(multipleSentences)
+      .map(EnglishComposer.multipleSentences);
+    let yielded = false;
+    const aggregateErrors: Array<ResultError> = [];
+    const unique: Set<string> = new Set();
+    for (const result of iterableResult.iterable()) {
+      switch (result.type) {
+        case "value":
+          if (!unique.has(result.value)) {
+            yielded = true;
+            yield result;
+            unique.add(result.value);
+          }
+          break;
+        case "error":
+          aggregateErrors.push(result.error);
+          break;
+      }
     }
-  } else {
-    const teloMisikekeErrors = settings.teloMisikeke
-      ? errors(tokiPona)
-        .map((message) => new ResultError(message, { isHtml: true }))
-      : [];
-    const error = teloMisikekeErrors.length === 0
-      ? deduplicateErrors(arrayResult.errors)
-      : teloMisikekeErrors;
-    return ArrayResult.errors(error);
-  }
-}
-function deduplicateErrors<const T extends Error>(errors: Iterable<T>) {
-  return distinctBy(errors, ({ message }) => message);
+    if (!yielded) {
+      let yielded = false;
+      if (settings.teloMisikeke) {
+        for (const error of errors(tokiPona)) {
+          yielded = true;
+          yield {
+            type: "error",
+            error: new ResultError(error, { isHtml: true }),
+          };
+        }
+      }
+      if (!yielded) {
+        const unique: Set<string> = new Set();
+        for (const error of aggregateErrors) {
+          if (!unique.has(error.message)) {
+            yield { type: "error", error };
+            unique.add(error.message);
+          }
+        }
+      }
+    }
+  });
 }

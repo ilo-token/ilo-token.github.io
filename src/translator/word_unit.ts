@@ -1,5 +1,5 @@
 import { Definition } from "../../dictionary/type.ts";
-import { ArrayResult } from "../compound.ts";
+import { IterableResult } from "../compound.ts";
 import { dictionary } from "../dictionary.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";
@@ -27,12 +27,12 @@ function defaultWordUnit(
 ) {
   const { word: useWord, reduplicationCount, emphasis, includeGerund } =
     options;
-  return new ArrayResult(dictionary.get(useWord)!.definitions)
+  return IterableResult.fromArray(dictionary.get(useWord)!.definitions)
     .flatMap<WordUnitTranslation>((definition) => {
       switch (definition.type) {
         case "noun":
           if (!includeGerund && definition.gerund) {
-            return ArrayResult.empty();
+            return IterableResult.empty();
           } else {
             return partialNoun({
               ...options,
@@ -42,19 +42,17 @@ function defaultWordUnit(
               .map((noun) => ({ ...noun, type: "noun" }));
           }
         case "personal pronoun":
-          return new ArrayResult([
-            {
-              ...partialPronoun({
-                ...options,
-                pronoun: definition,
-                emphasis: emphasis != null,
-              }),
-              type: "noun",
-            },
-          ]);
+          return IterableResult.single({
+            ...partialPronoun({
+              ...options,
+              pronoun: definition,
+              emphasis: emphasis != null,
+            }),
+            type: "noun",
+          });
         case "adjective":
           if (!includeGerund && definition.gerundLike) {
-            return ArrayResult.empty();
+            return IterableResult.empty();
           } else {
             return adjective({ ...options, definition })
               .map((adjective) => ({
@@ -79,7 +77,7 @@ function defaultWordUnit(
           })
             .map((verb) => ({ ...verb, type: "verb" }));
         case "modal verb":
-          return new ArrayResult([{
+          return IterableResult.single({
             type: "verb",
             modal: {
               adverb: [],
@@ -101,9 +99,9 @@ function defaultWordUnit(
             forObject: false,
             predicateType: null,
             phraseEmphasis: false,
-          }]);
+          });
         default:
-          return ArrayResult.empty();
+          return IterableResult.empty();
       }
     });
 }
@@ -113,7 +111,7 @@ export function wordUnit(
     place: Place;
     includeGerund: boolean;
   }>,
-): ArrayResult<WordUnitTranslation> {
+): IterableResult<WordUnitTranslation> {
   const { wordUnit } = options;
   switch (wordUnit.type) {
     case "number":
@@ -130,7 +128,7 @@ export function wordUnit(
           postAdjective: null,
         }));
     case "x ala x":
-      return ArrayResult.errors([new TranslationTodoError("x ala x")]);
+      return IterableResult.errors([new TranslationTodoError("x ala x")]);
     case "default":
     case "reduplication": {
       const reduplicationCount = getReduplicationCount(wordUnit);
@@ -146,11 +144,13 @@ export function wordUnit(
 export function fromSimpleDefinition(
   wordUnit: TokiPona.WordUnit,
   mapper: (definition: Definition) => null | string,
-): ArrayResult<English.Word> {
+): IterableResult<English.Word> {
   switch (wordUnit.type) {
     case "default":
     case "reduplication":
-      return new ArrayResult(dictionary.get(wordUnit.word)!.definitions)
+      return IterableResult.fromArray(
+        dictionary.get(wordUnit.word)!.definitions,
+      )
         .filterMap(mapper)
         .map((useWord) =>
           word({
@@ -160,9 +160,9 @@ export function fromSimpleDefinition(
           })
         );
     case "number":
-      return ArrayResult.empty();
+      return IterableResult.empty();
     case "x ala x":
-      return ArrayResult.errors([new TranslationTodoError("x ala x")]);
+      return IterableResult.errors([new TranslationTodoError("x ala x")]);
   }
 }
 export function getReduplicationCount(wordUnit: TokiPona.WordUnit): number {

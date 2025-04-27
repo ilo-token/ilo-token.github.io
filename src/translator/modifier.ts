@@ -1,4 +1,4 @@
-import { ArrayResult } from "../compound.ts";
+import { IterableResult } from "../compound.ts";
 import { dictionary } from "../dictionary.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as Composer from "../parser/composer.ts";
@@ -45,7 +45,7 @@ export type MultipleModifierTranslation =
   | (Readonly<{ type: "adverbial" }> & AdverbialModifier);
 export function defaultModifier(
   wordUnit: TokiPona.WordUnit,
-): ArrayResult<ModifierTranslation> {
+): IterableResult<ModifierTranslation> {
   const emphasis = wordUnit.emphasis != null;
   switch (wordUnit.type) {
     case "number":
@@ -65,11 +65,13 @@ export function defaultModifier(
         };
       });
     case "x ala x":
-      return ArrayResult.errors([new TranslationTodoError("x ala x")]);
+      return IterableResult.errors([new TranslationTodoError("x ala x")]);
     case "default":
     case "reduplication": {
       const reduplicationCount = getReduplicationCount(wordUnit);
-      return new ArrayResult(dictionary.get(wordUnit.word)!.definitions)
+      return IterableResult.fromArray(
+        dictionary.get(wordUnit.word)!.definitions,
+      )
         .flatMap<ModifierTranslation>((definition) => {
           switch (definition.type) {
             case "noun":
@@ -128,16 +130,16 @@ export function defaultModifier(
                   adjective,
                 }));
             case "adverb":
-              return new ArrayResult([{
+              return IterableResult.single({
                 type: "adverb",
                 adverb: word({
                   word: definition.adverb,
                   reduplicationCount,
                   emphasis,
                 }),
-              }]);
+              });
             default:
-              return ArrayResult.empty();
+              return IterableResult.empty();
           }
         });
     }
@@ -145,7 +147,7 @@ export function defaultModifier(
 }
 export function pi(
   insidePhrase: TokiPona.Phrase,
-): ArrayResult<ModifierTranslation> {
+): IterableResult<ModifierTranslation> {
   return phrase({
     phrase: insidePhrase,
     place: "object",
@@ -158,14 +160,14 @@ export function pi(
     )
     .filter((modifier) =>
       modifier.type !== "adjective" || modifier.inWayPhrase == null
-    ) as ArrayResult<ModifierTranslation>;
+    ) as IterableResult<ModifierTranslation>;
 }
 function modifier(modifier: TokiPona.Modifier) {
   switch (modifier.type) {
     case "default":
       return defaultModifier(modifier.word);
     case "proper words":
-      return new ArrayResult([{ type: "name", name: modifier.words }]);
+      return IterableResult.single({ type: "name", name: modifier.words });
     case "pi":
       return pi(modifier.phrase);
     case "nanpa":
@@ -175,8 +177,8 @@ function modifier(modifier: TokiPona.Modifier) {
 }
 export function multipleModifiers(
   modifiers: ReadonlyArray<TokiPona.Modifier>,
-): ArrayResult<MultipleModifierTranslation> {
-  return ArrayResult.combine(...modifiers.map(modifier))
+): IterableResult<MultipleModifierTranslation> {
+  return IterableResult.combine(...modifiers.map(modifier))
     .flatMap((modifiers) => {
       const noun = modifiers
         .flatMap((modifier) => modifier.type === "noun" ? [modifier.noun] : []);
@@ -205,7 +207,7 @@ export function multipleModifiers(
         modifier.type === "position phrase" ? [modifier.noun] : []
       );
 
-      let adjectival: ArrayResult<MultipleModifierTranslation>;
+      let adjectival: IterableResult<MultipleModifierTranslation>;
       if (
         noun.length <= 1 &&
         nounPreposition.length <= 1 &&
@@ -214,7 +216,7 @@ export function multipleModifiers(
         inPositionPhrase.length <= 1 &&
         (noun.length === 0 || inPositionPhrase.length === 0)
       ) {
-        adjectival = new ArrayResult([{
+        adjectival = IterableResult.single({
           type: "adjectival",
           nounPreposition: nounPreposition[0] ?? null,
           determiner,
@@ -222,11 +224,11 @@ export function multipleModifiers(
           name: name[0] ?? null,
           ofPhrase: noun[0] ?? null,
           inPositionPhrase: inPositionPhrase[0] ?? null,
-        }]);
+        });
       } else {
-        adjectival = ArrayResult.empty();
+        adjectival = IterableResult.empty();
       }
-      let adverbial: ArrayResult<MultipleModifierTranslation>;
+      let adverbial: IterableResult<MultipleModifierTranslation>;
       if (
         noun.length === 0 &&
         nounPreposition.length === 0 &&
@@ -249,15 +251,15 @@ export function multipleModifiers(
             emphasis: false,
           } as const
           : null;
-        adverbial = new ArrayResult([{
+        adverbial = IterableResult.single({
           type: "adverbial",
           adverb,
           inWayPhrase,
-        }]);
+        });
       } else {
-        adverbial = ArrayResult.empty();
+        adverbial = IterableResult.empty();
       }
-      return ArrayResult.concat(adjectival, adverbial);
+      return IterableResult.concat(adjectival, adverbial);
     })
     .addErrorWhenNone(() =>
       new ExhaustedError(modifiers.map(Composer.modifier).join(" "))

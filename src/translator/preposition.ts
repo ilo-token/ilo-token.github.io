@@ -1,5 +1,5 @@
 import { throwError } from "../../misc/misc.ts";
-import { ArrayResult } from "../compound.ts";
+import { IterableResult } from "../compound.ts";
 import { dictionary } from "../dictionary.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { fixAdverb } from "./adverb.ts";
@@ -12,8 +12,8 @@ import { getReduplicationCount } from "./word_unit.ts";
 
 export function preposition(
   preposition: TokiPona.Preposition,
-): ArrayResult<English.Preposition> {
-  return ArrayResult.combine(
+): IterableResult<English.Preposition> {
+  return IterableResult.combine(
     prepositionAsWord(preposition.preposition),
     multipleModifiers(preposition.modifiers)
       .filterMap((modifier) =>
@@ -49,15 +49,15 @@ export function preposition(
 }
 function prepositionAsWord(
   preposition: TokiPona.HeadedWordUnit,
-): ArrayResult<English.Word> {
+): IterableResult<English.Word> {
   switch (preposition.type) {
     case "x ala x":
-      return ArrayResult.errors([
+      return IterableResult.errors([
         new TranslationTodoError("preposition ala preposition"),
       ]);
     case "default":
     case "reduplication":
-      return new ArrayResult(
+      return IterableResult.fromArray(
         dictionary.get(preposition.word)!.definitions,
       )
         .filterMap((definition) =>

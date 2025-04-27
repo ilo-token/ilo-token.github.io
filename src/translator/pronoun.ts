@@ -1,5 +1,5 @@
 import * as Dictionary from "../../dictionary/type.ts";
-import { ArrayResult } from "../compound.ts";
+import { IterableResult } from "../compound.ts";
 import * as English from "./ast.ts";
 import { fromNounForms, PartialNoun } from "./noun.ts";
 import { word } from "./word.ts";
@@ -45,7 +45,7 @@ export function pronoun(
     emphasis: boolean;
     place: Place;
   }>,
-): ArrayResult<English.NounPhrase> {
+): IterableResult<English.NounPhrase> {
   const { definition, place } = options;
   return fromNounForms(pronounForms(definition, place), "both")
     .map(({ noun, quantity }) => ({

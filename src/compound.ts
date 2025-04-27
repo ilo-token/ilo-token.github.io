@@ -157,6 +157,25 @@ export class IterableResult<const T> {
   static empty(): IterableResult<never> {
     return new IterableResult(function* () {});
   }
+  collect(): ReadonlyArray<T> {
+    const array: Array<T> = [];
+    const error: Array<ResultError> = [];
+    for (const result of this.iterable()) {
+      switch (result.type) {
+        case "value":
+          array.push(result.value);
+          break;
+        case "error":
+          error.push(result.error);
+          break;
+      }
+    }
+    if (error.length > 0) {
+      throw new AggregateError(error);
+    } else {
+      return array;
+    }
+  }
   filter(mapper: (value: T) => boolean): IterableResult<T> {
     return this.flatMap((value) =>
       mapper(value) ? IterableResult.single(value) : IterableResult.empty()

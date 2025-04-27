@@ -5,11 +5,11 @@ import { number } from "./number.ts";
 import { translate } from "./translator.ts";
 
 Deno.test("verb with adverb", () => {
-  const translations = translate("mi toki pona").unwrap();
+  const translations = translate("mi toki pona").collect();
   assertArrayIncludes(translations, ["I nicely communicate"]);
 });
 Deno.test("adjective with adverb", () => {
-  const translations = translate("pona ike").unwrap();
+  const translations = translate("pona ike").collect();
   assertArrayIncludes(translations, ["Badly good"]);
 });
 Deno.test("numeral translation", () => {
@@ -37,7 +37,7 @@ Deno.test("numeral translation", () => {
     "mute ale mute tu tu": 2024,
   }));
   for (const [tokiPona, expected] of NUMBER_TESTS) {
-    const numbers = number(tokiPona.trim().split(" ")).unwrap();
+    const numbers = number(tokiPona.trim().split(" ")).collect();
     assertArrayIncludes(numbers, [expected], `Error at "${tokiPona}"`);
   }
 });

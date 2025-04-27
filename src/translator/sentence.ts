@@ -1,5 +1,5 @@
 import { nullableAsArray } from "../../misc/misc.ts";
-import { ArrayResult } from "../compound.ts";
+import { IterableResult } from "../compound.ts";
 import { dictionary } from "../dictionary.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { definitionAsPlainString } from "./as_string.ts";
@@ -22,7 +22,7 @@ function filler(filler: TokiPona.Filler) {
           length = filler.length;
           break;
       }
-      return new ArrayResult(dictionary.get(filler.word)!.definitions)
+      return IterableResult.fromArray(dictionary.get(filler.word)!.definitions)
         .filterMap((definition) => {
           if (definition.type === "filler") {
             const { before, repeat, after } = definition;
@@ -33,7 +33,7 @@ function filler(filler: TokiPona.Filler) {
         });
     }
     case "multiple a":
-      return new ArrayResult(["ha".repeat(filler.count)]);
+      return IterableResult.single("ha".repeat(filler.count));
   }
 }
 function emphasisAsPunctuation(
@@ -64,9 +64,12 @@ function emphasisAsPunctuation(
     return `${questionMark}${exclamationMark}`;
   }
 }
-function sentence(sentence: TokiPona.Sentence, isFinal: boolean) {
+function sentence(
+  sentence: TokiPona.Sentence,
+  isFinal: boolean,
+): IterableResult<English.Sentence> {
   if (sentence.interrogative === "x ala x") {
-    return ArrayResult.errors([new TranslationTodoError("x ala x")]);
+    return IterableResult.errors([new TranslationTodoError("x ala x")]);
   }
   const punctuation = !isFinal && sentence.punctuation === ""
     ? ","
@@ -74,7 +77,7 @@ function sentence(sentence: TokiPona.Sentence, isFinal: boolean) {
   switch (sentence.type) {
     case "default": {
       if (sentence.startingParticle != null) {
-        return ArrayResult.errors([
+        return IterableResult.errors([
           new TranslationTodoError(
             `"${sentence.startingParticle.word}" starting particle`,
           ),
@@ -91,10 +94,10 @@ function sentence(sentence: TokiPona.Sentence, isFinal: boolean) {
             }),
           }) as const
         );
-      const interjectionClause: ArrayResult<English.Clause> =
+      const interjectionClause: IterableResult<English.Clause> =
         sentence.contextClauses.length === 0 &&
           sentence.startingParticle == null
-          ? new ArrayResult(
+          ? IterableResult.fromArray(
             nullableAsArray(unwrapSingleWord(sentence.finalClause)),
           )
             .flatMap((wordUnit) =>
@@ -107,11 +110,11 @@ function sentence(sentence: TokiPona.Sentence, isFinal: boolean) {
               )
             )
             .map((interjection) => ({ type: "interjection", interjection }))
-          : ArrayResult.empty();
-      const clauses = ArrayResult.combine(
-        ArrayResult.combine(...sentence.contextClauses.map(contextClause))
+          : IterableResult.empty();
+      const clauses = IterableResult.combine(
+        IterableResult.combine(...sentence.contextClauses.map(contextClause))
           .map((clause) => clause.flat()),
-        ArrayResult.concat(interjectionClause, clause(sentence.finalClause)),
+        IterableResult.concat(interjectionClause, clause(sentence.finalClause)),
       )
         .map(([contextClauses, lastClause]) => [
           ...contextClauses,
@@ -145,11 +148,11 @@ function sentence(sentence: TokiPona.Sentence, isFinal: boolean) {
 }
 export function multipleSentences(
   sentences: TokiPona.MultipleSentences,
-): ArrayResult<English.MultipleSentences> {
+): IterableResult<English.MultipleSentences> {
   switch (sentences.type) {
     case "single word": {
       const { word } = sentences;
-      return new ArrayResult(dictionary.get(word)!.definitions)
+      return IterableResult.fromArray(dictionary.get(word)!.definitions)
         .flatMap(definitionAsPlainString)
         .map((definition) => ({
           type: "free form",
@@ -157,7 +160,7 @@ export function multipleSentences(
         }));
     }
     case "sentences":
-      return ArrayResult.combine(
+      return IterableResult.combine(
         ...sentences.sentences.map((value, i) =>
           sentence(value, i === sentences.sentences.length - 1)
         ),

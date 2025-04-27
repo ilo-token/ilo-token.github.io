@@ -1,5 +1,5 @@
 import { throwError } from "../../misc/misc.ts";
-import { ArrayResult } from "../compound.ts";
+import { IterableResult } from "../compound.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
 import { FilteredError } from "./error.ts";
@@ -7,7 +7,7 @@ import { phrase } from "./phrase.ts";
 
 export function nanpa(
   nanpa: TokiPona.Modifier & { type: "nanpa" },
-): ArrayResult<English.NounPhrase> {
+): IterableResult<English.NounPhrase> {
   return phrase({
     phrase: nanpa.phrase,
     place: "object",

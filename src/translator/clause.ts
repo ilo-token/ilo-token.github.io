@@ -1,5 +1,5 @@
 import { nullableAsArray, throwError } from "../../misc/misc.ts";
-import { ArrayResult } from "../compound.ts";
+import { IterableResult } from "../compound.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
 import { FilteredError, TranslationTodoError } from "./error.ts";
@@ -71,7 +71,7 @@ function phraseClause(phrases: TokiPona.MultiplePhrases) {
     });
 }
 function liClause(clause: TokiPona.Clause & { type: "li clause" }) {
-  return ArrayResult.combine(
+  return IterableResult.combine(
     multiplePhrasesAsNoun({
       phrases: clause.subjects,
       place: "subject",
@@ -134,27 +134,25 @@ function oClause(clause: TokiPona.Clause & { type: "o clause" }) {
       includeGerund: true,
       andParticle: "en",
     })
-    : new ArrayResult([
-      {
-        type: "simple",
-        determiner: [],
-        adjective: [],
-        noun: noEmphasis("you"),
-        quantity: "plural",
-        perspective: "second",
-        postAdjective: null,
-        postCompound: null,
-        preposition: [],
-        emphasis: false,
-      },
-    ]);
-  return ArrayResult.combine(subject, predicate(clause.predicates, "o"))
+    : IterableResult.single({
+      type: "simple",
+      determiner: [],
+      adjective: [],
+      noun: noEmphasis("you"),
+      quantity: "plural",
+      perspective: "second",
+      postAdjective: null,
+      postCompound: null,
+      preposition: [],
+      emphasis: false,
+    });
+  return IterableResult.combine(subject, predicate(clause.predicates, "o"))
     .flatMap(([subject, predicate]) => {
       const subjectPerspective = perspective(subject);
-      return ArrayResult.concat(
+      return IterableResult.concat(
         verb(predicate, subjectPerspective, subject.quantity)
           .map((verb) => iWish(subject, verb)),
-        ArrayResult.from(() =>
+        IterableResult.from(() =>
           verb(
             addModalToAll(
               noAdverbs(noEmphasis("should")),
@@ -173,7 +171,9 @@ function oClause(clause: TokiPona.Clause & { type: "o clause" }) {
       );
     });
 }
-export function clause(clause: TokiPona.Clause): ArrayResult<English.Clause> {
+export function clause(
+  clause: TokiPona.Clause,
+): IterableResult<English.Clause> {
   switch (clause.type) {
     case "phrases":
       return phraseClause(clause.phrases);
@@ -200,10 +200,12 @@ export function clause(clause: TokiPona.Clause): ArrayResult<English.Clause> {
 }
 export function contextClause(
   contextClause: TokiPona.ContextClause,
-): ArrayResult<ReadonlyArray<English.Clause>> {
+): IterableResult<ReadonlyArray<English.Clause>> {
   switch (contextClause.type) {
     case "prepositions":
-      return ArrayResult.combine(...contextClause.prepositions.map(preposition))
+      return IterableResult.combine(
+        ...contextClause.prepositions.map(preposition),
+      )
         .map((prepositions) =>
           prepositions.map((preposition) => ({
             ...preposition,
@@ -220,12 +222,14 @@ export function contextClause(
           emphasis: false,
         }]);
     case "anu":
-      return ArrayResult.errors([
+      return IterableResult.errors([
         new TranslationTodoError(`${contextClause.type} context clause`),
       ]);
     default:
-      return ArrayResult.concat<ReadonlyArray<English.Clause>>(
-        new ArrayResult(nullableAsArray(unwrapSingleWord(contextClause)))
+      return IterableResult.concat<ReadonlyArray<English.Clause>>(
+        IterableResult.fromArray(
+          nullableAsArray(unwrapSingleWord(contextClause)),
+        )
           .flatMap((wordUnit) =>
             fromSimpleDefinition(
               wordUnit,

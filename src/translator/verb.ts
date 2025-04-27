@@ -1,6 +1,6 @@
 import * as Dictionary from "../../dictionary/type.ts";
 import { mapNullable, nullableAsArray } from "../../misc/misc.ts";
-import { ArrayResult } from "../compound.ts";
+import { IterableResult } from "../compound.ts";
 import { settings } from "../settings.ts";
 import * as English from "./ast.ts";
 import { FilteredError } from "./error.ts";
@@ -92,9 +92,9 @@ export function partialVerb(
     reduplicationCount: number;
     emphasis: boolean;
   }>,
-): ArrayResult<PartialVerb> {
+): IterableResult<PartialVerb> {
   const { definition, reduplicationCount, emphasis } = options;
-  const object = new ArrayResult([definition.directObject])
+  const object = IterableResult.single(definition.directObject)
     .flatMap((object) => {
       if (object != null) {
         return noun({
@@ -103,10 +103,10 @@ export function partialVerb(
           emphasis: false,
         });
       } else {
-        return new ArrayResult([null]);
+        return IterableResult.single(null);
       }
     });
-  const preposition = ArrayResult.combine(
+  const preposition = IterableResult.combine(
     ...definition.indirectObject
       .flatMap(({ object, preposition }) =>
         noun({
@@ -117,7 +117,7 @@ export function partialVerb(
           .map((object) => nounAsPreposition(object, preposition))
       ),
   );
-  return ArrayResult.combine(object, preposition)
+  return IterableResult.combine(object, preposition)
     .map(([object, preposition]) => ({
       ...definition,
       adverb: [],
@@ -161,7 +161,7 @@ export function fromVerbForms(
     perspective: Dictionary.Perspective;
     quantity: English.Quantity;
   }>,
-): ArrayResult<Readonly<{ modal: null | string; verb: string }>> {
+): IterableResult<Readonly<{ modal: null | string; verb: string }>> {
   const { verbForms, perspective, quantity } = options;
   const is = verbForms.presentSingular === "is";
   const presentSingular = is && perspective === "first"
@@ -178,39 +178,39 @@ export function fromVerbForms(
     case "condensed":
       if (is) {
         if (quantity === "condensed") {
-          return new ArrayResult([{
+          return IterableResult.single({
             modal: null,
             verb: "is/are/was/were/will be",
-          }]);
+          });
         } else {
-          return new ArrayResult([{
+          return IterableResult.single({
             modal: null,
             verb: `${present}/${past}/will be`,
-          }]);
+          });
         }
       } else {
-        return new ArrayResult([{
+        return IterableResult.single({
           modal: "(will)",
           verb: condenseVerb(present, past),
-        }]);
+        });
       }
     case "both": {
       const future = is ? "be" : verbForms.presentPlural;
-      return new ArrayResult([
+      return IterableResult.fromArray([
         { modal: null, verb: present },
         { modal: null, verb: past },
         { modal: "will", verb: future },
       ]);
     }
     case "default only":
-      return new ArrayResult([{ modal: null, verb: present }]);
+      return IterableResult.single({ modal: null, verb: present });
   }
 }
 export function verb(
   partialVerb: PartialCompoundVerb,
   perspective: Dictionary.Perspective,
   quantity: English.Quantity,
-): ArrayResult<English.VerbPhrase> {
+): IterableResult<English.VerbPhrase> {
   switch (partialVerb.type) {
     case "simple": {
       const verbForms = partialVerb.first;
@@ -244,17 +244,17 @@ export function verb(
             hideVerb: false,
           }));
       } else {
-        return new ArrayResult([{
+        return IterableResult.single({
           ...partialVerb,
           type: "default",
           verb: { modal: partialVerb.modal, verb: partialVerb.rest },
           contentClause: null,
           hideVerb: false,
-        }]);
+        });
       }
     }
     case "compound":
-      return ArrayResult.combine(
+      return IterableResult.combine(
         ...partialVerb.verb.map((partialVerb) =>
           verb(partialVerb, perspective, quantity)
         ),

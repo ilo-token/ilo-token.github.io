@@ -23,6 +23,7 @@ import {
   resetElementsToDefault,
 } from "./settings_frontend.ts";
 import { translate } from "./translator/translator.ts";
+import { ResultError } from "./compound.ts";
 
 const DICTIONARY_AUTO_PARSE_THRESHOLD = 9000;
 
@@ -243,15 +244,24 @@ function main() {
     outputList.innerHTML = "";
     errorList.innerHTML = "";
     errorDisplay.innerText = "";
-    const result = translate(inputTextBox.value);
-    if (!result.isError()) {
-      for (const translation of result.unwrap()) {
-        const list = document.createElement("li");
-        list.innerHTML = translation;
-        outputList.appendChild(list);
+    const iterableResult = translate(inputTextBox.value);
+    const errors: Array<ResultError> = [];
+    let yielded = false;
+    for (const result of iterableResult.iterable()) {
+      switch (result.type) {
+        case "value": {
+          yielded = true;
+          const list = document.createElement("li");
+          list.innerHTML = result.value;
+          outputList.appendChild(list);
+          break;
+        }
+        case "error":
+          errors.push(result.error);
+          break;
       }
-    } else {
-      const errors = result.errors;
+    }
+    if (!yielded) {
       switch (errors.length) {
         case 0:
           errorDisplay.innerText = UNKNOWN_ERROR_MESSAGE;

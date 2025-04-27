@@ -1,11 +1,11 @@
 import { sumOf } from "@std/collections/sum-of";
 import { nullableAsArray } from "../../misc/misc.ts";
-import { ArrayResult } from "../compound.ts";
+import { IterableResult } from "../compound.ts";
 import { dictionary } from "../dictionary.ts";
 import { FilteredError } from "./error.ts";
 
 function singleNumber(word: string) {
-  return new ArrayResult(dictionary.get(word)!.definitions)
+  return IterableResult.fromArray(dictionary.get(word)!.definitions)
     .filterMap((definition) =>
       definition.type === "numeral" ? definition.numeral : null
     );
@@ -65,19 +65,19 @@ function nasinNanpaPona(number: ReadonlyArray<number>) {
 }
 function combineNumbers(numbers: ReadonlyArray<number>) {
   if (numbers.length === 1 || !numbers.includes(0)) {
-    return ArrayResult.concat(
-      ArrayResult.from(() =>
-        new ArrayResult(nullableAsArray(nasinNanpaPona(numbers)))
+    return IterableResult.concat(
+      IterableResult.from(() =>
+        IterableResult.fromArray(nullableAsArray(nasinNanpaPona(numbers)))
       ),
-      ArrayResult.from(() => new ArrayResult([regularNumber(numbers)])),
+      IterableResult.from(() => IterableResult.single(regularNumber(numbers))),
     );
   } else {
-    return ArrayResult.errors([
+    return IterableResult.errors([
       new FilteredError('"ala" along with other numeral'),
     ]);
   }
 }
-export function number(number: ReadonlyArray<string>): ArrayResult<number> {
-  return ArrayResult.combine(...number.map(singleNumber))
+export function number(number: ReadonlyArray<string>): IterableResult<number> {
+  return IterableResult.combine(...number.map(singleNumber))
     .flatMap(combineNumbers);
 }
