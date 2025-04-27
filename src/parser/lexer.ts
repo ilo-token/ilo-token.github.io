@@ -80,7 +80,7 @@ const multipleA = specificWord("a")
 const repeatingLetter = match(/[a-zA-Z]/, "latin letter")
   .then(memoize((letter) =>
     count(all(matchString(letter)))
-      .map((count) => [letter, count + 1] as const)
+      .map((count) => [letter, count + 1])
   ));
 const longWord = allAtLeastOnce(repeatingLetter)
   .skip(spaces)

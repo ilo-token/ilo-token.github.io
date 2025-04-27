@@ -316,7 +316,7 @@ export function withSource<const T>(
       value: [
         value,
         currentSource.slice(position, position + length),
-      ] as const,
+      ],
       length,
     }))
   );
