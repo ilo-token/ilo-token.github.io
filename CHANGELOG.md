@@ -18,6 +18,8 @@ NOTE: Before publishing:
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
 
+- Implement modal verb translation. "mi ken" can translate into "I can" and "I
+  may".
 - Added "Use hardcoded anu la translation" setting anticipating "anu la"
   translation which isn't implemented yet.
 
