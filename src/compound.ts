@@ -70,9 +70,9 @@ export class ArrayResult<const T> {
       return new ArrayResult([...this.array].sort(comparer));
     }
   }
-  sortBy(mapper: (value: T) => number): ArrayResult<T> {
-    return this.sort((left, right) => mapper(left) - mapper(right));
-  }
+  // sortBy(mapper: (value: T) => number): ArrayResult<T> {
+  //   return this.sort((left, right) => mapper(left) - mapper(right));
+  // }
   // addErrorWhenNone(error: () => ResultError): ArrayResult<T> {
   //   if (this.isError() && this.errors.length === 0) {
   //     return ArrayResult.errors([error()]);
