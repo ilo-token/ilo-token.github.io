@@ -26,7 +26,8 @@ import {
 import { translate } from "./translator/translator.ts";
 
 const DICTIONARY_AUTO_PARSE_THRESHOLD = 9000;
-const PAGE_SIZE = 100;
+const INITIAL_PAGE_SIZE = 100;
+const MAX_PAGE_SIZE = 10000;
 
 // never change this
 const DICTIONARY_KEY = "dictionary";
@@ -190,6 +191,7 @@ function main() {
 
   // state for output
   let output: null | Generator<Result<string>> = null;
+  let size = 0;
 
   // load custom dictionary
   if (!currentDictionary.isError()) {
@@ -254,13 +256,14 @@ function main() {
     errorDisplay.innerText = "";
     loadMoreButton.style.display = "";
     output = translate(inputTextBox.value).iterable();
+    size = 0;
     moreOutput();
   }
   function moreOutput() {
     const errors: Array<ResultError> = [];
     let yielded = false;
     let i = 0;
-    while (i < PAGE_SIZE) {
+    while (i < Math.min(INITIAL_PAGE_SIZE * 2 ** size, MAX_PAGE_SIZE)) {
       const next = output!.next();
       if (!next.done) {
         const result = next.value;
@@ -281,6 +284,9 @@ function main() {
         loadMoreButton.style.display = "none";
         break;
       }
+    }
+    if (size < Math.log2(MAX_PAGE_SIZE / INITIAL_PAGE_SIZE)) {
+      size++;
     }
     if (!yielded) {
       switch (errors.length) {
