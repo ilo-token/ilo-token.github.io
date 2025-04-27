@@ -5,27 +5,27 @@ import { ArrayResult, ArrayResultError } from "../array_result.ts";
 
 type ParserResult<T> = ArrayResult<Readonly<{ value: T; length: number }>>;
 type InnerParser<T> = (input: number) => ParserResult<T>;
-type Memo<T> = Map<number, MemoizationCacheResult<ParserResult<T>>>;
+type Cache<T> = Map<number, MemoizationCacheResult<ParserResult<T>>>;
 
 let currentSource = "";
-const allMemo: Set<WeakRef<Memo<unknown>>> = new Set();
+const allCache: Set<WeakRef<Cache<unknown>>> = new Set();
 
 export class Parser<T> {
   readonly rawParser: InnerParser<T>;
   constructor(parser: InnerParser<T>) {
-    const cache: Memo<T> = new Map();
-    allMemo.add(new WeakRef(cache));
-    this.rawParser = memoize<InnerParser<T>, number, Memo<T>>(
+    const cache: Cache<T> = new Map();
+    allCache.add(new WeakRef(cache));
+    this.rawParser = memoize<InnerParser<T>, number, Cache<T>>(
       parser,
       { cache },
     );
   }
   parse(source: string): ArrayResult<T> {
     currentSource = source;
-    for (const memo of allMemo) {
+    for (const memo of allCache) {
       const ref = memo.deref();
       if (ref == null) {
-        allMemo.delete(memo);
+        allCache.delete(memo);
       } else {
         ref.clear();
       }
