@@ -146,21 +146,40 @@ function verbPhrase(
   }>,
 ) {
   const { emphasis, verb, modifier } = options;
-  const adverb = fixAdverb([
-    ...[...modifier.adverb].reverse(),
-    ...verb.adverb,
-  ]);
   const preposition = [
     ...verb.preposition,
     ...nullableAsArray(modifier.inWayPhrase)
       .map((object) => nounAsPreposition(object, "in")),
   ];
-  return {
-    ...verb,
-    adverb,
-    phraseEmphasis: emphasis,
-    preposition,
-  };
+  if (verb.first != null) {
+    return {
+      ...verb,
+      adverb: fixAdverb([
+        ...[...modifier.adverb].reverse(),
+        ...verb.adverb,
+      ]),
+      phraseEmphasis: emphasis,
+      preposition,
+    };
+  } else if (verb.modal != null) {
+    return {
+      ...verb,
+      modal: {
+        adverb: fixAdverb([
+          ...[...modifier.adverb].reverse(),
+          ...verb.modal.adverb,
+        ]),
+        verb: verb.modal.verb,
+      },
+      phraseEmphasis: emphasis,
+      preposition,
+    };
+  } else {
+    // This should be unreachable
+    throw new FilteredError(
+      "verb phrase without modal verb nor conjugated verb",
+    );
+  }
 }
 function defaultPhrase(
   options: Readonly<{
@@ -194,13 +213,15 @@ function defaultPhrase(
       } else if (
         includeVerb && headWord.type === "verb" && modifier.type === "adverbial"
       ) {
-        return new ArrayResult([{
-          type: "verb",
-          verb: {
-            ...verbPhrase({ emphasis, verb: headWord, modifier }),
-            type: "simple",
-          },
-        }]);
+        return ArrayResult.from(() =>
+          new ArrayResult([{
+            type: "verb",
+            verb: {
+              ...verbPhrase({ emphasis, verb: headWord, modifier }),
+              type: "simple",
+            },
+          }])
+        );
       } else {
         return ArrayResult.empty();
       }

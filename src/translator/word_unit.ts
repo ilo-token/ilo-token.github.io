@@ -25,8 +25,9 @@ function defaultWordUnit(
     includeGerund: boolean;
   }>,
 ) {
-  const { word, emphasis, includeGerund } = options;
-  return new ArrayResult(dictionary.get(word)!.definitions)
+  const { word: useWord, reduplicationCount, emphasis, includeGerund } =
+    options;
+  return new ArrayResult(dictionary.get(useWord)!.definitions)
     .flatMap<WordUnitTranslation>((definition) => {
       switch (definition.type) {
         case "noun":
@@ -77,6 +78,30 @@ function defaultWordUnit(
             emphasis: emphasis != null,
           })
             .map((verb) => ({ ...verb, type: "verb" }));
+        case "modal verb":
+          return new ArrayResult([{
+            type: "verb",
+            modal: {
+              adverb: [],
+              verb: word({
+                word: definition.verb,
+                reduplicationCount,
+                emphasis: emphasis != null,
+              }),
+            },
+            adverb: [],
+            first: null,
+            reduplicationCount: 0,
+            wordEmphasis: false,
+            rest: [],
+            subjectComplement: null,
+            object: null,
+            objectComplement: null,
+            preposition: [],
+            forObject: false,
+            predicateType: null,
+            phraseEmphasis: false,
+          }]);
         default:
           return ArrayResult.empty();
       }
