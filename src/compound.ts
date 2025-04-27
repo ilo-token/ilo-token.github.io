@@ -1,11 +1,11 @@
-export type ArrayResultOptions = {
+export type ResultErrorOptions = {
   cause: unknown;
   isHtml: boolean;
 };
 export class ResultError extends Error {
   isHtml: boolean;
   override name = "ArrayResultError";
-  constructor(message: string, options: Partial<ArrayResultOptions> = {}) {
+  constructor(message: string, options: Partial<ResultErrorOptions> = {}) {
     super(message, { cause: options.cause });
     this.isHtml = options.isHtml ?? false;
   }
