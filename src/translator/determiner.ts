@@ -147,7 +147,7 @@ function encodeDeterminer(
       .flat()
       .join("");
 }
-function filterSet<T>(
+function filterSet<const T>(
   set: ReadonlyArray<readonly [condition: boolean, value: T]>,
 ) {
   return set.filter(([condition]) => condition).map(([_, value]) => value);

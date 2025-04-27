@@ -51,7 +51,7 @@ const ignore = allWithCheck(
     choiceWithCheck(spaces, comment),
   ),
 );
-function lex<T>(parser: Parser<T>) {
+function lex<const T>(parser: Parser<T>) {
   return parser.skip(ignore);
 }
 const wordWithPosition = lex(
@@ -65,7 +65,7 @@ const comma = lex(matchString(",", "comma"));
 const semicolon = lex(matchString(";", "semicolon"));
 const slash = lex(matchString("/", "slash"));
 
-const keyword = memoize(<T extends string>(keyword: T) =>
+const keyword = memoize(<const T extends string>(keyword: T) =>
   lex(withPosition(match(/[a-z\-]+/, `"${keyword}"`)))
     .map((positioned) =>
       positioned.value === keyword ? positioned.value : throwError(
@@ -100,10 +100,10 @@ const perspective = choiceOnlyOne(
   keyword("second"),
   keyword("third"),
 );
-function tag<T>(parser: Parser<T>) {
+function tag<const T>(parser: Parser<T>) {
   return openParenthesis.with(parser).skip(closeParenthesis);
 }
-function template<T>(parser: Parser<T>) {
+function template<const T>(parser: Parser<T>) {
   return openBracket.with(parser).skip(closeBracket);
 }
 const simpleUnit = memoize((kind: string) => word.skip(tag(keyword(kind))));
@@ -260,7 +260,7 @@ const checkedNoun = new CheckedParser(
   ),
   noun,
 );
-function checkedSimpleUnitWith<T>(tag: string, after: Parser<T>) {
+function checkedSimpleUnitWith<const T>(tag: string, after: Parser<T>) {
   return checkedSequence(
     word.skip(openParenthesis).skip(keyword(tag)),
     closeParenthesis.with(after),

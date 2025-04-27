@@ -363,7 +363,7 @@ export const MULTIPLE_SENTENCES_RULE: ReadonlyArray<
     sentences.filter(({ type }) => type !== "filler").length <= 2 ||
     throwError(new UnrecognizedError("multiple sentences")),
 ];
-export function filter<T>(
+export function filter<const T>(
   rules: ReadonlyArray<(value: T) => boolean>,
 ): (value: T) => boolean {
   return (value) => {
@@ -426,7 +426,7 @@ function phraseHasTopLevelEmphasis(phrase: Phrase) {
       return phrase.emphasis != null;
   }
 }
-function getDuplicate<T>(iterable: Iterable<T>) {
+function getDuplicate<const T>(iterable: Iterable<T>) {
   const unique = new Set<T>();
   const duplicates = new Set<T>();
   for (const value of iterable) {

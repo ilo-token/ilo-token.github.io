@@ -38,7 +38,7 @@ function nounPhrase(
   }>,
 ) {
   const { emphasis, partialNoun, modifier } = options;
-  return ArrayResult.from(() => {
+  return ArrayResult.from<English.NounPhrase>(() => {
     const determiner = fixDeterminer([
       ...[...modifier.determiner].reverse(),
       ...partialNoun.determiner,

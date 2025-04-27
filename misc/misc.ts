@@ -1,14 +1,16 @@
 // ensure this module don't have imports and as runtime agnostic as possible,
 // make separate module when necessary
 
-export function nullableAsArray<T>(value?: T): ReadonlyArray<NonNullable<T>> {
+export function nullableAsArray<const T>(
+  value?: T,
+): ReadonlyArray<NonNullable<T>> {
   if (value == null) {
     return [];
   } else {
     return [value];
   }
 }
-export function mapNullable<T, U>(
+export function mapNullable<const T, const U>(
   value: T,
   mapper: (value: NonNullable<T>) => U,
 ): null | U {
@@ -18,7 +20,10 @@ export function mapNullable<T, U>(
     return mapper(value);
   }
 }
-export function repeatArray<T>(element: T, count: number): ReadonlyArray<T> {
+export function repeatArray<const T>(
+  element: T,
+  count: number,
+): ReadonlyArray<T> {
   return new Array(count).fill(element);
 }
 export function repeatWithSpace(text: string, count: number): string {
@@ -42,7 +47,7 @@ export function compound(
     return `${initText} ${conjunction} ${last}`;
   }
 }
-export function lazy<T>(fn: () => T): () => T {
+export function lazy<const T>(fn: () => T): () => T {
   let defined = false;
   let value: null | T;
   return () => {

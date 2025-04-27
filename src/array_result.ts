@@ -18,7 +18,7 @@ export class TodoError extends ArrayResultError {
     this.name = "TodoError";
   }
 }
-export class ArrayResult<T> {
+export class ArrayResult<const T> {
   constructor(array?: ReadonlyArray<T>);
   constructor(array: undefined, errors: ReadonlyArray<ArrayResultError>);
   constructor(
@@ -46,10 +46,10 @@ export class ArrayResult<T> {
       mapper(value) ? new ArrayResult([value]) : ArrayResult.empty()
     );
   }
-  map<U>(mapper: (value: T) => U): ArrayResult<U> {
+  map<const U>(mapper: (value: T) => U): ArrayResult<U> {
     return this.flatMap((value) => new ArrayResult([mapper(value)]));
   }
-  flatMap<U>(mapper: (value: T) => ArrayResult<U>): ArrayResult<U> {
+  flatMap<const U>(mapper: (value: T) => ArrayResult<U>): ArrayResult<U> {
     if (this.isError()) {
       return this as unknown as ArrayResult<U>;
     } else {
@@ -60,7 +60,7 @@ export class ArrayResult<T> {
       );
     }
   }
-  filterMap<U>(mapper: (value: T) => U): ArrayResult<NonNullable<U>> {
+  filterMap<const U>(mapper: (value: T) => U): ArrayResult<NonNullable<U>> {
     return this.flatMap((value) =>
       new ArrayResult(nullableAsArray(mapper(value)))
     );
