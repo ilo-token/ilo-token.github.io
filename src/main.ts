@@ -12,6 +12,7 @@ import BrowserDetector from "browser-dtector";
 import { dictionary } from "../dictionary/dictionary.ts";
 import { dictionaryParser } from "../dictionary/parser.ts";
 import PROJECT_DATA from "../project_data.json" with { type: "json" };
+import { Result, ResultError } from "./compound.ts";
 import { loadCustomDictionary } from "./dictionary.ts";
 import { checkLocalStorage, setIgnoreError } from "./local_storage.ts";
 import { PositionedError } from "./parser/parser_lib.ts";
@@ -23,9 +24,9 @@ import {
   resetElementsToDefault,
 } from "./settings_frontend.ts";
 import { translate } from "./translator/translator.ts";
-import { ResultError } from "./compound.ts";
 
 const DICTIONARY_AUTO_PARSE_THRESHOLD = 9000;
+const PAGE_SIZE = 100;
 
 // never change this
 const DICTIONARY_KEY = "dictionary";
@@ -76,6 +77,9 @@ function main() {
   const errorList = document.getElementById(
     "error-list",
   ) as HTMLParagraphElement;
+  const loadMoreButton = document.getElementById(
+    "load-more-button",
+  ) as HTMLButtonElement;
 
   const translateButton = document.getElementById(
     "translate-button",
@@ -184,6 +188,9 @@ function main() {
   // this variable also holds error messages
   let currentDictionary = lastSavedDictionary;
 
+  // state for output
+  let output: null | Generator<Result<string>> = null;
+
   // load custom dictionary
   if (!currentDictionary.isError()) {
     loadCustomDictionary(currentDictionary.unwrap()[0]);
@@ -240,25 +247,39 @@ function main() {
       updateOutput();
     }
   });
+  loadMoreButton.addEventListener("click", moreOutput);
   function updateOutput() {
     outputList.innerHTML = "";
     errorList.innerHTML = "";
     errorDisplay.innerText = "";
-    const iterableResult = translate(inputTextBox.value);
+    loadMoreButton.style.display = "";
+    output = translate(inputTextBox.value).iterable();
+    moreOutput();
+  }
+  function moreOutput() {
     const errors: Array<ResultError> = [];
     let yielded = false;
-    for (const result of iterableResult.iterable()) {
-      switch (result.type) {
-        case "value": {
-          yielded = true;
-          const list = document.createElement("li");
-          list.innerHTML = result.value;
-          outputList.appendChild(list);
-          break;
+    let i = 0;
+    while (i < PAGE_SIZE) {
+      const next = output!.next();
+      if (!next.done) {
+        const result = next.value;
+        switch (result.type) {
+          case "value": {
+            yielded = true;
+            const list = document.createElement("li");
+            list.innerHTML = result.value;
+            outputList.appendChild(list);
+            i++;
+            break;
+          }
+          case "error":
+            errors.push(result.error);
+            break;
         }
-        case "error":
-          errors.push(result.error);
-          break;
+      } else {
+        loadMoreButton.style.display = "none";
+        break;
       }
     }
     if (!yielded) {
