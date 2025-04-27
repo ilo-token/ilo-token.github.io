@@ -30,7 +30,7 @@ export const SPECIAL_UCSUR_DESCRIPTIONS = {
   [END_OF_REVERSE_LONG_GLYPH]: "end of reverse long glyph",
   [UCSUR_MIDDLE_DOT]: "middle dot",
   [UCSUR_COLON]: "colon",
-} ;
+};
 
 export type SpecialUcsur = keyof typeof SPECIAL_UCSUR_DESCRIPTIONS;
 
@@ -183,8 +183,8 @@ export const KU_LILI = [
 ];
 export const UCSUR_TO_LATIN = new Map(
   [
-    { start: 0xF1900, words: [...PU, ...KU_SULI] } ,
-    { start: 0xF19A0, words: KU_LILI } ,
+    { start: 0xF1900, words: [...PU, ...KU_SULI] },
+    { start: 0xF19A0, words: KU_LILI },
   ]
     .flatMap(({ start, words }) =>
       words.map((latin, i) => [String.fromCodePoint(start + i), latin] as const)

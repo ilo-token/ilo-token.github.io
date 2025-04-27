@@ -170,7 +170,7 @@ function modifier(modifier: TokiPona.Modifier) {
       return pi(modifier.phrase);
     case "nanpa":
       return nanpa(modifier)
-        .map((noun) => ({ type: "position phrase", noun }) );
+        .map((noun) => ({ type: "position phrase", noun }));
   }
 }
 export function multipleModifiers(

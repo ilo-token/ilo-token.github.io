@@ -77,7 +77,10 @@ function loadOneFromElements<const T extends keyof Settings>(key: T) {
   );
   setIgnoreError(key, UPDATERS[key].stringify(settings[key]));
 }
-function setElement<const T extends keyof Settings>(key: T, value: Settings[T]) {
+function setElement<const T extends keyof Settings>(
+  key: T,
+  value: Settings[T],
+) {
   UPDATERS[key].set(
     document.getElementById(toKebabCase(key)) as
       | HTMLInputElement

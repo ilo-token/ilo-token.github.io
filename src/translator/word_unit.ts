@@ -38,7 +38,7 @@ function defaultWordUnit(
               definition,
               emphasis: emphasis != null,
             })
-              .map((noun) => ({ ...noun, type: "noun" }) );
+              .map((noun) => ({ ...noun, type: "noun" }));
           }
         case "personal pronoun":
           return new ArrayResult([
@@ -49,38 +49,34 @@ function defaultWordUnit(
                 emphasis: emphasis != null,
               }),
               type: "noun",
-            } ,
+            },
           ]);
         case "adjective":
           if (!includeGerund && definition.gerundLike) {
             return ArrayResult.empty();
           } else {
             return adjective({ ...options, definition })
-              .map((adjective) =>
-                ({
-                  type: "adjective",
-                  adjective,
-                }) 
-              );
+              .map((adjective) => ({
+                type: "adjective",
+                adjective,
+              }));
           }
         case "compound adjective":
           return compoundAdjective({
             ...options,
             adjectives: definition.adjective,
           })
-            .map((adjective) =>
-              ({
-                type: "adjective",
-                adjective,
-              }) 
-            );
+            .map((adjective) => ({
+              type: "adjective",
+              adjective,
+            }));
         case "verb":
           return partialVerb({
             ...options,
             definition,
             emphasis: emphasis != null,
           })
-            .map((verb) => ({ ...verb, type: "verb" }) );
+            .map((verb) => ({ ...verb, type: "verb" }));
         default:
           return ArrayResult.empty();
       }
