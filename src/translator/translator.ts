@@ -23,7 +23,7 @@ export function translate(tokiPona: string): IterableResult<string> {
         if (unique.size >= RANDOMIZATION_LIMIT) {
           yield {
             type: "error",
-            error: new ResultError("too much output to shuffle"),
+            error: new ResultError("too many output to shuffle"),
           };
           return;
         }
