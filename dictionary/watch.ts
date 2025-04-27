@@ -1,4 +1,4 @@
-// This code is Deno only
+// this code is Deno only
 
 import { unreachable } from "@std/assert/unreachable";
 import { debounce } from "@std/async/debounce";

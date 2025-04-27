@@ -1,4 +1,4 @@
-// Examples gathered from https://github.com/kilipan/nasin-toki
+// examples gathered from https://github.com/kilipan/nasin-toki
 // CC-BY-SA 4.0 https://github.com/kilipan/nasin-toki/blob/main/LICENSE.txt
 export const EXAMPLE_SENTENCES = [
   "anu seme",
@@ -189,7 +189,7 @@ export const EXAMPLE_SENTENCES = [
   "mi alasa sitelen e lipu pona",
   "jan sona li alasa sona e ijo mute",
 ];
-// Examples taken from https://telo-misikeke.gitlab.io/
+// examples taken from https://telo-misikeke.gitlab.io/
 export const MALFORMED_SENTENCES = [
   "mi jan Nikola, li kama pana e lukin pi ilo ni tawa sini.",
   "mi pona, taso, toki mi li ken pi ike.",

@@ -1,4 +1,4 @@
-// This code is Deno only
+// this code is Deno only
 
 import * as ESBuild from "esbuild";
 import * as Dictionary from "../dictionary/build.ts";

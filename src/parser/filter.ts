@@ -22,7 +22,7 @@ import {
 import { UnrecognizedError } from "./parser_lib.ts";
 
 export const WORD_UNIT_RULES: ReadonlyArray<(wordUnit: WordUnit) => boolean> = [
-  // avoid "seme ala seme"
+  // disallow "seme ala seme"
   (wordUnit) =>
     wordUnit.type !== "x ala x" || wordUnit.word !== "seme" ||
     throwError(new UnrecognizedError('"seme ala seme"')),
@@ -100,29 +100,29 @@ export const MODIFIER_RULES: ReadonlyArray<(modifier: Modifier) => boolean> = [
 export const MULTIPLE_MODIFIERS_RULES: ReadonlyArray<
   (modifier: ReadonlyArray<Modifier>) => boolean
 > = [
-  // // no multiple pi
+  // // disallow multiple pi
   // (modifiers) =>
   //   modifiers.filter(({type}) => type === "pi").length <= 1 ||
   //   throwError(new UnrecognizedError("multiple pi")),
 
-  // no multiple nanpa
+  // disallow multiple nanpa
   (modifiers) =>
     modifiers.filter(({ type }) => type === "nanpa").length <= 1 ||
     throwError(new UnrecognizedError("multiple nanpa")),
 
-  // no multiple proper words
+  // disallow multiple proper words
   (modifiers) =>
     modifiers
         .filter(({ type }) => type === "proper words")
         .length <= 1 ||
     throwError(new UnrecognizedError("multiple proper words")),
 
-  // no multiple number words
+  // disallow multiple number words
   (modifiers) =>
     modifiers.filter(modifierIsNumeric).length <= 1 ||
     throwError(new UnrecognizedError("multiple number words")),
 
-  // avoid duplicate modifiers when disabled by settings
+  // disallow duplicate modifiers when disabled by settings
   (modifiers) => {
     if (settings.separateRepeatedModifiers) {
       return true;
@@ -167,32 +167,32 @@ export const MULTIPLE_MODIFIERS_RULES: ReadonlyArray<
   },
 ];
 export const PHRASE_RULE: ReadonlyArray<(phrase: Phrase) => boolean> = [
-  // Disallow preverb modifiers other than "ala"
+  // disallow preverb modifiers other than "ala"
   (phrase) =>
     phrase.type !== "preverb" || modifiersIsAlaOrNone(phrase.modifiers) ||
     throwError(
       new UnrecognizedError('preverb with modifiers other than "ala"'),
     ),
 
-  // No multiple number words
+  // disallow multiple number words
   (phrase) =>
     phrase.type !== "default" ||
     phrase.headWord.type !== "number" ||
     !phrase.modifiers.some(modifierIsNumeric) ||
     throwError(new UnrecognizedError("multiple number words")),
 
-  // If the phrase has no modifiers, avoid emphasis particle
+  // if the phrase has no modifiers, disallow emphasis particle
   (phrase) =>
     phrase.type !== "default" ||
     phrase.emphasis == null ||
     phrase.modifiers.length > 0,
 
-  // For preverbs, inner phrase must not have emphasis particle
+  // for preverbs, inner phrase must not have emphasis particle
   (phrase) =>
     phrase.type !== "preverb" ||
     !phraseHasTopLevelEmphasis(phrase.phrase),
 
-  // Emphasis must not be nested
+  // emphasis must not be nested
   (phrase) =>
     phrase.emphasis == null ||
     everyWordUnitInPhrase(phrase)
@@ -201,29 +201,29 @@ export const PHRASE_RULE: ReadonlyArray<(phrase: Phrase) => boolean> = [
 ];
 export const PREPOSITION_RULE: ReadonlyArray<(phrase: Preposition) => boolean> =
   [
-    // Disallow preverb modifiers other than "ala"
+    // disallow preverb modifiers other than "ala"
     (preposition) =>
       modifiersIsAlaOrNone(preposition.modifiers) ||
       throwError(
         new UnrecognizedError('preverb with modifiers other than "ala"'),
       ),
 
-    // Disallow nested preposition
+    // disallow nested preposition
     (preposition) =>
       !everyPhraseInMultiplePhrases(preposition.phrases)
         .some(hasPrepositionInPhrase) ||
       throwError(new UnrecognizedError("preposition inside preposition")),
 
-    // Preposition with "anu" must not have emphasis particle
+    // preposition with "anu" must not have emphasis particle
     (preposition) =>
       preposition.emphasis == null || preposition.phrases.type !== "anu",
 
-    // Inner phrase must not have emphasis particle
+    // inner phrase must not have emphasis particle
     (preposition) =>
       preposition.phrases.type !== "single" ||
       !phraseHasTopLevelEmphasis(preposition.phrases.phrase),
 
-    // Emphasis must not be nested
+    // emphasis must not be nested
     (preposition) =>
       preposition.emphasis == null ||
       everyWordUnitInPreposition(preposition)
@@ -233,10 +233,10 @@ export const PREPOSITION_RULE: ReadonlyArray<(phrase: Preposition) => boolean> =
 export const CONTEXT_CLAUSE_RULE: ReadonlyArray<
   (contextClause: ContextClause) => boolean
 > = [
-  // Only allow "anu la" when allowed by the settings
+  // only allow "anu la" when allowed by the settings
   (clause) => clause.type !== "anu" || settings.hardcodedAnuLa,
 
-  // Prevent "anu ala anu la"
+  // disallow "anu ala anu la"
   (clause) =>
     clause.type !== "anu" || clause.anu.type !== "x ala x" ||
     throwError(new UnrecognizedError('"anu ala anu la"')),
@@ -309,7 +309,7 @@ export const CLAUSE_RULE: ReadonlyArray<(clause: Clause) => boolean> = [
   },
 ];
 export const SENTENCE_RULE: ReadonlyArray<(sentence: Sentence) => boolean> = [
-  // Prevent "taso ala taso" or "kin ala kin"
+  // disallow "taso ala taso" or "kin ala kin"
   (sentence) => {
     if (sentence.type === "default") {
       if (
@@ -322,7 +322,7 @@ export const SENTENCE_RULE: ReadonlyArray<(sentence: Sentence) => boolean> = [
     }
     return true;
   },
-  // If there is "la", there can't be starting particle e.g. taso
+  // if there is "la", there can't be starting particle e.g. taso
   (sentence) =>
     sentence.type !== "default" || sentence.contextClauses.length === 0 ||
     sentence.startingParticle == null || throwError(
@@ -331,7 +331,7 @@ export const SENTENCE_RULE: ReadonlyArray<(sentence: Sentence) => boolean> = [
       ),
     ),
 
-  // There can't be more than 1 "x ala x" or "seme"
+  // there can't be more than 1 "x ala x" or "seme"
   (sentence) => {
     if (sentence.interrogative != null) {
       const interrogative = everyWordUnitInSentence(sentence)
@@ -358,7 +358,7 @@ export const SENTENCE_RULE: ReadonlyArray<(sentence: Sentence) => boolean> = [
 export const MULTIPLE_SENTENCES_RULE: ReadonlyArray<
   (sentences: ReadonlyArray<Sentence>) => boolean
 > = [
-  // Only allow at most 2 sentences
+  // only allow at most 2 sentences
   (sentences) =>
     sentences.filter(({ type }) => type !== "filler").length <= 2 ||
     throwError(new UnrecognizedError("multiple sentences")),

@@ -22,5 +22,5 @@ export const defaultSettings: Readonly<Settings> = Object.freeze({
   separateRepeatedModifiers: false,
   hardcodedAnuLa: true,
 });
-// This global constant is mutable
+// this global constant is mutable
 export const settings: Settings = Object.seal({ ...defaultSettings });

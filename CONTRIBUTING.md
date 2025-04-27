@@ -58,7 +58,7 @@ More things to remember:
 - Keep the source code as runtime agnostic as possible. We target the browser
   and Deno. This is necessary because we use `deno test`. If a module is
   exclusive to one runtime, add a note above the code:
-  `// This code is browser/Deno only`.
+  `// this code is browser/Deno only`.
 
 (The following aren't strict rules. It's perfectly fine to not follow any of
 these for any reason e.g. you just want to fix typo.)

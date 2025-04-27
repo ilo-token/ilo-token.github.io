@@ -180,7 +180,7 @@ export function sequence<T extends ReadonlyArray<unknown>>(
     1,
     "`sequence` called with less than 2 arguments",
   );
-  // We resorted to using `any` types here, make sure it works properly
+  // we resorted to using `any` types here, make sure it works properly
   return sequence.reduceRight(
     (right: Parser<any>, left) =>
       left.then((value) => right.map((newValue) => [value, ...newValue])),

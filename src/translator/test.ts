@@ -1,4 +1,4 @@
-// This code is Deno only
+// this code is Deno only
 
 import { assertArrayIncludes } from "@std/assert/array-includes";
 import { number } from "./number.ts";

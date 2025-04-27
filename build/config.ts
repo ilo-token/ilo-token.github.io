@@ -1,4 +1,4 @@
-// This code is Deno only
+// this code is Deno only
 
 import { denoPlugins } from "@luca/esbuild-deno-loader";
 import { BuildOptions } from "esbuild";

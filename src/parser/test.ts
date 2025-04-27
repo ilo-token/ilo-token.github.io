@@ -1,4 +1,4 @@
-// This code is Deno only
+// this code is Deno only
 
 import { assertEquals } from "@std/assert/equals";
 import { assertLess } from "@std/assert/less";

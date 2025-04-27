@@ -2,7 +2,7 @@ import { dictionary as globalDictionary } from "../dictionary/dictionary.ts";
 import { Definition, Dictionary } from "../dictionary/type.ts";
 import { load } from "../telo_misikeke/telo_misikeke.js";
 
-// All of these global constants are mutable
+// all of these global constants are mutable
 
 const customDictionary: Dictionary = new Map();
 export const dictionary: Dictionary = new Map();

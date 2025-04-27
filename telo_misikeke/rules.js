@@ -1,10 +1,10 @@
-// This code is from https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/-/raw/main/public/rules.js
+// this code is from https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/-/raw/main/public/rules.js
 //
-// Repository: https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/
+// repository: https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/
 // Copyright (c) 2023 Nicolas Hurtubise
 // MIT License https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/#licence
 //
-// It is automatically modified to be an ES module
+// it is automatically modified to be an ES module
 
 var getCategory;
 var getMessage;

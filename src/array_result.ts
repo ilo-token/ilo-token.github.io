@@ -98,7 +98,7 @@ export class ArrayResult<T> {
       & Readonly<{ [I in keyof T]: ArrayResult<T[I]> }>
       & Readonly<{ length: T["length"] }>
   ): ArrayResult<T> {
-    // We resorted to using `any` types here, make sure it works properly
+    // we resorted to using `any` types here, make sure it works properly
     return arrayResults.reduce(
       (left: ArrayResult<any>, right) => {
         if (left.isError() && right.isError()) {

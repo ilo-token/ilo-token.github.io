@@ -1,4 +1,4 @@
-// This code is Deno only
+// this code is Deno only
 
 import { assert } from "@std/assert/assert";
 import { exists } from "@std/fs/exists";

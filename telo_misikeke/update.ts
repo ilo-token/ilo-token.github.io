@@ -1,4 +1,4 @@
-// This code is Deno only
+// this code is Deno only
 
 import { retry } from "@std/async/retry";
 
@@ -40,13 +40,13 @@ async function buildCode(
   }
   const exports = exportItems.join(", ");
   const code = `\
-// This code is from ${source}
+// this code is from ${source}
 //
-// Repository: https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/
+// repository: https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/
 // Copyright (c) 2023 Nicolas Hurtubise
 // MIT License https://gitlab.com/telo-misikeke/telo-misikeke.gitlab.io/#licence
 //
-// It is automatically modified to be an ES module
+// it is automatically modified to be an ES module
 
 ${withoutCjs};
 export { ${exports} };
