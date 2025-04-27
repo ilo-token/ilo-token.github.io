@@ -374,17 +374,16 @@ export function optionalWithCheck<T>(
 ): Parser<null | T> {
   return choiceWithCheck(parser, checkedAsWhole(nothing));
 }
-export const allWithCheck = memoize(<T>(
-  parser: CheckedParser<T>,
-): Parser<ReadonlyArray<T>> =>
-  choiceWithCheck<ReadonlyArray<T>>(
-    new CheckedParser(
-      parser.check,
-      sequence(parser.parser, lazy(lazyEval(() => allWithCheck(parser))))
-        .map(([first, rest]) => [first, ...rest]),
+export const allWithCheck = memoize(
+  <T>(parser: CheckedParser<T>): Parser<ReadonlyArray<T>> =>
+    choiceWithCheck<ReadonlyArray<T>>(
+      new CheckedParser(
+        parser.check,
+        sequence(parser.parser, lazy(lazyEval(() => allWithCheck(parser))))
+          .map(([first, rest]) => [first, ...rest]),
+      ),
+      checkedAsWhole(emptyArray),
     ),
-    checkedAsWhole(emptyArray),
-  )
 );
 export function allAtLeastOnceWithCheck<T>(
   parser: CheckedParser<T>,
