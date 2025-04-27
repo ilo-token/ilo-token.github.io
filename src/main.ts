@@ -320,9 +320,7 @@ function main() {
     resetElementsToCurrent();
     settingsDialogBox.close();
   });
-  resetButton.addEventListener("click", () => {
-    resetElementsToDefault();
-  });
+  resetButton.addEventListener("click", resetElementsToDefault);
   customDictionaryButton.addEventListener("click", () => {
     customDictionaryDialogBox.showModal();
     if (checkLocalStorage()) {
