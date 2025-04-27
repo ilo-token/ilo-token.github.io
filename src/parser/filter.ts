@@ -1,5 +1,5 @@
 import { compound, throwError } from "../../misc/misc.ts";
-import { extractArrayResultError } from "../array_result.ts";
+import { extractResultError } from "../array_result.ts";
 import { settings } from "../settings.ts";
 import {
   Clause,
@@ -376,7 +376,7 @@ export function filter<const T>(
             return [];
           }
         } catch (error) {
-          return extractArrayResultError(error);
+          return extractResultError(error);
         }
       },
     );

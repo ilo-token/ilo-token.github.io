@@ -2,7 +2,7 @@ import { distinct } from "@std/collections/distinct";
 import { distinctBy } from "@std/collections/distinct-by";
 import { shuffle } from "@std/random/shuffle";
 import { errors } from "../../telo_misikeke/telo_misikeke.js";
-import { ArrayResult, ArrayResultError } from "../array_result.ts";
+import { ArrayResult, ResultError } from "../array_result.ts";
 import { parser } from "../parser/parser.ts";
 import { settings } from "../settings.ts";
 import * as EnglishComposer from "./composer.ts";
@@ -23,7 +23,7 @@ export function translate(tokiPona: string): ArrayResult<string> {
   } else {
     const teloMisikekeErrors = settings.teloMisikeke
       ? errors(tokiPona)
-        .map((message) => new ArrayResultError(message, { isHtml: true }))
+        .map((message) => new ResultError(message, { isHtml: true }))
       : [];
     const error = teloMisikekeErrors.length === 0
       ? deduplicateErrors(arrayResult.errors)

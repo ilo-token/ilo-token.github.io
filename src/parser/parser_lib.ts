@@ -1,7 +1,7 @@
 import { assertGreater } from "@std/assert/greater";
 import { MemoizationCacheResult, memoize } from "@std/cache/memoize";
 import { lazy as lazyEval } from "../../misc/misc.ts";
-import { ArrayResult, ArrayResultError } from "../array_result.ts";
+import { ArrayResult, ResultError } from "../array_result.ts";
 
 type ParserResult<T> = ArrayResult<Readonly<{ value: T; length: number }>>;
 type InnerParser<T> = (input: number) => ParserResult<T>;
@@ -82,7 +82,7 @@ export class Parser<const T> {
   }
 }
 export type Position = Readonly<{ position: number; length: number }>;
-export class PositionedError extends ArrayResultError {
+export class PositionedError extends ResultError {
   public position: null | Position;
   override name = "PositionedError";
   constructor(message: string, position?: Position) {
@@ -116,7 +116,7 @@ export class UnrecognizedError extends PositionedError {
     super(`${element} is unrecognized`, position);
   }
 }
-export function error(error: ArrayResultError): Parser<never> {
+export function error(error: ResultError): Parser<never> {
   return new Parser(() => ArrayResult.errors([error]));
 }
 export const empty: Parser<never> = new Parser(() => ArrayResult.empty());
@@ -365,7 +365,7 @@ export function choiceWithCheck<const T>(
   ...choices: ReadonlyArray<CheckedParser<T>>
 ): Parser<T> {
   return new Parser((position) => {
-    const errors: Array<ArrayResultError> = [];
+    const errors: Array<ResultError> = [];
     for (const { check, parser } of choices) {
       const result = check.rawParser(position);
       if (result.isError()) {

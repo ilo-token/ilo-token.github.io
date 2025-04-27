@@ -2,7 +2,7 @@
 
 // deno-lint-ignore-file no-console
 
-import { ArrayResultError } from "../src/array_result.ts";
+import { ResultError } from "../src/array_result.ts";
 import { PositionedError } from "../src/parser/parser_lib.ts";
 import { dictionaryParser } from "./parser.ts";
 import { Dictionary } from "./type.ts";
@@ -50,7 +50,7 @@ export async function build(): Promise<boolean> {
   );
   return true;
 }
-function displayError(source: string, errors: ReadonlyArray<ArrayResultError>) {
+function displayError(source: string, errors: ReadonlyArray<ResultError>) {
   let color: boolean;
   try {
     color = Deno.env.get("NO_COLOR") !== "1";
