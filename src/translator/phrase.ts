@@ -67,7 +67,7 @@ function nounPhrase(
     }
     const headNoun = fromNounForms(partialNoun, quantity)
       .map(({ noun, quantity }) => ({
-        type: "simple" as const,
+        type: "simple",
         determiner,
         adjective,
         noun: word({

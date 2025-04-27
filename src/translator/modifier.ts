@@ -52,7 +52,7 @@ export function defaultModifier(
       return number(wordUnit.words).map((number) => {
         const quantity = number === 1 ? "singular" : "plural";
         return {
-          type: "determiner" as const,
+          type: "determiner",
           determiner: {
             determiner: word({
               word: `${number}`,
