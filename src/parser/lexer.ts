@@ -187,7 +187,7 @@ const combinedGlyphsToken = combinedGlyphs
   .map((words) => ({ type: "combined glyphs", words }));
 const wordToken = word.map((word) => ({ type: "word", word }));
 
-export const token: Parser<Token> = choiceOnlyOne<Token>(
+export const token: Parser<Token> = choiceOnlyOne(
   xAlaX,
   multipleA,
   choice<Token>(longWord, wordToken),

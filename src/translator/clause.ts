@@ -20,7 +20,7 @@ function phraseClause(phrases: TokiPona.MultiplePhrases) {
     andParticle: "en",
     includeVerb: false,
   })
-    .map<English.Clause>((phrase) => {
+    .map((phrase) => {
       switch (phrase.type) {
         case "noun":
           return {

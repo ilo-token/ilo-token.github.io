@@ -418,7 +418,7 @@ const verbDefinition = checkedSequence(
     )
       .skip(sequence(openParenthesis, keyword("v"))),
   ),
-  choiceWithCheck<null | PartialVerb>(
+  choiceWithCheck(
     checkedSequence(
       sequence(closeParenthesis, openBracket, keyword("object")),
       closeBracket
@@ -549,7 +549,7 @@ const verbDefinition = checkedSequence(
       return { ...rest, type: "verb", presentPlural, presentSingular, past };
     }
   });
-const definition = choiceWithCheck<Definition>(
+const definition = choiceWithCheck(
   // noun parser must come before adjective, compound adjective, and determiner parsers
   nounDefinition,
   // compound adjective parser must come before adjective parser

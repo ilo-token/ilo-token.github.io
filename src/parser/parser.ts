@@ -23,7 +23,6 @@ import {
   MultipleSentences,
   Phrase,
   Predicate,
-  Preposition,
   Sentence,
   SimpleHeadedWordUnit,
 } from "./ast.ts";
@@ -329,7 +328,7 @@ function nestedPhrasesOnly(
         phrases: phrases.map((phrase) => ({ type: "single", phrase })),
       }))
       : empty;
-    return choice<MultiplePhrases>(
+    return choice(
       longAnuParser,
       sequence(
         nestedPhrases(rest),
@@ -363,7 +362,7 @@ const subjectPhrases = choice(
   nestedPhrasesOnly(["anu", "en"]),
   singlePhrase,
 );
-const preposition = choice<Preposition>(
+const preposition = choice(
   specificToken("headless long glyph start")
     .with(phrase)
     .skip(specificToken("headless long glyph end"))

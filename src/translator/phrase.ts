@@ -375,7 +375,7 @@ export function multiplePhrases(
         ...phrases.phrases
           .map((phrases) => multiplePhrases({ ...options, phrases })),
       )
-        .filterMap<null | PhraseTranslation>((phrase) => {
+        .filterMap((phrase) => {
           if (
             phrase.some((phrase) =>
               phrase.type === "adjective" && phrase.inWayPhrase != null
