@@ -1,5 +1,3 @@
-import { nullableAsArray } from "../misc/misc.ts";
-
 export type ArrayResultOptions = {
   cause: unknown;
   isHtml: boolean;
@@ -60,11 +58,11 @@ export class ArrayResult<const T> {
       );
     }
   }
-  filterMap<const U>(mapper: (value: T) => U): ArrayResult<NonNullable<U>> {
-    return this.flatMap((value) =>
-      new ArrayResult(nullableAsArray(mapper(value)))
-    );
-  }
+  // filterMap<const U>(mapper: (value: T) => U): ArrayResult<NonNullable<U>> {
+  //   return this.flatMap((value) =>
+  //     new ArrayResult(nullableAsArray(mapper(value)))
+  //   );
+  // }
   sort(comparer: (left: T, right: T) => number): ArrayResult<T> {
     if (this.isError()) {
       return this;
@@ -75,13 +73,13 @@ export class ArrayResult<const T> {
   sortBy(mapper: (value: T) => number): ArrayResult<T> {
     return this.sort((left, right) => mapper(left) - mapper(right));
   }
-  addErrorWhenNone(error: () => ResultError): ArrayResult<T> {
-    if (this.isError() && this.errors.length === 0) {
-      return ArrayResult.errors([error()]);
-    } else {
-      return this;
-    }
-  }
+  // addErrorWhenNone(error: () => ResultError): ArrayResult<T> {
+  //   if (this.isError() && this.errors.length === 0) {
+  //     return ArrayResult.errors([error()]);
+  //   } else {
+  //     return this;
+  //   }
+  // }
   asIterableResult(): IterableResult<T> {
     if (this.isError()) {
       return IterableResult.errors(this.errors);
@@ -100,27 +98,27 @@ export class ArrayResult<const T> {
       ArrayResult.empty(),
     );
   }
-  static combine<T extends ReadonlyArray<unknown>>(
-    ...arrayResults:
-      & Readonly<{ [I in keyof T]: ArrayResult<T[I]> }>
-      & Readonly<{ length: T["length"] }>
-  ): ArrayResult<T> {
-    // we resorted to using `any` types here, make sure it works properly
-    return arrayResults.reduce(
-      (left: ArrayResult<any>, right) => {
-        if (left.isError() && right.isError()) {
-          return ArrayResult.concat(left, right);
-        } else if (left.isError()) {
-          return left;
-        } else if (right.isError()) {
-          return right;
-        } else {
-          return left.flatMap((left) => right.map((right) => [...left, right]));
-        }
-      },
-      new ArrayResult<any>([[]]),
-    ) as ArrayResult<T>;
-  }
+  // static combine<T extends ReadonlyArray<unknown>>(
+  //   ...arrayResults:
+  //     & Readonly<{ [I in keyof T]: ArrayResult<T[I]> }>
+  //     & Readonly<{ length: T["length"] }>
+  // ): ArrayResult<T> {
+  //   // we resorted to using `any` types here, make sure it works properly
+  //   return arrayResults.reduce(
+  //     (left: ArrayResult<any>, right) => {
+  //       if (left.isError() && right.isError()) {
+  //         return ArrayResult.concat(left, right);
+  //       } else if (left.isError()) {
+  //         return left;
+  //       } else if (right.isError()) {
+  //         return right;
+  //       } else {
+  //         return left.flatMap((left) => right.map((right) => [...left, right]));
+  //       }
+  //     },
+  //     new ArrayResult<any>([[]]),
+  //   ) as ArrayResult<T>;
+  // }
   static from<T>(arrayResult: () => ArrayResult<T>): ArrayResult<T> {
     try {
       return arrayResult();
