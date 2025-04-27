@@ -1,4 +1,4 @@
-import { ResultError, TodoError } from "../array_result.ts";
+import { ResultError, TodoError } from "../compound.ts";
 
 export class TranslationTodoError extends TodoError {
   override name = "TranslationTodoError";

@@ -2,7 +2,7 @@ import { distinct } from "@std/collections/distinct";
 import { distinctBy } from "@std/collections/distinct-by";
 import { shuffle } from "@std/random/shuffle";
 import { errors } from "../../telo_misikeke/telo_misikeke.js";
-import { ArrayResult, ResultError } from "../array_result.ts";
+import { ArrayResult, ResultError } from "../compound.ts";
 import { parser } from "../parser/parser.ts";
 import { settings } from "../settings.ts";
 import * as EnglishComposer from "./composer.ts";

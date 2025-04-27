@@ -1,5 +1,5 @@
 import { nullableAsArray, throwError } from "../../misc/misc.ts";
-import { ArrayResult } from "../array_result.ts";
+import { ArrayResult } from "../compound.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
 import { FilteredError, TranslationTodoError } from "./error.ts";

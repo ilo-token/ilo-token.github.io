@@ -1,5 +1,5 @@
 import { compound, throwError } from "../../misc/misc.ts";
-import { extractResultError } from "../array_result.ts";
+import { extractResultError } from "../compound.ts";
 import { settings } from "../settings.ts";
 import {
   Clause,

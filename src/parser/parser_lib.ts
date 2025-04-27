@@ -1,7 +1,7 @@
 import { assertGreater } from "@std/assert/greater";
 import { MemoizationCacheResult, memoize } from "@std/cache/memoize";
 import { lazy as lazyEval } from "../../misc/misc.ts";
-import { ArrayResult, ResultError } from "../array_result.ts";
+import { ArrayResult, ResultError } from "../compound.ts";
 
 type ParserResult<T> = ArrayResult<Readonly<{ value: T; length: number }>>;
 type InnerParser<T> = (input: number) => ParserResult<T>;
