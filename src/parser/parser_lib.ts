@@ -84,10 +84,10 @@ export class Parser<const T> {
 export type Position = Readonly<{ position: number; length: number }>;
 export class PositionedError extends ArrayResultError {
   public position: null | Position;
+  override name = "PositionedError";
   constructor(message: string, position?: Position) {
     super(message);
     this.position = position ?? null;
-    this.name = "PositionedError";
   }
 }
 function withPositionedError<const T>(fn: () => T, position: Position) {
@@ -102,18 +102,18 @@ function withPositionedError<const T>(fn: () => T, position: Position) {
   }
 }
 export class UnexpectedError extends PositionedError {
+  override name = "UnexpectedError";
   constructor(unexpected: string, expected: string, position?: Position) {
     super(
       `unexpected ${unexpected}. ${expected} were expected instead`,
       position,
     );
-    this.name = "UnexpectedError";
   }
 }
 export class UnrecognizedError extends PositionedError {
+  override name = "UnrecognizedError";
   constructor(element: string, position?: Position) {
     super(`${element} is unrecognized`, position);
-    this.name = "UnrecognizedError";
   }
 }
 export function error(error: ArrayResultError): Parser<never> {

@@ -6,16 +6,16 @@ export type ArrayResultOptions = {
 };
 export class ArrayResultError extends Error {
   isHtml: boolean;
+  override name = "ArrayResultError";
   constructor(message: string, options: Partial<ArrayResultOptions> = {}) {
     super(message, { cause: options.cause });
     this.isHtml = options.isHtml ?? false;
-    this.name = "ArrayResultError";
   }
 }
 export class TodoError extends ArrayResultError {
+  override name = "TodoError";
   constructor(functionality: string) {
     super(`${functionality} is not yet implemented`);
-    this.name = "TodoError";
   }
 }
 export class ArrayResult<const T> {
