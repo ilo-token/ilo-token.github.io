@@ -1,6 +1,6 @@
 import { distinct } from "@std/collections/distinct";
+import { distinctBy } from "@std/collections/distinct-by";
 import { shuffle } from "@std/random/shuffle";
-import { deduplicateErrors } from "../../misc/deduplicate_errors.ts";
 import { errors } from "../../telo_misikeke/telo_misikeke.js";
 import { ArrayResult, ArrayResultError } from "../array_result.ts";
 import { parser } from "../parser/parser.ts";
@@ -30,4 +30,7 @@ export function translate(tokiPona: string): ArrayResult<string> {
       : teloMisikekeErrors;
     return ArrayResult.errors(error);
   }
+}
+function deduplicateErrors<const T extends Error>(errors: Iterable<T>) {
+  return distinctBy(errors, ({ message }) => message);
 }
