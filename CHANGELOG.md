@@ -21,7 +21,7 @@ On this on-development version, things can be broken.
 - Implement modal verb translation. "mi ken" can translate into "I can" and "I
   may".
 - Implement pagination. This also prevents browser crashes due to numerous
-  translation output to handle.
+  translation output.
 - Added "Use hardcoded anu la translation" setting anticipating "anu la"
   translation which isn't implemented yet.
 
