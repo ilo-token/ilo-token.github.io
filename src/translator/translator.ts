@@ -6,7 +6,7 @@ import { settings } from "../settings.ts";
 import * as EnglishComposer from "./composer.ts";
 import { multipleSentences } from "./sentence.ts";
 
-const RANDOMIZATION_LIMIT = 10000;
+const RANDOMIZATION_LIMIT = 25248;
 
 export function translate(tokiPona: string): IterableResult<string> {
   return new IterableResult(function* () {
