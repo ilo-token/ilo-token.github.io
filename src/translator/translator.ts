@@ -19,9 +19,8 @@ export function translate(tokiPona: string): IterableResult<string> {
     const aggregateErrors: Array<ResultError> = [];
     const unique: Set<string> = new Set();
     if (settings.randomize) {
-      let i = 0;
       for (const result of iterableResult.iterable()) {
-        if (i >= RANDOMIZATION_LIMIT) {
+        if (unique.size >= RANDOMIZATION_LIMIT) {
           yield {
             type: "error",
             error: new ResultError("too much output to shuffle"),
@@ -31,7 +30,6 @@ export function translate(tokiPona: string): IterableResult<string> {
         switch (result.type) {
           case "value":
             unique.add(result.value);
-            i++;
             break;
           case "error":
             aggregateErrors.push(result.error);
