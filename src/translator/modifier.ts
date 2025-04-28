@@ -23,7 +23,7 @@ export type ModifierTranslation =
   }>
   | Readonly<{ type: "adjective"; adjective: English.AdjectivePhrase }>
   | Readonly<{ type: "determiner"; determiner: English.Determiner }>
-  | Readonly<{ type: "adverb"; adverb: English.Word }>
+  | Readonly<{ type: "adverb"; adverb: English.Adverb }>
   | Readonly<{ type: "name"; name: string }>
   | Readonly<{ type: "position phrase"; noun: English.NounPhrase }>;
 export type AdjectivalModifier = Readonly<{
@@ -37,7 +37,7 @@ export type AdjectivalModifier = Readonly<{
   inPositionPhrase: null | English.NounPhrase;
 }>;
 export type AdverbialModifier = Readonly<{
-  adverb: ReadonlyArray<English.Word>;
+  adverb: ReadonlyArray<English.Adverb>;
   inWayPhrase: null | English.NounPhrase;
 }>;
 export type MultipleModifierTranslation =
@@ -132,11 +132,14 @@ export function defaultModifier(
             case "adverb":
               return IterableResult.single({
                 type: "adverb",
-                adverb: word({
-                  word: definition.adverb,
-                  reduplicationCount,
-                  emphasis,
-                }),
+                adverb: {
+                  adverb: word({
+                    word: definition.adverb,
+                    reduplicationCount,
+                    emphasis,
+                  }),
+                  negative: definition.negative,
+                },
               });
             default:
               return IterableResult.empty();

@@ -38,7 +38,14 @@ export function adjective(
     .map(({ emphasis, so }) => ({
       type: "simple",
       kind: definition.kind,
-      adverb: [...definition.adverb, ...nullableAsArray(so)].map(noEmphasis),
+      adverb: [
+        ...definition.adverb,
+        ...nullableAsArray(so).map((so) => ({ adverb: so, negative: false })),
+      ]
+        .map((adverb) => ({
+          adverb: noEmphasis(adverb.adverb),
+          negative: adverb.negative,
+        })),
       adjective: word({
         word: definition.adjective,
         reduplicationCount,

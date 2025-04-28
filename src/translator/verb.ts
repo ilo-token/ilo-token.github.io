@@ -18,7 +18,7 @@ export type PartialVerb =
   & VerbObjects
   & Readonly<{
     modal: null | English.AdverbVerb;
-    adverb: ReadonlyArray<English.Word>;
+    adverb: ReadonlyArray<English.Adverb>;
     first: null | Dictionary.VerbForms;
     reduplicationCount: number;
     wordEmphasis: boolean;

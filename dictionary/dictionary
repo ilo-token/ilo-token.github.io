@@ -21,7 +21,7 @@ akesi:
 
 ala:
     not(d negative);
-    not(adv);
+    not(adv negative);
     nothing(n plural);
     no(d quantifier plural);
 

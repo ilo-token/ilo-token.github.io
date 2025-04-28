@@ -46,8 +46,12 @@ export type AdjectiveType =
   | "origin"
   | "material"
   | "qualifier";
+export type Adverb = Readonly<{
+  adverb: string;
+  negative: boolean;
+}>;
 export type Adjective = Readonly<{
-  adverb: ReadonlyArray<string>;
+  adverb: ReadonlyArray<Adverb>;
   adjective: string;
   kind: AdjectiveType;
   gerundLike: boolean;
@@ -86,7 +90,7 @@ export type Definition =
     type: "compound adjective";
     adjective: ReadonlyArray<Adjective>;
   }>
-  | Readonly<{ type: "adverb"; adverb: string }>
+  | (Readonly<{ type: "adverb" }> & Adverb)
   | (Readonly<{ type: "verb" }> & Verb)
   | Readonly<{ type: "modal verb"; verb: string }>
   | Readonly<{ type: "preposition"; preposition: string }>

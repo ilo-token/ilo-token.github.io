@@ -42,7 +42,10 @@ export function adjective(
   let text: string;
   switch (phrases.type) {
     case "simple":
-      text = [...phrases.adverb.map(word), word(phrases.adjective)]
+      text = [
+        ...phrases.adverb.map(({ adverb }) => word(adverb)),
+        word(phrases.adjective),
+      ]
         .join(" ");
       break;
     case "compound":
@@ -70,7 +73,7 @@ function complement(complement: English.Complement) {
 }
 export function adverbVerb(verbAdverb: English.AdverbVerb): string {
   const { adverb, verb } = verbAdverb;
-  return [...adverb, verb].map(word).join(" ");
+  return [...adverb.map(({ adverb }) => adverb), verb].map(word).join(" ");
 }
 export function verb(phrase: English.VerbPhrase, depth: number): string {
   let text: string;

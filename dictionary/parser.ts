@@ -214,9 +214,17 @@ const adjectiveKind = choiceWithCheck(
     ),
   ),
 );
+const adverb = checkedSequence(
+  word.skip(openParenthesis).skip(keyword("adv")),
+  optionalAll(keyword("negative")).skip(closeParenthesis),
+)
+  .map(([adverb, negative]) => ({
+    adverb,
+    negative: negative != null,
+  }));
 const adjective = checkedSequence(
   sequence(
-    all(simpleUnit("adv")),
+    allWithCheck(adverb),
     word.skip(openParenthesis).skip(keyword("adj")),
   ),
   sequence(
@@ -279,8 +287,6 @@ const particleDefinition = checkedSequence(
   sequence(keyword("def"), closeParenthesis),
 )
   .map(([definition]) => ({ type: "particle definition", definition }));
-const adverbDefinition = checkedSimpleUnit("adv")
-  .map((adverb) => ({ type: "adverb", adverb }));
 const prepositionDefinition = checkedSimpleUnitWithTemplate(
   "prep",
   sequence(keyword("indirect"), keyword("object")),
@@ -557,7 +563,7 @@ const definition = choiceWithCheck(
   // adjective parser must come before adverb parser
   adjective.map((adjective) => ({ ...adjective, type: "adjective" })),
   verbDefinition,
-  adverbDefinition,
+  adverb.map((adverb) => ({ ...adverb, type: "adverb" })),
   interjectionDefinition,
   particleDefinition,
   determiner.map((determiner) => ({ ...determiner, type: "determiner" })),

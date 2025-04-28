@@ -33,7 +33,7 @@ export type AdjectivePhrase =
   | Readonly<{
     type: "simple";
     kind: Dictionary.AdjectiveType;
-    adverb: ReadonlyArray<Word>;
+    adverb: ReadonlyArray<Adverb>;
     adjective: Word;
     emphasis: boolean;
   }>
@@ -46,8 +46,12 @@ export type AdjectivePhrase =
 export type Complement =
   | Readonly<{ type: "noun"; noun: NounPhrase }>
   | Readonly<{ type: "adjective"; adjective: AdjectivePhrase }>;
+export type Adverb = Readonly<{
+  adverb: Word;
+  negative: boolean;
+}>;
 export type AdverbVerb = {
-  adverb: ReadonlyArray<Word>;
+  adverb: ReadonlyArray<Adverb>;
   verb: Word;
 };
 export type Verb = Readonly<{
@@ -87,7 +91,7 @@ export type Clause =
   | Readonly<{ type: "adverb"; adverb: Word }>
   | Readonly<{ type: "dependent"; conjunction: Word; clause: Clause }>;
 export type Preposition = Readonly<{
-  adverb: ReadonlyArray<Word>;
+  adverb: ReadonlyArray<Adverb>;
   preposition: Word;
   object: NounPhrase;
   emphasis: boolean;
