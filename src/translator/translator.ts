@@ -20,7 +20,7 @@ export function translate(tokiPona: string): IterableResult<string> {
     const unique: Set<string> = new Set();
     if (settings.randomize) {
       for (const result of iterableResult.iterable()) {
-        if (unique.size >= RANDOMIZATION_LIMIT) {
+        if (unique.size > RANDOMIZATION_LIMIT) {
           yield {
             type: "error",
             error: new ResultError("too many output to shuffle"),
