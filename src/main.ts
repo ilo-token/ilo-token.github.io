@@ -189,10 +189,6 @@ function main() {
   // this variable also holds error messages
   let currentDictionary = lastSavedDictionary;
 
-  // state for output
-  let output: null | Generator<Result<string>> = null;
-  let size = 0;
-
   // load custom dictionary
   if (!currentDictionary.isError()) {
     loadCustomDictionary(currentDictionary.unwrap()[0]);
@@ -200,6 +196,10 @@ function main() {
     showDictionaryError();
     showMessage(DICTIONARY_LOADING_FAILED_MESSAGE);
   }
+
+  // state for output
+  let output: null | Generator<Result<string>> = null;
+  let size = 0;
 
   // initial text area size
   resizeTextarea();
