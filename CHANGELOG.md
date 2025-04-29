@@ -7,8 +7,6 @@ NOTE: Before publishing:
 - update this very document, don't forget to add release date
 -->
 
-<!-- TODO: add "Use hardcoded anu la translation" setting on wiki -->
-
 <details>
 
 <summary>On development changelog</summary>
