@@ -72,8 +72,13 @@ function complement(complement: English.Complement) {
   }
 }
 export function adverbVerb(verbAdverb: English.AdverbVerb): string {
-  const { adverb, verb } = verbAdverb;
-  return [...adverb.map(({ adverb }) => adverb), verb].map(word).join(" ");
+  const { preAdverb, verb, postAdverb } = verbAdverb;
+  return [
+    ...preAdverb.map(({ adverb }) => adverb),
+    verb,
+    ...postAdverb.map(({ adverb }) => adverb),
+  ]
+    .map(word).join(" ");
 }
 export function verb(phrase: English.VerbPhrase, depth: number): string {
   let text: string;

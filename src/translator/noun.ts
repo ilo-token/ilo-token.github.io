@@ -1,11 +1,11 @@
 import * as Dictionary from "../../dictionary/type.ts";
-import { nullableAsArray } from "../../misc/misc.ts";
+import { mapNullable, nullableAsArray } from "../../misc/misc.ts";
 import { IterableResult } from "../compound.ts";
 import { settings } from "../settings.ts";
 import { adjective } from "./adjective.ts";
 import * as English from "./ast.ts";
 import * as EnglishComposer from "./composer.ts";
-import { determiner } from "./determiner.ts";
+import { determiner, extractNegativeFromDeterminers } from "./determiner.ts";
 import { condense } from "./misc.ts";
 import { word } from "./word.ts";
 
@@ -136,5 +136,24 @@ export function perspective(noun: English.NounPhrase): Dictionary.Perspective {
       return noun.perspective;
     case "compound":
       return "third";
+  }
+}
+export function extractNegativeFromNoun(
+  noun: English.NounPhrase,
+): null | English.NounPhrase {
+  switch (noun.type) {
+    case "simple":
+      return mapNullable(
+        extractNegativeFromDeterminers(noun.determiner),
+        (determiner) => ({ ...noun, determiner }),
+      );
+    case "compound": {
+      const nouns = noun.nouns.map(extractNegativeFromNoun);
+      if (nouns.every((noun) => noun != null)) {
+        return { ...noun, nouns };
+      } else {
+        return null;
+      }
+    }
   }
 }

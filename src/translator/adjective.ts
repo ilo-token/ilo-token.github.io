@@ -1,7 +1,8 @@
 import * as Dictionary from "../../dictionary/type.ts";
-import { nullableAsArray } from "../../misc/misc.ts";
+import { mapNullable, nullableAsArray } from "../../misc/misc.ts";
 import { IterableResult } from "../compound.ts";
 import * as TokiPona from "../parser/ast.ts";
+import { extractNegativeFromAdverbs } from "./adverb.ts";
 import * as English from "./ast.ts";
 import { UntranslatableError } from "./error.ts";
 import { noEmphasis, word } from "./word.ts";
@@ -109,4 +110,23 @@ export function fixAdjective(
       }
     })
     .sort((a, b) => rankAdjective(a.kind) - rankAdjective(b.kind));
+}
+export function extractNegativeFromAdjective(
+  adjective: English.AdjectivePhrase,
+): null | English.AdjectivePhrase {
+  switch (adjective.type) {
+    case "simple":
+      return mapNullable(
+        extractNegativeFromAdverbs(adjective.adverb),
+        (adverb) => ({ ...adjective, adverb }),
+      );
+    case "compound": {
+      const adjectives = adjective.adjective.map(extractNegativeFromAdjective);
+      if (adjectives.every((adjective) => adjective != null)) {
+        return { ...adjective, adjective: adjectives };
+      } else {
+        return null;
+      }
+    }
+  }
 }

@@ -152,16 +152,14 @@ function oClause(clause: TokiPona.Clause & { type: "o clause" }) {
       return IterableResult.concat(
         verb(predicate, subjectPerspective, subject.quantity)
           .map((verb) => iWish(subject, verb)),
-        IterableResult.from(() =>
-          verb(
-            addModalToAll(
-              noAdverbs(noEmphasis("should")),
-              predicate,
-            ),
+        IterableResult.from(() => {
+          const takeNegative = true;
+          return verb(
+            addModalToAll("should", predicate, takeNegative),
             subjectPerspective,
             subject.quantity,
-          )
-        )
+          );
+        })
           .map((verb) => ({
             type: "default",
             subject,

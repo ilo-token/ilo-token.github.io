@@ -19,7 +19,7 @@ export type PartialVerb =
   & Readonly<{
     modal: null | English.AdverbVerb;
     adverb: ReadonlyArray<English.Adverb>;
-    first: null | Dictionary.VerbForms;
+    first: null | (Dictionary.VerbForms & Readonly<{ negated: boolean }>);
     reduplicationCount: number;
     wordEmphasis: boolean;
     rest: ReadonlyArray<English.AdverbVerb>;
@@ -44,25 +44,43 @@ export function condenseVerb(present: string, past: string): string {
   return [condense(first, second), ...rest].join(" ");
 }
 export function addModal(
-  modal: English.AdverbVerb,
+  modal: string,
   verb: PartialVerb,
+  takeNegative: boolean,
 ): PartialVerb {
   if (verb.modal == null) {
     const newRest = nullableAsArray(verb.first)
-      .map(({ presentPlural }) => presentPlural)
-      .map((verb) => verb === "are" ? "be" : verb)
-      .map((newVerb) => ({
-        adverb: verb.adverb,
-        verb: word({
-          word: newVerb,
-          reduplicationCount: verb.reduplicationCount,
-          emphasis: verb.wordEmphasis,
-        }),
-      }));
+      .map((first) => {
+        const presentPlural = first.presentPlural;
+        const useVerb = presentPlural === "are" ? "be" : presentPlural;
+        // TODO: fix adverbs
+        const preAdverb = takeNegative ? verb.adverb : [
+          ...(
+            first.negated ? [{ adverb: noEmphasis("not"), negative: true }] : []
+          ),
+          ...verb.adverb,
+        ];
+        return {
+          preAdverb,
+          verb: word({
+            word: useVerb,
+            reduplicationCount: verb.reduplicationCount,
+            emphasis: verb.wordEmphasis,
+          }),
+          postAdverb: [],
+        };
+      });
+    const postAdverb = takeNegative && (verb.first?.negated ?? false)
+      ? [{ adverb: noEmphasis("not"), negative: true }]
+      : [];
     return {
       ...verb,
-      modal,
-      adverb: modal.adverb,
+      modal: {
+        preAdverb: [],
+        verb: noEmphasis(modal),
+        postAdverb,
+      },
+      adverb: [],
       first: null,
       rest: [...newRest, ...verb.rest],
       reduplicationCount: 1,
@@ -73,16 +91,17 @@ export function addModal(
   }
 }
 export function addModalToAll(
-  modal: English.AdverbVerb,
+  modal: string,
   verb: PartialCompoundVerb,
+  takeNegative: boolean,
 ): PartialCompoundVerb {
   switch (verb.type) {
     case "simple":
-      return { ...addModal(modal, verb), type: "simple" };
+      return { ...addModal(modal, verb, takeNegative), type: "simple" };
     case "compound":
       return {
         ...verb,
-        verb: verb.verb.map((verb) => addModalToAll(modal, verb)),
+        verb: verb.verb.map((verb) => addModalToAll(modal, verb, takeNegative)),
       };
   }
 }
@@ -122,7 +141,7 @@ export function partialVerb(
       ...definition,
       adverb: [],
       modal: null,
-      first: definition,
+      first: { ...definition, negated: false },
       reduplicationCount,
       wordEmphasis: emphasis,
       rest: [],
@@ -155,6 +174,7 @@ export function forObject(verb: PartialCompoundVerb): boolean | string {
     return false;
   }
 }
+// TODO: handle negatives
 export function fromVerbForms(
   options: Readonly<{
     verbForms: Dictionary.VerbForms;
@@ -230,12 +250,13 @@ export function verb(
               ),
               verb: [
                 {
-                  adverb: partialVerb.adverb,
+                  preAdverb: partialVerb.adverb,
                   verb: word({
                     word: verb.verb,
                     reduplicationCount: partialVerb.reduplicationCount,
                     emphasis: partialVerb.wordEmphasis,
                   }),
+                  postAdverb: [],
                 },
                 ...partialVerb.rest,
               ],
@@ -267,5 +288,5 @@ export function verb(
   }
 }
 export function noAdverbs(verb: English.Word): English.AdverbVerb {
-  return { adverb: [], verb };
+  return { preAdverb: [], verb, postAdverb: [] };
 }

@@ -2,7 +2,11 @@ import { mapNullable, nullableAsArray } from "../../misc/misc.ts";
 import { IterableResult } from "../compound.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as Composer from "../parser/composer.ts";
-import { AdjectiveWithInWay, fixAdjective } from "./adjective.ts";
+import {
+  AdjectiveWithInWay,
+  extractNegativeFromAdjective,
+  fixAdjective,
+} from "./adjective.ts";
 import { fixAdverb } from "./adverb.ts";
 import * as English from "./ast.ts";
 import { fixDeterminer, getNumber } from "./determiner.ts";
@@ -18,8 +22,12 @@ import {
   AdverbialModifier,
   multipleModifiers,
 } from "./modifier.ts";
-import { fromNounForms, PartialNoun } from "./noun.ts";
-import { nounAsPreposition, preposition } from "./preposition.ts";
+import { extractNegativeFromNoun, fromNounForms, PartialNoun } from "./noun.ts";
+import {
+  extractNegativeFromPreposition,
+  nounAsPreposition,
+  preposition,
+} from "./preposition.ts";
 import { Place } from "./pronoun.ts";
 import { PartialCompoundVerb, PartialVerb } from "./verb.ts";
 import { word } from "./word.ts";
@@ -138,6 +146,7 @@ function adjectivePhrase(
       }
   }
 }
+// TODO: extract "not"
 function verbPhrase(
   options: Readonly<{
     emphasis: boolean;
@@ -165,11 +174,11 @@ function verbPhrase(
     return {
       ...verb,
       modal: {
-        adverb: fixAdverb([
+        ...verb.modal,
+        preAdverb: fixAdverb([
           ...[...modifier.adverb].reverse(),
-          ...verb.modal.adverb,
+          ...verb.modal.preAdverb,
         ]),
-        verb: verb.modal.verb,
       },
       phraseEmphasis: emphasis,
       preposition,
@@ -229,6 +238,7 @@ function defaultPhrase(
     .addErrorWhenNone(() => new ExhaustedError(Composer.phrase(phrase)));
 }
 function prepositionAsVerb(preposition: English.Preposition) {
+  const extracted = extractNegativeFromPreposition(preposition);
   return {
     modal: null,
     adverb: [],
@@ -236,6 +246,7 @@ function prepositionAsVerb(preposition: English.Preposition) {
       presentPlural: "are",
       presentSingular: "is",
       past: "were",
+      negated: extracted != null,
     },
     reduplicationCount: 1,
     wordEmphasis: false,
@@ -243,7 +254,7 @@ function prepositionAsVerb(preposition: English.Preposition) {
     subjectComplement: null,
     object: null,
     objectComplement: null,
-    preposition: [preposition],
+    preposition: [extracted ?? preposition],
     forObject: false,
     predicateType: null,
     phraseEmphasis: false,
@@ -336,20 +347,27 @@ export function phraseAsVerb(
   switch (phrase.type) {
     case "noun":
     case "adjective": {
+      let negated: boolean;
       let subjectComplement: English.Complement;
       switch (phrase.type) {
-        case "noun":
+        case "noun": {
+          const extract = extractNegativeFromNoun(phrase.noun);
+          negated = extract != null;
           subjectComplement = {
             type: "noun",
-            noun: phrase.noun,
+            noun: extract ?? phrase.noun,
           };
           break;
-        case "adjective":
+        }
+        case "adjective": {
+          const extract = extractNegativeFromAdjective(phrase.adjective);
+          negated = extract != null;
           subjectComplement = {
             type: "adjective",
-            adjective: phrase.adjective,
+            adjective: extract ?? phrase.adjective,
           };
           break;
+        }
       }
       return {
         type: "simple",
@@ -359,6 +377,7 @@ export function phraseAsVerb(
           presentPlural: "are",
           presentSingular: "is",
           past: "were",
+          negated,
         },
         wordEmphasis: false,
         reduplicationCount: 1,

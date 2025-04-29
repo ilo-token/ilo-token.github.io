@@ -10,3 +10,13 @@ export function fixAdverb(
     return adverb;
   }
 }
+export function extractNegativeFromAdverbs(
+  adverb: ReadonlyArray<English.Adverb>,
+): null | ReadonlyArray<English.Adverb> {
+  const index = adverb.findIndex(({ negative }) => negative);
+  if (index === -1) {
+    return null;
+  } else {
+    return [...adverb].splice(index, 1);
+  }
+}

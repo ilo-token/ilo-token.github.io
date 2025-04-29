@@ -133,6 +133,16 @@ export function fixDeterminer(
     );
   }
 }
+export function extractNegativeFromDeterminers(
+  determiner: ReadonlyArray<English.Determiner>,
+): null | ReadonlyArray<English.Determiner> {
+  const index = determiner.findIndex(({ kind }) => kind === "negative");
+  if (index === -1) {
+    return null;
+  } else {
+    return [...determiner].splice(index, 1);
+  }
+}
 function prettyPrintDeterminers(
   determiners: ReadonlyArray<English.Determiner>,
 ) {

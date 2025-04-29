@@ -2,7 +2,7 @@ import { throwError } from "../../misc/misc.ts";
 import { IterableResult } from "../compound.ts";
 import { dictionary } from "../dictionary.ts";
 import * as TokiPona from "../parser/ast.ts";
-import { fixAdverb } from "./adverb.ts";
+import { extractNegativeFromAdverbs, fixAdverb } from "./adverb.ts";
 import * as English from "./ast.ts";
 import { FilteredError, TranslationTodoError } from "./error.ts";
 import { multipleModifiers } from "./modifier.ts";
@@ -81,4 +81,14 @@ export function nounAsPreposition(
     object: phrase,
     emphasis: false,
   };
+}
+export function extractNegativeFromPreposition(
+  preposition: English.Preposition,
+): null | English.Preposition {
+  const adverb = extractNegativeFromAdverbs(preposition.adverb);
+  if (adverb == null) {
+    return null;
+  } else {
+    return { ...preposition, adverb };
+  }
 }

@@ -80,12 +80,13 @@ function defaultWordUnit(
           return IterableResult.single({
             type: "verb",
             modal: {
-              adverb: [],
+              preAdverb: [],
               verb: word({
                 word: definition.verb,
                 reduplicationCount,
                 emphasis: emphasis != null,
               }),
+              postAdverb: [],
             },
             adverb: [],
             first: null,

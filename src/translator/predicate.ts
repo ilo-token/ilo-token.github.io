@@ -1,10 +1,14 @@
 import { nullableAsArray } from "../../misc/misc.ts";
 import { IterableResult } from "../compound.ts";
 import * as TokiPona from "../parser/ast.ts";
-import { AdjectiveWithInWay } from "./adjective.ts";
+import {
+  AdjectiveWithInWay,
+  extractNegativeFromAdjective,
+} from "./adjective.ts";
 import * as English from "./ast.ts";
 import { FilteredError, UntranslatableError } from "./error.ts";
 import { CONJUNCTION } from "./misc.ts";
+import { extractNegativeFromNoun } from "./noun.ts";
 import {
   multiplePhrases,
   phrase,
@@ -25,72 +29,97 @@ function verbObject(verb: PartialCompoundVerb, object: English.NounPhrase) {
     return { ...verb, object: englishObject, preposition };
   }
 }
-function applyTo(predicate: English.NounPhrase, object: English.NounPhrase) {
-  return {
-    type: "simple",
-    adverb: [],
-    modal: null,
-    first: {
-      presentPlural: "apply",
-      presentSingular: "applies",
-      past: "applied",
-    },
-    reduplicationCount: 1,
-    wordEmphasis: false,
-    rest: [],
-    subjectComplement: null,
-    object: predicate,
-    objectComplement: null,
-    preposition: [nounAsPreposition(object, "to")],
-    forObject: false,
-    predicateType: null,
-    phraseEmphasis: false,
-  } as const;
-}
-function turnInto(predicate: English.NounPhrase, object: English.NounPhrase) {
-  return {
-    type: "simple",
-    adverb: [],
-    modal: null,
-    first: {
-      presentPlural: "turn",
-      presentSingular: "turns",
-      past: "turned",
-    },
-    reduplicationCount: 1,
-    wordEmphasis: false,
-    rest: [],
-    subjectComplement: null,
-    object,
-    objectComplement: null,
-    preposition: [nounAsPreposition(predicate, "into")],
-    forObject: false,
-    predicateType: null,
-    phraseEmphasis: false,
-  } as const;
+function applyToAndTurnInto(
+  predicate: English.NounPhrase,
+  object: English.NounPhrase,
+) {
+  return IterableResult.concat(
+    IterableResult.fromArray(
+      nullableAsArray(extractNegativeFromNoun(predicate)),
+    )
+      .map((predicate) => [true as boolean, predicate]),
+    IterableResult.single([false as boolean, predicate]),
+  )
+    .flatMap(([negated, predicate]) =>
+      IterableResult.fromArray([
+        {
+          type: "simple",
+          adverb: [],
+          modal: null,
+          first: {
+            presentPlural: "apply",
+            presentSingular: "applies",
+            past: "applied",
+            negated,
+          },
+          reduplicationCount: 1,
+          wordEmphasis: false,
+          rest: [],
+          subjectComplement: null,
+          object: predicate,
+          objectComplement: null,
+          preposition: [nounAsPreposition(object, "to")],
+          forObject: false,
+          predicateType: null,
+          phraseEmphasis: false,
+        },
+        {
+          type: "simple",
+          adverb: [],
+          modal: null,
+          first: {
+            presentPlural: "turn",
+            presentSingular: "turns",
+            past: "turned",
+            negated,
+          },
+          reduplicationCount: 1,
+          wordEmphasis: false,
+          rest: [],
+          subjectComplement: null,
+          object,
+          objectComplement: null,
+          preposition: [nounAsPreposition(predicate, "into")],
+          forObject: false,
+          predicateType: null,
+          phraseEmphasis: false,
+        },
+      ])
+    );
 }
 function make(predicate: AdjectiveWithInWay, object: English.NounPhrase) {
-  return {
-    type: "simple",
-    adverb: [],
-    modal: null,
-    first: {
-      presentPlural: "make",
-      presentSingular: "makes",
-      past: "made",
-    },
-    reduplicationCount: 1,
-    wordEmphasis: false,
-    rest: [],
-    subjectComplement: null,
-    object,
-    objectComplement: { type: "adjective", adjective: predicate.adjective },
-    preposition: nullableAsArray(predicate.inWayPhrase)
-      .map((phrase) => nounAsPreposition(phrase, "in")),
-    forObject: false,
-    predicateType: null,
-    phraseEmphasis: false,
-  } as const;
+  return IterableResult.concat(
+    IterableResult.fromArray(
+      nullableAsArray(extractNegativeFromAdjective(predicate.adjective)),
+    )
+      .map((adjective) => [true as boolean, adjective]),
+    IterableResult.single([false as boolean, predicate.adjective]),
+  )
+    .map(([negated, adjective]) => ({
+      type: "simple",
+      adverb: [],
+      modal: null,
+      first: {
+        presentPlural: "make",
+        presentSingular: "makes",
+        past: "made",
+        negated,
+      },
+      reduplicationCount: 1,
+      wordEmphasis: false,
+      rest: [],
+      subjectComplement: null,
+      object,
+      objectComplement: {
+        type: "adjective",
+        adjective,
+      },
+      preposition: nullableAsArray(predicate.inWayPhrase)
+        .map((phrase) => nounAsPreposition(phrase, "in")),
+      forObject: false,
+      predicateType: null,
+      phraseEmphasis: false,
+    }));
 }
 function predicateVerb(
   predicate: PhraseTranslation,
@@ -98,12 +127,9 @@ function predicateVerb(
 ) {
   switch (predicate.type) {
     case "noun":
-      return IterableResult.fromArray([
-        applyTo(predicate.noun, object),
-        turnInto(predicate.noun, object),
-      ]);
+      return applyToAndTurnInto(predicate.noun, object);
     case "adjective":
-      return IterableResult.single(make(predicate, object));
+      return make(predicate, object);
     case "verb":
       return IterableResult.from(() =>
         IterableResult.single(verbObject(predicate.verb, object))
