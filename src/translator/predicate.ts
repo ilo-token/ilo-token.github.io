@@ -33,13 +33,11 @@ function applyToAndTurnInto(
   predicate: English.NounPhrase,
   object: English.NounPhrase,
 ) {
-  return IterableResult.concat(
-    IterableResult.fromArray(
-      nullableAsArray(extractNegativeFromNoun(predicate)),
-    )
-      .map((predicate) => [true as boolean, predicate]),
-    IterableResult.single([false as boolean, predicate]),
-  )
+  return IterableResult.fromArray([
+    ...nullableAsArray(extractNegativeFromNoun(predicate))
+      .map((predicate) => [true, predicate] as const),
+    [false, predicate] as const,
+  ])
     .flatMap(([negated, predicate]) =>
       IterableResult.fromArray([
         {
@@ -88,13 +86,11 @@ function applyToAndTurnInto(
     );
 }
 function make(predicate: AdjectiveWithInWay, object: English.NounPhrase) {
-  return IterableResult.concat(
-    IterableResult.fromArray(
-      nullableAsArray(extractNegativeFromAdjective(predicate.adjective)),
-    )
-      .map((adjective) => [true as boolean, adjective]),
-    IterableResult.single([false as boolean, predicate.adjective]),
-  )
+  return IterableResult.fromArray([
+    ...nullableAsArray(extractNegativeFromAdjective(predicate.adjective))
+      .map((adjective) => [true, adjective] as const),
+    [false, predicate.adjective] as const,
+  ])
     .map(([negated, adjective]) => ({
       type: "simple",
       modal: null,
