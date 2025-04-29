@@ -138,7 +138,7 @@ function adjectivePhrase(
     case "compound":
       if (modifier.adverb.length === 0) {
         return {
-          adjective: { ...adjective, emphasis },
+          adjective: { ...adjective, emphasis: adjective.emphasis || emphasis },
           inWayPhrase: modifier.inWayPhrase,
         };
       } else {
