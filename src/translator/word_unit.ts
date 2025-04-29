@@ -88,10 +88,7 @@ function defaultWordUnit(
               }),
               postAdverb: [],
             },
-            adverb: [],
             first: null,
-            reduplicationCount: 0,
-            wordEmphasis: false,
             rest: [],
             subjectComplement: null,
             object: null,
@@ -99,7 +96,7 @@ function defaultWordUnit(
             preposition: [],
             forObject: false,
             predicateType: null,
-            phraseEmphasis: false,
+            emphasis: false,
           });
         default:
           return IterableResult.empty();

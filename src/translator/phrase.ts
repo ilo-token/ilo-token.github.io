@@ -159,10 +159,7 @@ function verbPhrase(
     ...nullableAsArray(modifier.inWayPhrase)
       .map((object) => nounAsPreposition(object, "in")),
   ];
-  const adverb = [
-    ...[...modifier.adverb].reverse(),
-    ...verb.adverb,
-  ];
+  const adverb = [...modifier.adverb].reverse();
   const extracted = extractNegativeFromAdverbs(adverb);
   if (extracted != null && extractNegativeFromAdverbs(extracted) != null) {
     throw new FilteredError("double negative");
@@ -172,9 +169,8 @@ function verbPhrase(
   if (verb.first != null) {
     return {
       ...verb,
-      first: { ...verb.first, negated },
-      adverb: useAdverb,
-      phraseEmphasis: emphasis,
+      first: { ...verb.first, negated, adverb: useAdverb },
+      emphasis: emphasis,
       preposition,
     };
   } else if (verb.modal != null) {
@@ -186,7 +182,7 @@ function verbPhrase(
         verb: verb.modal.verb,
         postAdverb,
       },
-      phraseEmphasis: emphasis,
+      emphasis: emphasis,
       preposition,
     };
   } else {
@@ -247,15 +243,15 @@ function prepositionAsVerb(preposition: English.Preposition) {
   const extracted = extractNegativeFromPreposition(preposition);
   return {
     modal: null,
-    adverb: [],
     first: {
+      adverb: [],
       presentPlural: "are",
       presentSingular: "is",
       past: "were",
       negated: extracted != null,
+      reduplicationCount: 1,
+      emphasis: false,
     },
-    reduplicationCount: 1,
-    wordEmphasis: false,
     rest: [],
     subjectComplement: null,
     object: null,
@@ -263,7 +259,7 @@ function prepositionAsVerb(preposition: English.Preposition) {
     preposition: [extracted ?? preposition],
     forObject: false,
     predicateType: null,
-    phraseEmphasis: false,
+    emphasis: false,
   };
 }
 export function phrase(
@@ -378,15 +374,15 @@ export function phraseAsVerb(
       return {
         type: "simple",
         modal: null,
-        adverb: [],
         first: {
+          adverb: [],
           presentPlural: "are",
           presentSingular: "is",
           past: "were",
           negated,
+          emphasis: false,
+          reduplicationCount: 1,
         },
-        wordEmphasis: false,
-        reduplicationCount: 1,
         rest: [],
         subjectComplement,
         object: null,
@@ -394,7 +390,7 @@ export function phraseAsVerb(
         preposition: [],
         forObject: false,
         predicateType: null,
-        phraseEmphasis: false,
+        emphasis: false,
       };
     }
     case "verb":

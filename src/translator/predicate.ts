@@ -44,16 +44,16 @@ function applyToAndTurnInto(
       IterableResult.fromArray([
         {
           type: "simple",
-          adverb: [],
           modal: null,
           first: {
+            adverb: [],
             presentPlural: "apply",
             presentSingular: "applies",
             past: "applied",
             negated,
+            reduplicationCount: 1,
+            emphasis: false,
           },
-          reduplicationCount: 1,
-          wordEmphasis: false,
           rest: [],
           subjectComplement: null,
           object: predicate,
@@ -61,20 +61,20 @@ function applyToAndTurnInto(
           preposition: [nounAsPreposition(object, "to")],
           forObject: false,
           predicateType: null,
-          phraseEmphasis: false,
+          emphasis: false,
         },
         {
           type: "simple",
-          adverb: [],
           modal: null,
           first: {
+            adverb: [],
             presentPlural: "turn",
             presentSingular: "turns",
             past: "turned",
             negated,
+            reduplicationCount: 1,
+            emphasis: false,
           },
-          reduplicationCount: 1,
-          wordEmphasis: false,
           rest: [],
           subjectComplement: null,
           object,
@@ -82,7 +82,7 @@ function applyToAndTurnInto(
           preposition: [nounAsPreposition(predicate, "into")],
           forObject: false,
           predicateType: null,
-          phraseEmphasis: false,
+          emphasis: false,
         },
       ])
     );
@@ -97,16 +97,16 @@ function make(predicate: AdjectiveWithInWay, object: English.NounPhrase) {
   )
     .map(([negated, adjective]) => ({
       type: "simple",
-      adverb: [],
       modal: null,
       first: {
+        adverb: [],
         presentPlural: "make",
         presentSingular: "makes",
         past: "made",
         negated,
+        reduplicationCount: 1,
+        emphasis: false,
       },
-      reduplicationCount: 1,
-      wordEmphasis: false,
       rest: [],
       subjectComplement: null,
       object,
@@ -118,7 +118,7 @@ function make(predicate: AdjectiveWithInWay, object: English.NounPhrase) {
         .map((phrase) => nounAsPreposition(phrase, "in")),
       forObject: false,
       predicateType: null,
-      phraseEmphasis: false,
+      emphasis: false,
     }));
 }
 function predicateVerb(
