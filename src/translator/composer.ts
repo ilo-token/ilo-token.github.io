@@ -73,14 +73,19 @@ function complement(complement: English.Complement) {
 }
 function adverbVerb(verbAdverb: English.AdverbVerb) {
   const { preAdverb, verb, postAdverb } = verbAdverb;
+  const verbPost =
+    verb.word === "can" && postAdverb != null && postAdverb.negative &&
+      postAdverb.adverb.word === "not"
+      ? `${word(verb)}${word(postAdverb.adverb)}`
+      : [verb, ...nullableAsArray(postAdverb).map(({ adverb }) => adverb)].map(
+        word,
+      ).join(" ");
   return [
-    ...preAdverb.map(({ adverb }) => adverb),
-    verb,
-    ...nullableAsArray(postAdverb).map(({ adverb }) => adverb),
+    ...preAdverb.map(({ adverb }) => word(adverb)),
+    verbPost,
   ]
-    .map(word).join(" ");
+    .join(" ");
 }
-// TODO: "can not" into "cannot"
 export function verb(phrase: English.VerbPhrase, depth: number): string {
   let text: string;
   switch (phrase.type) {
