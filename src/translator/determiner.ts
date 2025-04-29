@@ -143,17 +143,18 @@ export function extractNegativeFromDeterminers(
     return [...determiner].splice(index, 1);
   }
 }
-function prettyPrintDeterminers(
-  determiners: ReadonlyArray<English.Determiner>,
-) {
-  return `(${determiners.map(({ determiner }) => determiner).join(" ")})`;
-}
 function encodeDeterminer(
   strings: TemplateStringsArray,
   ...determiners: ReadonlyArray<ReadonlyArray<English.Determiner>>
 ) {
   return () =>
-    zip(strings, [...determiners.map(prettyPrintDeterminers), ""])
+    zip(strings, [
+      ...determiners
+        .map((determiners) =>
+          `(${determiners.map(({ determiner }) => determiner).join(" ")})`
+        ),
+      "",
+    ])
       .flat()
       .join("");
 }
