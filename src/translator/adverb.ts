@@ -1,5 +1,8 @@
 import * as English from "./ast.ts";
 import { FilteredError } from "./error.ts";
+import { noEmphasis } from "./word.ts";
+
+export const NOT = { adverb: noEmphasis("not"), negative: true };
 
 export function fixAdverb(
   adverb: ReadonlyArray<English.Adverb>,

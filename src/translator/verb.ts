@@ -2,6 +2,7 @@ import * as Dictionary from "../../dictionary/type.ts";
 import { mapNullable, nullableAsArray } from "../../misc/misc.ts";
 import { IterableResult } from "../compound.ts";
 import { settings } from "../settings.ts";
+import { NOT } from "./adverb.ts";
 import * as English from "./ast.ts";
 import { FilteredError } from "./error.ts";
 import { condense } from "./misc.ts";
@@ -9,6 +10,7 @@ import { noun } from "./noun.ts";
 import { nounAsPreposition } from "./preposition.ts";
 import { noEmphasis, word } from "./word.ts";
 
+export type VerbForms = Dictionary.VerbForms & Readonly<{ negated: boolean }>;
 export type VerbObjects = Readonly<{
   object: null | English.NounPhrase;
   objectComplement: null | English.Complement;
@@ -19,7 +21,7 @@ export type PartialVerb =
   & Readonly<{
     modal: null | English.AdverbVerb;
     adverb: ReadonlyArray<English.Adverb>;
-    first: null | (Dictionary.VerbForms & Readonly<{ negated: boolean }>);
+    first: null | VerbForms;
     reduplicationCount: number;
     wordEmphasis: boolean;
     rest: ReadonlyArray<English.AdverbVerb>;
@@ -56,7 +58,7 @@ function addModal(
         // TODO: fix adverbs
         const preAdverb = takeNegative ? verb.adverb : [
           ...(
-            first.negated ? [{ adverb: noEmphasis("not"), negative: true }] : []
+            first.negated ? [NOT] : []
           ),
           ...verb.adverb,
         ];
@@ -71,7 +73,7 @@ function addModal(
         };
       });
     const postAdverb = takeNegative && (verb.first?.negated ?? false)
-      ? [{ adverb: noEmphasis("not"), negative: true }]
+      ? [NOT]
       : [];
     return {
       ...verb,
@@ -177,7 +179,7 @@ export function forObject(verb: PartialCompoundVerb): boolean | string {
 // TODO: handle negatives
 function fromVerbForms(
   options: Readonly<{
-    verbForms: Dictionary.VerbForms;
+    verbForms: VerbForms;
     perspective: Dictionary.Perspective;
     quantity: English.Quantity;
   }>,

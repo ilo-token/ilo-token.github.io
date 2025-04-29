@@ -7,7 +7,7 @@ import {
   extractNegativeFromAdjective,
   fixAdjective,
 } from "./adjective.ts";
-import { extractNegativeFromAdverbs, fixAdverb } from "./adverb.ts";
+import { extractNegativeFromAdverbs, fixAdverb, NOT } from "./adverb.ts";
 import * as English from "./ast.ts";
 import { fixDeterminer, getNumber } from "./determiner.ts";
 import {
@@ -30,7 +30,7 @@ import {
 } from "./preposition.ts";
 import { Place } from "./pronoun.ts";
 import { PartialCompoundVerb, PartialVerb } from "./verb.ts";
-import { noEmphasis, word } from "./word.ts";
+import { word } from "./word.ts";
 import { wordUnit } from "./word_unit.ts";
 
 export type PhraseTranslation =
@@ -178,9 +178,7 @@ function verbPhrase(
       preposition,
     };
   } else if (verb.modal != null) {
-    const postAdverb = negated
-      ? [{ adverb: noEmphasis("not"), negative: true }]
-      : [];
+    const postAdverb = negated ? [NOT] : [];
     return {
       ...verb,
       modal: {
