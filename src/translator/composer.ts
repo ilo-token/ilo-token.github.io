@@ -73,13 +73,11 @@ function complement(complement: English.Complement) {
 }
 function adverbVerb(verbAdverb: English.AdverbVerb) {
   const { preAdverb, verb, postAdverb } = verbAdverb;
-  const verbPost =
-    verb.word === "can" && postAdverb != null && postAdverb.negative &&
+  const verbPost = verb.word === "can" && postAdverb != null &&
       postAdverb.adverb.word === "not"
-      ? `${word(verb)}${word(postAdverb.adverb)}`
-      : [verb, ...nullableAsArray(postAdverb).map(({ adverb }) => adverb)].map(
-        word,
-      ).join(" ");
+    ? `${word(verb)}${word(postAdverb.adverb)}`
+    : [verb, ...nullableAsArray(postAdverb).map(({ adverb }) => adverb)]
+      .map(word).join(" ");
   return [
     ...preAdverb.map(({ adverb }) => word(adverb)),
     verbPost,
