@@ -80,6 +80,7 @@ export function adverbVerb(verbAdverb: English.AdverbVerb): string {
   ]
     .map(word).join(" ");
 }
+// TODO: "can not" into "cannot"
 export function verb(phrase: English.VerbPhrase, depth: number): string {
   let text: string;
   switch (phrase.type) {
