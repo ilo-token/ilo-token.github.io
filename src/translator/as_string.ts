@@ -6,9 +6,7 @@ import { noun, simpleNounForms } from "./noun.ts";
 import { pronoun } from "./pronoun.ts";
 import { partialVerb, verb } from "./verb.ts";
 
-function nounAsPlainString(
-  definition: Dictionary.Noun,
-): IterableResult<string> {
+function nounAsPlainString(definition: Dictionary.Noun) {
   return noun({ definition, reduplicationCount: 1, emphasis: false })
     .map((noun) => EnglishComposer.noun(noun, 0));
 }
