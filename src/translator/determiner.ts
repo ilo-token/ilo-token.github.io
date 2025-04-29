@@ -140,7 +140,9 @@ export function extractNegativeFromDeterminers(
   if (index === -1) {
     return null;
   } else {
-    return [...determiner].splice(index, 1);
+    const spliced = [...determiner];
+    spliced.splice(index, 1);
+    return spliced;
   }
 }
 function encodeDeterminer(

@@ -20,6 +20,8 @@ export function extractNegativeFromAdverbs(
   if (index === -1) {
     return null;
   } else {
-    return [...adverb].splice(index, 1);
+    const spliced = [...adverb];
+    spliced.splice(index, 1);
+    return spliced;
   }
 }
