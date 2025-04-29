@@ -77,7 +77,8 @@ function adverbVerb(verbAdverb: English.AdverbVerb) {
       postAdverb.adverb.word === "not"
     ? `${word(verb)}${word(postAdverb.adverb)}`
     : [verb, ...nullableAsArray(postAdverb).map(({ adverb }) => adverb)]
-      .map(word).join(" ");
+      .map(word)
+      .join(" ");
   return [
     ...preAdverb.map(({ adverb }) => word(adverb)),
     verbPost,
