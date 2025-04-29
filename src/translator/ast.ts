@@ -53,7 +53,7 @@ export type Adverb = Readonly<{
 export type AdverbVerb = {
   preAdverb: ReadonlyArray<Adverb>;
   verb: Word;
-  postAdverb: ReadonlyArray<Adverb>;
+  postAdverb: null | Adverb;
 };
 export type Verb = Readonly<{
   modal: null | AdverbVerb;

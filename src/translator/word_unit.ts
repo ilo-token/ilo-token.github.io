@@ -86,7 +86,7 @@ function defaultWordUnit(
                 reduplicationCount,
                 emphasis: emphasis != null,
               }),
-              postAdverb: [],
+              postAdverb: null,
             },
             first: null,
             rest: [],

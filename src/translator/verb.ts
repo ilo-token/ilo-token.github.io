@@ -68,12 +68,12 @@ function addModal(
         return {
           preAdverb,
           verb: word({ ...first, word: useVerb }),
-          postAdverb: [],
+          postAdverb: null,
         };
       });
     const postAdverb = takeNegative && (verb.first?.negated ?? false)
-      ? [NOT]
-      : [];
+      ? NOT
+      : null;
     return {
       ...verb,
       modal: {
@@ -224,7 +224,7 @@ function fromVerbForms(
             doesNot: {
               preAdverb: [],
               verb: noEmphasis(`${does} not/did not/will not`),
-              postAdverb: [],
+              postAdverb: null,
             },
             verb: verbForms.presentPlural,
             postAdverb: null,
@@ -258,7 +258,7 @@ function fromVerbForms(
               modal: {
                 preAdverb: [],
                 verb: noEmphasis("will"),
-                postAdverb: [NOT],
+                postAdverb: NOT,
               },
               verb: "be",
               postAdverb: null,
@@ -272,7 +272,7 @@ function fromVerbForms(
               doesNot: {
                 preAdverb: [],
                 verb: noEmphasis(does),
-                postAdverb: [NOT],
+                postAdverb: NOT,
               },
             },
             {
@@ -280,14 +280,14 @@ function fromVerbForms(
               doesNot: {
                 preAdverb: [],
                 verb: noEmphasis("did"),
-                postAdverb: [NOT],
+                postAdverb: NOT,
               },
             },
             {
               modal: {
                 preAdverb: [],
                 verb: noEmphasis("will"),
-                postAdverb: [NOT],
+                postAdverb: NOT,
               },
               doesNot: null,
             },
@@ -327,7 +327,7 @@ function fromVerbForms(
             doesNot: {
               preAdverb: [],
               verb: noEmphasis(does),
-              postAdverb: [NOT],
+              postAdverb: NOT,
             },
             verb: verbForms.presentPlural,
             postAdverb: null,
@@ -350,7 +350,7 @@ function fromVerbForms(
       {
         preAdverb: adverb,
         verb: word({ ...verbForms, word: verb }),
-        postAdverb: nullableAsArray(postAdverb),
+        postAdverb,
       },
     ],
   }));
@@ -403,5 +403,5 @@ export function verb(
   }
 }
 export function noAdverbs(verb: English.Word): English.AdverbVerb {
-  return { preAdverb: [], verb, postAdverb: [] };
+  return { preAdverb: [], verb, postAdverb: null };
 }

@@ -174,7 +174,7 @@ function verbPhrase(
       preposition,
     };
   } else if (verb.modal != null) {
-    const postAdverb = negated ? [NOT] : [];
+    const postAdverb = negated ? NOT : null;
     return {
       ...verb,
       modal: {

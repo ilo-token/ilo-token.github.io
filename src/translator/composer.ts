@@ -76,7 +76,7 @@ function adverbVerb(verbAdverb: English.AdverbVerb) {
   return [
     ...preAdverb.map(({ adverb }) => adverb),
     verb,
-    ...postAdverb.map(({ adverb }) => adverb),
+    ...nullableAsArray(postAdverb).map(({ adverb }) => adverb),
   ]
     .map(word).join(" ");
 }
