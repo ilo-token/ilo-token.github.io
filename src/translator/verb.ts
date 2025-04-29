@@ -177,7 +177,6 @@ export function forObject(verb: PartialCompoundVerb): boolean | string {
     return false;
   }
 }
-// TODO: handle negatives
 function fromVerbForms(
   options: Readonly<{
     verbForms: VerbForms;
