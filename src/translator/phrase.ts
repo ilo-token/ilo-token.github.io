@@ -7,7 +7,7 @@ import {
   extractNegativeFromAdjective,
   fixAdjective,
 } from "./adjective.ts";
-import { fixAdverb } from "./adverb.ts";
+import { extractNegativeFromAdverbs, fixAdverb } from "./adverb.ts";
 import * as English from "./ast.ts";
 import { fixDeterminer, getNumber } from "./determiner.ts";
 import {
@@ -30,7 +30,7 @@ import {
 } from "./preposition.ts";
 import { Place } from "./pronoun.ts";
 import { PartialCompoundVerb, PartialVerb } from "./verb.ts";
-import { word } from "./word.ts";
+import { noEmphasis, word } from "./word.ts";
 import { wordUnit } from "./word_unit.ts";
 
 export type PhraseTranslation =
@@ -146,7 +146,6 @@ function adjectivePhrase(
       }
   }
 }
-// TODO: extract "not"
 function verbPhrase(
   options: Readonly<{
     emphasis: boolean;
@@ -160,25 +159,34 @@ function verbPhrase(
     ...nullableAsArray(modifier.inWayPhrase)
       .map((object) => nounAsPreposition(object, "in")),
   ];
+  const adverb = [
+    ...[...modifier.adverb].reverse(),
+    ...verb.adverb,
+  ];
+  const extracted = extractNegativeFromAdverbs(adverb);
+  if (extracted != null && extractNegativeFromAdverbs(extracted) != null) {
+    throw new FilteredError("double negative");
+  }
+  const negated = extracted != null;
+  const useAdverb = fixAdverb(extracted ?? adverb);
   if (verb.first != null) {
     return {
       ...verb,
-      adverb: fixAdverb([
-        ...[...modifier.adverb].reverse(),
-        ...verb.adverb,
-      ]),
+      first: { ...verb.first, negated },
+      adverb: useAdverb,
       phraseEmphasis: emphasis,
       preposition,
     };
   } else if (verb.modal != null) {
+    const postAdverb = negated
+      ? [{ adverb: noEmphasis("not"), negative: true }]
+      : [];
     return {
       ...verb,
       modal: {
-        ...verb.modal,
-        preAdverb: fixAdverb([
-          ...[...modifier.adverb].reverse(),
-          ...verb.modal.preAdverb,
-        ]),
+        preAdverb: useAdverb,
+        verb: verb.modal.verb,
+        postAdverb,
       },
       phraseEmphasis: emphasis,
       preposition,
