@@ -43,9 +43,7 @@ export type AdverbialModifier = Readonly<{
 export type MultipleModifierTranslation =
   | (Readonly<{ type: "adjectival" }> & AdjectivalModifier)
   | (Readonly<{ type: "adverbial" }> & AdverbialModifier);
-export function defaultModifier(
-  wordUnit: TokiPona.WordUnit,
-): IterableResult<ModifierTranslation> {
+function defaultModifier(wordUnit: TokiPona.WordUnit) {
   const emphasis = wordUnit.emphasis != null;
   switch (wordUnit.type) {
     case "number":
@@ -148,9 +146,7 @@ export function defaultModifier(
     }
   }
 }
-export function pi(
-  insidePhrase: TokiPona.Phrase,
-): IterableResult<ModifierTranslation> {
+function pi(insidePhrase: TokiPona.Phrase) {
   return phrase({
     phrase: insidePhrase,
     place: "object",

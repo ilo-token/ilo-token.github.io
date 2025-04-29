@@ -2,10 +2,16 @@ import * as Dictionary from "../../dictionary/type.ts";
 import { IterableResult } from "../compound.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";
 import * as EnglishComposer from "./composer.ts";
-import { nounAsPlainString, simpleNounForms } from "./noun.ts";
+import { noun, simpleNounForms } from "./noun.ts";
 import { pronoun } from "./pronoun.ts";
 import { partialVerb, verb } from "./verb.ts";
 
+function nounAsPlainString(
+  definition: Dictionary.Noun,
+): IterableResult<string> {
+  return noun({ definition, reduplicationCount: 1, emphasis: false })
+    .map((noun) => EnglishComposer.noun(noun, 0));
+}
 export function definitionAsPlainString(
   definition: Dictionary.Definition,
 ): IterableResult<string> {

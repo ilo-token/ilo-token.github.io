@@ -4,7 +4,6 @@ import { IterableResult } from "../compound.ts";
 import { settings } from "../settings.ts";
 import { adjective } from "./adjective.ts";
 import * as English from "./ast.ts";
-import * as EnglishComposer from "./composer.ts";
 import { determiner, extractNegativeFromDeterminers } from "./determiner.ts";
 import { condense } from "./misc.ts";
 import { word } from "./word.ts";
@@ -123,12 +122,6 @@ export function noun(
       preposition: [],
       emphasis: false,
     }));
-}
-export function nounAsPlainString(
-  definition: Dictionary.Noun,
-): IterableResult<string> {
-  return noun({ definition, reduplicationCount: 1, emphasis: false })
-    .map((noun) => EnglishComposer.noun(noun, 0));
 }
 export function perspective(noun: English.NounPhrase): Dictionary.Perspective {
   switch (noun.type) {

@@ -71,7 +71,7 @@ function complement(complement: English.Complement) {
       return adjective(complement.adjective, 0);
   }
 }
-export function adverbVerb(verbAdverb: English.AdverbVerb): string {
+function adverbVerb(verbAdverb: English.AdverbVerb) {
   const { preAdverb, verb, postAdverb } = verbAdverb;
   return [
     ...preAdverb.map(({ adverb }) => adverb),

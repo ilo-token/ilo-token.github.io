@@ -38,16 +38,16 @@ export type PartialCompoundVerb =
     }>
     & VerbObjects
   );
-export function condenseVerb(present: string, past: string): string {
+function condenseVerb(present: string, past: string) {
   const [first, ...rest] = present.split(" ");
   const second = past.split(" ")[0];
   return [condense(first, second), ...rest].join(" ");
 }
-export function addModal(
+function addModal(
   modal: string,
   verb: PartialVerb,
   takeNegative: boolean,
-): PartialVerb {
+) {
   if (verb.modal == null) {
     const newRest = nullableAsArray(verb.first)
       .map((first) => {
@@ -152,7 +152,7 @@ export function partialVerb(
       phraseEmphasis: false,
     }));
 }
-export function everyPartialVerb(
+function everyPartialVerb(
   verb: PartialCompoundVerb,
 ): ReadonlyArray<PartialVerb> {
   switch (verb.type) {
@@ -175,13 +175,13 @@ export function forObject(verb: PartialCompoundVerb): boolean | string {
   }
 }
 // TODO: handle negatives
-export function fromVerbForms(
+function fromVerbForms(
   options: Readonly<{
     verbForms: Dictionary.VerbForms;
     perspective: Dictionary.Perspective;
     quantity: English.Quantity;
   }>,
-): IterableResult<Readonly<{ modal: null | string; verb: string }>> {
+) {
   const { verbForms, perspective, quantity } = options;
   const is = verbForms.presentSingular === "is";
   const presentSingular = is && perspective === "first"

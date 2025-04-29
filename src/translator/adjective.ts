@@ -82,7 +82,7 @@ export function compoundAdjective(
     ]);
   }
 }
-export function rankAdjective(kind: Dictionary.AdjectiveType): number {
+function rankAdjective(kind: Dictionary.AdjectiveType) {
   return [
     "opinion",
     "size",
