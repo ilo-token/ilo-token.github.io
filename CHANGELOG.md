@@ -17,7 +17,7 @@ The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
 
 ilo Token now performs proper verb negation: "mi toki ala" will translate to "I
-do not communicate" instead of the erroneous "I not communicate".
+do not communicate" instead of the grammatically awkward "I not communicate".
 
 ilo Token can now translate to modal verbs: "mi ken" can translate into "I can"
 and "I may". Preverb translation is not yet implemented.
