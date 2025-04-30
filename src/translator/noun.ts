@@ -141,7 +141,7 @@ export function extractNegativeFromNoun(
     case "simple":
       return mapNullable(
         extractNegativeFromMultipleDeterminers(noun.determiners),
-        (determiner) => ({ ...noun, determiner }),
+        (determiners) => ({ ...noun, determiners }),
       );
     case "compound": {
       const nouns = noun.nouns.map(extractNegativeFromNoun);

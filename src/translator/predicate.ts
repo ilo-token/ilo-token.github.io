@@ -23,10 +23,10 @@ function verbObject(verb: PartialCompoundVerb, object: English.NounPhrase) {
   if (useForObject === false) {
     throw new FilteredError("intransitive verb with object");
   } else {
-    const [englishObject, preposition] = useForObject === true
+    const [englishObject, prepositions] = useForObject === true
       ? [object, []]
       : [verb.object, [nounAsPreposition(object, useForObject)]];
-    return { ...verb, object: englishObject, preposition };
+    return { ...verb, object: englishObject, prepositions };
   }
 }
 function applyToAndTurnInto(

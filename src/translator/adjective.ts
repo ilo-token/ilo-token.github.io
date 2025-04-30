@@ -89,7 +89,7 @@ export function extractNegativeFromAdjective(
     case "simple":
       return mapNullable(
         extractNegativeFromMultipleAdverbs(adjective.adverbs),
-        (adverb) => ({ ...adjective, adverb }),
+        (adverbs) => ({ ...adjective, adverbs }),
       );
     case "compound": {
       const adjectives = adjective.adjectives.map(extractNegativeFromAdjective);

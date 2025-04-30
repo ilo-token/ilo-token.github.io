@@ -170,7 +170,7 @@ function verbPhrase(
   if (verb.first != null) {
     return {
       ...verb,
-      first: { ...verb.first, negated, adverb: useAdverbs },
+      first: { ...verb.first, negated, adverbs: useAdverbs },
       emphasis: emphasis,
       prepositions,
     };
