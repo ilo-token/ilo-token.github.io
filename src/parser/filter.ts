@@ -33,12 +33,12 @@ export const NANPA_RULES: ReadonlyArray<(nanpa: Nanpa) => boolean> = [
     type !== "x ala x" ||
     throwError(new UnrecognizedError('"nanpa ala nanpa"')),
 
-  // nanpa construction cannot contain preposition
+  // nanpa construction cannot contain prepositions
   ({ phrase: { type } }) =>
     type !== "preposition" ||
     throwError(new UnrecognizedError("preposition inside nanpa")),
 
-  // nanpa construction cannot contain preverb
+  // nanpa construction cannot contain preverbs
   ({ phrase: { type } }) =>
     type !== "preverb" ||
     throwError(new UnrecognizedError("preverb inside nanpa")),
@@ -59,7 +59,7 @@ export const NANPA_RULES: ReadonlyArray<(nanpa: Nanpa) => boolean> = [
   ({ phrase: { emphasis } }) => emphasis == null,
 ];
 export const MODIFIER_RULES: ReadonlyArray<(modifier: Modifier) => boolean> = [
-  // pi cannot contain preposition
+  // pi cannot contain prepositions
   (modifier) =>
     modifier.type !== "pi" || modifier.phrase.type !== "preposition" ||
     throwError(new UnrecognizedError("preposition inside pi")),

@@ -413,7 +413,7 @@ const compoundAdjectiveDefinition = checkedSequence(
   .map((adjectives) => ({ type: "compound adjective", adjectives }))
   .filterWithPositionedError(({ adjectives }) =>
     adjectives.every((adjective) => adjective.adverbs.length === 0) ||
-    throwError("compound adjective cannot have adverb")
+    throwError("compound adjective cannot have adverbs")
   );
 const verbDefinition = checkedSequence(
   sequence(
