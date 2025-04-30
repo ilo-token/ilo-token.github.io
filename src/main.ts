@@ -24,6 +24,7 @@ import {
   resetDomToDefault,
 } from "./settings_frontend.ts";
 import { translate } from "./translator/translator.ts";
+import { closestString } from "@std/text/closest-string";
 
 const DICTIONARY_AUTO_PARSE_THRESHOLD = 5000;
 const INITIAL_PAGE_SIZE = 100;
@@ -61,8 +62,10 @@ const DICTIONARY_LOADING_FAILED_MESSAGE =
   "syntax has been updated and your custom dictionary still uses the old " +
   "syntax. Please fix it. Apologies for the inconvenience.";
 const NO_WORD_MESSAGE = "Please provide a word";
-const WORD_NOT_FOUND_MESSAGE = "Word not found";
-const WORD_ALREADY_IMPORTED_MESSAGE = "The word is already imported";
+const WORD_NOT_FOUND_MESSAGE = (word: string, suggestion: string) =>
+  `"${word}" doesn't exist in the dictionary. Maybe you mean "${suggestion}".`;
+const WORD_ALREADY_IMPORTED_MESSAGE = (word: string) =>
+  `"${word}" is already imported`;
 const DICTIONARY_ERROR_MESSAGE = "Please fix the errors before saving";
 
 function main() {
@@ -337,13 +340,11 @@ function main() {
   });
   function importWord() {
     const word = importWordTextBox.value.trim();
-    if (word === "") {
-      showMessage(NO_WORD_MESSAGE);
-    } else if (
+    if (
       autoParse() && !currentDictionary.isError() &&
       currentDictionary.unwrap()[0].has(word)
     ) {
-      showMessage(WORD_ALREADY_IMPORTED_MESSAGE);
+      showMessage(WORD_ALREADY_IMPORTED_MESSAGE(word));
     } else {
       const definitions = dictionary.get(word)?.source;
       if (definitions != null) {
@@ -356,8 +357,19 @@ function main() {
           customDictionaryTextBox.scrollHeight,
         );
         updateIfCanAutoParse();
+      } else if (word === "") {
+        showMessage(NO_WORD_MESSAGE);
       } else {
-        showMessage(WORD_NOT_FOUND_MESSAGE);
+        showMessage(
+          WORD_NOT_FOUND_MESSAGE(
+            word,
+            closestString(
+              word,
+              [...dictionary.keys()],
+              { caseSensitive: true },
+            ),
+          ),
+        );
       }
     }
   }
