@@ -13,7 +13,7 @@ import { noEmphasis, word } from "./word.ts";
 export type VerbForms =
   & Dictionary.VerbForms
   & Readonly<{
-    adverb: ReadonlyArray<English.Adverb>;
+    adverbs: ReadonlyArray<English.Adverb>;
     negated: boolean;
     reduplicationCount: number;
     emphasis: boolean;
@@ -21,7 +21,7 @@ export type VerbForms =
 export type VerbObjects = Readonly<{
   object: null | English.NounPhrase;
   objectComplement: null | English.Complement;
-  preposition: ReadonlyArray<English.Preposition>;
+  prepositions: ReadonlyArray<English.Preposition>;
 }>;
 export type PartialVerb =
   & VerbObjects
@@ -40,7 +40,7 @@ export type PartialCompoundVerb =
     & Readonly<{
       type: "compound";
       conjunction: string;
-      verb: ReadonlyArray<PartialCompoundVerb>;
+      verbs: ReadonlyArray<PartialCompoundVerb>;
     }>
     & VerbObjects
   );
@@ -57,14 +57,14 @@ function addModal(
   if (verb.modal == null) {
     const newRest = nullableAsArray(verb.first)
       .map((first) => {
-        const { adverb, presentPlural, negated } = first;
+        const { adverbs, presentPlural, negated } = first;
         const useVerb = presentPlural === "are" ? "be" : presentPlural;
-        const preAdverb = takeNegative ? adverb : [
+        const preAdverbs = takeNegative ? adverbs : [
           ...(negated ? [NOT] : []),
-          ...adverb,
+          ...adverbs,
         ];
         return {
-          preAdverb,
+          preAdverbs,
           verb: word({ ...first, word: useVerb }),
           postAdverb: null,
         };
@@ -75,7 +75,7 @@ function addModal(
     return {
       ...verb,
       modal: {
-        preAdverb: [],
+        preAdverbs: [],
         verb: noEmphasis(modal),
         postAdverb,
       },
@@ -99,7 +99,9 @@ export function addModalToAll(
     case "compound":
       return {
         ...verb,
-        verb: verb.verb.map((verb) => addModalToAll(modal, verb, takeNegative)),
+        verbs: verb.verbs.map((verb) =>
+          addModalToAll(modal, verb, takeNegative)
+        ),
       };
   }
 }
@@ -123,8 +125,8 @@ export function partialVerb(
         return IterableResult.single(null);
       }
     });
-  const preposition = IterableResult.combine(
-    ...definition.indirectObject
+  const prepositions = IterableResult.combine(
+    ...definition.indirectObjects
       .flatMap(({ object, preposition }) =>
         noun({
           definition: object,
@@ -134,13 +136,13 @@ export function partialVerb(
           .map((object) => nounAsPreposition(object, preposition))
       ),
   );
-  return IterableResult.combine(object, preposition)
-    .map(([object, preposition]) => ({
+  return IterableResult.combine(object, prepositions)
+    .map(([object, prepositions]) => ({
       ...definition,
       modal: null,
       first: {
         ...definition,
-        adverb: [],
+        adverbs: [],
         negated: false,
         reduplicationCount,
         emphasis: emphasis,
@@ -149,7 +151,7 @@ export function partialVerb(
       subjectComplement: null,
       object,
       objectComplement: null,
-      preposition,
+      prepositions,
       emphasis: false,
     }));
 }
@@ -160,7 +162,7 @@ function everyPartialVerb(
     case "simple":
       return [verb];
     case "compound":
-      return verb.verb.flatMap(everyPartialVerb);
+      return verb.verbs.flatMap(everyPartialVerb);
   }
 }
 // TODO: error messages
@@ -183,7 +185,7 @@ function fromVerbForms(
   }>,
 ): IterableResult<English.Verb> {
   const { verbForms, perspective, quantity } = options;
-  const { negated, adverb } = verbForms;
+  const { negated, adverbs } = verbForms;
   const is = verbForms.presentSingular === "is";
   const presentSingular = is && perspective === "first"
     ? "am"
@@ -219,7 +221,7 @@ function fromVerbForms(
           result = IterableResult.single({
             modal: null,
             doesNot: {
-              preAdverb: [],
+              preAdverbs: [],
               verb: noEmphasis(`${does} not/did not/will not`),
               postAdverb: null,
             },
@@ -253,7 +255,7 @@ function fromVerbForms(
             { modal: null, verb: past, postAdverb: NOT },
             {
               modal: {
-                preAdverb: [],
+                preAdverbs: [],
                 verb: noEmphasis("will"),
                 postAdverb: NOT,
               },
@@ -267,7 +269,7 @@ function fromVerbForms(
             {
               modal: null,
               doesNot: {
-                preAdverb: [],
+                preAdverbs: [],
                 verb: noEmphasis(does),
                 postAdverb: NOT,
               },
@@ -275,14 +277,14 @@ function fromVerbForms(
             {
               modal: null,
               doesNot: {
-                preAdverb: [],
+                preAdverbs: [],
                 verb: noEmphasis("did"),
                 postAdverb: NOT,
               },
             },
             {
               modal: {
-                preAdverb: [],
+                preAdverbs: [],
                 verb: noEmphasis("will"),
                 postAdverb: NOT,
               },
@@ -322,7 +324,7 @@ function fromVerbForms(
           result = IterableResult.single({
             modal: null,
             doesNot: {
-              preAdverb: [],
+              preAdverbs: [],
               verb: noEmphasis(does),
               postAdverb: NOT,
             },
@@ -342,10 +344,10 @@ function fromVerbForms(
   }
   return result.map(({ modal, doesNot, verb, postAdverb }) => ({
     modal,
-    verb: [
+    verbs: [
       ...nullableAsArray(doesNot),
       {
-        preAdverb: adverb,
+        preAdverbs: adverbs,
         verb: word({ ...verbForms, word: verb }),
         postAdverb,
       },
@@ -371,7 +373,7 @@ export function verb(
             type: "simple",
             verb: {
               modal: verb.modal,
-              verb: [...verb.verb, ...partialVerb.rest],
+              verbs: [...verb.verbs, ...partialVerb.rest],
             },
             contentClause: null,
             hideVerb: false,
@@ -380,7 +382,7 @@ export function verb(
         return IterableResult.single({
           ...partialVerb,
           type: "simple",
-          verb: { modal: partialVerb.modal, verb: partialVerb.rest },
+          verb: { modal: partialVerb.modal, verbs: partialVerb.rest },
           contentClause: null,
           hideVerb: false,
         });
@@ -388,7 +390,7 @@ export function verb(
     }
     case "compound":
       return IterableResult.combine(
-        ...partialVerb.verb.map((partialVerb) =>
+        ...partialVerb.verbs.map((partialVerb) =>
           verb(partialVerb, perspective, quantity)
         ),
       )
@@ -400,5 +402,5 @@ export function verb(
   }
 }
 export function noAdverbs(verb: English.Word): English.AdverbVerb {
-  return { preAdverb: [], verb, postAdverb: null };
+  return { preAdverbs: [], verb, postAdverb: null };
 }

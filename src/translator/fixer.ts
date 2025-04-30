@@ -9,10 +9,10 @@ function fixNounPhrase(noun: English.NounPhrase): English.NounPhrase {
     case "simple":
       return {
         ...noun,
-        determiner: fixMultipleDeterminers(noun.determiner),
-        adjective: fixMultipleAdjectives(noun.adjective),
+        determiners: fixMultipleDeterminers(noun.determiners),
+        adjectives: fixMultipleAdjectives(noun.adjectives),
         postCompound: mapNullable(noun.postCompound, fixNounPhrase),
-        preposition: noun.preposition.map(fixPreposition),
+        prepositions: noun.prepositions.map(fixPreposition),
       };
     case "compound":
       return { ...noun, nouns: noun.nouns.map(fixNounPhrase) };
@@ -24,69 +24,74 @@ function filterKind(
 ) {
   return determiners.filter(({ kind }) => kinds.includes(kind));
 }
-function fixMultipleDeterminers(determiner: ReadonlyArray<English.Determiner>) {
-  const negative = filterKind(determiner, ["negative"]);
-  const first = filterKind(determiner, [
+function fixMultipleDeterminers(
+  determiners: ReadonlyArray<English.Determiner>,
+) {
+  const negatives = filterKind(determiners, ["negative"]);
+  const first = filterKind(determiners, [
     "article",
     "demonstrative",
     "possessive",
   ]);
-  const article = filterKind(determiner, ["article"]);
-  const demonstrative = filterKind(determiner, ["demonstrative"]);
-  const possessive = filterKind(determiner, ["possessive"]);
-  const distributive = filterKind(determiner, ["distributive"]);
-  const interrogative = filterKind(determiner, ["interrogative"]);
-  const quantitative = filterKind(determiner, ["numeral", "quantifier"]);
+  const articles = filterKind(determiners, ["article"]);
+  const demonstratives = filterKind(determiners, ["demonstrative"]);
+  const possessives = filterKind(determiners, ["possessive"]);
+  const distributiveDeterminers = filterKind(determiners, ["distributive"]);
+  const interrogatives = filterKind(determiners, ["interrogative"]);
+  const quantitativeDeterminers = filterKind(determiners, [
+    "numeral",
+    "quantifier",
+  ]);
   const errors = filterSet([
     [
-      negative.length > 1,
-      encodeDeterminer`multiple negative determiners ${negative}`,
+      negatives.length > 1,
+      encodeDeterminer`multiple negative determiners ${negatives}`,
     ],
-    [article.length > 1, encodeDeterminer`multiple articles ${article}`],
+    [articles.length > 1, encodeDeterminer`multiple articles ${articles}`],
     [
-      demonstrative.length > 1,
-      encodeDeterminer`multiple demonstrative determiners ${demonstrative}`,
-    ],
-    [
-      possessive.length > 1,
-      encodeDeterminer`multiple possessive determiners ${possessive}`,
+      demonstratives.length > 1,
+      encodeDeterminer`multiple demonstrative determiners ${demonstratives}`,
     ],
     [
-      distributive.length > 1,
-      encodeDeterminer`multiple distributive determiners ${distributive}`,
+      possessives.length > 1,
+      encodeDeterminer`multiple possessive determiners ${possessives}`,
     ],
     [
-      interrogative.length > 1,
-      encodeDeterminer`multiple interrogative determiners ${interrogative}`,
+      distributiveDeterminers.length > 1,
+      encodeDeterminer`multiple distributive determiners ${distributiveDeterminers}`,
     ],
     [
-      quantitative.length > 1,
-      encodeDeterminer`multiple quantitative determiners ${quantitative}`,
+      interrogatives.length > 1,
+      encodeDeterminer`multiple interrogative determiners ${interrogatives}`,
     ],
     [
-      article.length > 0 && demonstrative.length > 0,
-      encodeDeterminer`article ${article} with demonstrative determiner ${demonstrative}`,
+      quantitativeDeterminers.length > 1,
+      encodeDeterminer`multiple quantitative determiners ${quantitativeDeterminers}`,
     ],
     [
-      article.length > 0 && possessive.length > 0,
-      encodeDeterminer`article ${article} with possessive determiner ${possessive}`,
+      articles.length > 0 && demonstratives.length > 0,
+      encodeDeterminer`article ${articles} with demonstrative determiner ${demonstratives}`,
     ],
     [
-      demonstrative.length > 0 && possessive.length > 0,
-      encodeDeterminer`demonstrative determiner ${demonstrative} with possessive determiner ${possessive}`,
+      articles.length > 0 && possessives.length > 0,
+      encodeDeterminer`article ${articles} with possessive determiner ${possessives}`,
     ],
     [
-      negative.length > 0 && interrogative.length > 0,
-      encodeDeterminer`negative determiner ${negative} with interrogative determiner ${interrogative}`,
+      demonstratives.length > 0 && possessives.length > 0,
+      encodeDeterminer`demonstrative determiner ${demonstratives} with possessive determiner ${possessives}`,
+    ],
+    [
+      negatives.length > 0 && interrogatives.length > 0,
+      encodeDeterminer`negative determiner ${negatives} with interrogative determiner ${interrogatives}`,
     ],
   ]);
   if (errors.length === 0) {
     return [
-      ...negative,
+      ...negatives,
       ...first,
-      ...distributive,
-      ...interrogative,
-      ...quantitative,
+      ...distributiveDeterminers,
+      ...interrogatives,
+      ...quantitativeDeterminers,
     ];
   } else {
     throw new AggregateError(
@@ -99,11 +104,11 @@ function fixAdjectivePhrase(
 ): English.AdjectivePhrase {
   switch (adjective.type) {
     case "simple":
-      return { ...adjective, adverb: fixMultipleAdverbs(adjective.adverb) };
+      return { ...adjective, adverbs: fixMultipleAdverbs(adjective.adverbs) };
     case "compound":
       return {
         ...adjective,
-        adjective: adjective.adjective.map(fixAdjectivePhrase),
+        adjectives: adjective.adjectives.map(fixAdjectivePhrase),
       };
   }
 }
@@ -120,7 +125,7 @@ function rankAdjective(kind: Dictionary.AdjectiveType) {
   ]
     .indexOf(kind);
 }
-function flattenAdjectives(
+function flattenAdjective(
   adjective: English.AdjectivePhrase,
 ): ReadonlyArray<English.AdjectivePhrase & { type: "simple" }> {
   switch (adjective.type) {
@@ -128,7 +133,7 @@ function flattenAdjectives(
       return [adjective];
     case "compound":
       if (adjective.conjunction === "and") {
-        return adjective.adjective.flatMap(flattenAdjectives);
+        return adjective.adjectives.flatMap(flattenAdjective);
       } else {
         // This should be unreachable
         throw new FilteredError(
@@ -138,18 +143,18 @@ function flattenAdjectives(
   }
 }
 function fixMultipleAdjectives(
-  adjective: ReadonlyArray<English.AdjectivePhrase>,
+  adjectives: ReadonlyArray<English.AdjectivePhrase>,
 ) {
-  return adjective
+  return adjectives
     .map(fixAdjectivePhrase)
-    .flatMap(flattenAdjectives)
+    .flatMap(flattenAdjective)
     .sort((a, b) => rankAdjective(a.kind) - rankAdjective(b.kind));
 }
-function fixMultipleAdverbs(adverb: ReadonlyArray<English.Adverb>) {
-  if (adverb.length > 1) {
+function fixMultipleAdverbs(adverbs: ReadonlyArray<English.Adverb>) {
+  if (adverbs.length > 1) {
     throw new FilteredError("multiple adverbs");
   } else {
-    return adverb;
+    return adverbs;
   }
 }
 function fixComplement(complement: English.Complement): English.Complement {
@@ -164,12 +169,15 @@ function fixComplement(complement: English.Complement): English.Complement {
   }
 }
 function fixAdverbVerb(adverbVerb: English.AdverbVerb): English.AdverbVerb {
-  return { ...adverbVerb, preAdverb: fixMultipleAdverbs(adverbVerb.preAdverb) };
+  return {
+    ...adverbVerb,
+    preAdverbs: fixMultipleAdverbs(adverbVerb.preAdverbs),
+  };
 }
 function fixVerb(verb: English.Verb): English.Verb {
   return {
     modal: mapNullable(verb.modal, fixAdverbVerb),
-    verb: verb.verb.map(fixAdverbVerb),
+    verbs: verb.verbs.map(fixAdverbVerb),
   };
 }
 function fixVerbPhrase(verb: English.VerbPhrase): English.VerbPhrase {
@@ -182,7 +190,7 @@ function fixVerbPhrase(verb: English.VerbPhrase): English.VerbPhrase {
         contentClause: mapNullable(verb.contentClause, fixClause),
         object: mapNullable(verb.object, fixNounPhrase),
         objectComplement: mapNullable(verb.objectComplement, fixComplement),
-        preposition: verb.preposition.map(fixPreposition),
+        prepositions: verb.prepositions.map(fixPreposition),
       };
     case "compound":
       return {
@@ -190,7 +198,7 @@ function fixVerbPhrase(verb: English.VerbPhrase): English.VerbPhrase {
         verbs: verb.verbs.map(fixVerbPhrase),
         object: mapNullable(verb.object, fixNounPhrase),
         objectComplement: mapNullable(verb.objectComplement, fixComplement),
-        preposition: verb.preposition.map(fixPreposition),
+        prepositions: verb.prepositions.map(fixPreposition),
       };
   }
 }
@@ -199,7 +207,7 @@ function fixPreposition(
 ): English.Preposition {
   return {
     ...preposition,
-    adverb: fixMultipleAdverbs(preposition.adverb),
+    adverbs: fixMultipleAdverbs(preposition.adverbs),
     object: fixNounPhrase(preposition.object),
   };
 }

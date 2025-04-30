@@ -44,7 +44,7 @@ function applyToAndTurnInto(
           type: "simple",
           modal: null,
           first: {
-            adverb: [],
+            adverbs: [],
             presentPlural: "apply",
             presentSingular: "applies",
             past: "applied",
@@ -56,7 +56,7 @@ function applyToAndTurnInto(
           subjectComplement: null,
           object: predicate,
           objectComplement: null,
-          preposition: [nounAsPreposition(object, "to")],
+          prepositions: [nounAsPreposition(object, "to")],
           forObject: false,
           predicateType: null,
           emphasis: false,
@@ -65,7 +65,7 @@ function applyToAndTurnInto(
           type: "simple",
           modal: null,
           first: {
-            adverb: [],
+            adverbs: [],
             presentPlural: "turn",
             presentSingular: "turns",
             past: "turned",
@@ -77,7 +77,7 @@ function applyToAndTurnInto(
           subjectComplement: null,
           object,
           objectComplement: null,
-          preposition: [nounAsPreposition(predicate, "into")],
+          prepositions: [nounAsPreposition(predicate, "into")],
           forObject: false,
           predicateType: null,
           emphasis: false,
@@ -95,7 +95,7 @@ function make(predicate: AdjectiveWithInWay, object: English.NounPhrase) {
       type: "simple",
       modal: null,
       first: {
-        adverb: [],
+        adverbs: [],
         presentPlural: "make",
         presentSingular: "makes",
         past: "made",
@@ -110,7 +110,7 @@ function make(predicate: AdjectiveWithInWay, object: English.NounPhrase) {
         type: "adjective",
         adjective,
       },
-      preposition: nullableAsArray(predicate.inWayPhrase)
+      prepositions: nullableAsArray(predicate.inWayPhrase)
         .map((phrase) => nounAsPreposition(phrase, "in")),
       forObject: false,
       predicateType: null,
@@ -135,7 +135,7 @@ function predicateVerb(
 function associatedPredicate(
   predicate: PhraseTranslation,
   object: null | PhraseTranslation,
-  preposition: ReadonlyArray<English.Preposition>,
+  prepositions: ReadonlyArray<English.Preposition>,
 ) {
   let verbObject: IterableResult<PartialCompoundVerb>;
   if (object == null) {
@@ -149,7 +149,7 @@ function associatedPredicate(
   }
   return verbObject.map((verbObject) => ({
     ...verbObject,
-    preposition: [...verbObject.preposition, ...preposition],
+    preposition: [...verbObject.prepositions, ...prepositions],
   }));
 }
 export function predicate(
@@ -204,10 +204,10 @@ export function predicate(
         .map((predicates) => ({
           type: "compound",
           conjunction: CONJUNCTION[tokiPonaPredicate.type],
-          verb: predicates,
+          verbs: predicates,
           object: null,
           objectComplement: null,
-          preposition: [],
+          prepositions: [],
         }));
   }
 }

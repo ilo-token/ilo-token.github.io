@@ -32,8 +32,8 @@ export function partialPronoun(
   return {
     ...options,
     ...pronounForms(pronoun, place),
-    determiner: [],
-    adjective: [],
+    determiners: [],
+    adjectives: [],
     perspective: pronoun.perspective,
     postAdjective: null,
   };
@@ -50,14 +50,14 @@ export function pronoun(
   return fromNounForms(pronounForms(definition, place), "both")
     .map(({ noun, quantity }) => ({
       type: "simple",
-      determiner: [],
-      adjective: [],
+      determiners: [],
+      adjectives: [],
       noun: word({ ...options, word: noun }),
       quantity,
       perspective: definition.perspective,
       postCompound: null,
       postAdjective: null,
-      preposition: [],
+      prepositions: [],
       emphasis: false,
     }));
 }

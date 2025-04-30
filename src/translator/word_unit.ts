@@ -63,7 +63,7 @@ function defaultWordUnit(
         case "compound adjective":
           return compoundAdjective({
             ...options,
-            adjectives: definition.adjective,
+            adjectives: definition.adjectives,
           })
             .map((adjective) => ({
               type: "adjective",
@@ -80,7 +80,7 @@ function defaultWordUnit(
           return IterableResult.single({
             type: "verb",
             modal: {
-              preAdverb: [],
+              preAdverbs: [],
               verb: word({
                 word: definition.verb,
                 reduplicationCount,
@@ -93,7 +93,7 @@ function defaultWordUnit(
             subjectComplement: null,
             object: null,
             objectComplement: null,
-            preposition: [],
+            prepositions: [],
             forObject: false,
             predicateType: null,
             emphasis: false,
@@ -116,8 +116,8 @@ export function wordUnit(
       return number(wordUnit.words)
         .map((number) => ({
           type: "noun",
-          determiner: [],
-          adjective: [],
+          determiners: [],
+          adjectives: [],
           singular: `${number}`,
           plural: null,
           reduplicationCount: 1,

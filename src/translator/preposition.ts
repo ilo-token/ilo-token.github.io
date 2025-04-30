@@ -2,7 +2,7 @@ import { throwError } from "../../misc/misc.ts";
 import { IterableResult } from "../compound.ts";
 import { dictionary } from "../dictionary.ts";
 import * as TokiPona from "../parser/ast.ts";
-import { extractNegativeFromAdverbs } from "./adverb.ts";
+import { extractNegativeFromMultipleAdverbs } from "./adverb.ts";
 import * as English from "./ast.ts";
 import { FilteredError, TranslationTodoError } from "./error.ts";
 import { multipleModifiers } from "./modifier.ts";
@@ -18,7 +18,7 @@ export function preposition(
     multipleModifiers(preposition.modifiers)
       .map((modifier) =>
         modifier.type === "adverbial"
-          ? (modifier.inWayPhrase == null ? modifier.adverb : throwError(
+          ? (modifier.inWayPhrase == null ? modifier.adverbs : throwError(
             new FilteredError(
               '"in [adjective] way" prepositional phrase modifying ' +
                 "preposition",
@@ -39,8 +39,8 @@ export function preposition(
           : throwError(new FilteredError(`${phrases.type} as indirect object`))
       ),
   )
-    .map(([preposition, adverb, object]) => ({
-      adverb,
+    .map(([preposition, adverbs, object]) => ({
+      adverbs,
       preposition,
       object,
       emphasis: preposition.emphasis,
@@ -75,7 +75,7 @@ export function nounAsPreposition(
   preposition: string,
 ): English.Preposition {
   return {
-    adverb: [],
+    adverbs: [],
     preposition: noEmphasis(preposition),
     object: phrase,
     emphasis: false,
@@ -84,10 +84,10 @@ export function nounAsPreposition(
 export function extractNegativeFromPreposition(
   preposition: English.Preposition,
 ): null | English.Preposition {
-  const adverb = extractNegativeFromAdverbs(preposition.adverb);
-  if (adverb == null) {
+  const adverbs = extractNegativeFromMultipleAdverbs(preposition.adverbs);
+  if (adverbs == null) {
     return null;
   } else {
-    return { ...preposition, adverb };
+    return { ...preposition, adverbs };
   }
 }

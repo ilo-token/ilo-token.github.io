@@ -10,14 +10,14 @@ export type Quantity = "singular" | "plural" | "condensed";
 export type NounPhrase =
   | Readonly<{
     type: "simple";
-    determiner: ReadonlyArray<Determiner>;
-    adjective: ReadonlyArray<AdjectivePhrase>;
+    determiners: ReadonlyArray<Determiner>;
+    adjectives: ReadonlyArray<AdjectivePhrase>;
     noun: Word;
     quantity: Quantity;
     perspective: Dictionary.Perspective;
     postAdjective: null | Readonly<{ adjective: string; name: string }>;
     postCompound: null | NounPhrase;
-    preposition: ReadonlyArray<Preposition>;
+    prepositions: ReadonlyArray<Preposition>;
     emphasis: boolean;
   }>
   | Readonly<{
@@ -35,14 +35,14 @@ export type AdjectivePhrase =
   | Readonly<{
     type: "simple";
     kind: Dictionary.AdjectiveType;
-    adverb: ReadonlyArray<Adverb>;
+    adverbs: ReadonlyArray<Adverb>;
     adjective: Word;
     emphasis: boolean;
   }>
   | Readonly<{
     type: "compound";
     conjunction: string;
-    adjective: ReadonlyArray<AdjectivePhrase>;
+    adjectives: ReadonlyArray<AdjectivePhrase>;
     emphasis: boolean;
   }>;
 export type Complement =
@@ -53,13 +53,13 @@ export type Adverb = Readonly<{
   negative: boolean;
 }>;
 export type AdverbVerb = {
-  preAdverb: ReadonlyArray<Adverb>;
+  preAdverbs: ReadonlyArray<Adverb>;
   verb: Word;
   postAdverb: null | Adverb;
 };
 export type Verb = Readonly<{
   modal: null | AdverbVerb;
-  verb: ReadonlyArray<AdverbVerb>;
+  verbs: ReadonlyArray<AdverbVerb>;
 }>;
 export type VerbPhrase =
   | Readonly<{
@@ -69,7 +69,7 @@ export type VerbPhrase =
     contentClause: null | Clause;
     object: null | NounPhrase;
     objectComplement: null | Complement;
-    preposition: ReadonlyArray<Preposition>;
+    prepositions: ReadonlyArray<Preposition>;
     hideVerb: boolean;
   }>
   | Readonly<{
@@ -78,7 +78,7 @@ export type VerbPhrase =
     verbs: ReadonlyArray<VerbPhrase>;
     object: null | NounPhrase;
     objectComplement: null | Complement;
-    preposition: ReadonlyArray<Preposition>;
+    prepositions: ReadonlyArray<Preposition>;
   }>;
 export type Clause =
   | Readonly<{
@@ -94,7 +94,7 @@ export type Clause =
   | Readonly<{ type: "adverb"; adverb: Word }>
   | Readonly<{ type: "dependent"; conjunction: Word; clause: Clause }>;
 export type Preposition = Readonly<{
-  adverb: ReadonlyArray<Adverb>;
+  adverbs: ReadonlyArray<Adverb>;
   preposition: Word;
   object: NounPhrase;
   emphasis: boolean;

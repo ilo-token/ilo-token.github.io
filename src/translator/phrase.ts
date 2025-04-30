@@ -6,7 +6,7 @@ import {
   AdjectiveWithInWay,
   extractNegativeFromAdjective,
 } from "./adjective.ts";
-import { extractNegativeFromAdverbs, NOT } from "./adverb.ts";
+import { extractNegativeFromMultipleAdverbs, NOT } from "./adverb.ts";
 import * as English from "./ast.ts";
 import { getNumber } from "./determiner.ts";
 import {
@@ -46,37 +46,37 @@ function nounPhrase(
 ) {
   const { emphasis, partialNoun, modifier } = options;
   return IterableResult.from<English.NounPhrase>(() => {
-    const determiner = [
-      ...[...modifier.determiner].reverse(),
-      ...partialNoun.determiner,
+    const determiners = [
+      ...[...modifier.determiners].reverse(),
+      ...partialNoun.determiners,
     ];
-    const quantity = getNumber(determiner);
-    const adjective = [
-      ...[...modifier.adjective].reverse(),
-      ...partialNoun.adjective,
+    const quantity = getNumber(determiners);
+    const adjectives = [
+      ...[...modifier.adjectives].reverse(),
+      ...partialNoun.adjectives,
     ];
     if (partialNoun.postAdjective != null && modifier.name != null) {
       throw new FilteredError("double name");
     }
     const postAdjective = partialNoun.postAdjective ??
       mapNullable(modifier.name, (name) => ({ adjective: "named", name }));
-    const preposition = [
+    const prepositions = [
       ...nullableAsArray(modifier.inPositionPhrase)
         .map((object) => nounAsPreposition(object, "in")),
       ...nullableAsArray(modifier.ofPhrase)
         .map((object) => nounAsPreposition(object, "of")),
     ];
-    if (preposition.length > 1) {
+    if (prepositions.length > 1) {
       throw new FilteredError("multiple preposition within noun phrase");
     }
-    if (preposition.length > 0 && postAdjective != null) {
+    if (prepositions.length > 0 && postAdjective != null) {
       throw new FilteredError("named noun with preposition");
     }
     const headNoun = fromNounForms(partialNoun, quantity)
       .map(({ noun, quantity }) => ({
         type: "simple",
-        determiner,
-        adjective,
+        determiners,
+        adjectives,
         noun: word({
           word: noun,
           reduplicationCount: partialNoun.reduplicationCount,
@@ -86,7 +86,7 @@ function nounPhrase(
         perspective: partialNoun.perspective,
         postCompound: null,
         postAdjective,
-        preposition,
+        prepositions,
         emphasis: emphasis &&
           modifier.nounPreposition == null,
       }));
@@ -121,21 +121,21 @@ function adjectivePhrase(
   const { emphasis, adjective, modifier } = options;
   switch (adjective.type) {
     case "simple": {
-      const adverb = [
-        ...[...modifier.adverb].reverse(),
-        ...adjective.adverb,
+      const adverbs = [
+        ...[...modifier.adverbs].reverse(),
+        ...adjective.adverbs,
       ];
       return {
         adjective: {
           ...adjective,
-          adverb,
+          adverbs,
           emphasis,
         },
         inWayPhrase: modifier.inWayPhrase,
       };
     }
     case "compound":
-      if (modifier.adverb.length === 0) {
+      if (modifier.adverbs.length === 0) {
         return {
           adjective: { ...adjective, emphasis: adjective.emphasis || emphasis },
           inWayPhrase: modifier.inWayPhrase,
@@ -153,36 +153,38 @@ function verbPhrase(
   }>,
 ) {
   const { emphasis, verb, modifier } = options;
-  const preposition = [
-    ...verb.preposition,
+  const prepositions = [
+    ...verb.prepositions,
     ...nullableAsArray(modifier.inWayPhrase)
       .map((object) => nounAsPreposition(object, "in")),
   ];
-  const adverb = [...modifier.adverb].reverse();
-  const extracted = extractNegativeFromAdverbs(adverb);
-  if (extracted != null && extractNegativeFromAdverbs(extracted) != null) {
+  const adverbs = [...modifier.adverbs].reverse();
+  const extracted = extractNegativeFromMultipleAdverbs(adverbs);
+  if (
+    extracted != null && extractNegativeFromMultipleAdverbs(extracted) != null
+  ) {
     throw new FilteredError("double negative");
   }
   const negated = extracted != null;
-  const useAdverb = extracted ?? adverb;
+  const useAdverbs = extracted ?? adverbs;
   if (verb.first != null) {
     return {
       ...verb,
-      first: { ...verb.first, negated, adverb: useAdverb },
+      first: { ...verb.first, negated, adverb: useAdverbs },
       emphasis: emphasis,
-      preposition,
+      prepositions,
     };
   } else if (verb.modal != null) {
     const postAdverb = negated ? NOT : null;
     return {
       ...verb,
       modal: {
-        preAdverb: useAdverb,
+        preAdverbs: useAdverbs,
         verb: verb.modal.verb,
         postAdverb,
       },
       emphasis: emphasis,
-      preposition,
+      prepositions,
     };
   } else {
     // This should be unreachable
@@ -243,7 +245,7 @@ function prepositionAsVerb(preposition: English.Preposition) {
   return {
     modal: null,
     first: {
-      adverb: [],
+      adverbs: [],
       presentPlural: "are",
       presentSingular: "is",
       past: "were",
@@ -255,7 +257,7 @@ function prepositionAsVerb(preposition: English.Preposition) {
     subjectComplement: null,
     object: null,
     objectComplement: null,
-    preposition: [extracted ?? preposition],
+    prepositions: [extracted ?? preposition],
     forObject: false,
     predicateType: null,
     emphasis: false,
@@ -292,9 +294,9 @@ export function phrase(
 }
 function compoundNoun(
   conjunction: "and" | "or",
-  phrase: ReadonlyArray<English.NounPhrase>,
+  phrases: ReadonlyArray<English.NounPhrase>,
 ) {
-  const nouns = phrase
+  const nouns = phrases
     .flatMap((noun) => {
       if (
         noun.type === "compound" &&
@@ -323,18 +325,18 @@ function compoundNoun(
 }
 function compoundAdjective(
   conjunction: "and" | "or",
-  phrase: ReadonlyArray<English.AdjectivePhrase>,
+  phrases: ReadonlyArray<English.AdjectivePhrase>,
 ) {
   return {
     type: "compound",
     conjunction,
-    adjective: phrase
+    adjectives: phrases
       .flatMap((adjective) => {
         if (
           adjective.type === "compound" &&
           adjective.conjunction === conjunction
         ) {
-          return adjective.adjective;
+          return adjective.adjectives;
         } else {
           return [adjective];
         }
@@ -374,7 +376,7 @@ export function phraseAsVerb(
         type: "simple",
         modal: null,
         first: {
-          adverb: [],
+          adverbs: [],
           presentPlural: "are",
           presentSingular: "is",
           past: "were",
@@ -386,7 +388,7 @@ export function phraseAsVerb(
         subjectComplement,
         object: null,
         objectComplement: null,
-        preposition: [],
+        prepositions: [],
         forObject: false,
         predicateType: null,
         emphasis: false,
@@ -453,10 +455,10 @@ export function multiplePhrases(
               verb: {
                 type: "compound",
                 conjunction,
-                verb: phrase.map(phraseAsVerb),
+                verbs: phrase.map(phraseAsVerb),
                 object: null,
                 objectComplement: null,
-                preposition: [],
+                prepositions: [],
               },
             };
           } else {

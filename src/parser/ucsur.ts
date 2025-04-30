@@ -34,7 +34,7 @@ export const SPECIAL_UCSUR_DESCRIPTIONS = {
 
 export type SpecialUcsur = keyof typeof SPECIAL_UCSUR_DESCRIPTIONS;
 
-export const PU = [
+export const PU_WORDS = [
   "a",
   "akesi",
   "ala",
@@ -156,7 +156,7 @@ export const PU = [
   "weka",
   "wile",
 ];
-export const KU_SULI = [
+export const KU_SULI_WORDS = [
   "namako",
   "kin",
   "oko",
@@ -175,7 +175,7 @@ export const KU_SULI = [
   "misikeke",
   "ku",
 ];
-export const KU_LILI = [
+export const KU_LILI_WORDS = [
   "pake",
   "apeja",
   "majuna",
@@ -183,8 +183,8 @@ export const KU_LILI = [
 ];
 export const UCSUR_TO_LATIN = new Map(
   [
-    { start: 0xF1900, words: [...PU, ...KU_SULI] },
-    { start: 0xF19A0, words: KU_LILI },
+    { start: 0xF1900, words: [...PU_WORDS, ...KU_SULI_WORDS] },
+    { start: 0xF19A0, words: KU_LILI_WORDS },
   ]
     .flatMap(({ start, words }) =>
       words.map((latin, i) => [String.fromCodePoint(start + i), latin] as const)

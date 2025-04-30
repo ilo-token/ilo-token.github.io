@@ -22,14 +22,14 @@ export function nanpa(
           ),
         )
         : (phrase.noun as English.NounPhrase & { type: "simple" })
-            .preposition.length > 0
+            .prepositions.length > 0
         ? throwError(
           new FilteredError('preposition within "position X" phrase'),
         )
         : {
           type: "simple",
-          determiner: [],
-          adjective: [],
+          determiners: [],
+          adjectives: [],
           noun: {
             word: "position",
             emphasis: nanpa.nanpa.emphasis != null,
@@ -38,7 +38,7 @@ export function nanpa(
           perspective: "third",
           postCompound: phrase.noun,
           postAdjective: null,
-          preposition: [],
+          prepositions: [],
           emphasis: false,
         }
     );

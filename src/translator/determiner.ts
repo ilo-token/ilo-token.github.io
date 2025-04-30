@@ -55,14 +55,14 @@ export function determiner(
       determiner: word({ ...options, word: determiner }),
     }));
 }
-export function extractNegativeFromDeterminers(
-  determiner: ReadonlyArray<English.Determiner>,
+export function extractNegativeFromMultipleDeterminers(
+  determiners: ReadonlyArray<English.Determiner>,
 ): null | ReadonlyArray<English.Determiner> {
-  const index = determiner.findIndex(({ kind }) => kind === "negative");
+  const index = determiners.findIndex(({ kind }) => kind === "negative");
   if (index === -1) {
     return null;
   } else {
-    const spliced = [...determiner];
+    const spliced = [...determiners];
     spliced.splice(index, 1);
     return spliced;
   }

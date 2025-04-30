@@ -5,8 +5,8 @@ export type NounForms = Readonly<{
 export type Noun =
   & NounForms
   & Readonly<{
-    determiner: ReadonlyArray<Determiner>;
-    adjective: ReadonlyArray<Adjective>;
+    determiners: ReadonlyArray<Determiner>;
+    adjectives: ReadonlyArray<Adjective>;
     gerund: boolean;
     postAdjective:
       | null
@@ -51,7 +51,7 @@ export type Adverb = Readonly<{
   negative: boolean;
 }>;
 export type Adjective = Readonly<{
-  adverb: ReadonlyArray<Adverb>;
+  adverbs: ReadonlyArray<Adverb>;
   adjective: string;
   kind: AdjectiveType;
   gerundLike: boolean;
@@ -63,7 +63,7 @@ export type VerbForms = Readonly<{
 }>;
 export type PartialVerb = Readonly<{
   directObject: null | Noun;
-  indirectObject: ReadonlyArray<
+  indirectObjects: ReadonlyArray<
     Readonly<{
       preposition: string;
       object: Noun;
@@ -88,7 +88,7 @@ export type Definition =
   | (Readonly<{ type: "adjective" }> & Adjective)
   | Readonly<{
     type: "compound adjective";
-    adjective: ReadonlyArray<Adjective>;
+    adjectives: ReadonlyArray<Adjective>;
   }>
   | (Readonly<{ type: "adverb" }> & Adverb)
   | (Readonly<{ type: "verb" }> & Verb)

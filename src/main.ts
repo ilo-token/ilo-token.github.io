@@ -18,10 +18,10 @@ import { checkLocalStorage, setIgnoreError } from "./local_storage.ts";
 import { PositionedError } from "./parser/parser_lib.ts";
 import { settings } from "./settings.ts";
 import {
-  loadFromElements,
+  loadFromDom,
   loadFromLocalStorage,
-  resetElementsToCurrent,
-  resetElementsToDefault,
+  resetDomToCurrent,
+  resetDomToDefault,
 } from "./settings_frontend.ts";
 import { translate } from "./translator/translator.ts";
 
@@ -312,15 +312,15 @@ function main() {
     settingsDialogBox.showModal();
   });
   confirmButton.addEventListener("click", () => {
-    loadFromElements();
+    loadFromDom();
     updateLabel();
     settingsDialogBox.close();
   });
   cancelButton.addEventListener("click", () => {
-    resetElementsToCurrent();
+    resetDomToCurrent();
     settingsDialogBox.close();
   });
-  resetButton.addEventListener("click", resetElementsToDefault);
+  resetButton.addEventListener("click", resetDomToDefault);
   customDictionaryButton.addEventListener("click", () => {
     customDictionaryDialogBox.showModal();
     if (checkLocalStorage()) {

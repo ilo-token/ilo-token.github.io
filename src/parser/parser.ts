@@ -28,16 +28,16 @@ import {
 } from "./ast.ts";
 import { everyWordUnitInSentence } from "./extract.ts";
 import {
-  CLAUSE_RULE,
-  CONTEXT_CLAUSE_RULE,
+  CLAUSE_RULES,
+  CONTEXT_CLAUSE_RULES,
   filter,
   MODIFIER_RULES,
   MULTIPLE_MODIFIERS_RULES,
-  MULTIPLE_SENTENCES_RULE,
+  MULTIPLE_SENTENCES_RULES,
   NANPA_RULES,
-  PHRASE_RULE,
-  PREPOSITION_RULE,
-  SENTENCE_RULE,
+  PHRASE_RULES,
+  PREPOSITION_RULES,
+  SENTENCE_RULES,
   WORD_UNIT_RULES,
 } from "./filter.ts";
 import { token } from "./lexer.ts";
@@ -258,7 +258,7 @@ const phrase: Parser<Phrase> = lazy(lazyEval(() =>
         emphasis,
       })),
   )
-    .filter(filter(PHRASE_RULE))
+    .filter(filter(PHRASE_RULES))
 ));
 const nanpa = sequence(wordUnit(new Set(["nanpa"]), '"nanpa"'), phrase)
   .map(([nanpa, phrase]) => ({ nanpa, phrase }))
@@ -449,7 +449,7 @@ const preposition = choice(
       emphasis,
     })),
 )
-  .filter(filter(PREPOSITION_RULE));
+  .filter(filter(PREPOSITION_RULES));
 
 function associatedPredicates(nestingRule: ReadonlyArray<"li" | "o" | "anu">) {
   return sequence(
@@ -573,7 +573,7 @@ const clause = choice<Clause>(
       predicates,
     })),
 )
-  .filter(filter(CLAUSE_RULE));
+  .filter(filter(CLAUSE_RULES));
 const contextClause = choice<ContextClause>(
   wordUnit(new Set(["anu"]), '"anu"').map((anu) => ({ type: "anu", anu })),
   nanpa.map((nanpa) => ({ ...nanpa, type: "nanpa" })),
@@ -589,7 +589,7 @@ const contextClause = choice<ContextClause>(
     })),
   clause,
 )
-  .filter(filter(CONTEXT_CLAUSE_RULE));
+  .filter(filter(CONTEXT_CLAUSE_RULES));
 const la = choice(
   comma.with(specificWord("la")),
   specificWord("la").skip(comma),
@@ -688,7 +688,7 @@ const sentence = choice<Sentence>(
       interrogative: null,
     })),
 )
-  .filter(filter(SENTENCE_RULE));
+  .filter(filter(SENTENCE_RULES));
 export const parser: Parser<MultipleSentences> = spaces
   .with(
     lookAhead(allRest.filter((source) =>
@@ -702,6 +702,6 @@ export const parser: Parser<MultipleSentences> = spaces
       .map((word) => ({ type: "single word", word })),
     manyAtLeastOnce(sentence)
       .skip(end)
-      .filter(filter(MULTIPLE_SENTENCES_RULE))
+      .filter(filter(MULTIPLE_SENTENCES_RULES))
       .map((sentences) => ({ type: "sentences", sentences })),
   ));

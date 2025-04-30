@@ -7,7 +7,7 @@ import { assertThrows } from "@std/assert/throws";
 import { EXAMPLE_SENTENCES, MALFORMED_SENTENCES } from "../examples.ts";
 import { parser } from "./parser.ts";
 import { all, end, many, match, matchString, sequence } from "./parser_lib.ts";
-import { KU_LILI, KU_SULI, PU } from "./ucsur.ts";
+import { KU_LILI_WORDS, KU_SULI_WORDS, PU_WORDS } from "./ucsur.ts";
 
 Deno.test("AST all distinct", () => {
   for (const sentence of EXAMPLE_SENTENCES) {
@@ -23,20 +23,20 @@ Deno.test("parser all error", () => {
   }
 });
 Deno.test("ucsur have proper length", () => {
-  assertEquals(PU.length, 120);
-  assertEquals(KU_SULI.length, 17);
-  assertEquals(KU_LILI.length, 4);
+  assertEquals(PU_WORDS.length, 120);
+  assertEquals(KU_SULI_WORDS.length, 17);
+  assertEquals(KU_LILI_WORDS.length, 4);
 });
 Deno.test("ucsur ordered", () => {
-  for (const [i, word] of PU.entries()) {
-    if (i < PU.length - 1) {
-      const other = PU[i + 1];
-      assertLess(word, PU[i + 1], `error between ${word} and ${other}`);
+  for (const [i, word] of PU_WORDS.entries()) {
+    if (i < PU_WORDS.length - 1) {
+      const other = PU_WORDS[i + 1];
+      assertLess(word, PU_WORDS[i + 1], `error between ${word} and ${other}`);
     }
   }
 });
 Deno.test("no ali", () => {
-  for (const word of PU) {
+  for (const word of PU_WORDS) {
     assertNotEquals(word, "ali");
   }
 });

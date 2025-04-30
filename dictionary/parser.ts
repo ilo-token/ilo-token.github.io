@@ -232,8 +232,8 @@ const adjective = checkedSequence(
     optionalAll(keyword("gerund-like")).skip(closeParenthesis),
   ),
 )
-  .map(([[adverb, adjective], [kind, gerundLike]]) => ({
-    adverb,
+  .map(([[adverbs, adjective], [kind, gerundLike]]) => ({
+    adverbs,
     adjective,
     kind,
     gerundLike: gerundLike != null,
@@ -250,10 +250,10 @@ const noun = sequence(
       .map(([adjective, name]) => ({ adjective, name })),
   ),
 )
-  .map(([determiner, adjective, noun, postAdjective]) => ({
+  .map(([determiners, adjectives, noun, postAdjective]) => ({
     ...noun,
-    determiner,
-    adjective,
+    determiners,
+    adjectives,
     postAdjective,
   }));
 const checkedNoun = new CheckedParser(
@@ -410,9 +410,9 @@ const compoundAdjectiveDefinition = checkedSequence(
     .skip(keyword("c")),
   closeParenthesis.with(adjective.parser),
 )
-  .map((adjective) => ({ type: "compound adjective", adjective }))
-  .filterWithPositionedError(({ adjective }) =>
-    adjective.every((adjective) => adjective.adverb.length === 0) ||
+  .map((adjectives) => ({ type: "compound adjective", adjectives }))
+  .filterWithPositionedError(({ adjectives }) =>
+    adjectives.every((adjective) => adjective.adverbs.length === 0) ||
     throwError("compound adjective cannot have adverb")
   );
 const verbDefinition = checkedSequence(
@@ -434,9 +434,9 @@ const verbDefinition = checkedSequence(
         ))
         .map(nullableAsArray),
     )
-      .map(([_, indirectObject]) => ({
+      .map(([_, indirectObjects]) => ({
         directObject: null,
-        indirectObject,
+        indirectObjects,
         forObject: true,
         predicateType: null,
       })),
@@ -446,7 +446,7 @@ const verbDefinition = checkedSequence(
     )
       .map(() => ({
         directObject: null,
-        indirectObject: [],
+        indirectObjects: [],
         forObject: false,
         predicateType: "verb",
       })),
@@ -461,7 +461,7 @@ const verbDefinition = checkedSequence(
     )
       .map(() => ({
         directObject: null,
-        indirectObject: [],
+        indirectObjects: [],
         forObject: false,
         predicateType: "noun adjective",
       })),
@@ -488,7 +488,7 @@ const verbDefinition = checkedSequence(
         if (rawIndirectObject == null) {
           return {
             directObject,
-            indirectObject: [],
+            indirectObjects: [],
             forObject: false,
             predicateType: null,
           };
@@ -497,14 +497,14 @@ const verbDefinition = checkedSequence(
           if (indirectObject === "template") {
             return {
               directObject,
-              indirectObject: [],
+              indirectObjects: [],
               forObject: preposition,
               predicateType: null,
             };
           } else {
             return {
               directObject,
-              indirectObject: [{
+              indirectObjects: [{
                 preposition,
                 object: indirectObject,
               }],

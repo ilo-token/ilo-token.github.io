@@ -4,15 +4,18 @@ import { IterableResult } from "../compound.ts";
 import { settings } from "../settings.ts";
 import { adjective } from "./adjective.ts";
 import * as English from "./ast.ts";
-import { determiner, extractNegativeFromDeterminers } from "./determiner.ts";
+import {
+  determiner,
+  extractNegativeFromMultipleDeterminers,
+} from "./determiner.ts";
 import { condense } from "./misc.ts";
 import { word } from "./word.ts";
 
 export type PartialNoun =
   & Dictionary.NounForms
   & Readonly<{
-    determiner: ReadonlyArray<English.Determiner>;
-    adjective: ReadonlyArray<English.AdjectivePhrase>;
+    determiners: ReadonlyArray<English.Determiner>;
+    adjectives: ReadonlyArray<English.AdjectivePhrase>;
     reduplicationCount: number;
     emphasis: boolean;
     perspective: Dictionary.Perspective;
@@ -27,23 +30,23 @@ export function partialNoun(
 ): IterableResult<PartialNoun> {
   const { definition } = options;
   const engDeterminer = IterableResult.combine(
-    ...definition.determiner
+    ...definition.determiners
       .map((definition) =>
         determiner({ definition, reduplicationCount: 1, emphasis: false })
       ),
   );
   const engAdjective = IterableResult.combine(
-    ...definition.adjective
+    ...definition.adjectives
       .map((definition) =>
         adjective({ definition, reduplicationCount: 1, emphasis: null })
       ),
   );
   return IterableResult.combine(engDeterminer, engAdjective)
-    .map(([determiner, adjective]) => ({
+    .map(([determiners, adjectives]) => ({
       ...options,
       ...definition,
-      determiner,
-      adjective,
+      determiners,
+      adjectives,
       perspective: "third",
     }));
 }
@@ -119,7 +122,7 @@ export function noun(
       noun: word({ ...options, word: noun }),
       postCompound: null,
       quantity,
-      preposition: [],
+      prepositions: [],
       emphasis: false,
     }));
 }
@@ -137,7 +140,7 @@ export function extractNegativeFromNoun(
   switch (noun.type) {
     case "simple":
       return mapNullable(
-        extractNegativeFromDeterminers(noun.determiner),
+        extractNegativeFromMultipleDeterminers(noun.determiners),
         (determiner) => ({ ...noun, determiner }),
       );
     case "compound": {

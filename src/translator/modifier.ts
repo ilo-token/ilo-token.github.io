@@ -30,14 +30,14 @@ export type AdjectivalModifier = Readonly<{
   nounPreposition:
     | null
     | Readonly<{ noun: English.NounPhrase; preposition: string }>;
-  determiner: ReadonlyArray<English.Determiner>;
-  adjective: ReadonlyArray<English.AdjectivePhrase>;
+  determiners: ReadonlyArray<English.Determiner>;
+  adjectives: ReadonlyArray<English.AdjectivePhrase>;
   name: null | string;
   ofPhrase: null | English.NounPhrase;
   inPositionPhrase: null | English.NounPhrase;
 }>;
 export type AdverbialModifier = Readonly<{
-  adverb: ReadonlyArray<English.Adverb>;
+  adverbs: ReadonlyArray<English.Adverb>;
   inWayPhrase: null | English.NounPhrase;
 }>;
 export type MultipleModifierTranslation =
@@ -119,7 +119,7 @@ function defaultModifier(wordUnit: TokiPona.WordUnit) {
                 }));
             case "compound adjective":
               return compoundAdjective({
-                adjectives: definition.adjective,
+                adjectives: definition.adjectives,
                 reduplicationCount,
                 emphasis: wordUnit.emphasis,
               })
@@ -155,7 +155,7 @@ function pi(insidePhrase: TokiPona.Phrase) {
   })
     .filter((modifier) =>
       modifier.type !== "noun" || modifier.noun.type !== "simple" ||
-      modifier.noun.preposition.length === 0
+      modifier.noun.prepositions.length === 0
     )
     .filter((modifier) =>
       modifier.type !== "adjective" || modifier.inWayPhrase == null
@@ -179,80 +179,80 @@ export function multipleModifiers(
 ): IterableResult<MultipleModifierTranslation> {
   return IterableResult.combine(...modifiers.map(modifier))
     .flatMap((modifiers) => {
-      const noun = modifiers
+      const nouns = modifiers
         .flatMap((modifier) => modifier.type === "noun" ? [modifier.noun] : []);
 
-      const nounPreposition = modifiers
+      const nounPrepositions = modifiers
         .filter(({ type }) => type === "noun preposition") as ReadonlyArray<
           ModifierTranslation & { type: "noun preposition" }
         >;
 
-      const determiner = modifiers.flatMap((modifier) =>
+      const determiners = modifiers.flatMap((modifier) =>
         modifier.type === "determiner" ? [modifier.determiner] : []
       );
 
-      const adjective = modifiers.flatMap((modifier) =>
+      const adjectives = modifiers.flatMap((modifier) =>
         modifier.type === "adjective" ? [modifier.adjective] : []
       );
 
-      const adverb = modifiers.flatMap((modifier) =>
+      const adverbs = modifiers.flatMap((modifier) =>
         modifier.type === "adverb" ? [modifier.adverb] : []
       );
 
-      const name = modifiers
+      const names = modifiers
         .flatMap((modifier) => modifier.type === "name" ? [modifier.name] : []);
 
-      const inPositionPhrase = modifiers.flatMap((modifier) =>
+      const inPositionPhrases = modifiers.flatMap((modifier) =>
         modifier.type === "position phrase" ? [modifier.noun] : []
       );
 
       let adjectival: IterableResult<MultipleModifierTranslation>;
       if (
-        noun.length <= 1 &&
-        nounPreposition.length <= 1 &&
-        adverb.length === 0 &&
-        name.length <= 1 &&
-        inPositionPhrase.length <= 1 &&
-        (noun.length === 0 || inPositionPhrase.length === 0)
+        nouns.length <= 1 &&
+        nounPrepositions.length <= 1 &&
+        adverbs.length === 0 &&
+        names.length <= 1 &&
+        inPositionPhrases.length <= 1 &&
+        (nouns.length === 0 || inPositionPhrases.length === 0)
       ) {
         adjectival = IterableResult.single({
           type: "adjectival",
-          nounPreposition: nounPreposition[0] ?? null,
-          determiner,
-          adjective,
-          name: name[0] ?? null,
-          ofPhrase: noun[0] ?? null,
-          inPositionPhrase: inPositionPhrase[0] ?? null,
+          nounPreposition: nounPrepositions[0] ?? null,
+          determiners,
+          adjectives,
+          name: names[0] ?? null,
+          ofPhrase: nouns[0] ?? null,
+          inPositionPhrase: inPositionPhrases[0] ?? null,
         });
       } else {
         adjectival = IterableResult.empty();
       }
       let adverbial: IterableResult<MultipleModifierTranslation>;
       if (
-        noun.length === 0 &&
-        nounPreposition.length === 0 &&
-        determiner.length === 0 &&
-        adjective.length <= 1 &&
-        name.length === 0 &&
-        inPositionPhrase.length === 0
+        nouns.length === 0 &&
+        nounPrepositions.length === 0 &&
+        determiners.length === 0 &&
+        adjectives.length <= 1 &&
+        names.length === 0 &&
+        inPositionPhrases.length === 0
       ) {
-        const inWayPhrase = adjective.length > 0
+        const inWayPhrase = adjectives.length > 0
           ? {
             type: "simple",
-            determiner: [],
-            adjective,
+            determiners: [],
+            adjectives,
             noun: noEmphasis("way"),
             quantity: "singular",
             perspective: "third",
             postAdjective: null,
             postCompound: null,
-            preposition: [],
+            prepositions: [],
             emphasis: false,
           } as const
           : null;
         adverbial = IterableResult.single({
           type: "adverbial",
-          adverb,
+          adverbs,
           inWayPhrase,
         });
       } else {

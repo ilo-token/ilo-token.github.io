@@ -32,8 +32,8 @@ function phraseClause(phrases: TokiPona.MultiplePhrases) {
             type: "simple",
             subject: {
               type: "simple",
-              determiner: [],
-              adjective: [],
+              determiners: [],
+              adjectives: [],
               noun: {
                 word: "it",
                 emphasis: false,
@@ -42,14 +42,14 @@ function phraseClause(phrases: TokiPona.MultiplePhrases) {
               perspective: "third",
               postAdjective: null,
               postCompound: null,
-              preposition: [],
+              prepositions: [],
               emphasis: false,
             },
             verb: {
               type: "simple",
               verb: {
                 modal: null,
-                verb: [noAdverbs(noEmphasis("is"))],
+                verbs: [noAdverbs(noEmphasis("is"))],
               },
               subjectComplement: {
                 type: "adjective",
@@ -58,11 +58,11 @@ function phraseClause(phrases: TokiPona.MultiplePhrases) {
               contentClause: null,
               object: null,
               objectComplement: null,
-              preposition: nullableAsArray(phrase.inWayPhrase)
+              prepositions: nullableAsArray(phrase.inWayPhrase)
                 .map((object) => nounAsPreposition(object, "in")),
               hideVerb: true,
             },
-            preposition: [],
+            prepositions: [],
             hideSubject: true,
           };
         case "verb":
@@ -95,21 +95,21 @@ function iWish(subject: English.NounPhrase, verb: English.VerbPhrase) {
     type: "simple",
     subject: {
       type: "simple",
-      determiner: [],
-      adjective: [],
+      determiners: [],
+      adjectives: [],
       noun: noEmphasis("I"),
       quantity: "singular",
       perspective: "first",
       postAdjective: null,
       postCompound: null,
-      preposition: [],
+      prepositions: [],
       emphasis: false,
     },
     verb: {
       type: "simple",
       verb: {
         modal: null,
-        verb: [noAdverbs(noEmphasis("wish"))],
+        verbs: [noAdverbs(noEmphasis("wish"))],
       },
       subjectComplement: null,
       contentClause: {
@@ -120,7 +120,7 @@ function iWish(subject: English.NounPhrase, verb: English.VerbPhrase) {
       },
       object: null,
       objectComplement: null,
-      preposition: [],
+      prepositions: [],
       hideVerb: false,
     },
     hideSubject: false,
@@ -136,14 +136,14 @@ function oClause(clause: TokiPona.Clause & { type: "o clause" }) {
     })
     : IterableResult.single({
       type: "simple",
-      determiner: [],
-      adjective: [],
+      determiners: [],
+      adjectives: [],
       noun: noEmphasis("you"),
       quantity: "plural",
       perspective: "second",
       postAdjective: null,
       postCompound: null,
-      preposition: [],
+      prepositions: [],
       emphasis: false,
     });
   return IterableResult.combine(subject, predicate(clause.predicates, "o"))
@@ -214,7 +214,7 @@ export function contextClause(
       return nanpa(contextClause)
         .map((object) => [{
           type: "preposition",
-          adverb: [],
+          adverbs: [],
           preposition: noEmphasis("at"),
           object,
           emphasis: false,

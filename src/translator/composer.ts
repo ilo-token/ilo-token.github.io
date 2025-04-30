@@ -15,14 +15,14 @@ export function noun(phrases: English.NounPhrase, depth: number): string {
   switch (phrases.type) {
     case "simple": {
       const text = [
-        ...phrases.determiner.map(({ determiner }) => word(determiner)),
-        ...phrases.adjective.map(adjective),
+        ...phrases.determiners.map(({ determiner }) => word(determiner)),
+        ...phrases.adjectives.map(adjective),
         word(phrases.noun),
         ...nullableAsArray(phrases.postAdjective)
           .map(({ adjective, name }) => `${adjective} ${name}`),
         ...nullableAsArray(phrases.postCompound)
           .map((phrase) => noun(phrase, 0)),
-        ...phrases.preposition.map(preposition),
+        ...phrases.prepositions.map(preposition),
       ]
         .join(" ");
       return word({ word: text, emphasis: phrases.emphasis });
@@ -43,14 +43,14 @@ export function adjective(
   switch (phrases.type) {
     case "simple":
       text = [
-        ...phrases.adverb.map(({ adverb }) => word(adverb)),
+        ...phrases.adverbs.map(({ adverb }) => word(adverb)),
         word(phrases.adjective),
       ]
         .join(" ");
       break;
     case "compound":
       text = compound(
-        phrases.adjective.map((phrase) => adjective(phrase, depth + 1)),
+        phrases.adjectives.map((phrase) => adjective(phrase, depth + 1)),
         phrases.conjunction,
         depth !== 0,
       );
@@ -72,7 +72,7 @@ function complement(complement: English.Complement) {
   }
 }
 function adverbVerb(verbAdverb: English.AdverbVerb) {
-  const { preAdverb, verb, postAdverb } = verbAdverb;
+  const { preAdverbs, verb, postAdverb } = verbAdverb;
   const verbPost = verb.word === "can" && postAdverb != null &&
       postAdverb.adverb.word === "not"
     ? `${word(verb)}${word(postAdverb.adverb)}`
@@ -80,7 +80,7 @@ function adverbVerb(verbAdverb: English.AdverbVerb) {
       .map(word)
       .join(" ");
   return [
-    ...preAdverb.map(({ adverb }) => word(adverb)),
+    ...preAdverbs.map(({ adverb }) => word(adverb)),
     verbPost,
   ]
     .join(" ");
@@ -89,11 +89,11 @@ export function verb(phrase: English.VerbPhrase, depth: number): string {
   let text: string;
   switch (phrase.type) {
     case "simple": {
-      const { verb: { modal, verb } } = phrase;
+      const { verb: { modal, verbs } } = phrase;
       const verbText = !phrase.hideVerb
         ? [
           ...nullableAsArray(modal),
-          ...verb,
+          ...verbs,
         ]
           .map(adverbVerb)
         : [];
@@ -116,7 +116,7 @@ export function verb(phrase: English.VerbPhrase, depth: number): string {
     text,
     ...nullableAsArray(phrase.object).map(noun, 0),
     ...nullableAsArray(phrase.objectComplement).map(complement),
-    ...phrase.preposition.map(preposition),
+    ...phrase.prepositions.map(preposition),
   ]
     .join(" ");
 }

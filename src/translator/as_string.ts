@@ -37,7 +37,7 @@ export function definitionAsPlainString(
         .map((adjective) => EnglishComposer.adjective(adjective, 0));
     case "compound adjective": {
       return compoundAdjective({
-        adjectives: definition.adjective,
+        adjectives: definition.adjectives,
         reduplicationCount: 1,
         emphasis: null,
       })

@@ -157,19 +157,19 @@ export class IterableResult<const T> {
   }
   collect(): ReadonlyArray<T> {
     const array: Array<T> = [];
-    const error: Array<ResultError> = [];
+    const errors: Array<ResultError> = [];
     for (const result of this.iterable()) {
       switch (result.type) {
         case "value":
           array.push(result.value);
           break;
         case "error":
-          error.push(result.error);
+          errors.push(result.error);
           break;
       }
     }
-    if (error.length > 0) {
-      throw new AggregateError(error);
+    if (errors.length > 0) {
+      throw new AggregateError(errors);
     } else {
       return array;
     }
