@@ -99,7 +99,7 @@ function nounPhrase(
         ...modifier.nounPreposition!.noun as English.NounPhrase & {
           type: "simple";
         },
-        preposition: [nounAsPreposition(
+        prepositions: [nounAsPreposition(
           noun,
           modifier.nounPreposition!.preposition,
         )],

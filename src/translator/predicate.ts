@@ -149,7 +149,7 @@ function associatedPredicate(
   }
   return verbObject.map((verbObject) => ({
     ...verbObject,
-    preposition: [...verbObject.prepositions, ...prepositions],
+    prepositions: [...verbObject.prepositions, ...prepositions],
   }));
 }
 export function predicate(
