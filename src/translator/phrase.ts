@@ -307,20 +307,10 @@ function compoundNoun(
         return [noun];
       }
     });
-  let quantity: English.Quantity;
-  switch (conjunction) {
-    case "and":
-      quantity = "plural";
-      break;
-    case "or":
-      quantity = nouns[nouns.length - 1].quantity;
-      break;
-  }
   return {
     type: "compound",
     conjunction,
     nouns,
-    quantity,
   } as const;
 }
 function compoundAdjective(

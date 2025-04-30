@@ -134,6 +134,19 @@ export function perspective(noun: English.NounPhrase): Dictionary.Perspective {
       return "third";
   }
 }
+export function quantity(noun: English.NounPhrase): English.Quantity {
+  switch (noun.type) {
+    case "simple":
+      return noun.quantity;
+    case "compound":
+      switch (noun.conjunction as "and" | "or") {
+        case "and":
+          return "plural";
+        case "or":
+          return quantity(noun.nouns[noun.nouns.length - 1]);
+      }
+  }
+}
 export function extractNegativeFromNoun(
   noun: English.NounPhrase,
 ): null | English.NounPhrase {

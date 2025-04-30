@@ -24,7 +24,6 @@ export type NounPhrase =
     type: "compound";
     conjunction: string;
     nouns: ReadonlyArray<NounPhrase>;
-    quantity: Quantity;
   }>;
 export type Determiner = Readonly<{
   kind: Dictionary.DeterminerType;

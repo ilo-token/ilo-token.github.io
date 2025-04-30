@@ -4,7 +4,7 @@ import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
 import { FilteredError, TranslationTodoError } from "./error.ts";
 import { nanpa } from "./nanpa.ts";
-import { perspective } from "./noun.ts";
+import { perspective, quantity } from "./noun.ts";
 import { multiplePhrases, multiplePhrasesAsNoun } from "./phrase.ts";
 import { predicate } from "./predicate.ts";
 import { nounAsPreposition, preposition } from "./preposition.ts";
@@ -81,7 +81,7 @@ function liClause(clause: TokiPona.Clause & { type: "li clause" }) {
     predicate(clause.predicates, "li"),
   )
     .flatMap(([subject, predicate]) =>
-      verb(predicate, perspective(subject), subject.quantity)
+      verb(predicate, perspective(subject), quantity(subject))
         .map((verb) => ({
           type: "simple",
           subject,
@@ -149,15 +149,16 @@ function oClause(clause: TokiPona.Clause & { type: "o clause" }) {
   return IterableResult.combine(subject, predicate(clause.predicates, "o"))
     .flatMap(([subject, predicate]) => {
       const subjectPerspective = perspective(subject);
+      const subjectQuantity = quantity(subject);
       return IterableResult.concat(
-        verb(predicate, subjectPerspective, subject.quantity)
+        verb(predicate, subjectPerspective, subjectQuantity)
           .map((verb) => iWish(subject, verb)),
         IterableResult.from(() => {
           const takeNegative = true;
           return verb(
             addModalToAll("should", predicate, takeNegative),
             subjectPerspective,
-            subject.quantity,
+            subjectQuantity,
           );
         })
           .map((verb) => ({
