@@ -50,10 +50,13 @@ function condenseVerb(present: string, past: string) {
   return [condense(first, second), ...rest].join(" ");
 }
 function addModal(
-  modal: string,
-  verb: PartialVerb,
-  takeNegative: boolean,
+  options: Readonly<{
+    modal: string;
+    verb: PartialVerb;
+    takeNegative: boolean;
+  }>,
 ) {
+  const { modal, verb, takeNegative } = options;
   if (verb.modal == null) {
     const newRest = nullableAsArray(verb.first)
       .map((first) => {
@@ -89,18 +92,21 @@ function addModal(
   }
 }
 export function addModalToAll(
-  modal: string,
-  verb: PartialCompoundVerb,
-  takeNegative: boolean,
+  options: Readonly<{
+    modal: string;
+    verb: PartialCompoundVerb;
+    takeNegative: boolean;
+  }>,
 ): PartialCompoundVerb {
+  const { modal, verb, takeNegative } = options;
   switch (verb.type) {
     case "simple":
-      return { ...addModal(modal, verb, takeNegative), type: "simple" };
+      return { ...addModal({ modal, verb, takeNegative }), type: "simple" };
     case "compound":
       return {
         ...verb,
         verbs: verb.verbs.map((verb) =>
-          addModalToAll(modal, verb, takeNegative)
+          addModalToAll({ modal, verb, takeNegative })
         ),
       };
   }
