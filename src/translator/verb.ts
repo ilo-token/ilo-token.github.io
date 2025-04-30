@@ -178,13 +178,10 @@ export function forObject(verb: PartialCompoundVerb): boolean | string {
   }
 }
 function fromVerbForms(
-  options: Readonly<{
-    verbForms: VerbForms;
-    perspective: Dictionary.Perspective;
-    quantity: English.Quantity;
-  }>,
+  verbForms: VerbForms,
+  perspective: Dictionary.Perspective,
+  quantity: English.Quantity,
 ): IterableResult<English.Verb> {
-  const { verbForms, perspective, quantity } = options;
   const { negated, adverbs } = verbForms;
   const is = verbForms.presentSingular === "is";
   const presentSingular = is && perspective === "first"
@@ -363,11 +360,7 @@ export function verb(
     case "simple": {
       const verbForms = partialVerb.first;
       if (verbForms != null) {
-        return fromVerbForms({
-          verbForms,
-          perspective,
-          quantity,
-        })
+        return fromVerbForms(verbForms, perspective, quantity)
           .map((verb) => ({
             ...partialVerb,
             type: "simple",
