@@ -66,7 +66,7 @@ const WORD_ALREADY_IMPORTED_MESSAGE = "The word is already imported";
 const DICTIONARY_ERROR_MESSAGE = "Please fix the errors before saving";
 
 function main() {
-  // load elements
+  // load DOM
   const inputTextBox = document.getElementById(
     "input",
   ) as HTMLTextAreaElement;
@@ -222,19 +222,19 @@ function main() {
       `Errors (${currentDictionary.errors.length}):`;
     customDictionaryErrorList.innerHTML = "";
     for (const error of currentDictionary.errors) {
-      const element = document.createElement("li");
-      element.innerText = error.message;
+      const list = document.createElement("li");
+      list.innerText = error.message;
       const { position: { position, length } } = error as PositionedError & {
         position: { position: number; length: number };
       };
-      element.addEventListener("click", () => {
+      list.addEventListener("click", () => {
         customDictionaryTextBox.focus();
         customDictionaryTextBox.setSelectionRange(
           position,
           position + length,
         );
       });
-      customDictionaryErrorList.appendChild(element);
+      customDictionaryErrorList.appendChild(list);
     }
   }
   // add all event listener

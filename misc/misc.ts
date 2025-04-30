@@ -21,10 +21,10 @@ export function mapNullable<const T, const U>(
   }
 }
 export function repeatArray<const T>(
-  element: T,
+  value: T,
   count: number,
 ): ReadonlyArray<T> {
-  return new Array(count).fill(element);
+  return new Array(count).fill(value);
 }
 export function repeatWithSpace(text: string, count: number): string {
   return repeatArray(text, count).join(" ");
@@ -33,16 +33,16 @@ export function throwError(error: unknown): never {
   throw error;
 }
 export function compound(
-  elements: ReadonlyArray<string>,
+  values: ReadonlyArray<string>,
   conjunction: string,
   repeat: boolean,
 ): string {
-  if (repeat || elements.length <= 2) {
-    return elements.join(` ${conjunction} `);
+  if (repeat || values.length <= 2) {
+    return values.join(` ${conjunction} `);
   } else {
-    const lastIndex = elements.length - 1;
-    const init = elements.slice(0, lastIndex);
-    const last = elements[lastIndex];
+    const lastIndex = values.length - 1;
+    const init = values.slice(0, lastIndex);
+    const last = values[lastIndex];
     const initText = init.map((item) => `${item},`).join(" ");
     return `${initText} ${conjunction} ${last}`;
   }

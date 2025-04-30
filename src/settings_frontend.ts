@@ -69,7 +69,7 @@ function loadOneFromLocalStorage<const T extends keyof Settings>(key: T) {
     settings[key],
   );
 }
-function loadOneFromElement<const T extends keyof Settings>(key: T) {
+function loadOneFromDom<const T extends keyof Settings>(key: T) {
   settings[key] = UPDATERS[key].load(
     document.getElementById(toKebabCase(key)) as
       | HTMLInputElement
@@ -77,7 +77,7 @@ function loadOneFromElement<const T extends keyof Settings>(key: T) {
   );
   setIgnoreError(key, UPDATERS[key].stringify(settings[key]));
 }
-function setElement<const T extends keyof Settings>(
+function setDom<const T extends keyof Settings>(
   key: T,
   value: Settings[T],
 ) {
@@ -97,16 +97,16 @@ export function loadFromLocalStorage(): void {
 }
 export function loadFromDom(): void {
   for (const key of KEYS) {
-    loadOneFromElement(key);
+    loadOneFromDom(key);
   }
 }
 export function resetDomToCurrent(): void {
   for (const key of KEYS) {
-    setElement(key, settings[key]);
+    setDom(key, settings[key]);
   }
 }
 export function resetDomToDefault(): void {
   for (const key of KEYS) {
-    setElement(key, defaultSettings[key]);
+    setDom(key, defaultSettings[key]);
   }
 }

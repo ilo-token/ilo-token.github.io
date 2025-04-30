@@ -95,7 +95,7 @@ function fixMultipleDeterminers(
     ];
   } else {
     throw new AggregateError(
-      errors.map((element) => new FilteredError(element())),
+      errors.map((message) => new FilteredError(message())),
     );
   }
 }
