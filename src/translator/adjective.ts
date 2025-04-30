@@ -82,35 +82,6 @@ export function compoundAdjective(
     ]);
   }
 }
-function rankAdjective(kind: Dictionary.AdjectiveType) {
-  return [
-    "opinion",
-    "size",
-    "physical quality",
-    "age",
-    "color",
-    "origin",
-    "material",
-    "qualifier",
-  ]
-    .indexOf(kind);
-}
-export function fixAdjective(
-  adjective: ReadonlyArray<English.AdjectivePhrase>,
-): ReadonlyArray<English.AdjectivePhrase> {
-  return adjective
-    .flatMap((adjective) => {
-      switch (adjective.type) {
-        case "simple":
-          return [adjective];
-        case "compound":
-          return adjective.adjective as ReadonlyArray<
-            English.AdjectivePhrase & { type: "simple" }
-          >;
-      }
-    })
-    .sort((a, b) => rankAdjective(a.kind) - rankAdjective(b.kind));
-}
 export function extractNegativeFromAdjective(
   adjective: English.AdjectivePhrase,
 ): null | English.AdjectivePhrase {

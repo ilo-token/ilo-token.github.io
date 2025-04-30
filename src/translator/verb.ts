@@ -2,7 +2,7 @@ import * as Dictionary from "../../dictionary/type.ts";
 import { nullableAsArray } from "../../misc/misc.ts";
 import { IterableResult } from "../compound.ts";
 import { settings } from "../settings.ts";
-import { fixAdverb, NOT } from "./adverb.ts";
+import { NOT } from "./adverb.ts";
 import * as English from "./ast.ts";
 import { FilteredError } from "./error.ts";
 import { condense } from "./misc.ts";
@@ -59,12 +59,10 @@ function addModal(
       .map((first) => {
         const { adverb, presentPlural, negated } = first;
         const useVerb = presentPlural === "are" ? "be" : presentPlural;
-        const preAdverb = fixAdverb(
-          takeNegative ? adverb : [
-            ...(negated ? [NOT] : []),
-            ...adverb,
-          ],
-        );
+        const preAdverb = takeNegative ? adverb : [
+          ...(negated ? [NOT] : []),
+          ...adverb,
+        ];
         return {
           preAdverb,
           verb: word({ ...first, word: useVerb }),

@@ -5,6 +5,7 @@ import { parser } from "../parser/parser.ts";
 import { settings } from "../settings.ts";
 import * as EnglishComposer from "./composer.ts";
 import { multipleSentences } from "./sentence.ts";
+import { fixMultipleSentences } from "./fixer.ts";
 
 const RANDOMIZATION_LIMIT = 25248;
 
@@ -14,6 +15,7 @@ export function translate(tokiPona: string): IterableResult<string> {
       .parse(tokiPona)
       .asIterableResult()
       .flatMap(multipleSentences)
+      .map(fixMultipleSentences)
       .map(EnglishComposer.multipleSentences);
     let yielded = false;
     const aggregateErrors: Array<ResultError> = [];

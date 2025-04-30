@@ -5,11 +5,10 @@ import * as Composer from "../parser/composer.ts";
 import {
   AdjectiveWithInWay,
   extractNegativeFromAdjective,
-  fixAdjective,
 } from "./adjective.ts";
-import { extractNegativeFromAdverbs, fixAdverb, NOT } from "./adverb.ts";
+import { extractNegativeFromAdverbs, NOT } from "./adverb.ts";
 import * as English from "./ast.ts";
-import { fixDeterminer, getNumber } from "./determiner.ts";
+import { getNumber } from "./determiner.ts";
 import {
   ExhaustedError,
   FilteredError,
@@ -47,15 +46,15 @@ function nounPhrase(
 ) {
   const { emphasis, partialNoun, modifier } = options;
   return IterableResult.from<English.NounPhrase>(() => {
-    const determiner = fixDeterminer([
+    const determiner = [
       ...[...modifier.determiner].reverse(),
       ...partialNoun.determiner,
-    ]);
+    ];
     const quantity = getNumber(determiner);
-    const adjective = fixAdjective([
+    const adjective = [
       ...[...modifier.adjective].reverse(),
       ...partialNoun.adjective,
-    ]);
+    ];
     if (partialNoun.postAdjective != null && modifier.name != null) {
       throw new FilteredError("double name");
     }
@@ -122,10 +121,10 @@ function adjectivePhrase(
   const { emphasis, adjective, modifier } = options;
   switch (adjective.type) {
     case "simple": {
-      const adverb = fixAdverb([
+      const adverb = [
         ...[...modifier.adverb].reverse(),
         ...adjective.adverb,
-      ]);
+      ];
       return {
         adjective: {
           ...adjective,
@@ -165,7 +164,7 @@ function verbPhrase(
     throw new FilteredError("double negative");
   }
   const negated = extracted != null;
-  const useAdverb = fixAdverb(extracted ?? adverb);
+  const useAdverb = extracted ?? adverb;
   if (verb.first != null) {
     return {
       ...verb,

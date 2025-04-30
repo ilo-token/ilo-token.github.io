@@ -2,7 +2,7 @@ import { throwError } from "../../misc/misc.ts";
 import { IterableResult } from "../compound.ts";
 import { dictionary } from "../dictionary.ts";
 import * as TokiPona from "../parser/ast.ts";
-import { extractNegativeFromAdverbs, fixAdverb } from "./adverb.ts";
+import { extractNegativeFromAdverbs } from "./adverb.ts";
 import * as English from "./ast.ts";
 import { FilteredError, TranslationTodoError } from "./error.ts";
 import { multipleModifiers } from "./modifier.ts";
@@ -25,8 +25,7 @@ export function preposition(
             ),
           ))
           : throwError(new FilteredError("adjectives modifying preposition"))
-      )
-      .map(fixAdverb),
+      ),
     multiplePhrases({
       phrases: preposition.phrases,
       place: "object",

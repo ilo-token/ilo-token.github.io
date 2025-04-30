@@ -1,5 +1,7 @@
 import * as Dictionary from "../../dictionary/type.ts";
 
+// When editing, update `./fixer.ts` as well
+
 export type Word = Readonly<{
   word: string;
   emphasis: boolean;
