@@ -16,7 +16,7 @@ export function preposition(
   return IterableResult.combine(
     prepositionAsWord(preposition.preposition),
     multipleModifiers(preposition.modifiers)
-      .filterMap((modifier) =>
+      .map((modifier) =>
         modifier.type === "adverbial"
           ? (modifier.inWayPhrase == null ? modifier.adverb : throwError(
             new FilteredError(
@@ -34,7 +34,7 @@ export function preposition(
       andParticle: null,
       includeVerb: false,
     })
-      .filterMap((phrases) =>
+      .map((phrases) =>
         phrases.type === "noun"
           ? phrases.noun
           : throwError(new FilteredError(`${phrases.type} as indirect object`))
