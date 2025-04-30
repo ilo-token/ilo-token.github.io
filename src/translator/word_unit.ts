@@ -127,7 +127,7 @@ export function wordUnit(
         }));
     case "x ala x":
       return IterableResult.errors([new TranslationTodoError("x ala x")]);
-    case "default":
+    case "simple":
     case "reduplication": {
       const reduplicationCount = getReduplicationCount(wordUnit);
       return defaultWordUnit({
@@ -144,7 +144,7 @@ export function fromSimpleDefinition(
   mapper: (definition: Definition) => null | string,
 ): IterableResult<English.Word> {
   switch (wordUnit.type) {
-    case "default":
+    case "simple":
     case "reduplication":
       return IterableResult.fromArray(
         dictionary.get(wordUnit.word)!.definitions,
@@ -166,7 +166,7 @@ export function fromSimpleDefinition(
 export function getReduplicationCount(wordUnit: TokiPona.WordUnit): number {
   switch (wordUnit.type) {
     case "number":
-    case "default":
+    case "simple":
     case "x ala x":
       return 1;
     case "reduplication":

@@ -29,7 +29,7 @@ function phraseClause(phrases: TokiPona.MultiplePhrases) {
           };
         case "adjective":
           return {
-            type: "default",
+            type: "simple",
             subject: {
               type: "simple",
               determiner: [],
@@ -46,7 +46,7 @@ function phraseClause(phrases: TokiPona.MultiplePhrases) {
               emphasis: false,
             },
             verb: {
-              type: "default",
+              type: "simple",
               verb: {
                 modal: null,
                 verb: [noAdverbs(noEmphasis("is"))],
@@ -83,7 +83,7 @@ function liClause(clause: TokiPona.Clause & { type: "li clause" }) {
     .flatMap(([subject, predicate]) =>
       verb(predicate, perspective(subject), subject.quantity)
         .map((verb) => ({
-          type: "default",
+          type: "simple",
           subject,
           verb,
           hideSubject: false,
@@ -92,7 +92,7 @@ function liClause(clause: TokiPona.Clause & { type: "li clause" }) {
 }
 function iWish(subject: English.NounPhrase, verb: English.VerbPhrase) {
   return {
-    type: "default",
+    type: "simple",
     subject: {
       type: "simple",
       determiner: [],
@@ -106,14 +106,14 @@ function iWish(subject: English.NounPhrase, verb: English.VerbPhrase) {
       emphasis: false,
     },
     verb: {
-      type: "default",
+      type: "simple",
       verb: {
         modal: null,
         verb: [noAdverbs(noEmphasis("wish"))],
       },
       subjectComplement: null,
       contentClause: {
-        type: "default",
+        type: "simple",
         subject,
         verb,
         hideSubject: false,
@@ -161,7 +161,7 @@ function oClause(clause: TokiPona.Clause & { type: "o clause" }) {
           );
         })
           .map((verb) => ({
-            type: "default",
+            type: "simple",
             subject,
             verb,
             hideSubject: false,
@@ -249,7 +249,7 @@ export function unwrapSingleWord(
 ): null | TokiPona.WordUnit {
   if (clause.type === "phrases" && clause.phrases.type === "single") {
     const { phrases: { phrase } } = clause;
-    if (phrase.type === "default" && phrase.modifiers.length === 0) {
+    if (phrase.type === "simple" && phrase.modifiers.length === 0) {
       return phrase.headWord;
     }
   }

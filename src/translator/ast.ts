@@ -63,7 +63,7 @@ export type Verb = Readonly<{
 }>;
 export type VerbPhrase =
   | Readonly<{
-    type: "default";
+    type: "simple";
     verb: Verb;
     subjectComplement: null | Complement;
     contentClause: null | Clause;
@@ -82,7 +82,7 @@ export type VerbPhrase =
   }>;
 export type Clause =
   | Readonly<{
-    type: "default";
+    type: "simple";
     subject: NounPhrase;
     verb: VerbPhrase;
     hideSubject: boolean;

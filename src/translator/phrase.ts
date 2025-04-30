@@ -193,7 +193,7 @@ function verbPhrase(
 }
 function defaultPhrase(
   options: Readonly<{
-    phrase: TokiPona.Phrase & { type: "default" };
+    phrase: TokiPona.Phrase & { type: "simple" };
     place: Place;
     includeGerund: boolean;
     includeVerb: boolean;
@@ -271,7 +271,7 @@ export function phrase(
 ): IterableResult<PhraseTranslation> {
   const { phrase, includeVerb } = options;
   switch (phrase.type) {
-    case "default":
+    case "simple":
       return defaultPhrase({ ...options, phrase });
     case "preposition":
       if (includeVerb) {

@@ -368,7 +368,7 @@ export function verb(
         })
           .map((verb) => ({
             ...partialVerb,
-            type: "default",
+            type: "simple",
             verb: {
               modal: verb.modal,
               verb: [...verb.verb, ...partialVerb.rest],
@@ -379,7 +379,7 @@ export function verb(
       } else {
         return IterableResult.single({
           ...partialVerb,
-          type: "default",
+          type: "simple",
           verb: { modal: partialVerb.modal, verb: partialVerb.rest },
           contentClause: null,
           hideVerb: false,

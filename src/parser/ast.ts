@@ -5,7 +5,7 @@ export type Filler =
   | Emphasis
   | Readonly<{ type: "multiple a"; count: number }>;
 export type SimpleHeadedWordUnit =
-  | Readonly<{ type: "default"; word: string }>
+  | Readonly<{ type: "simple"; word: string }>
   | Readonly<{ type: "x ala x"; word: string }>
   | Readonly<{ type: "reduplication"; word: string; count: number }>;
 export type SimpleWordUnit =
@@ -19,13 +19,13 @@ export type WordUnit =
   & Readonly<{ emphasis: null | Emphasis }>;
 export type Nanpa = Readonly<{ nanpa: WordUnit; phrase: Phrase }>;
 export type Modifier =
-  | Readonly<{ type: "default"; word: WordUnit }>
+  | Readonly<{ type: "simple"; word: WordUnit }>
   | Readonly<{ type: "proper words"; words: string }>
   | Readonly<{ type: "pi"; phrase: Phrase }>
   | (Readonly<{ type: "nanpa" }> & Nanpa);
 export type Phrase =
   | Readonly<{
-    type: "default";
+    type: "simple";
     headWord: WordUnit;
     modifiers: ReadonlyArray<Modifier>;
     emphasis: null | Emphasis;
@@ -84,7 +84,7 @@ export type ContextClause =
   | (Readonly<{ type: "anu"; anu: HeadedWordUnit }>);
 export type Sentence =
   | Readonly<{
-    type: "default";
+    type: "simple";
     startingParticle: null | HeadedWordUnit;
     contextClauses: ReadonlyArray<ContextClause>;
     finalClause: Clause;

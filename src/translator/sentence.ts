@@ -75,7 +75,7 @@ function sentence(
     ? ","
     : sentence.punctuation;
   switch (sentence.type) {
-    case "default": {
+    case "simple": {
       if (sentence.startingParticle != null) {
         return IterableResult.errors([
           new TranslationTodoError(

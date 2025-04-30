@@ -163,7 +163,7 @@ function simpleWordUnit(word: Set<string>, description: string) {
       .then(reduplicateRest),
     xAlaX(word, description),
     wordFrom(word, description)
-      .map((word) => ({ type: "default", word })),
+      .map((word) => ({ type: "simple", word })),
   );
 }
 function wordUnit(word: Set<string>, description: string) {
@@ -196,10 +196,10 @@ function optionalCombined(word: Set<string>, description: string) {
       .map((wordUnit) => [wordUnit, null]),
     binaryWords(word, description)
       .map(([first, second]) => [
-        { type: "default", word: first, emphasis: null },
+        { type: "simple", word: first, emphasis: null },
         {
-          type: "default",
-          word: { type: "default", word: second, emphasis: null },
+          type: "simple",
+          word: { type: "simple", word: second, emphasis: null },
         },
       ]),
   );
@@ -214,18 +214,18 @@ const phrase: Parser<Phrase> = lazy(lazyEval(() =>
       optionalEmphasis,
     )
       .map(([words, wordModifier, modifiers, phraseModifier]) => ({
-        type: "default",
+        type: "simple",
         headWord: { type: "number", words, emphasis: wordModifier },
         modifiers,
         emphasis: phraseModifier,
       })),
     binaryWords(preverbSet, "preverb").map(([preverb, phrase]) => ({
       type: "preverb",
-      preverb: { type: "default", word: preverb, emphasis: null },
+      preverb: { type: "simple", word: preverb, emphasis: null },
       modifiers: [],
       phrase: {
-        type: "default",
-        headWord: { type: "default", word: phrase, emphasis: null },
+        type: "simple",
+        headWord: { type: "simple", word: phrase, emphasis: null },
         modifiers: [],
         emphasis: null,
       },
@@ -252,7 +252,7 @@ const phrase: Parser<Phrase> = lazy(lazyEval(() =>
       optionalEmphasis,
     )
       .map(([[headWord, modifier], modifiers, emphasis]) => ({
-        type: "default",
+        type: "simple",
         headWord,
         modifiers: [...nullableAsArray(modifier), ...modifiers],
         emphasis,
@@ -275,12 +275,12 @@ const modifiers = sequence(
     choice<Modifier>(
       sequence(number, optionalEmphasis)
         .map(([words, emphasis]) => ({
-          type: "default",
+          type: "simple",
           word: { type: "number", words, emphasis },
         }))
         .filter(filter(MODIFIER_RULES)),
       wordUnit(contentWordSet, "modifier")
-        .map((word) => ({ type: "default", word }))
+        .map((word) => ({ type: "simple", word }))
         .filter(filter(MODIFIER_RULES)),
       properWords
         .map((words) => ({ type: "proper words", words }))
@@ -368,7 +368,7 @@ const preposition = choice(
     .skip(specificToken("headless long glyph end"))
     .map((phrase) => ({
       preposition: {
-        type: "default",
+        type: "simple",
         word: "lon",
         emphasis: null,
       },
@@ -400,13 +400,13 @@ const preposition = choice(
         .slice(1)
         .map((word) =>
           ({
-            type: "default",
-            word: { type: "default", word, emphasis: null },
+            type: "simple",
+            word: { type: "simple", word, emphasis: null },
             emphasis: null,
           }) as const
         );
       return {
-        preposition: { type: "default", word: words[0], emphasis: null },
+        preposition: { type: "simple", word: words[0], emphasis: null },
         modifiers,
         phrases: { type: "single", phrase, emphasis: null },
         emphasis: null,
@@ -414,7 +414,7 @@ const preposition = choice(
     }),
   binaryWords(prepositionSet, "preposition").map(([preposition, phrase]) => ({
     preposition: {
-      type: "default",
+      type: "simple",
       word: preposition,
       emphasis: null,
     },
@@ -422,9 +422,9 @@ const preposition = choice(
     phrases: {
       type: "single",
       phrase: {
-        type: "default",
+        type: "simple",
         headWord: {
-          type: "default",
+          type: "simple",
           word: phrase,
           emphasis: null,
         },
@@ -528,9 +528,9 @@ const clause = choice<Clause>(
       subjects: {
         type: "single",
         phrase: {
-          type: "default",
+          type: "simple",
           headWord: {
-            type: "default",
+            type: "simple",
             word: subject,
             emphasis: null,
           },
@@ -658,7 +658,7 @@ const sentence = choice<Sentence>(
       punctuation,
     ]) => {
       const sentence = {
-        type: "default",
+        type: "simple",
         startingParticle,
         contextClauses,
         finalClause,
@@ -671,7 +671,7 @@ const sentence = choice<Sentence>(
       const interrogative = wordUnits.some(({ type }) => type === "x ala x")
         ? "x ala x"
         : wordUnits.some((wordUnit) =>
-            (wordUnit.type === "default" ||
+            (wordUnit.type === "simple" ||
               wordUnit.type === "reduplication") &&
             wordUnit.word === "seme"
           )

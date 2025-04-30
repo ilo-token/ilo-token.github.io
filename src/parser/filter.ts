@@ -45,13 +45,13 @@ export const NANPA_RULES: ReadonlyArray<(nanpa: Nanpa) => boolean> = [
 
   // nanpa construction cannot contain pi
   ({ phrase }) =>
-    phrase.type !== "default" ||
+    phrase.type !== "simple" ||
     phrase.modifiers.every(({ type }) => type !== "pi") ||
     throwError(new UnrecognizedError("pi inside nanpa")),
 
   // nanpa construction cannot contain nanpa
   ({ phrase }) =>
-    phrase.type !== "default" ||
+    phrase.type !== "simple" ||
     phrase.modifiers.every(({ type }) => type !== "nanpa") ||
     throwError(new UnrecognizedError("nanpa inside nanpa")),
 
@@ -68,7 +68,7 @@ export const MODIFIER_RULES: ReadonlyArray<(modifier: Modifier) => boolean> = [
   (modifier) => {
     if (modifier.type === "pi") {
       const { phrase } = modifier;
-      if (phrase.type === "default" && phrase.modifiers.length === 0) {
+      if (phrase.type === "simple" && phrase.modifiers.length === 0) {
         throw new UnrecognizedError("pi followed by one word");
       }
     }
@@ -78,7 +78,7 @@ export const MODIFIER_RULES: ReadonlyArray<(modifier: Modifier) => boolean> = [
   // (modifier) => {
   //   const checker = (modifier: Modifier) => {
   //     switch (modifier.type) {
-  //       case "default":
+  //       case "simple":
   //       case "proper words":
   //       case "nanpa":
   //         return everyModifierInPhrase(modifier.phrase).some(checker);
@@ -129,7 +129,7 @@ export const MULTIPLE_MODIFIERS_RULES: ReadonlyArray<
     } else {
       const words = modifiers.flatMap((modifier) => {
         switch (modifier.type) {
-          case "default":
+          case "simple":
             if (modifier.word.type !== "number") {
               return [modifier.word.word];
             } else {
@@ -137,7 +137,7 @@ export const MULTIPLE_MODIFIERS_RULES: ReadonlyArray<
             }
           case "pi":
             if (
-              modifier.phrase.type === "default" &&
+              modifier.phrase.type === "simple" &&
               modifier.phrase.headWord.type !== "number"
             ) {
               return [modifier.phrase.headWord.word];
@@ -176,14 +176,14 @@ export const PHRASE_RULE: ReadonlyArray<(phrase: Phrase) => boolean> = [
 
   // disallow multiple number words
   (phrase) =>
-    phrase.type !== "default" ||
+    phrase.type !== "simple" ||
     phrase.headWord.type !== "number" ||
     !phrase.modifiers.some(modifierIsNumeric) ||
     throwError(new UnrecognizedError("multiple number words")),
 
   // if the phrase has no modifiers, disallow emphasis particle
   (phrase) =>
-    phrase.type !== "default" ||
+    phrase.type !== "simple" ||
     phrase.emphasis == null ||
     phrase.modifiers.length > 0,
 
@@ -293,8 +293,8 @@ export const CLAUSE_RULE: ReadonlyArray<(clause: Clause) => boolean> = [
     ) {
       const { subjects: { phrase } } = clause;
       if (
-        phrase.type === "default" &&
-        phrase.headWord.type === "default" &&
+        phrase.type === "simple" &&
+        phrase.headWord.type === "simple" &&
         phrase.headWord.emphasis == null &&
         phrase.modifiers.length === 0 &&
         phrase.emphasis == null
@@ -311,7 +311,7 @@ export const CLAUSE_RULE: ReadonlyArray<(clause: Clause) => boolean> = [
 export const SENTENCE_RULE: ReadonlyArray<(sentence: Sentence) => boolean> = [
   // disallow "taso ala taso" or "kin ala kin"
   (sentence) => {
-    if (sentence.type === "default") {
+    if (sentence.type === "simple") {
       if (
         sentence.startingParticle != null &&
         sentence.startingParticle.type === "x ala x"
@@ -324,7 +324,7 @@ export const SENTENCE_RULE: ReadonlyArray<(sentence: Sentence) => boolean> = [
   },
   // if there is "la", there can't be starting particle e.g. taso
   (sentence) =>
-    sentence.type !== "default" || sentence.contextClauses.length === 0 ||
+    sentence.type !== "simple" || sentence.contextClauses.length === 0 ||
     sentence.startingParticle == null || throwError(
       new UnrecognizedError(
         `${sentence.startingParticle.word} particle with "la"`,
@@ -341,7 +341,7 @@ export const SENTENCE_RULE: ReadonlyArray<(sentence: Sentence) => boolean> = [
               return false;
             case "x ala x":
               return true;
-            case "default":
+            case "simple":
             case "reduplication":
               return wordUnit.word === "seme";
           }
@@ -393,7 +393,7 @@ export function filter<const T>(
   };
 }
 function modifierIsNumeric(modifier: Modifier) {
-  return modifier.type === "default" && modifier.word.type === "number";
+  return modifier.type === "simple" && modifier.word.type === "number";
 }
 function modifiersIsAlaOrNone(modifiers: ReadonlyArray<Modifier>) {
   switch (modifiers.length) {
@@ -401,7 +401,7 @@ function modifiersIsAlaOrNone(modifiers: ReadonlyArray<Modifier>) {
       return true;
     case 1: {
       const [modifier] = modifiers;
-      return modifier.type === "default" && modifier.word.type === "default" &&
+      return modifier.type === "simple" && modifier.word.type === "simple" &&
         modifier.word.word === "ala";
     }
     default:
@@ -410,7 +410,7 @@ function modifiersIsAlaOrNone(modifiers: ReadonlyArray<Modifier>) {
 }
 function hasPrepositionInPhrase(phrase: Phrase) {
   switch (phrase.type) {
-    case "default":
+    case "simple":
       return false;
     case "preposition":
       return true;
@@ -420,7 +420,7 @@ function hasPrepositionInPhrase(phrase: Phrase) {
 }
 function phraseHasTopLevelEmphasis(phrase: Phrase) {
   switch (phrase.type) {
-    case "default":
+    case "simple":
     case "preverb":
     case "preposition":
       return phrase.emphasis != null;

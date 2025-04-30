@@ -54,7 +54,7 @@ function prepositionAsWord(
       return IterableResult.errors([
         new TranslationTodoError("preposition ala preposition"),
       ]);
-    case "default":
+    case "simple":
     case "reduplication":
       return IterableResult.fromArray(
         dictionary.get(preposition.word)!.definitions,

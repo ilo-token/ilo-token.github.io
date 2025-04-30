@@ -19,7 +19,7 @@ export function everyWordUnitInModifier(
   modifier: Modifier,
 ): ReadonlyArray<WordUnit> {
   switch (modifier.type) {
-    case "default":
+    case "simple":
       return [modifier.word];
     case "pi":
       return everyWordUnitInPhrase(modifier.phrase);
@@ -31,7 +31,7 @@ export function everyWordUnitInModifier(
 }
 export function everyWordUnitInPhrase(phrase: Phrase): ReadonlyArray<WordUnit> {
   switch (phrase.type) {
-    case "default":
+    case "simple":
       return [
         phrase.headWord,
         ...phrase.modifiers.flatMap(everyWordUnitInModifier),
@@ -114,7 +114,7 @@ export function everyWordUnitInSentence(
   sentence: Sentence,
 ): ReadonlyArray<WordUnit> {
   switch (sentence.type) {
-    case "default":
+    case "simple":
       return [
         ...nullableAsArray(sentence.startingParticle),
         ...sentence.contextClauses.flatMap(everyWordUnitInContextClause),
@@ -127,7 +127,7 @@ export function everyWordUnitInSentence(
 }
 export function everyModifierInPhrase(phrase: Phrase): ReadonlyArray<Modifier> {
   switch (phrase.type) {
-    case "default":
+    case "simple":
       return phrase.modifiers;
     case "preverb":
       return [

@@ -88,7 +88,7 @@ function adverbVerb(verbAdverb: English.AdverbVerb) {
 export function verb(phrase: English.VerbPhrase, depth: number): string {
   let text: string;
   switch (phrase.type) {
-    case "default": {
+    case "simple": {
       const { verb: { modal, verb } } = phrase;
       const verbText = !phrase.hideVerb
         ? [
@@ -122,7 +122,7 @@ export function verb(phrase: English.VerbPhrase, depth: number): string {
 }
 function clause(ast: English.Clause): string {
   switch (ast.type) {
-    case "default": {
+    case "simple": {
       const subject = !ast.hideSubject ? [noun(ast.subject, 0)] : [];
       return [
         ...subject,

@@ -39,7 +39,7 @@ export function simpleWordUnit(wordUnit: SimpleWordUnit): string {
   switch (wordUnit.type) {
     case "number":
       return wordUnit.words.join(" ");
-    case "default":
+    case "simple":
       return wordUnit.word;
     case "x ala x":
       return `${wordUnit.word} ala ${wordUnit.word}`;
@@ -59,7 +59,7 @@ export function nanpa(nanpa: Nanpa): string {
 }
 export function modifier(modifier: Modifier): string {
   switch (modifier.type) {
-    case "default":
+    case "simple":
       return wordUnit(modifier.word);
     case "proper words":
       return modifier.words;
@@ -71,7 +71,7 @@ export function modifier(modifier: Modifier): string {
 }
 export function phrase(value: Phrase): string {
   switch (value.type) {
-    case "default":
+    case "simple":
       return [
         wordUnit(value.headWord),
         ...value.modifiers.map(modifier),
@@ -185,7 +185,7 @@ export function contextClause(contextClause: ContextClause): string {
 export function sentence(sentence: Sentence): string {
   let text: string;
   switch (sentence.type) {
-    case "default":
+    case "simple":
       text = [
         ...nullableAsArray(sentence.startingParticle).map(wordUnit),
         ...sentence.contextClauses

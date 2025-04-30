@@ -64,7 +64,7 @@ function defaultModifier(wordUnit: TokiPona.WordUnit) {
       });
     case "x ala x":
       return IterableResult.errors([new TranslationTodoError("x ala x")]);
-    case "default":
+    case "simple":
     case "reduplication": {
       const reduplicationCount = getReduplicationCount(wordUnit);
       return IterableResult.fromArray(
@@ -163,7 +163,7 @@ function pi(insidePhrase: TokiPona.Phrase) {
 }
 function modifier(modifier: TokiPona.Modifier) {
   switch (modifier.type) {
-    case "default":
+    case "simple":
       return defaultModifier(modifier.word);
     case "proper words":
       return IterableResult.single({ type: "name", name: modifier.words });

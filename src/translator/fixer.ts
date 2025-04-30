@@ -174,7 +174,7 @@ function fixVerb(verb: English.Verb): English.Verb {
 }
 function fixVerbPhrase(verb: English.VerbPhrase): English.VerbPhrase {
   switch (verb.type) {
-    case "default":
+    case "simple":
       return {
         ...verb,
         verb: fixVerb(verb.verb),
@@ -205,7 +205,7 @@ function fixPreposition(
 }
 function fixClause(clause: English.Clause): English.Clause {
   switch (clause.type) {
-    case "default":
+    case "simple":
       return {
         ...clause,
         subject: fixNounPhrase(clause.subject),
