@@ -4,6 +4,29 @@ import { IterableResult } from "../compound.ts";
 import { dictionary } from "../dictionary.ts";
 import { FilteredError } from "./error.ts";
 
+const WORDS = [
+  "zero",
+  "one",
+  "two",
+  "three",
+  "four",
+  "five",
+  "six",
+  "seven",
+  "eight",
+  "nine",
+  "ten",
+  "eleven",
+  "twelve",
+  "thirteen",
+  "fourteen",
+  "fifteen",
+  "sixteen",
+  "seventeen",
+  "eighteen",
+  "nineteen",
+  "twenty",
+];
 function singleNumber(word: string) {
   return IterableResult.fromArray(dictionary.get(word)!.definitions)
     .filterMap((definition) =>
@@ -80,4 +103,11 @@ function combineNumbers(numbers: ReadonlyArray<number>) {
 export function number(numbers: ReadonlyArray<string>): IterableResult<number> {
   return IterableResult.combine(...numbers.map(singleNumber))
     .flatMap(combineNumbers);
+}
+export function numberAsText(number: number): string {
+  if (number <= 20) {
+    return WORDS[number];
+  } else {
+    return `${number}`;
+  }
 }

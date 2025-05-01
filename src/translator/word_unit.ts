@@ -6,7 +6,7 @@ import { adjective, compoundAdjective } from "./adjective.ts";
 import * as English from "./ast.ts";
 import { TranslationTodoError } from "./error.ts";
 import { PartialNoun, partialNoun } from "./noun.ts";
-import { number } from "./number.ts";
+import { number, numberAsText } from "./number.ts";
 import { partialPronoun, Place } from "./pronoun.ts";
 import { PartialVerb, partialVerb } from "./verb.ts";
 import { word } from "./word.ts";
@@ -118,7 +118,7 @@ export function wordUnit(
           type: "noun",
           determiners: [],
           adjectives: [],
-          singular: `${number}`,
+          singular: numberAsText(number),
           plural: null,
           reduplicationCount: 1,
           emphasis: wordUnit.emphasis != null,

@@ -8,7 +8,7 @@ import { determiner } from "./determiner.ts";
 import { ExhaustedError, TranslationTodoError } from "./error.ts";
 import { nanpa } from "./nanpa.ts";
 import { noun } from "./noun.ts";
-import { number } from "./number.ts";
+import { number, numberAsText } from "./number.ts";
 import { phrase } from "./phrase.ts";
 import { pronoun } from "./pronoun.ts";
 import { noEmphasis, word } from "./word.ts";
@@ -53,7 +53,7 @@ function defaultModifier(wordUnit: TokiPona.WordUnit) {
           type: "determiner",
           determiner: {
             determiner: word({
-              word: `${number}`,
+              word: numberAsText(number),
               reduplicationCount: 1,
               emphasis,
             }),
