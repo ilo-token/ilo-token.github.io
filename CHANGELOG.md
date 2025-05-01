@@ -28,7 +28,7 @@ and "I may". Preverb translation is not yet implemented.
   translation output.
 - Reorder noun by perspective from third person then second then finally first.
 - Number as english words e.g. "ten" instead of "10" are now used for small
-  numbers.
+  numbers. Thanks soweli Eweke for the suggestion!
 - Added "Use hardcoded anu la translation" setting anticipating "anu la"
   translation which isn't implemented yet.
 
