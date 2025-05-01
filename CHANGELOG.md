@@ -22,14 +22,13 @@ do not communicate" instead of the grammatically awkward "I not communicate".
 ilo Token can now translate to modal verbs: "mi ken" can translate into "I can"
 and "I may". Preverb translation is not yet implemented.
 
-ilo Token will now prefer "you and I" over "I and you". ilo Token will reorder
-compound nouns from third person then second then first.
-
 - Implement proper verb negation.
 - Implement modal verb translation.
 - Implement pagination. This also prevents browser crashes due to numerous
   translation output.
 - Reorder noun by perspective from third person then second then finally first.
+- Number as english words e.g. "ten" instead of "10" are now used for small
+  numbers.
 - Added "Use hardcoded anu la translation" setting anticipating "anu la"
   translation which isn't implemented yet.
 
