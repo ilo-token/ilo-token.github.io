@@ -1235,6 +1235,7 @@ pona:
     positive(adj opinion) quality(n);
 
     nicely(adv);
+    # TODO: well(adv); # Implement this when ilo Token can add adverbs after the verbs or adjectives
 
 pu:
     interact(v) with(prep) the(d article) book(n singular) titled(adj)
