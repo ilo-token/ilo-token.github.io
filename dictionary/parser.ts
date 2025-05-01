@@ -295,8 +295,8 @@ const prepositionDefinition = checkedSimpleUnitWithTemplate(
 const numeralDefinition = checkedSimpleUnit("num")
   .mapWithPositionedError((num) => {
     const numeral = +num;
-    if (!Number.isInteger(numeral)) {
-      throw `"${num}" is not a number`;
+    if (!Number.isInteger(numeral) || numeral < 0) {
+      throw `"${num}" is not a non-negative integer`;
     } else {
       return { type: "numeral", numeral };
     }
