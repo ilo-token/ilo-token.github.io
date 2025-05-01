@@ -23,9 +23,8 @@ ala:
     not(d negative);
     not(adv negative);
     nothing(n plural);
+    none(n plural);
     no(d quantifier plural);
-
-    none(n plural) of(prep) [headword];
 
     `[`negates a word or phrase`]`(particle def);
     `[`forms a yes-no question`]`(particle def);
