@@ -25,10 +25,16 @@ ala:
     nothing(n plural);
     no(d quantifier plural);
 
+    none(n plural) of(prep) [headword];
+
     `[`negates a word or phrase`]`(particle def);
     `[`forms a yes-no question`]`(particle def);
 
-    0(num);
+    # 0(num);
+        # While technically true, this just floods the output. ilo Token
+        # prioritizes numerals at the moment which is bad because normal
+        # negation are more interesting. Thanks soweli Eweke for pointing this
+        # out!
 
 alasa:
     # hunt(v) [object];
@@ -1580,6 +1586,14 @@ tu:
     separate(v) [object];
     divide(v) [object];
     split(v) [object];
+
+    separating(n gerund);
+    dividing(n gerund);
+    splitting(n gerund);
+
+    separated(adj opinion);
+    divided(adj opinion);
+    split(adj opinion);
 
 unpa:
     sexual(adj qualifier) activity(n);
