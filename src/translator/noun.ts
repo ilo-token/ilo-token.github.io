@@ -82,7 +82,7 @@ export function fromNounForms(
           ]);
         case "condensed":
           if (singular != null && plural != null) {
-            return IterableResult.single({
+            return IterableResult.single<NounQuantity>({
               noun: condense(singular, plural),
               quantity: "condensed",
             });
@@ -90,12 +90,15 @@ export function fromNounForms(
           // fallthrough
         case "default only":
           if (singular != null) {
-            return IterableResult.single({
+            return IterableResult.single<NounQuantity>({
               noun: singular,
               quantity: "singular",
             });
           } else {
-            return IterableResult.single({ noun: plural!, quantity: "plural" });
+            return IterableResult.single<NounQuantity>({
+              noun: plural!,
+              quantity: "plural",
+            });
           }
       }
   }

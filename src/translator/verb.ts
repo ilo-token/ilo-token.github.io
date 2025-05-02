@@ -213,14 +213,14 @@ function fromVerbForms(
     case "condensed":
       if (negated) {
         if (is) {
-          result = IterableResult.single({
+          result = IterableResult.single<Result>({
             modal: null,
             doesNot: null,
             verb: `${present} not/${past} not/will not be`,
             postAdverb: null,
           });
         } else {
-          result = IterableResult.single({
+          result = IterableResult.single<Result>({
             modal: null,
             doesNot: {
               preAdverbs: [],
@@ -233,14 +233,14 @@ function fromVerbForms(
         }
       } else {
         if (is) {
-          result = IterableResult.single({
+          result = IterableResult.single<Result>({
             modal: null,
             doesNot: null,
             verb: `${present}/${past}/will be`,
             postAdverb: null,
           });
         } else {
-          result = IterableResult.single({
+          result = IterableResult.single<Result>({
             modal: noAdverbs(noEmphasis("(will)")),
             doesNot: null,
             verb: condenseVerb(present, past),
@@ -316,14 +316,14 @@ function fromVerbForms(
     case "default only":
       if (negated) {
         if (is) {
-          result = IterableResult.single({
+          result = IterableResult.single<Result>({
             modal: null,
             doesNot: null,
             verb: present,
             postAdverb: NOT,
           });
         } else {
-          result = IterableResult.single({
+          result = IterableResult.single<Result>({
             modal: null,
             doesNot: {
               preAdverbs: [],
@@ -335,7 +335,7 @@ function fromVerbForms(
           });
         }
       } else {
-        result = IterableResult.single({
+        result = IterableResult.single<Result>({
           modal: null,
           doesNot: null,
           verb: present,
@@ -378,7 +378,7 @@ export function verb(
       const { first } = verb;
       switch (first.type) {
         case "modal":
-          return IterableResult.single({
+          return IterableResult.single<English.VerbPhrase>({
             ...verb,
             type: "simple",
             verb: { modal: first, verbs: verb.rest },

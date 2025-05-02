@@ -226,7 +226,7 @@ export function multipleModifiers(
         inPositionPhrases.length <= 1 &&
         (nouns.length === 0 || inPositionPhrases.length === 0)
       ) {
-        adjectival = IterableResult.single({
+        adjectival = IterableResult.single<MultipleModifierTranslation>({
           type: "adjectival",
           nounPreposition: nounPrepositions[0] ?? null,
           determiners,
@@ -261,7 +261,7 @@ export function multipleModifiers(
             emphasis: false,
           }
           : null;
-        adverbial = IterableResult.single({
+        adverbial = IterableResult.single<MultipleModifierTranslation>({
           type: "adverbial",
           adverbs,
           inWayPhrase,

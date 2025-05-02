@@ -125,7 +125,7 @@ export function error(error: ResultError): Parser<never> {
 }
 export const empty: Parser<never> = new Parser(() => ArrayResult.empty());
 export const nothing: Parser<null> = new Parser(() =>
-  new ArrayResult([{ value: null, length: 0 }])
+  new ArrayResult<ValueLength<null>>([{ value: null, length: 0 }])
 );
 export const emptyArray: Parser<ReadonlyArray<never>> = nothing.map(() => []);
 export function lookAhead<T>(parser: Parser<T>): Parser<T> {
@@ -263,7 +263,10 @@ export function matchCapture(
   return new Parser((position) => {
     const match = currentSource.slice(position).match(newRegex);
     if (match != null) {
-      return new ArrayResult([{ value: match, length: match[0].length }]);
+      return new ArrayResult<ValueLength<RegExpMatchArray>>([{
+        value: match,
+        length: match[0].length,
+      }]);
     } else {
       return generateError(position, description);
     }
@@ -281,7 +284,7 @@ export function matchString(
       currentSource.length - position >= match.length &&
       currentSource.slice(position, position + match.length) === match
     ) {
-      return new ArrayResult([{
+      return new ArrayResult<ValueLength<string>>([{
         value: match,
         length: match.length,
       }]);
@@ -291,19 +294,19 @@ export function matchString(
   });
 }
 export const allRest: Parser<string> = new Parser((position) =>
-  new ArrayResult([{
+  new ArrayResult<ValueLength<string>>([{
     value: currentSource.slice(position),
     length: currentSource.length - position,
   }])
 );
 export const end: Parser<null> = new Parser((position) =>
   position === currentSource.length
-    ? new ArrayResult([{ value: null, length: 0 }])
+    ? new ArrayResult<ValueLength<null>>([{ value: null, length: 0 }])
     : generateError(position, "end of text")
 );
 export const notEnd: Parser<null> = new Parser((position) =>
   position < currentSource.length
-    ? new ArrayResult([{ value: null, length: 0 }])
+    ? new ArrayResult<ValueLength<null>>([{ value: null, length: 0 }])
     : ArrayResult.errors([
       new UnexpectedError(
         "end of text",
