@@ -48,7 +48,7 @@ export type MultiplePhrases =
 export type Preposition = Readonly<{
   preposition: HeadedWordUnit;
   modifiers: ReadonlyArray<Modifier>;
-  phrases: MultiplePhrases & Readonly<{ type: "single" | "anu" }>;
+  phrases: Readonly<{ type: "single" | "anu" }> & MultiplePhrases;
   emphasis: null | Emphasis;
 }>;
 export type Predicate =
