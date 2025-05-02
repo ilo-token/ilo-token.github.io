@@ -53,7 +53,8 @@ export async function build(): Promise<boolean> {
 function displayError(source: string, errors: ReadonlyArray<ResultError>) {
   let color: boolean;
   try {
-    color = Deno.env.get("NO_COLOR") !== "1";
+    const noColor = Deno.env.get("NO_COLOR");
+    color = noColor == null || noColor === "";
   } catch (error) {
     if (error instanceof Deno.errors.NotCapable) {
       color = true;
