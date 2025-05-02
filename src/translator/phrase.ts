@@ -63,15 +63,8 @@ function nounPhrase(
         modifier.name,
         (name): English.PostAdjective => ({ adjective: "named", name }),
       );
-    const prepositions = [
-      ...nullableAsArray(modifier.inPositionPhrase)
-        .map((object) => nounAsPreposition(object, "in")),
-      ...nullableAsArray(modifier.ofPhrase)
-        .map((object) => nounAsPreposition(object, "of")),
-    ];
-    if (prepositions.length > 1) {
-      throw new FilteredError("multiple preposition within noun phrase");
-    }
+    const prepositions = nullableAsArray(modifier.ofPhrase)
+      .map((object) => nounAsPreposition(object, "of"));
     // TODO: do this on `fixer.ts` instead
     if (prepositions.length > 0 && postAdjective != null) {
       throw new FilteredError("named noun with preposition");
@@ -96,9 +89,7 @@ function nounPhrase(
       }));
     if (modifier.nounPreposition == null) {
       return headNoun;
-    } else if (
-      modifier.ofPhrase == null && modifier.inPositionPhrase == null
-    ) {
+    } else if (modifier.ofPhrase == null) {
       return headNoun.map((noun): English.NounPhrase => ({
         ...modifier.nounPreposition!.noun as English.NounPhrase & {
           type: "simple";

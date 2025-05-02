@@ -6,7 +6,7 @@ import { FilteredError } from "./error.ts";
 import { phrase } from "./phrase.ts";
 
 export function nanpa(
-  nanpa: TokiPona.Modifier & { type: "nanpa" },
+  nanpa: TokiPona.Nanpa,
 ): IterableResult<English.NounPhrase> {
   return phrase({
     phrase: nanpa.phrase,

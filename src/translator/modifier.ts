@@ -24,8 +24,7 @@ export type ModifierTranslation =
   | Readonly<{ type: "adjective"; adjective: English.AdjectivePhrase }>
   | Readonly<{ type: "determiner"; determiner: English.Determiner }>
   | Readonly<{ type: "adverb"; adverb: English.Adverb }>
-  | Readonly<{ type: "name"; name: string }>
-  | Readonly<{ type: "position phrase"; noun: English.NounPhrase }>;
+  | Readonly<{ type: "name"; name: string }>;
 export type AdjectivalModifier = Readonly<{
   nounPreposition:
     | null
@@ -34,7 +33,6 @@ export type AdjectivalModifier = Readonly<{
   adjectives: ReadonlyArray<English.AdjectivePhrase>;
   name: null | string;
   ofPhrase: null | English.NounPhrase;
-  inPositionPhrase: null | English.NounPhrase;
 }>;
 export type AdverbialModifier = Readonly<{
   adverbs: ReadonlyArray<English.Adverb>;
@@ -180,7 +178,7 @@ function modifier(modifier: TokiPona.Modifier) {
     case "nanpa":
       return nanpa(modifier)
         .map((noun): ModifierTranslation => ({
-          type: "position phrase",
+          type: "noun",
           noun,
         }));
   }
@@ -213,18 +211,12 @@ export function multipleModifiers(
       const names = modifiers
         .flatMap((modifier) => modifier.type === "name" ? [modifier.name] : []);
 
-      const inPositionPhrases = modifiers.flatMap((modifier) =>
-        modifier.type === "position phrase" ? [modifier.noun] : []
-      );
-
       let adjectival: IterableResult<MultipleModifierTranslation>;
       if (
         nouns.length <= 1 &&
         nounPrepositions.length <= 1 &&
         adverbs.length === 0 &&
-        names.length <= 1 &&
-        inPositionPhrases.length <= 1 &&
-        (nouns.length === 0 || inPositionPhrases.length === 0)
+        names.length <= 1
       ) {
         adjectival = IterableResult.single<MultipleModifierTranslation>({
           type: "adjectival",
@@ -233,7 +225,6 @@ export function multipleModifiers(
           adjectives,
           name: names[0] ?? null,
           ofPhrase: nouns[0] ?? null,
-          inPositionPhrase: inPositionPhrases[0] ?? null,
         });
       } else {
         adjectival = IterableResult.empty();
@@ -244,8 +235,7 @@ export function multipleModifiers(
         nounPrepositions.length === 0 &&
         determiners.length === 0 &&
         adjectives.length <= 1 &&
-        names.length === 0 &&
-        inPositionPhrases.length === 0
+        names.length === 0
       ) {
         const inWayPhrase: null | English.NounPhrase = adjectives.length > 0
           ? {
