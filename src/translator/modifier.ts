@@ -156,6 +156,7 @@ function pi(
     includeVerb: false,
   })
     .filter((modifier) =>
+      // TODO: do this in `fixer.ts` instead
       modifier.type !== "noun" || modifier.noun.type !== "simple" ||
       modifier.noun.prepositions.length === 0
     )
