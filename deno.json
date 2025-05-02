@@ -22,7 +22,7 @@
     },
     "build-dictionary": {
       "description": "Builds the dictionary at `./dictionary/dictionary.ts`",
-      "command": "deno run -E=NO_COLOR -R=./dictionary/dictionary -W=./dictionary/dictionary.ts --no-prompt --frozen --cached-only ./dictionary/build.ts"
+      "command": "deno run -E=NO_COLOR,DEBUG_TAGS,DEBUG_CHUNKS -R=./dictionary/dictionary -W=./dictionary/dictionary.ts --no-prompt --frozen --cached-only ./dictionary/build.ts"
     }
   },
   "fmt": {
