@@ -49,7 +49,7 @@ export function compound(
 }
 export function lazy<T>(fn: () => T): () => T {
   let defined = false;
-  let value: null | T;
+  let value: T;
   return () => {
     if (!defined) {
       defined = true;
