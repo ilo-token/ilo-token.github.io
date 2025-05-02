@@ -29,7 +29,7 @@ async function watchDictionary() {
   const command = new Deno.Command(Deno.execPath(), {
     args: [
       "run",
-      "-E=NO_COLOR",
+      "-E=NO_COLOR,DEBUG_TAGS,DEBUG_CHUNKS",
       "-R=./dictionary/dictionary",
       "-W=./dictionary/dictionary.ts",
       "--no-prompt",
