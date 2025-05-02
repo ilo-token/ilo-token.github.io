@@ -1,12 +1,12 @@
-export type RedundancySettings = "both" | "condensed" | "default only";
+export type Redundancy = "both" | "condensed" | "default only";
 
 // may be extended but existing properties must stay unchanged
 export type Settings = {
   teloMisikeke: boolean;
   randomize: boolean;
   multiline: boolean;
-  quantity: RedundancySettings;
-  tense: RedundancySettings;
+  quantity: Redundancy;
+  tense: Redundancy;
   xAlaXPartialParsing: boolean;
   separateRepeatedModifiers: boolean;
   hardcodedAnuLa: boolean;

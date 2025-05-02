@@ -64,13 +64,13 @@ export type IndirectObject = Readonly<{
   preposition: string;
   object: Noun;
 }>;
-export type PartialVerb = Readonly<{
+export type VerbAccessory = Readonly<{
   directObject: null | Noun;
   indirectObjects: ReadonlyArray<IndirectObject>;
   forObject: boolean | string;
   predicateType: null | "verb" | "noun adjective";
 }>;
-export type Verb = VerbForms & PartialVerb;
+export type Verb = VerbForms & VerbAccessory;
 export type Definition =
   | Readonly<{ type: "filler"; before: string; repeat: string; after: string }>
   | Readonly<{ type: "particle definition"; definition: string }>

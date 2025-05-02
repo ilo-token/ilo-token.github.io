@@ -2,12 +2,7 @@
 
 import { toKebabCase } from "@std/text/to-kebab-case";
 import { checkLocalStorage, setIgnoreError } from "./local_storage.ts";
-import {
-  defaultSettings,
-  RedundancySettings,
-  Settings,
-  settings,
-} from "./settings.ts";
+import { defaultSettings, Redundancy, Settings, settings } from "./settings.ts";
 
 type Updater<T> = Readonly<{
   parse: (value: string) => null | T;
@@ -32,13 +27,13 @@ const BOOL_UPDATER: Updater<boolean> = {
     (input as HTMLInputElement).checked = value;
   },
 };
-const REDUNDANCY_UPDATER: Updater<RedundancySettings> = {
+const REDUNDANCY_UPDATER: Updater<Redundancy> = {
   parse: (value) =>
     ["both", "condensed", "default only"].includes(value)
-      ? value as RedundancySettings
+      ? value as Redundancy
       : null,
   stringify: (value) => value,
-  load: ({ value }) => value as RedundancySettings,
+  load: ({ value }) => value as Redundancy,
   set: (input, value) => {
     input.value = value;
   },

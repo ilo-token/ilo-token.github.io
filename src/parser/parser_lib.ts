@@ -3,20 +3,20 @@ import { MemoizationCacheResult, memoize } from "@std/cache/memoize";
 import { lazy as lazyEval } from "../../misc/misc.ts";
 import { ArrayResult, ResultError } from "../compound.ts";
 
-type SingleResult<T> = Readonly<{ value: T; length: number }>;
-type ParserResult<T> = ArrayResult<SingleResult<T>>;
-type InnerParser<T> = (input: number) => ParserResult<T>;
+type ValueLength<T> = Readonly<{ value: T; length: number }>;
+type ParserResult<T> = ArrayResult<ValueLength<T>>;
+type RawParser<T> = (input: number) => ParserResult<T>;
 type Cache<T> = Map<number, MemoizationCacheResult<ParserResult<T>>>;
 
 let currentSource = "";
 const allCache: Set<WeakRef<Cache<unknown>>> = new Set();
 
 export class Parser<T> {
-  readonly rawParser: InnerParser<T>;
-  constructor(parser: InnerParser<T>) {
+  readonly rawParser: RawParser<T>;
+  constructor(parser: RawParser<T>) {
     const cache: Cache<T> = new Map();
     allCache.add(new WeakRef(cache));
-    this.rawParser = memoize<InnerParser<T>, number, Cache<T>>(
+    this.rawParser = memoize<RawParser<T>, number, Cache<T>>(
       parser,
       { cache },
     );
@@ -36,7 +36,7 @@ export class Parser<T> {
   map<U>(mapper: (value: T) => U): Parser<U> {
     return new Parser((input) =>
       this.rawParser(input)
-        .map(({ value, length }): SingleResult<U> => ({
+        .map(({ value, length }): ValueLength<U> => ({
           value: mapper(value),
           length,
         }))
@@ -62,7 +62,7 @@ export class Parser<T> {
         .flatMap(({ value, length }) =>
           mapper(value)
             .rawParser(position + length)
-            .map(({ value, length: addedLength }): SingleResult<U> => ({
+            .map(({ value, length: addedLength }): ValueLength<U> => ({
               value,
               length: length + addedLength,
             }))
@@ -131,7 +131,7 @@ export const emptyArray: Parser<ReadonlyArray<never>> = nothing.map(() => []);
 export function lookAhead<T>(parser: Parser<T>): Parser<T> {
   return new Parser((input) =>
     parser.rawParser(input)
-      .map(({ value }): SingleResult<T> => ({ value, length: 0 }))
+      .map(({ value }): ValueLength<T> => ({ value, length: 0 }))
   );
 }
 export function lazy<T>(parser: () => Parser<T>): Parser<T> {
@@ -316,7 +316,7 @@ export type WithSource<T> = readonly [value: T, source: string];
 export function withSource<T>(parser: Parser<T>): Parser<WithSource<T>> {
   return new Parser((position) =>
     parser.rawParser(position).map(
-      ({ value, length }): SingleResult<WithSource<T>> => ({
+      ({ value, length }): ValueLength<WithSource<T>> => ({
         value: [
           value,
           currentSource.slice(position, position + length),
@@ -330,7 +330,7 @@ export type WithPosition<T> = Readonly<{ value: T }> & Position;
 export function withPosition<T>(parser: Parser<T>): Parser<WithPosition<T>> {
   return new Parser((position) =>
     parser.rawParser(position).map(
-      ({ value, length }): SingleResult<WithPosition<T>> => ({
+      ({ value, length }): ValueLength<WithPosition<T>> => ({
         value: { value, position, length },
         length,
       }),

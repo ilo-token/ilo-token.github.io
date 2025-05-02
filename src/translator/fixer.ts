@@ -181,16 +181,16 @@ function fixComplement(complement: English.Complement): English.Complement {
       };
   }
 }
-function fixAdverbVerb(adverbVerb: English.AdverbVerb): English.AdverbVerb {
+function fixSingleVerb(adverbVerb: English.Verb): English.Verb {
   return {
     ...adverbVerb,
     preAdverbs: fixMultipleAdverbs(adverbVerb.preAdverbs),
   };
 }
-function fixVerb(verb: English.Verb): English.Verb {
+function fixVerb(verb: English.WholeVerb): English.WholeVerb {
   return {
-    modal: mapNullable(verb.modal, fixAdverbVerb),
-    verbs: verb.verbs.map(fixAdverbVerb),
+    modal: mapNullable(verb.modal, fixSingleVerb),
+    verbs: verb.verbs.map(fixSingleVerb),
   };
 }
 function fixVerbPhrase(verb: English.VerbPhrase): English.VerbPhrase {

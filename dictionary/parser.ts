@@ -34,8 +34,8 @@ import {
   IndirectObject,
   Noun,
   NounForms,
-  PartialVerb,
   PostAdjective,
+  VerbAccessory,
 } from "./type.ts";
 
 const RESERVED_SYMBOLS = "#()*+/:;<=>@[\\]^`{|}~";
@@ -459,7 +459,7 @@ const verbDefinition = checkedSequence(
         ))
         .map(nullableAsArray),
     )
-      .map(([_, indirectObjects]): null | PartialVerb => ({
+      .map(([_, indirectObjects]): null | VerbAccessory => ({
         directObject: null,
         indirectObjects,
         forObject: true,
@@ -469,7 +469,7 @@ const verbDefinition = checkedSequence(
       sequence(closeParenthesis, openBracket, keyword("predicate")),
       closeBracket,
     )
-      .map((): null | PartialVerb => ({
+      .map((): null | VerbAccessory => ({
         directObject: null,
         indirectObjects: [],
         forObject: false,
@@ -479,12 +479,12 @@ const verbDefinition = checkedSequence(
       keyword("modal"),
       sequence(closeParenthesis, template(keyword("predicate"))),
     )
-      .map((): null | PartialVerb => null),
+      .map((): null | VerbAccessory => null),
     checkedSequence(
       keyword("linking"),
       sequence(closeParenthesis, template(keyword("predicate"))),
     )
-      .map((): null | PartialVerb => ({
+      .map((): null | VerbAccessory => ({
         directObject: null,
         indirectObjects: [],
         forObject: false,
@@ -509,7 +509,7 @@ const verbDefinition = checkedSequence(
         ),
       ),
     )
-      .map(([_, [directObject, rawIndirectObject]]): PartialVerb => {
+      .map(([_, [directObject, rawIndirectObject]]): VerbAccessory => {
         if (rawIndirectObject == null) {
           return {
             directObject,

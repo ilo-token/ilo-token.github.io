@@ -54,7 +54,7 @@ type NounQuantity = Readonly<{ noun: string; quantity: English.Quantity }>;
 export function fromNounForms(
   nounForms: Dictionary.NounForms,
   determinerNumber: Dictionary.Quantity,
-): IterableResult<{ noun: string; quantity: English.Quantity }> {
+): IterableResult<NounQuantity> {
   const { singular, plural } = nounForms;
   switch (determinerNumber) {
     case "singular":

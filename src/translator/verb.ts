@@ -18,19 +18,19 @@ export type VerbForms =
     reduplicationCount: number;
     emphasis: boolean;
   }>;
-export type VerbObjects = Readonly<{
+export type VerbAccessory = Readonly<{
   object: null | English.NounPhrase;
   objectComplement: null | English.Complement;
   prepositions: ReadonlyArray<English.Preposition>;
 }>;
 export type FirstVerb =
-  | (Readonly<{ type: "modal" }> & English.AdverbVerb)
+  | (Readonly<{ type: "modal" }> & English.Verb)
   | (Readonly<{ type: "conjugated" }> & VerbForms);
 export type PartialVerb =
-  & VerbObjects
+  & VerbAccessory
   & Readonly<{
     first: FirstVerb;
-    rest: ReadonlyArray<English.AdverbVerb>;
+    rest: ReadonlyArray<English.Verb>;
     subjectComplement: null | English.Complement;
     forObject: boolean | string;
     predicateType: null | "verb" | "noun adjective";
@@ -44,7 +44,7 @@ export type PartialCompoundVerb =
       conjunction: string;
       verbs: ReadonlyArray<PartialCompoundVerb>;
     }>
-    & VerbObjects
+    & VerbAccessory
   );
 function condenseVerb(present: string, past: string) {
   const [first, ...rest] = present.split(" ");
@@ -65,7 +65,7 @@ function addModal(
       throw new FilteredError("nested modal verb");
     case "conjugated": {
       const newRest = nullableAsArray(first)
-        .map((first): English.AdverbVerb => {
+        .map((first): English.Verb => {
           const { adverbs, presentPlural, negated } = first;
           const useVerb = presentPlural === "are" ? "be" : presentPlural;
           const preAdverbs = takeNegative ? adverbs : [
@@ -189,7 +189,7 @@ function fromVerbForms(
   verbForms: VerbForms,
   perspective: Dictionary.Perspective,
   quantity: English.Quantity,
-): IterableResult<English.Verb> {
+): IterableResult<English.WholeVerb> {
   const { negated, adverbs } = verbForms;
   const is = verbForms.presentSingular === "is";
   const presentSingular = is && perspective === "first"
@@ -203,8 +203,8 @@ function fromVerbForms(
       ? [pastPlural, verbForms.presentPlural, "do"]
       : [pastSingular, presentSingular, "does"];
   type Result = Readonly<{
-    modal: null | English.AdverbVerb;
-    doesNot: null | English.AdverbVerb;
+    modal: null | English.Verb;
+    doesNot: null | English.Verb;
     verb: string;
     postAdverb: null | English.Adverb;
   }>;
@@ -344,7 +344,9 @@ function fromVerbForms(
       }
       break;
   }
-  return result.map(({ modal, doesNot, verb, postAdverb }): English.Verb => ({
+  return result.map((
+    { modal, doesNot, verb, postAdverb },
+  ): English.WholeVerb => ({
     modal,
     verbs: [
       ...nullableAsArray(doesNot),
@@ -400,6 +402,6 @@ export function verb(
     }
   }
 }
-export function noAdverbs(verb: English.Word): English.AdverbVerb {
+export function noAdverbs(verb: English.Word): English.Verb {
   return { preAdverbs: [], verb, postAdverb: null };
 }

@@ -52,19 +52,19 @@ export type Adverb = Readonly<{
   adverb: Word;
   negative: boolean;
 }>;
-export type AdverbVerb = {
+export type Verb = {
   preAdverbs: ReadonlyArray<Adverb>;
   verb: Word;
   postAdverb: null | Adverb;
 };
-export type Verb = Readonly<{
-  modal: null | AdverbVerb;
-  verbs: ReadonlyArray<AdverbVerb>;
+export type WholeVerb = Readonly<{
+  modal: null | Verb;
+  verbs: ReadonlyArray<Verb>;
 }>;
 export type VerbPhrase =
   | Readonly<{
     type: "simple";
-    verb: Verb;
+    verb: WholeVerb;
     subjectComplement: null | Complement;
     contentClause: null | Clause;
     object: null | NounPhrase;
