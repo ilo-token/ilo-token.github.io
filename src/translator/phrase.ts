@@ -171,30 +171,34 @@ function verbPhrase(
   }
   const negated = extracted != null;
   const useAdverbs = extracted ?? adverbs;
-  if (verb.first != null) {
-    return {
-      ...verb,
-      first: { ...verb.first, negated, adverbs: useAdverbs },
-      emphasis: emphasis,
-      prepositions,
-    };
-  } else if (verb.modal != null) {
-    const postAdverb = negated ? NOT : null;
-    return {
-      ...verb,
-      modal: {
-        preAdverbs: useAdverbs,
-        verb: verb.modal.verb,
-        postAdverb,
-      },
-      emphasis: emphasis,
-      prepositions,
-    };
-  } else {
-    // This should be unreachable
-    throw new FilteredError(
-      "verb phrase without modal verb nor conjugated verb",
-    );
+  const { first } = verb;
+  switch (first.type) {
+    case "modal": {
+      const postAdverb = negated ? NOT : null;
+      return {
+        ...verb,
+        first: {
+          type: "modal",
+          preAdverbs: useAdverbs,
+          verb: first.verb,
+          postAdverb,
+        },
+        emphasis: emphasis,
+        prepositions,
+      };
+    }
+    case "conjugated":
+      return {
+        ...verb,
+        first: {
+          ...first,
+          type: "conjugated",
+          negated,
+          adverbs: useAdverbs,
+        },
+        emphasis: emphasis,
+        prepositions,
+      };
   }
 }
 function defaultPhrase(
@@ -247,8 +251,8 @@ function defaultPhrase(
 function prepositionAsVerb(preposition: English.Preposition): PartialVerb {
   const extracted = extractNegativeFromPreposition(preposition);
   return {
-    modal: null,
     first: {
+      type: "conjugated",
       adverbs: [],
       presentPlural: "are",
       presentSingular: "is",
@@ -368,8 +372,8 @@ export function phraseAsVerb(
       }
       return {
         type: "simple",
-        modal: null,
         first: {
+          type: "conjugated",
           adverbs: [],
           presentPlural: "are",
           presentSingular: "is",

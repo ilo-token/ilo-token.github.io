@@ -45,8 +45,8 @@ function applyToAndTurnInto(
       IterableResult.fromArray<PartialCompoundVerb>([
         {
           type: "simple",
-          modal: null,
           first: {
+            type: "conjugated",
             adverbs: [],
             presentPlural: "apply",
             presentSingular: "applies",
@@ -66,8 +66,8 @@ function applyToAndTurnInto(
         },
         {
           type: "simple",
-          modal: null,
           first: {
+            type: "conjugated",
             adverbs: [],
             presentPlural: "turn",
             presentSingular: "turns",
@@ -96,8 +96,8 @@ function make(predicate: AdjectiveWithInWay, object: English.NounPhrase) {
   ])
     .map(([negated, adjective]): PartialCompoundVerb => ({
       type: "simple",
-      modal: null,
       first: {
+        type: "conjugated",
         adverbs: [],
         presentPlural: "make",
         presentSingular: "makes",

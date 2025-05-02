@@ -79,7 +79,8 @@ function defaultWordUnit(
         case "modal verb":
           return IterableResult.single<WordUnitTranslation>({
             type: "verb",
-            modal: {
+            first: {
+              type: "modal",
               preAdverbs: [],
               verb: word({
                 word: definition.verb,
@@ -88,7 +89,6 @@ function defaultWordUnit(
               }),
               postAdverb: null,
             },
-            first: null,
             rest: [],
             subjectComplement: null,
             object: null,

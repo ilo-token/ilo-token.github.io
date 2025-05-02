@@ -23,11 +23,13 @@ export type VerbObjects = Readonly<{
   objectComplement: null | English.Complement;
   prepositions: ReadonlyArray<English.Preposition>;
 }>;
+export type FirstVerb =
+  | (Readonly<{ type: "modal" }> & English.AdverbVerb)
+  | (Readonly<{ type: "conjugated" }> & VerbForms);
 export type PartialVerb =
   & VerbObjects
   & Readonly<{
-    modal: null | English.AdverbVerb;
-    first: null | VerbForms;
+    first: FirstVerb;
     rest: ReadonlyArray<English.AdverbVerb>;
     subjectComplement: null | English.Complement;
     forObject: boolean | string;
@@ -55,40 +57,40 @@ function addModal(
     verb: PartialVerb;
     takeNegative: boolean;
   }>,
-) {
+): PartialVerb {
   const { modal, verb, takeNegative } = options;
-  if (verb.modal == null) {
-    const newRest = nullableAsArray(verb.first)
-      .map((first): English.AdverbVerb => {
-        const { adverbs, presentPlural, negated } = first;
-        const useVerb = presentPlural === "are" ? "be" : presentPlural;
-        const preAdverbs = takeNegative ? adverbs : [
-          ...(negated ? [NOT] : []),
-          ...adverbs,
-        ];
-        return {
-          preAdverbs,
-          verb: word({ ...first, word: useVerb }),
-          postAdverb: null,
-        };
-      });
-    const postAdverb = takeNegative && (verb.first?.negated ?? false)
-      ? NOT
-      : null;
-    return {
-      ...verb,
-      modal: {
-        preAdverbs: [],
-        verb: noEmphasis(modal),
-        postAdverb,
-      },
-      first: null,
-      rest: [...newRest, ...verb.rest],
-      reduplicationCount: 1,
-      emphasis: false,
-    };
-  } else {
-    throw new FilteredError("nested modal verb");
+  const { first } = verb;
+  switch (first.type) {
+    case "modal":
+      throw new FilteredError("nested modal verb");
+    case "conjugated": {
+      const newRest = nullableAsArray(first)
+        .map((first): English.AdverbVerb => {
+          const { adverbs, presentPlural, negated } = first;
+          const useVerb = presentPlural === "are" ? "be" : presentPlural;
+          const preAdverbs = takeNegative ? adverbs : [
+            ...(negated ? [NOT] : []),
+            ...adverbs,
+          ];
+          return {
+            preAdverbs,
+            verb: word({ ...first, word: useVerb }),
+            postAdverb: null,
+          };
+        });
+      const postAdverb = takeNegative && (first.negated ?? false) ? NOT : null;
+      return {
+        ...verb,
+        first: {
+          type: "modal",
+          preAdverbs: [],
+          verb: noEmphasis(modal),
+          postAdverb,
+        },
+        rest: [...newRest, ...verb.rest],
+        emphasis: false,
+      };
+    }
   }
 }
 export function addModalToAll(
@@ -145,9 +147,9 @@ export function partialVerb(
   return IterableResult.combine(object, prepositions)
     .map(([object, prepositions]): PartialVerb => ({
       ...definition,
-      modal: null,
       first: {
         ...definition,
+        type: "conjugated",
         adverbs: [],
         negated: false,
         reduplicationCount,
@@ -360,30 +362,6 @@ export function verb(
   quantity: English.Quantity,
 ): IterableResult<English.VerbPhrase> {
   switch (partialVerb.type) {
-    case "simple": {
-      const verbForms = partialVerb.first;
-      if (verbForms != null) {
-        return fromVerbForms(verbForms, perspective, quantity)
-          .map((verb): English.VerbPhrase => ({
-            ...partialVerb,
-            type: "simple",
-            verb: {
-              modal: verb.modal,
-              verbs: [...verb.verbs, ...partialVerb.rest],
-            },
-            contentClause: null,
-            hideVerb: false,
-          }));
-      } else {
-        return IterableResult.single({
-          ...partialVerb,
-          type: "simple",
-          verb: { modal: partialVerb.modal, verbs: partialVerb.rest },
-          contentClause: null,
-          hideVerb: false,
-        });
-      }
-    }
     case "compound":
       return IterableResult.combine(
         ...partialVerb.verbs.map((partialVerb) =>
@@ -395,6 +373,31 @@ export function verb(
           type: "compound",
           verbs,
         }));
+    case "simple": {
+      const { first } = partialVerb;
+      switch (first.type) {
+        case "modal":
+          return IterableResult.single({
+            ...partialVerb,
+            type: "simple",
+            verb: { modal: first, verbs: partialVerb.rest },
+            contentClause: null,
+            hideVerb: false,
+          });
+        case "conjugated":
+          return fromVerbForms(first, perspective, quantity)
+            .map((verb): English.VerbPhrase => ({
+              ...partialVerb,
+              type: "simple",
+              verb: {
+                modal: verb.modal,
+                verbs: [...verb.verbs, ...partialVerb.rest],
+              },
+              contentClause: null,
+              hideVerb: false,
+            }));
+      }
+    }
   }
 }
 export function noAdverbs(verb: English.Word): English.AdverbVerb {
