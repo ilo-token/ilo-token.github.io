@@ -72,6 +72,7 @@ function nounPhrase(
     if (prepositions.length > 1) {
       throw new FilteredError("multiple preposition within noun phrase");
     }
+    // TODO: do this on `fixer.ts` instead
     if (prepositions.length > 0 && postAdjective != null) {
       throw new FilteredError("named noun with preposition");
     }

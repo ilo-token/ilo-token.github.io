@@ -21,6 +21,7 @@ export function nanpa(
             `${phrase.type} within "position X" phrase`,
           ),
         )
+        // TODO: do this on `fixer.ts` instead
         : (phrase.noun as English.NounPhrase & { type: "simple" })
             .prepositions.length > 0
         ? throwError(
