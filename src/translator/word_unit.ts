@@ -28,7 +28,7 @@ function defaultWordUnit(
   const { word: useWord, reduplicationCount, emphasis, includeGerund } =
     options;
   return IterableResult.fromArray(dictionary.get(useWord)!.definitions)
-    .flatMap<WordUnitTranslation>((definition) => {
+    .flatMap((definition) => {
       switch (definition.type) {
         case "noun":
           if (!includeGerund && definition.gerund) {
@@ -39,10 +39,10 @@ function defaultWordUnit(
               definition,
               emphasis: emphasis != null,
             })
-              .map((noun) => ({ ...noun, type: "noun" }));
+              .map((noun): WordUnitTranslation => ({ ...noun, type: "noun" }));
           }
         case "personal pronoun":
-          return IterableResult.single({
+          return IterableResult.single<WordUnitTranslation>({
             ...partialPronoun({
               ...options,
               pronoun: definition,
@@ -55,7 +55,7 @@ function defaultWordUnit(
             return IterableResult.empty();
           } else {
             return adjective({ ...options, definition })
-              .map((adjective) => ({
+              .map((adjective): WordUnitTranslation => ({
                 type: "adjective",
                 adjective,
               }));
@@ -65,7 +65,7 @@ function defaultWordUnit(
             ...options,
             adjectives: definition.adjectives,
           })
-            .map((adjective) => ({
+            .map((adjective): WordUnitTranslation => ({
               type: "adjective",
               adjective,
             }));
@@ -75,9 +75,9 @@ function defaultWordUnit(
             definition,
             emphasis: emphasis != null,
           })
-            .map((verb) => ({ ...verb, type: "verb" }));
+            .map((verb): WordUnitTranslation => ({ ...verb, type: "verb" }));
         case "modal verb":
-          return IterableResult.single({
+          return IterableResult.single<WordUnitTranslation>({
             type: "verb",
             modal: {
               preAdverbs: [],
@@ -114,7 +114,7 @@ export function wordUnit(
   switch (wordUnit.type) {
     case "number":
       return number(wordUnit.words)
-        .map((number) => ({
+        .map((number): WordUnitTranslation => ({
           type: "noun",
           determiners: [],
           adjectives: [],

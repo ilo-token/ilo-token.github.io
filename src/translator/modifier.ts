@@ -47,7 +47,7 @@ function defaultModifier(wordUnit: TokiPona.WordUnit) {
   const emphasis = wordUnit.emphasis != null;
   switch (wordUnit.type) {
     case "number":
-      return number(wordUnit.words).map((number) => {
+      return number(wordUnit.words).map((number): ModifierTranslation => {
         const quantity = number === 1 ? "singular" : "plural";
         return {
           type: "determiner",
@@ -70,11 +70,11 @@ function defaultModifier(wordUnit: TokiPona.WordUnit) {
       return IterableResult.fromArray(
         dictionary.get(wordUnit.word)!.definitions,
       )
-        .flatMap<ModifierTranslation>((definition) => {
+        .flatMap((definition) => {
           switch (definition.type) {
             case "noun":
               return noun({ definition, reduplicationCount, emphasis })
-                .map((noun) => ({
+                .map((noun): ModifierTranslation => ({
                   type: "noun",
                   noun,
                 }));
@@ -84,7 +84,7 @@ function defaultModifier(wordUnit: TokiPona.WordUnit) {
                 reduplicationCount,
                 emphasis,
               })
-                .map((noun) => ({
+                .map((noun): ModifierTranslation => ({
                   type: "noun preposition",
                   noun,
                   preposition: definition.preposition,
@@ -96,14 +96,14 @@ function defaultModifier(wordUnit: TokiPona.WordUnit) {
                 emphasis,
                 place: "object",
               })
-                .map((noun) => ({ type: "noun", noun }));
+                .map((noun): ModifierTranslation => ({ type: "noun", noun }));
             case "determiner":
               return determiner({
                 definition,
                 reduplicationCount,
                 emphasis: wordUnit.emphasis != null,
               })
-                .map((determiner) => ({
+                .map((determiner): ModifierTranslation => ({
                   type: "determiner",
                   determiner,
                 }));
@@ -113,7 +113,7 @@ function defaultModifier(wordUnit: TokiPona.WordUnit) {
                 reduplicationCount,
                 emphasis: wordUnit.emphasis,
               })
-                .map((adjective) => ({
+                .map((adjective): ModifierTranslation => ({
                   type: "adjective",
                   adjective,
                 }));
@@ -123,12 +123,12 @@ function defaultModifier(wordUnit: TokiPona.WordUnit) {
                 reduplicationCount,
                 emphasis: wordUnit.emphasis,
               })
-                .map((adjective) => ({
+                .map((adjective): ModifierTranslation => ({
                   type: "adjective",
                   adjective,
                 }));
             case "adverb":
-              return IterableResult.single({
+              return IterableResult.single<ModifierTranslation>({
                 type: "adverb",
                 adverb: {
                   adverb: word({
@@ -166,12 +166,18 @@ function modifier(modifier: TokiPona.Modifier) {
     case "simple":
       return defaultModifier(modifier.word);
     case "proper words":
-      return IterableResult.single({ type: "name", name: modifier.words });
+      return IterableResult.single<ModifierTranslation>({
+        type: "name",
+        name: modifier.words,
+      });
     case "pi":
       return pi(modifier.phrase);
     case "nanpa":
       return nanpa(modifier)
-        .map((noun) => ({ type: "position phrase", noun }));
+        .map((noun): ModifierTranslation => ({
+          type: "position phrase",
+          noun,
+        }));
   }
 }
 export function multipleModifiers(
@@ -236,7 +242,7 @@ export function multipleModifiers(
         names.length === 0 &&
         inPositionPhrases.length === 0
       ) {
-        const inWayPhrase = adjectives.length > 0
+        const inWayPhrase: null | English.NounPhrase = adjectives.length > 0
           ? {
             type: "simple",
             determiners: [],
@@ -248,7 +254,7 @@ export function multipleModifiers(
             postCompound: null,
             prepositions: [],
             emphasis: false,
-          } as const
+          }
           : null;
         adverbial = IterableResult.single({
           type: "adverbial",

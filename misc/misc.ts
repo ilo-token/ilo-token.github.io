@@ -1,7 +1,7 @@
 // ensure this module don't have imports and as runtime agnostic as possible,
 // make separate module when necessary
 
-export function nullableAsArray<const T>(
+export function nullableAsArray<T>(
   value?: T,
 ): ReadonlyArray<NonNullable<T>> {
   if (value == null) {
@@ -10,7 +10,7 @@ export function nullableAsArray<const T>(
     return [value];
   }
 }
-export function mapNullable<const T, const U>(
+export function mapNullable<T, U>(
   value: T,
   mapper: (value: NonNullable<T>) => U,
 ): null | U {
@@ -20,7 +20,7 @@ export function mapNullable<const T, const U>(
     return mapper(value);
   }
 }
-export function repeatArray<const T>(
+export function repeatArray<T>(
   value: T,
   count: number,
 ): ReadonlyArray<T> {
@@ -47,7 +47,7 @@ export function compound(
     return `${initText} ${conjunction} ${last}`;
   }
 }
-export function lazy<const T>(fn: () => T): () => T {
+export function lazy<T>(fn: () => T): () => T {
   let defined = false;
   let value: null | T;
   return () => {

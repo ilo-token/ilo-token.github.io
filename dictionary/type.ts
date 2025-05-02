@@ -2,18 +2,17 @@ export type NounForms = Readonly<{
   singular: null | string;
   plural: null | string;
 }>;
+export type PostAdjective = Readonly<{
+  adjective: string;
+  name: string;
+}>;
 export type Noun =
   & NounForms
   & Readonly<{
     determiners: ReadonlyArray<Determiner>;
     adjectives: ReadonlyArray<Adjective>;
     gerund: boolean;
-    postAdjective:
-      | null
-      | Readonly<{
-        adjective: string;
-        name: string;
-      }>;
+    postAdjective: null | PostAdjective;
   }>;
 export type PronounForms = Readonly<{
   singular: null | Readonly<{ subject: string; object: string }>;
@@ -61,14 +60,13 @@ export type VerbForms = Readonly<{
   presentSingular: string;
   past: string;
 }>;
+export type IndirectObject = Readonly<{
+  preposition: string;
+  object: Noun;
+}>;
 export type PartialVerb = Readonly<{
   directObject: null | Noun;
-  indirectObjects: ReadonlyArray<
-    Readonly<{
-      preposition: string;
-      object: Noun;
-    }>
-  >;
+  indirectObjects: ReadonlyArray<IndirectObject>;
   forObject: boolean | string;
   predicateType: null | "verb" | "noun adjective";
 }>;

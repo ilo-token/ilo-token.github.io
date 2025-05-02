@@ -7,6 +7,7 @@ export type Word = Readonly<{
   emphasis: boolean;
 }>;
 export type Quantity = "singular" | "plural" | "condensed";
+export type PostAdjective = Readonly<{ adjective: string; name: string }>;
 export type NounPhrase =
   | Readonly<{
     type: "simple";
@@ -15,7 +16,7 @@ export type NounPhrase =
     noun: Word;
     quantity: Quantity;
     perspective: Dictionary.Perspective;
-    postAdjective: null | Readonly<{ adjective: string; name: string }>;
+    postAdjective: null | PostAdjective;
     postCompound: null | NounPhrase;
     prepositions: ReadonlyArray<Preposition>;
     emphasis: boolean;

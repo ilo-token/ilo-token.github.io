@@ -59,7 +59,7 @@ function addModal(
   const { modal, verb, takeNegative } = options;
   if (verb.modal == null) {
     const newRest = nullableAsArray(verb.first)
-      .map((first) => {
+      .map((first): English.AdverbVerb => {
         const { adverbs, presentPlural, negated } = first;
         const useVerb = presentPlural === "are" ? "be" : presentPlural;
         const preAdverbs = takeNegative ? adverbs : [
@@ -143,7 +143,7 @@ export function partialVerb(
       ),
   );
   return IterableResult.combine(object, prepositions)
-    .map(([object, prepositions]) => ({
+    .map(([object, prepositions]): PartialVerb => ({
       ...definition,
       modal: null,
       first: {
@@ -200,16 +200,13 @@ function fromVerbForms(
     quantity !== "singular" || (!is && perspective !== "third")
       ? [pastPlural, verbForms.presentPlural, "do"]
       : [pastSingular, presentSingular, "does"];
-  let result: IterableResult<
-    Readonly<
-      {
-        modal: null | English.AdverbVerb;
-        doesNot: null | English.AdverbVerb;
-        verb: string;
-        postAdverb: null | English.Adverb;
-      }
-    >
-  >;
+  type Result = Readonly<{
+    modal: null | English.AdverbVerb;
+    doesNot: null | English.AdverbVerb;
+    verb: string;
+    postAdverb: null | English.Adverb;
+  }>;
+  let result: IterableResult<Result>;
   switch (settings.tense) {
     case "condensed":
       if (negated) {
@@ -266,7 +263,7 @@ function fromVerbForms(
               postAdverb: null,
             },
           ])
-            .map((options) => ({ ...options, doesNot: null }));
+            .map((options): Result => ({ ...options, doesNot: null }));
         } else {
           result = IterableResult.fromArray([
             {
@@ -294,7 +291,7 @@ function fromVerbForms(
               doesNot: null,
             },
           ])
-            .map((options) => ({
+            .map((options): Result => ({
               ...options,
               verb: verbForms.presentPlural,
               postAdverb: null,
@@ -307,7 +304,7 @@ function fromVerbForms(
           { modal: null, verb: past },
           { modal: noAdverbs(noEmphasis("will")), verb: future },
         ])
-          .map((options) => ({
+          .map((options): Result => ({
             ...options,
             doesNot: null,
             postAdverb: null,
@@ -345,7 +342,7 @@ function fromVerbForms(
       }
       break;
   }
-  return result.map(({ modal, doesNot, verb, postAdverb }) => ({
+  return result.map(({ modal, doesNot, verb, postAdverb }): English.Verb => ({
     modal,
     verbs: [
       ...nullableAsArray(doesNot),
@@ -367,7 +364,7 @@ export function verb(
       const verbForms = partialVerb.first;
       if (verbForms != null) {
         return fromVerbForms(verbForms, perspective, quantity)
-          .map((verb) => ({
+          .map((verb): English.VerbPhrase => ({
             ...partialVerb,
             type: "simple",
             verb: {
@@ -393,7 +390,7 @@ export function verb(
           verb(partialVerb, perspective, quantity)
         ),
       )
-        .map((verbs) => ({
+        .map((verbs): English.VerbPhrase => ({
           ...partialVerb,
           type: "compound",
           verbs,

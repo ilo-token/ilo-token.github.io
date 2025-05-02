@@ -45,7 +45,7 @@ function nounPhrase(
   }>,
 ) {
   const { emphasis, partialNoun, modifier } = options;
-  return IterableResult.from<English.NounPhrase>(() => {
+  return IterableResult.from(() => {
     const determiners = [
       ...[...modifier.determiners].reverse(),
       ...partialNoun.determiners,
@@ -59,7 +59,10 @@ function nounPhrase(
       throw new FilteredError("double name");
     }
     const postAdjective = partialNoun.postAdjective ??
-      mapNullable(modifier.name, (name) => ({ adjective: "named", name }));
+      mapNullable(
+        modifier.name,
+        (name): English.PostAdjective => ({ adjective: "named", name }),
+      );
     const prepositions = [
       ...nullableAsArray(modifier.inPositionPhrase)
         .map((object) => nounAsPreposition(object, "in")),
@@ -73,7 +76,7 @@ function nounPhrase(
       throw new FilteredError("named noun with preposition");
     }
     const headNoun = fromNounForms(partialNoun, quantity)
-      .map(({ noun, quantity }) => ({
+      .map(({ noun, quantity }): English.NounPhrase => ({
         type: "simple",
         determiners,
         adjectives,
@@ -95,7 +98,7 @@ function nounPhrase(
     } else if (
       modifier.ofPhrase == null && modifier.inPositionPhrase == null
     ) {
-      return headNoun.map((noun) => ({
+      return headNoun.map((noun): English.NounPhrase => ({
         ...modifier.nounPreposition!.noun as English.NounPhrase & {
           type: "simple";
         },
@@ -117,7 +120,7 @@ function adjectivePhrase(
     adjective: English.AdjectivePhrase;
     modifier: AdverbialModifier;
   }>,
-) {
+): AdjectiveWithInWay {
   const { emphasis, adjective, modifier } = options;
   switch (adjective.type) {
     case "simple": {
@@ -151,7 +154,7 @@ function verbPhrase(
     verb: PartialVerb;
     modifier: AdverbialModifier;
   }>,
-) {
+): PartialVerb {
   const { emphasis, verb, modifier } = options;
   const prepositions = [
     ...verb.prepositions,
@@ -207,14 +210,14 @@ function defaultPhrase(
     wordUnit({ ...options, wordUnit: phrase.headWord }),
     multipleModifiers(phrase.modifiers),
   )
-    .flatMap<PhraseTranslation>(([headWord, modifier]) => {
+    .flatMap(([headWord, modifier]) => {
       if (headWord.type === "noun" && modifier.type === "adjectival") {
         return nounPhrase({ emphasis, partialNoun: headWord, modifier })
-          .map((noun) => ({ type: "noun", noun }));
+          .map((noun): PhraseTranslation => ({ type: "noun", noun }));
       } else if (
         headWord.type === "adjective" && modifier.type === "adverbial"
       ) {
-        return IterableResult.single({
+        return IterableResult.single<PhraseTranslation>({
           ...adjectivePhrase({
             emphasis,
             adjective: headWord.adjective,
@@ -226,7 +229,7 @@ function defaultPhrase(
         includeVerb && headWord.type === "verb" && modifier.type === "adverbial"
       ) {
         return IterableResult.from(() =>
-          IterableResult.single({
+          IterableResult.single<PhraseTranslation>({
             type: "verb",
             verb: {
               ...verbPhrase({ emphasis, verb: headWord, modifier }),
@@ -240,7 +243,7 @@ function defaultPhrase(
     })
     .addErrorWhenNone(() => new ExhaustedError(Composer.phrase(phrase)));
 }
-function prepositionAsVerb(preposition: English.Preposition) {
+function prepositionAsVerb(preposition: English.Preposition): PartialVerb {
   const extracted = extractNegativeFromPreposition(preposition);
   return {
     modal: null,
@@ -279,7 +282,7 @@ export function phrase(
       if (includeVerb) {
         return preposition(phrase)
           .map(prepositionAsVerb)
-          .map((verb) => ({
+          .map((verb): PhraseTranslation => ({
             type: "verb",
             verb: { ...verb, type: "simple" },
           }));
@@ -293,9 +296,9 @@ export function phrase(
   }
 }
 function compoundNoun(
-  conjunction: "and" | "or",
+  conjunction: string,
   phrases: ReadonlyArray<English.NounPhrase>,
-) {
+): English.NounPhrase {
   const nouns = phrases
     .flatMap((noun) => {
       if (
@@ -311,12 +314,12 @@ function compoundNoun(
     type: "compound",
     conjunction,
     nouns,
-  } as const;
+  };
 }
 function compoundAdjective(
-  conjunction: "and" | "or",
+  conjunction: string,
   phrases: ReadonlyArray<English.AdjectivePhrase>,
-) {
+): English.AdjectivePhrase {
   return {
     type: "compound",
     conjunction,
@@ -332,7 +335,7 @@ function compoundAdjective(
         }
       }),
     emphasis: false,
-  } as const;
+  };
 }
 export function phraseAsVerb(
   phrase: PhraseTranslation,
@@ -408,7 +411,7 @@ export function multiplePhrases(
         ...phrases.phrases
           .map((phrases) => multiplePhrases({ ...options, phrases })),
       )
-        .filterMap((phrase) => {
+        .filterMap((phrase): null | PhraseTranslation => {
           if (
             phrase.some((phrase) =>
               phrase.type === "adjective" && phrase.inWayPhrase != null

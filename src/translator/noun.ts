@@ -42,7 +42,7 @@ export function partialNoun(
       ),
   );
   return IterableResult.combine(engDeterminer, engAdjective)
-    .map(([determiners, adjectives]) => ({
+    .map(([determiners, adjectives]): PartialNoun => ({
       ...options,
       ...definition,
       determiners,
@@ -50,6 +50,7 @@ export function partialNoun(
       perspective: "third",
     }));
 }
+type NounQuantity = Readonly<{ noun: string; quantity: English.Quantity }>;
 export function fromNounForms(
   nounForms: Dictionary.NounForms,
   determinerNumber: Dictionary.Quantity,
@@ -68,16 +69,16 @@ export function fromNounForms(
           break;
       }
       return IterableResult.fromArray(nullableAsArray(noun))
-        .map((noun) => ({ noun, quantity: determinerNumber }));
+        .map((noun): NounQuantity => ({ noun, quantity: determinerNumber }));
     }
     case "both":
       switch (settings.quantity) {
         case "both":
           return IterableResult.fromArray([
             ...nullableAsArray(singular)
-              .map((noun) => ({ noun, quantity: "singular" as const })),
+              .map((noun): NounQuantity => ({ noun, quantity: "singular" })),
             ...nullableAsArray(plural)
-              .map((noun) => ({ noun, quantity: "plural" as const })),
+              .map((noun): NounQuantity => ({ noun, quantity: "plural" })),
           ]);
         case "condensed":
           if (singular != null && plural != null) {
@@ -116,7 +117,7 @@ export function noun(
     fromNounForms(definition, "both"),
     partialNoun(options),
   )
-    .map(([{ noun, quantity }, partialNoun]) => ({
+    .map(([{ noun, quantity }, partialNoun]): English.NounPhrase => ({
       ...partialNoun,
       type: "simple",
       noun: word({ ...options, word: noun }),
@@ -154,7 +155,7 @@ export function extractNegativeFromNoun(
     case "simple":
       return mapNullable(
         extractNegativeFromMultipleDeterminers(noun.determiners),
-        (determiners) => ({ ...noun, determiners }),
+        (determiners): English.NounPhrase => ({ ...noun, determiners }),
       );
     case "compound": {
       const nouns = noun.nouns.map(extractNegativeFromNoun);

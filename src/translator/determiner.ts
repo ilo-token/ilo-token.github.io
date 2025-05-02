@@ -50,7 +50,7 @@ export function determiner(
     singular: definition.determiner,
     plural: definition.plural,
   })
-    .map((determiner) => ({
+    .map((determiner): English.Determiner => ({
       ...definition,
       determiner: word({ ...options, word: determiner }),
     }));

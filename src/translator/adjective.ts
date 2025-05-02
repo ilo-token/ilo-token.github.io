@@ -23,6 +23,7 @@ function so(emphasis: null | TokiPona.Emphasis) {
     }
   }
 }
+// TODO: is {type: "simple"} necessary here?
 export function adjective(
   options: Readonly<{
     definition: Dictionary.Adjective;
@@ -31,21 +32,25 @@ export function adjective(
   }>,
 ): IterableResult<English.AdjectivePhrase & { type: "simple" }> {
   const { definition, reduplicationCount, emphasis } = options;
-  return IterableResult.concat<{ emphasis: boolean; so: null | string }>(
+  type EmphasisSo = Readonly<{ emphasis: boolean; so: null | string }>;
+  return IterableResult.concat(
     IterableResult.from(() => IterableResult.single(so(emphasis)))
-      .map((so) => ({ emphasis: false, so })),
-    IterableResult.single({ emphasis: emphasis != null, so: null }),
+      .map((so): EmphasisSo => ({ emphasis: false, so })),
+    IterableResult.single<EmphasisSo>({ emphasis: emphasis != null, so: null }),
   )
-    .map(({ emphasis, so }) => ({
+    .map(({ emphasis, so }): English.AdjectivePhrase & { type: "simple" } => ({
       type: "simple",
       kind: definition.kind,
       adverbs: [
         ...definition.adverbs,
-        ...nullableAsArray(so).map((so) => ({ adverb: so, negative: false })),
+        ...nullableAsArray(so).map((so): Dictionary.Adverb => ({
+          adverb: so,
+          negative: false,
+        })),
       ]
-        .map((adverb) => ({
-          adverb: noEmphasis(adverb.adverb),
-          negative: adverb.negative,
+        .map(({ adverb, negative }): English.Adverb => ({
+          adverb: noEmphasis(adverb),
+          negative: negative,
         })),
       adjective: word({
         word: definition.adjective,
@@ -55,6 +60,7 @@ export function adjective(
       emphasis: false,
     }));
 }
+// TODO: is {type: "compound"} necessary here?
 export function compoundAdjective(
   options: Readonly<{
     adjectives: ReadonlyArray<Dictionary.Adjective>;
@@ -70,7 +76,7 @@ export function compoundAdjective(
           adjective({ definition, reduplicationCount: 1, emphasis })
         ),
     )
-      .map((adjectives) => ({
+      .map((adjectives): English.AdjectivePhrase & { type: "compound" } => ({
         type: "compound",
         conjunction: "and",
         adjectives,
@@ -89,7 +95,7 @@ export function extractNegativeFromAdjective(
     case "simple":
       return mapNullable(
         extractNegativeFromMultipleAdverbs(adjective.adverbs),
-        (adverbs) => ({ ...adjective, adverbs }),
+        (adverbs): English.AdjectivePhrase => ({ ...adjective, adverbs }),
       );
     case "compound": {
       const adjectives = adjective.adjectives.map(extractNegativeFromAdjective);

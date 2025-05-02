@@ -18,7 +18,10 @@ import {
 import { nounAsPreposition, preposition } from "./preposition.ts";
 import { forObject, PartialCompoundVerb } from "./verb.ts";
 
-function verbObject(verb: PartialCompoundVerb, object: English.NounPhrase) {
+function verbObject(
+  verb: PartialCompoundVerb,
+  object: English.NounPhrase,
+): PartialCompoundVerb {
   const useForObject = forObject(verb);
   if (useForObject === false) {
     throw new FilteredError("intransitive verb with object");
@@ -39,7 +42,7 @@ function applyToAndTurnInto(
     [false, predicate] as const,
   ])
     .flatMap(([negated, predicate]) =>
-      IterableResult.fromArray([
+      IterableResult.fromArray<PartialCompoundVerb>([
         {
           type: "simple",
           modal: null,
@@ -91,7 +94,7 @@ function make(predicate: AdjectiveWithInWay, object: English.NounPhrase) {
       .map((adjective) => [true, adjective] as const),
     [false, predicate.adjective] as const,
   ])
-    .map(([negated, adjective]) => ({
+    .map(([negated, adjective]): PartialCompoundVerb => ({
       type: "simple",
       modal: null,
       first: {
@@ -147,7 +150,7 @@ function associatedPredicate(
       new UntranslatableError(object.type, "object"),
     ]);
   }
-  return verbObject.map((verbObject) => ({
+  return verbObject.map((verbObject): PartialCompoundVerb => ({
     ...verbObject,
     prepositions: [...verbObject.prepositions, ...prepositions],
   }));
@@ -201,7 +204,7 @@ export function predicate(
         ...tokiPonaPredicate.predicates
           .map((predicates) => predicate(predicates, andParticle)),
       )
-        .map((predicates) => ({
+        .map((predicates): PartialCompoundVerb => ({
           type: "compound",
           conjunction: CONJUNCTION[tokiPonaPredicate.type],
           verbs: predicates,

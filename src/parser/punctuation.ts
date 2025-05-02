@@ -19,8 +19,8 @@ export const SENTENCE_TERMINATOR_TO_ASCII = new Map([
   ...ASCII_SENTENCE_TERMINATOR.map((symbol) => [symbol, symbol] as const),
   ...FULL_WIDTH_PERIOD.map((period) => [period, "."] as const),
   ...FULL_WIDTH_COLON.map((colon) => [colon, ":"] as const),
-  [ELLIPSIS, "..."] as const,
-  [MIDDLE_DOT, "."] as const,
+  [ELLIPSIS, "..."],
+  [MIDDLE_DOT, "."],
 ]);
 export const SENTENCE_TERMINATOR = characterClass(
   SENTENCE_TERMINATOR_TO_ASCII.keys(),

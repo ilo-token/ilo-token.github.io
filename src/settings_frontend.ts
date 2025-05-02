@@ -55,7 +55,7 @@ const UPDATERS: Readonly<{ [K in keyof Settings]: Updater<Settings[K]> }> = {
 };
 const KEYS = Object.keys(UPDATERS) as ReadonlyArray<keyof Settings>;
 
-function loadOneFromLocalStorage<const T extends keyof Settings>(key: T) {
+function loadOneFromLocalStorage<T extends keyof Settings>(key: T) {
   const source = localStorage.getItem(key);
   if (source != null) {
     settings[key] = UPDATERS[key].parse(source) ?? defaultSettings[key];
@@ -69,7 +69,7 @@ function loadOneFromLocalStorage<const T extends keyof Settings>(key: T) {
     settings[key],
   );
 }
-function loadOneFromDom<const T extends keyof Settings>(key: T) {
+function loadOneFromDom<T extends keyof Settings>(key: T) {
   settings[key] = UPDATERS[key].load(
     document.getElementById(toKebabCase(key)) as
       | HTMLInputElement
@@ -77,7 +77,7 @@ function loadOneFromDom<const T extends keyof Settings>(key: T) {
   );
   setIgnoreError(key, UPDATERS[key].stringify(settings[key]));
 }
-function setDom<const T extends keyof Settings>(
+function setDom<T extends keyof Settings>(
   key: T,
   value: Settings[T],
 ) {

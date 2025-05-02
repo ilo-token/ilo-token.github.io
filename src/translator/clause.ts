@@ -20,7 +20,7 @@ function phraseClause(phrases: TokiPona.MultiplePhrases) {
     andParticle: "en",
     includeVerb: false,
   })
-    .map((phrase) => {
+    .map((phrase): English.Clause => {
       switch (phrase.type) {
         case "noun":
           return {
@@ -62,7 +62,6 @@ function phraseClause(phrases: TokiPona.MultiplePhrases) {
                 .map((object) => nounAsPreposition(object, "in")),
               hideVerb: true,
             },
-            prepositions: [],
             hideSubject: true,
           };
         case "verb":
@@ -82,7 +81,7 @@ function liClause(clause: TokiPona.Clause & { type: "li clause" }) {
   )
     .flatMap(([subject, predicate]) =>
       verb(predicate, perspective(subject), quantity(subject))
-        .map((verb) => ({
+        .map((verb): English.Clause => ({
           type: "simple",
           subject,
           verb,
@@ -90,7 +89,10 @@ function liClause(clause: TokiPona.Clause & { type: "li clause" }) {
         }))
     );
 }
-function iWish(subject: English.NounPhrase, verb: English.VerbPhrase) {
+function iWish(
+  subject: English.NounPhrase,
+  verb: English.VerbPhrase,
+): English.Clause {
   return {
     type: "simple",
     subject: {
@@ -124,7 +126,7 @@ function iWish(subject: English.NounPhrase, verb: English.VerbPhrase) {
       hideVerb: false,
     },
     hideSubject: false,
-  } as const;
+  };
 }
 function oClause(clause: TokiPona.Clause & { type: "o clause" }) {
   const subject = clause.subjects != null
@@ -134,7 +136,7 @@ function oClause(clause: TokiPona.Clause & { type: "o clause" }) {
       includeGerund: true,
       andParticle: "en",
     })
-    : IterableResult.single({
+    : IterableResult.single<English.NounPhrase>({
       type: "simple",
       determiners: [],
       adjectives: [],
@@ -164,7 +166,7 @@ function oClause(clause: TokiPona.Clause & { type: "o clause" }) {
             subjectQuantity,
           );
         })
-          .map((verb) => ({
+          .map((verb): English.Clause => ({
             type: "simple",
             subject,
             verb,
@@ -209,26 +211,27 @@ export function contextClause(
         ...contextClause.prepositions.map(preposition),
       )
         .map((prepositions) =>
-          prepositions.map((preposition) => ({
+          prepositions.map((preposition): English.Clause => ({
             ...preposition,
             type: "preposition",
           }))
         );
     case "nanpa":
       return nanpa(contextClause)
-        .map((object) => [{
+        .map((object): English.Clause => ({
           type: "preposition",
           adverbs: [],
           preposition: noEmphasis("at"),
           object,
           emphasis: false,
-        }]);
+        }))
+        .map((clause) => [clause]);
     case "anu":
       return IterableResult.errors([
         new TranslationTodoError(`${contextClause.type} context clause`),
       ]);
     default:
-      return IterableResult.concat<ReadonlyArray<English.Clause>>(
+      return IterableResult.concat(
         IterableResult.fromArray(
           nullableAsArray(unwrapSingleWord(contextClause)),
         )
@@ -239,13 +242,16 @@ export function contextClause(
                 definition.type === "adverb" ? definition.adverb : null,
             )
           )
-          .map((adverb) => [{ type: "adverb", adverb }]),
-        clause(contextClause).map((clause) => [{
+          .map(
+            (adverb): English.Clause => ({ type: "adverb", adverb }),
+          ),
+        clause(contextClause).map((clause): English.Clause => ({
           type: "dependent",
           conjunction: noEmphasis("given"),
           clause,
-        }]),
-      );
+        })),
+      )
+        .map((clause) => [clause]);
   }
 }
 export function unwrapSingleWord(

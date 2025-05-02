@@ -245,7 +245,9 @@ function fixClause(clause: English.Clause): English.Clause {
       return clause;
   }
 }
-function fixSentence({ clauses, punctuation }: English.Sentence) {
+function fixSentence(
+  { clauses, punctuation }: English.Sentence,
+): English.Sentence {
   return { clauses: clauses.map(fixClause), punctuation };
 }
 export function fixMultipleSentences(
@@ -261,7 +263,7 @@ export function fixMultipleSentences(
       };
   }
 }
-function filterSet<const T>(
+function filterSet<T>(
   set: ReadonlyArray<readonly [condition: boolean, value: T]>,
 ) {
   return set.filter(([condition]) => condition).map(([_, value]) => value);

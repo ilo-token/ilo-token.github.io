@@ -3,14 +3,15 @@ import { MemoizationCacheResult, memoize } from "@std/cache/memoize";
 import { lazy as lazyEval } from "../../misc/misc.ts";
 import { ArrayResult, ResultError } from "../compound.ts";
 
-type ParserResult<T> = ArrayResult<Readonly<{ value: T; length: number }>>;
+type SingleResult<T> = Readonly<{ value: T; length: number }>;
+type ParserResult<T> = ArrayResult<SingleResult<T>>;
 type InnerParser<T> = (input: number) => ParserResult<T>;
 type Cache<T> = Map<number, MemoizationCacheResult<ParserResult<T>>>;
 
 let currentSource = "";
 const allCache: Set<WeakRef<Cache<unknown>>> = new Set();
 
-export class Parser<const T> {
+export class Parser<T> {
   readonly rawParser: InnerParser<T>;
   constructor(parser: InnerParser<T>) {
     const cache: Cache<T> = new Map();
@@ -32,13 +33,16 @@ export class Parser<const T> {
     }
     return this.rawParser(0).map(({ value }) => value);
   }
-  map<const U>(mapper: (value: T) => U): Parser<U> {
+  map<U>(mapper: (value: T) => U): Parser<U> {
     return new Parser((input) =>
       this.rawParser(input)
-        .map(({ value, length }) => ({ value: mapper(value), length }))
+        .map(({ value, length }): SingleResult<U> => ({
+          value: mapper(value),
+          length,
+        }))
     );
   }
-  mapWithPositionedError<const U>(mapper: (value: T) => U): Parser<U> {
+  mapWithPositionedError<U>(mapper: (value: T) => U): Parser<U> {
     return withPosition(this)
       .map((value) => withPositionedError(() => mapper(value.value), value));
   }
@@ -52,13 +56,13 @@ export class Parser<const T> {
       .filter((value) => withPositionedError(() => mapper(value.value), value))
       .map(({ value }) => value);
   }
-  then<const U>(mapper: (value: T) => Parser<U>): Parser<U> {
+  then<U>(mapper: (value: T) => Parser<U>): Parser<U> {
     return new Parser((position) =>
       this.rawParser(position)
         .flatMap(({ value, length }) =>
           mapper(value)
             .rawParser(position + length)
-            .map(({ value, length: addedLength }) => ({
+            .map(({ value, length: addedLength }): SingleResult<U> => ({
               value,
               length: length + addedLength,
             }))
@@ -74,10 +78,10 @@ export class Parser<const T> {
   sortBy(mapper: (value: T) => number): Parser<T> {
     return this.sort((left, right) => mapper(left) - mapper(right));
   }
-  with<const U>(parser: Parser<U>): Parser<U> {
+  with<U>(parser: Parser<U>): Parser<U> {
     return sequence(this, parser).map(([_, arrayResult]) => arrayResult);
   }
-  skip<const U>(parser: Parser<U>): Parser<T> {
+  skip<U>(parser: Parser<U>): Parser<T> {
     return sequence(this, parser).map(([arrayResult]) => arrayResult);
   }
 }
@@ -90,7 +94,7 @@ export class PositionedError extends ResultError {
     this.position = position ?? null;
   }
 }
-function withPositionedError<const T>(fn: () => T, position: Position) {
+function withPositionedError<T>(fn: () => T, position: Position) {
   try {
     return fn();
   } catch (error) {
@@ -124,16 +128,16 @@ export const nothing: Parser<null> = new Parser(() =>
   new ArrayResult([{ value: null, length: 0 }])
 );
 export const emptyArray: Parser<ReadonlyArray<never>> = nothing.map(() => []);
-export function lookAhead<const T>(parser: Parser<T>): Parser<T> {
+export function lookAhead<T>(parser: Parser<T>): Parser<T> {
   return new Parser((input) =>
     parser.rawParser(input)
-      .map(({ value }) => ({ value, length: 0 }))
+      .map(({ value }): SingleResult<T> => ({ value, length: 0 }))
   );
 }
-export function lazy<const T>(parser: () => Parser<T>): Parser<T> {
+export function lazy<T>(parser: () => Parser<T>): Parser<T> {
   return new Parser((input) => parser().rawParser(input));
 }
-export function choice<const T>(
+export function choice<T>(
   ...choices: ReadonlyArray<Parser<T>>
 ): Parser<T> {
   assertGreater(
@@ -145,7 +149,7 @@ export function choice<const T>(
     new ArrayResult(choices).flatMap((parser) => parser.rawParser(input))
   );
 }
-export function choiceOnlyOne<const T>(
+export function choiceOnlyOne<T>(
   ...choices: ReadonlyArray<Parser<T>>
 ): Parser<T> {
   assertGreater(
@@ -166,13 +170,13 @@ export function choiceOnlyOne<const T>(
     empty,
   );
 }
-export function optional<const T>(parser: Parser<T>): Parser<null | T> {
+export function optional<T>(parser: Parser<T>): Parser<null | T> {
   return choice(parser, nothing);
 }
-export function optionalAll<const T>(parser: Parser<T>): Parser<null | T> {
+export function optionalAll<T>(parser: Parser<T>): Parser<null | T> {
   return choiceOnlyOne(parser, nothing);
 }
-export function sequence<const T extends ReadonlyArray<unknown>>(
+export function sequence<T extends ReadonlyArray<unknown>>(
   ...sequence:
     & Readonly<{ [I in keyof T]: Parser<T[I]> }>
     & Readonly<{ length: T["length"] }>
@@ -189,31 +193,31 @@ export function sequence<const T extends ReadonlyArray<unknown>>(
     emptyArray,
   ) as Parser<any>;
 }
-export const many = memoize(<const T>(
+export const many = memoize(<T>(
   parser: Parser<T>,
 ): Parser<ReadonlyArray<T>> =>
-  choice<ReadonlyArray<T>>(
+  choice(
     sequence(parser, lazy(lazyEval(() => many(parser))))
-      .map(([first, rest]) => [first, ...rest]),
+      .map(([first, rest]): ReadonlyArray<T> => [first, ...rest]),
     emptyArray,
   )
 );
-export function manyAtLeastOnce<const T>(
+export function manyAtLeastOnce<T>(
   parser: Parser<T>,
 ): Parser<ReadonlyArray<T>> {
   return sequence(parser, many(parser))
     .map(([first, rest]) => [first, ...rest]);
 }
-export const all = memoize(<const T>(
+export const all = memoize(<T>(
   parser: Parser<T>,
 ): Parser<ReadonlyArray<T>> =>
-  choiceOnlyOne<ReadonlyArray<T>>(
+  choiceOnlyOne(
     sequence(parser, lazy(lazyEval(() => all(parser))))
-      .map(([first, rest]) => [first, ...rest]),
+      .map(([first, rest]): ReadonlyArray<T> => [first, ...rest]),
     emptyArray,
   )
 );
-export function allAtLeastOnce<const T>(
+export function allAtLeastOnce<T>(
   parser: Parser<T>,
 ): Parser<ReadonlyArray<T>> {
   return sequence(parser, all(parser))
@@ -308,35 +312,37 @@ export const notEnd: Parser<null> = new Parser((position) =>
       ),
     ])
 );
-export function withSource<const T>(
-  parser: Parser<T>,
-): Parser<readonly [value: T, source: string]> {
+export type WithSource<T> = readonly [value: T, source: string];
+export function withSource<T>(parser: Parser<T>): Parser<WithSource<T>> {
   return new Parser((position) =>
-    parser.rawParser(position).map(({ value, length }) => ({
-      value: [
-        value,
-        currentSource.slice(position, position + length),
-      ],
-      length,
-    }))
+    parser.rawParser(position).map(
+      ({ value, length }): SingleResult<WithSource<T>> => ({
+        value: [
+          value,
+          currentSource.slice(position, position + length),
+        ],
+        length,
+      }),
+    )
   );
 }
-export function withPosition<const T>(
-  parser: Parser<T>,
-): Parser<Readonly<{ value: T }> & Position> {
+export type WithPosition<T> = Readonly<{ value: T }> & Position;
+export function withPosition<T>(parser: Parser<T>): Parser<WithPosition<T>> {
   return new Parser((position) =>
-    parser.rawParser(position).map(({ value, length }) => ({
-      value: { value, position, length },
-      length,
-    }))
+    parser.rawParser(position).map(
+      ({ value, length }): SingleResult<WithPosition<T>> => ({
+        value: { value, position, length },
+        length,
+      }),
+    )
   );
 }
-export class CheckedParser<const T> {
+export class CheckedParser<T> {
   constructor(public check: Parser<unknown>, public parser: Parser<T>) {}
-  map<const U>(mapper: (value: T) => U): CheckedParser<U> {
+  map<U>(mapper: (value: T) => U): CheckedParser<U> {
     return new CheckedParser(this.check, this.parser.map(mapper));
   }
-  mapWithPositionedError<const U>(mapper: (value: T) => U): CheckedParser<U> {
+  mapWithPositionedError<U>(mapper: (value: T) => U): CheckedParser<U> {
     return new CheckedParser(
       this.check,
       this.parser.mapWithPositionedError(mapper),
@@ -352,16 +358,16 @@ export class CheckedParser<const T> {
     );
   }
 }
-export function checkedSequence<const T, const U>(
+export function checkedSequence<T, U>(
   check: Parser<T>,
   rest: Parser<U>,
 ): CheckedParser<readonly [T, U]> {
   return new CheckedParser(check, sequence(check, rest));
 }
-export function checkedAsWhole<const T>(parser: Parser<T>): CheckedParser<T> {
+export function checkedAsWhole<T>(parser: Parser<T>): CheckedParser<T> {
   return new CheckedParser(parser, parser);
 }
-export function choiceWithCheck<const T>(
+export function choiceWithCheck<T>(
   ...choices: ReadonlyArray<CheckedParser<T>>
 ): Parser<T> {
   return new Parser((position) => {
@@ -377,23 +383,23 @@ export function choiceWithCheck<const T>(
     return ArrayResult.errors(errors);
   });
 }
-export function optionalWithCheck<const T>(
+export function optionalWithCheck<T>(
   parser: CheckedParser<T>,
 ): Parser<null | T> {
   return choiceWithCheck(parser, checkedAsWhole(nothing));
 }
 export const allWithCheck = memoize(
-  <const T>(parser: CheckedParser<T>): Parser<ReadonlyArray<T>> =>
-    choiceWithCheck<ReadonlyArray<T>>(
+  <T>(parser: CheckedParser<T>): Parser<ReadonlyArray<T>> =>
+    choiceWithCheck(
       new CheckedParser(
         parser.check,
         sequence(parser.parser, lazy(lazyEval(() => allWithCheck(parser))))
-          .map(([first, rest]) => [first, ...rest]),
+          .map(([first, rest]): ReadonlyArray<T> => [first, ...rest]),
       ),
       checkedAsWhole(emptyArray),
     ),
 );
-export function allAtLeastOnceWithCheck<const T>(
+export function allAtLeastOnceWithCheck<T>(
   parser: CheckedParser<T>,
 ): Parser<ReadonlyArray<T>> {
   return sequence(parser.parser, allWithCheck(parser))

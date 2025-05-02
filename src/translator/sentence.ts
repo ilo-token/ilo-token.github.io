@@ -84,16 +84,14 @@ function sentence(
         ]);
       }
       const useAnuSeme = nullableAsArray(sentence.anuSeme)
-        .map((seme) =>
-          ({
-            type: "interjection",
-            interjection: word({
-              word: "right",
-              reduplicationCount: getReduplicationCount(seme),
-              emphasis: seme.emphasis != null,
-            }),
-          }) as const
-        );
+        .map((seme): English.Clause => ({
+          type: "interjection",
+          interjection: word({
+            word: "right",
+            reduplicationCount: getReduplicationCount(seme),
+            emphasis: seme.emphasis != null,
+          }),
+        }));
       const interjectionClause: IterableResult<English.Clause> =
         sentence.contextClauses.length === 0 &&
           sentence.startingParticle == null
@@ -109,7 +107,10 @@ function sentence(
                     : null,
               )
             )
-            .map((interjection) => ({ type: "interjection", interjection }))
+            .map((interjection): English.Clause => ({
+              type: "interjection",
+              interjection,
+            }))
           : IterableResult.empty();
       const clauses = IterableResult.combine(
         IterableResult.combine(...sentence.contextClauses.map(contextClause))
@@ -126,16 +127,14 @@ function sentence(
         interrogative: sentence.interrogative != null,
         originalPunctuation: punctuation,
       });
-      return clauses.map((clauses) => ({
-        type: "sentence",
+      return clauses.map((clauses): English.Sentence => ({
         clauses,
         punctuation: usePunctuation,
       }));
     }
     case "filler":
       return filler(sentence.filler)
-        .map((interjection) => ({
-          type: "sentence",
+        .map((interjection): English.Sentence => ({
           clauses: [
             {
               type: "interjection",
@@ -154,7 +153,7 @@ export function multipleSentences(
       const { word } = sentences;
       return IterableResult.fromArray(dictionary.get(word)!.definitions)
         .flatMap(definitionAsPlainString)
-        .map((definition) => ({
+        .map((definition): English.MultipleSentences => ({
           type: "free form",
           text: definition,
         }));
@@ -165,6 +164,9 @@ export function multipleSentences(
           sentence(value, i === sentences.sentences.length - 1)
         ),
       )
-        .map((sentences) => ({ type: "sentences", sentences }));
+        .map((sentences): English.MultipleSentences => ({
+          type: "sentences",
+          sentences,
+        }));
   }
 }

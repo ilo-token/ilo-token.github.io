@@ -16,7 +16,7 @@ export class TodoError extends ResultError {
     super(`${functionality} is not yet implemented`);
   }
 }
-export class ArrayResult<const T> {
+export class ArrayResult<T> {
   constructor(array?: ReadonlyArray<T>);
   constructor(array: undefined, errors: ReadonlyArray<ResultError>);
   constructor(
@@ -44,21 +44,21 @@ export class ArrayResult<const T> {
       mapper(value) ? new ArrayResult([value]) : ArrayResult.empty()
     );
   }
-  map<const U>(mapper: (value: T) => U): ArrayResult<U> {
+  map<U>(mapper: (value: T) => U): ArrayResult<U> {
     return this.flatMap((value) => new ArrayResult([mapper(value)]));
   }
-  flatMap<const U>(mapper: (value: T) => ArrayResult<U>): ArrayResult<U> {
+  flatMap<U>(mapper: (value: T) => ArrayResult<U>): ArrayResult<U> {
     if (this.isError()) {
       return this as unknown as ArrayResult<U>;
     } else {
-      return this.array.reduce(
+      return this.array.reduce<ArrayResult<U>>(
         (rest, value) =>
           ArrayResult.concat(rest, ArrayResult.from(() => mapper(value))),
-        ArrayResult.empty() as ArrayResult<U>,
+        ArrayResult.empty(),
       );
     }
   }
-  // filterMap<const U>(mapper: (value: T) => U): ArrayResult<NonNullable<U>> {
+  // filterMap<U>(mapper: (value: T) => U): ArrayResult<NonNullable<U>> {
   //   return this.flatMap((value) =>
   //     new ArrayResult(nullableAsArray(mapper(value)))
   //   );
@@ -131,16 +131,16 @@ export type Result<T> =
   | Readonly<{ type: "value"; value: T }>
   | Readonly<{ type: "error"; error: ResultError }>;
 
-export class IterableResult<const T> {
+export class IterableResult<T> {
   constructor(public readonly iterable: () => Generator<Result<T>>) {}
-  static fromArray<const T>(array: ReadonlyArray<T>): IterableResult<T> {
+  static fromArray<T>(array: ReadonlyArray<T>): IterableResult<T> {
     return new IterableResult(function* () {
       for (const value of array) {
         yield { type: "value", value };
       }
     });
   }
-  static single<const T>(value: T): IterableResult<T> {
+  static single<T>(value: T): IterableResult<T> {
     return new IterableResult(function* () {
       yield { type: "value", value };
     });
@@ -179,10 +179,10 @@ export class IterableResult<const T> {
       mapper(value) ? IterableResult.single(value) : IterableResult.empty()
     );
   }
-  map<const U>(mapper: (value: T) => U): IterableResult<U> {
+  map<U>(mapper: (value: T) => U): IterableResult<U> {
     return this.flatMap((value) => IterableResult.single(mapper(value)));
   }
-  flatMap<const U>(mapper: (value: T) => IterableResult<U>): IterableResult<U> {
+  flatMap<U>(mapper: (value: T) => IterableResult<U>): IterableResult<U> {
     const iterable = this.iterable;
     return new IterableResult(function* () {
       const errors: Array<ResultError> = [];
@@ -209,12 +209,12 @@ export class IterableResult<const T> {
       }
       if (!yielded) {
         for (const error of errors) {
-          yield { type: "error", error } as const;
+          yield { type: "error", error };
         }
       }
     });
   }
-  filterMap<const U>(mapper: (value: T) => U): IterableResult<NonNullable<U>> {
+  filterMap<U>(mapper: (value: T) => U): IterableResult<NonNullable<U>> {
     return this.flatMap((value) => {
       const newValue = mapper(value);
       if (newValue == null) {
@@ -258,7 +258,7 @@ export class IterableResult<const T> {
       }
       if (!yielded) {
         for (const error of errors) {
-          yield { type: "error", error } as const;
+          yield { type: "error", error };
         }
       }
     });

@@ -6,7 +6,10 @@ import { word } from "./word.ts";
 
 export type Place = "subject" | "object";
 
-function pronounForms(pronoun: Dictionary.PronounForms, place: Place) {
+function pronounForms(
+  pronoun: Dictionary.PronounForms,
+  place: Place,
+): Dictionary.NounForms {
   switch (place) {
     case "subject":
       return {
@@ -48,7 +51,7 @@ export function pronoun(
 ): IterableResult<English.NounPhrase> {
   const { definition, place } = options;
   return fromNounForms(pronounForms(definition, place), "both")
-    .map(({ noun, quantity }) => ({
+    .map(({ noun, quantity }): English.NounPhrase => ({
       type: "simple",
       determiners: [],
       adjectives: [],

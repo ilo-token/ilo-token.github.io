@@ -266,7 +266,7 @@ Deno.test("all", () => {
   const parser = all(matchString("a").skip(space)).skip(end);
   assertEquals(parser.parse("a a a").unwrap(), [["a", "a", "a"]]);
 });
-function uniquePairs<const T>(array: ReadonlyArray<T>) {
+function uniquePairs<T>(array: ReadonlyArray<T>) {
   return array.flatMap((a, i) =>
     array.slice(i + 1).map((b) => [a, b] as const)
   );
