@@ -4,7 +4,7 @@ import { adjective, compoundAdjective } from "./adjective.ts";
 import * as EnglishComposer from "./composer.ts";
 import { noun, simpleNounForms } from "./noun.ts";
 import { pronoun } from "./pronoun.ts";
-import { partialVerb, verb } from "./verb.ts";
+import { partialSimpleVerb, verb } from "./verb.ts";
 
 function nounAsPlainString(definition: Dictionary.Noun) {
   return noun({ definition, reduplicationCount: 1, emphasis: false })
@@ -53,9 +53,13 @@ export function definitionAsPlainString(
     case "interjection":
       return IterableResult.single(definition.interjection);
     case "verb": {
-      return partialVerb({ definition, reduplicationCount: 1, emphasis: false })
-        .flatMap((partialVerb) =>
-          verb({ ...partialVerb, type: "simple" }, "third", "plural")
+      return partialSimpleVerb({
+        definition,
+        reduplicationCount: 1,
+        emphasis: false,
+      })
+        .flatMap((partialSimpleVerb) =>
+          verb({ ...partialSimpleVerb, type: "simple" }, "third", "plural")
         )
         .map((verb) => EnglishComposer.verb(verb, 0));
     }

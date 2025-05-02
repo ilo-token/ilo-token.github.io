@@ -257,7 +257,7 @@ export function contextClause(
 export function unwrapSingleWord(
   clause: TokiPona.Clause,
 ): null | TokiPona.WordUnit {
-  if (clause.type === "phrases" && clause.phrases.type === "single") {
+  if (clause.type === "phrases" && clause.phrases.type === "simple") {
     const { phrases: { phrase } } = clause;
     if (phrase.type === "simple" && phrase.modifiers.length === 0) {
       return phrase.headWord;

@@ -32,7 +32,7 @@ function filler(filler: TokiPona.Filler) {
           }
         });
     }
-    case "multiple a":
+    case "reduplicated a":
       return IterableResult.single("ha".repeat(filler.count));
   }
 }

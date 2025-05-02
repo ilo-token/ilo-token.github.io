@@ -23,7 +23,7 @@ function pronounForms(
       };
   }
 }
-export function partialPronoun(
+export function pronounAsPartialNoun(
   options: Readonly<{
     pronoun: Dictionary.Pronoun;
     reduplicationCount: number;

@@ -28,37 +28,37 @@ import {
   preposition,
 } from "./preposition.ts";
 import { Place } from "./pronoun.ts";
-import { PartialCompoundVerb, PartialVerb } from "./verb.ts";
+import { PartialSimpleVerb, PartialVerb } from "./verb.ts";
 import { word } from "./word.ts";
 import { wordUnit } from "./word_unit.ts";
 
 export type PhraseTranslation =
   | Readonly<{ type: "noun"; noun: English.NounPhrase }>
   | (Readonly<{ type: "adjective" }> & AdjectiveWithInWay)
-  | Readonly<{ type: "verb"; verb: PartialCompoundVerb }>;
+  | Readonly<{ type: "verb"; verb: PartialVerb }>;
 
 function nounPhrase(
   options: Readonly<{
     emphasis: boolean;
-    partialNoun: PartialNoun;
+    noun: PartialNoun;
     modifier: AdjectivalModifier;
   }>,
 ) {
-  const { emphasis, partialNoun, modifier } = options;
+  const { emphasis, noun, modifier } = options;
   return IterableResult.from(() => {
     const determiners = [
       ...[...modifier.determiners].reverse(),
-      ...partialNoun.determiners,
+      ...noun.determiners,
     ];
     const quantity = getNumber(determiners);
     const adjectives = [
       ...[...modifier.adjectives].reverse(),
-      ...partialNoun.adjectives,
+      ...noun.adjectives,
     ];
-    if (partialNoun.postAdjective != null && modifier.name != null) {
+    if (noun.postAdjective != null && modifier.name != null) {
       throw new FilteredError("double name");
     }
-    const postAdjective = partialNoun.postAdjective ??
+    const postAdjective = noun.postAdjective ??
       mapNullable(
         modifier.name,
         (name): English.PostAdjective => ({ adjective: "named", name }),
@@ -76,18 +76,18 @@ function nounPhrase(
     if (prepositions.length > 0 && postAdjective != null) {
       throw new FilteredError("named noun with preposition");
     }
-    const headNoun = fromNounForms(partialNoun, quantity)
-      .map(({ noun, quantity }): English.NounPhrase => ({
+    const headNoun = fromNounForms(noun, quantity)
+      .map(({ noun: useWord, quantity }): English.NounPhrase => ({
         type: "simple",
         determiners,
         adjectives,
         noun: word({
-          word: noun,
-          reduplicationCount: partialNoun.reduplicationCount,
-          emphasis: partialNoun.emphasis,
+          word: useWord,
+          reduplicationCount: noun.reduplicationCount,
+          emphasis: noun.emphasis,
         }),
         quantity,
-        perspective: partialNoun.perspective,
+        perspective: noun.perspective,
         postCompound: null,
         postAdjective,
         prepositions,
@@ -152,10 +152,10 @@ function adjectivePhrase(
 function verbPhrase(
   options: Readonly<{
     emphasis: boolean;
-    verb: PartialVerb;
+    verb: PartialSimpleVerb;
     modifier: AdverbialModifier;
   }>,
-): PartialVerb {
+): PartialSimpleVerb {
   const { emphasis, verb, modifier } = options;
   const prepositions = [
     ...verb.prepositions,
@@ -187,12 +187,12 @@ function verbPhrase(
         prepositions,
       };
     }
-    case "conjugated":
+    case "non-modal":
       return {
         ...verb,
         first: {
           ...first,
-          type: "conjugated",
+          type: "non-modal",
           negated,
           adverbs: useAdverbs,
         },
@@ -217,7 +217,7 @@ function defaultPhrase(
   )
     .flatMap(([headWord, modifier]) => {
       if (headWord.type === "noun" && modifier.type === "adjectival") {
-        return nounPhrase({ emphasis, partialNoun: headWord, modifier })
+        return nounPhrase({ emphasis, noun: headWord, modifier })
           .map((noun): PhraseTranslation => ({ type: "noun", noun }));
       } else if (
         headWord.type === "adjective" && modifier.type === "adverbial"
@@ -248,11 +248,13 @@ function defaultPhrase(
     })
     .addErrorWhenNone(() => new ExhaustedError(Composer.phrase(phrase)));
 }
-function prepositionAsVerb(preposition: English.Preposition): PartialVerb {
+function prepositionAsVerb(
+  preposition: English.Preposition,
+): PartialSimpleVerb {
   const extracted = extractNegativeFromPreposition(preposition);
   return {
     first: {
-      type: "conjugated",
+      type: "non-modal",
       adverbs: [],
       presentPlural: "are",
       presentSingular: "is",
@@ -344,7 +346,7 @@ function compoundAdjective(
 }
 export function phraseAsVerb(
   phrase: PhraseTranslation,
-): PartialCompoundVerb {
+): PartialVerb {
   switch (phrase.type) {
     case "noun":
     case "adjective": {
@@ -373,7 +375,7 @@ export function phraseAsVerb(
       return {
         type: "simple",
         first: {
-          type: "conjugated",
+          type: "non-modal",
           adverbs: [],
           presentPlural: "are",
           presentSingular: "is",
@@ -407,9 +409,9 @@ export function multiplePhrases(
 ): IterableResult<PhraseTranslation> {
   const { phrases, andParticle, includeVerb } = options;
   switch (phrases.type) {
-    case "single":
+    case "simple":
       return phrase({ ...options, phrase: phrases.phrase });
-    case "and conjunction":
+    case "and":
     case "anu": {
       const conjunction = CONJUNCTION[phrases.type];
       return IterableResult.combine(

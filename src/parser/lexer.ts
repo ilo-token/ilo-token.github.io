@@ -63,10 +63,10 @@ const combinedGlyphs = sequence(ucsur, allAtLeastOnce(joiner.with(ucsur)))
   .map(([first, rest]) => [first, ...rest]);
 const word = choiceOnlyOne(latinWord, singleUcsurWord);
 const properWords = allAtLeastOnce(
-  match(/[A-Z][a-zA-Z]*/, "proper word").skip(spaces),
+  match(/[A-Z][a-zA-Z]*/, "name").skip(spaces),
 )
   .map((array) => array.join(" "))
-  .map((words): Token => ({ type: "proper word", words, kind: "latin" }));
+  .map((words): Token => ({ type: "name", words, kind: "latin" }));
 
 const specificWord = memoize((thatWord: string) =>
   word.filter((thisWord) =>
@@ -76,7 +76,7 @@ const specificWord = memoize((thatWord: string) =>
 );
 const multipleA = specificWord("a")
   .with(count(allAtLeastOnce(specificWord("a"))))
-  .map((count): Token => ({ type: "multiple a", count: count + 1 }));
+  .map((count): Token => ({ type: "reduplicated a", count: count + 1 }));
 const repeatingLetter = match(/[a-zA-Z]/, "latin letter")
   .then(memoize((letter) =>
     count(all(matchString(letter)))
@@ -142,7 +142,7 @@ const cartouche = specificSpecialUcsur(START_OF_CARTOUCHE)
 const cartouches = allAtLeastOnce(cartouche)
   .map((words) => words.join(" "))
   .map((words): Token => ({
-    type: "proper word",
+    type: "name",
     words,
     kind: "cartouche",
   }));

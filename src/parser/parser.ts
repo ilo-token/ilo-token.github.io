@@ -82,7 +82,7 @@ const comma = punctuation
   );
 const optionalComma = optional(comma);
 const word = specificToken("word").map(({ word }) => word);
-const properWords = specificToken("proper word").map(({ words }) => words);
+const properWords = specificToken("name").map(({ words }) => words);
 
 function wordFrom(set: Set<string>, description: string) {
   return word.filter((word) =>
@@ -286,7 +286,7 @@ const modifiers = sequence(
         .map((word): Modifier => ({ type: "simple", word }))
         .filter(filter(MODIFIER_RULES)),
       properWords
-        .map((words): Modifier => ({ type: "proper words", words }))
+        .map((words): Modifier => ({ type: "name", words }))
         .filter(filter(MODIFIER_RULES)),
     ),
   ),
@@ -305,7 +305,7 @@ const modifiers = sequence(
   ])
   .filter(filter(MULTIPLE_MODIFIERS_RULES));
 const singlePhrase = phrase
-  .map((phrase): MultiplePhrases => ({ type: "single", phrase }));
+  .map((phrase): MultiplePhrases => ({ type: "simple", phrase }));
 const longAnu = sequence(
   specificToken("headless long glyph start").with(phrase),
   manyAtLeastOnce(
@@ -324,12 +324,12 @@ function nestedPhrasesOnly(
     return singlePhrase;
   } else {
     const [first, ...rest] = nestingRule;
-    const type = first === "anu" ? "anu" : "and conjunction";
+    const type = first === "anu" ? "anu" : "and";
     const longAnuParser = type === "anu"
       ? longAnu.map((phrases): MultiplePhrases => ({
         type: "anu",
         phrases: phrases.map((phrase): MultiplePhrases => ({
-          type: "single",
+          type: "simple",
           phrase,
         })),
       }))
@@ -379,7 +379,7 @@ const preposition = choice(
         emphasis: null,
       },
       modifiers: [],
-      phrases: { type: "single", phrase },
+      phrases: { type: "simple", phrase },
       emphasis: null,
     })),
   sequence(
@@ -411,7 +411,7 @@ const preposition = choice(
       return {
         preposition: { type: "simple", word: words[0], emphasis: null },
         modifiers,
-        phrases: { type: "single", phrase },
+        phrases: { type: "simple", phrase },
         emphasis: null,
       };
     }),
@@ -424,7 +424,7 @@ const preposition = choice(
       },
       modifiers: [],
       phrases: {
-        type: "single",
+        type: "simple",
         phrase: {
           type: "simple",
           headWord: {
@@ -442,7 +442,7 @@ const preposition = choice(
     optionalCombined(prepositionSet, "preposition"),
     modifiers,
     nestedPhrases(["anu"]) as Parser<
-      MultiplePhrases & { type: "single" | "anu" }
+      MultiplePhrases & { type: "simple" | "anu" }
     >,
     optionalEmphasis,
   )
@@ -490,16 +490,16 @@ function multiplePredicates(
   if (nestingRule.length === 0) {
     return choice(
       associatedPredicates([]),
-      phrase.map((predicate): Predicate => ({ type: "single", predicate })),
+      phrase.map((predicate): Predicate => ({ type: "simple", predicate })),
     );
   } else {
     const [first, ...rest] = nestingRule;
-    const type = first === "anu" ? "anu" : "and conjunction";
+    const type = first === "anu" ? "anu" : "and";
     const longAnuParser: Parser<Predicate> = type === "anu"
       ? longAnu.map((phrases): Predicate => ({
         type: "anu",
         predicates: phrases.map((predicate): Predicate => ({
-          type: "single",
+          type: "simple",
           predicate,
         })),
       }))
@@ -541,7 +541,7 @@ const clause = choice(
     .map(([subject, predicates]): Clause => ({
       type: "li clause",
       subjects: {
-        type: "single",
+        type: "simple",
         phrase: {
           type: "simple",
           headWord: {
@@ -631,8 +631,8 @@ const filler = choice(
           ),
         )
     ),
-  specificToken("multiple a")
-    .map(({ count }): Filler => ({ type: "multiple a", count })),
+  specificToken("reduplicated a")
+    .map(({ count }): Filler => ({ type: "reduplicated a", count })),
   specificToken("long word")
     .map(({ word, length }): Filler =>
       fillerSet.has(word)

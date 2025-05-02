@@ -79,7 +79,7 @@ export const MODIFIER_RULES: ReadonlyArray<(modifier: Modifier) => boolean> = [
   //   const checker = (modifier: Modifier) => {
   //     switch (modifier.type) {
   //       case "simple":
-  //       case "proper words":
+  //       case "name":
   //       case "nanpa":
   //         return everyModifierInPhrase(modifier.phrase).some(checker);
   //       case "pi":
@@ -113,7 +113,7 @@ export const MULTIPLE_MODIFIERS_RULES: ReadonlyArray<
   // disallow multiple proper words
   (modifiers) =>
     modifiers
-        .filter(({ type }) => type === "proper words")
+        .filter(({ type }) => type === "name")
         .length <= 1 ||
     throwError(new UnrecognizedError("multiple proper words")),
 
@@ -144,7 +144,7 @@ export const MULTIPLE_MODIFIERS_RULES: ReadonlyArray<
             } else {
               return [];
             }
-          case "proper words":
+          case "name":
           case "nanpa":
             return [];
         }
@@ -221,7 +221,7 @@ export const PREPOSITION_RULES: ReadonlyArray<
 
   // inner phrase must not have emphasis particle
   (preposition) =>
-    preposition.phrases.type !== "single" ||
+    preposition.phrases.type !== "simple" ||
     !phraseHasTopLevelEmphasis(preposition.phrases.phrase),
 
   // emphasis must not be nested
@@ -290,7 +290,7 @@ export const CLAUSE_RULES: ReadonlyArray<(clause: Clause) => boolean> = [
     if (
       clause.type === "li clause" &&
       clause.explicitLi &&
-      clause.subjects.type === "single"
+      clause.subjects.type === "simple"
     ) {
       const { subjects: { phrase } } = clause;
       if (

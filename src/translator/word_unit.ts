@@ -7,14 +7,14 @@ import * as English from "./ast.ts";
 import { TranslationTodoError } from "./error.ts";
 import { PartialNoun, partialNoun } from "./noun.ts";
 import { number, numberAsText } from "./number.ts";
-import { partialPronoun, Place } from "./pronoun.ts";
-import { PartialVerb, partialVerb } from "./verb.ts";
+import { Place, pronounAsPartialNoun } from "./pronoun.ts";
+import { PartialSimpleVerb, partialSimpleVerb } from "./verb.ts";
 import { word } from "./word.ts";
 
 export type WordUnitTranslation =
   | (Readonly<{ type: "noun" }> & PartialNoun)
   | Readonly<{ type: "adjective"; adjective: English.AdjectivePhrase }>
-  | (Readonly<{ type: "verb" }> & PartialVerb);
+  | (Readonly<{ type: "verb" }> & PartialSimpleVerb);
 
 function defaultWordUnit(
   options: Readonly<{
@@ -43,7 +43,7 @@ function defaultWordUnit(
           }
         case "personal pronoun":
           return IterableResult.single<WordUnitTranslation>({
-            ...partialPronoun({
+            ...pronounAsPartialNoun({
               ...options,
               pronoun: definition,
               emphasis: emphasis != null,
@@ -70,7 +70,7 @@ function defaultWordUnit(
               adjective,
             }));
         case "verb":
-          return partialVerb({
+          return partialSimpleVerb({
             ...options,
             definition,
             emphasis: emphasis != null,

@@ -170,7 +170,7 @@ function modifier(modifier: TokiPona.Modifier) {
   switch (modifier.type) {
     case "simple":
       return defaultModifier(modifier.word);
-    case "proper words":
+    case "name":
       return IterableResult.single<ModifierTranslation>({
         type: "name",
         name: modifier.words,

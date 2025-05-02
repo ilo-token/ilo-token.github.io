@@ -25,7 +25,7 @@ export function everyWordUnitInModifier(
       return everyWordUnitInPhrase(modifier.phrase);
     case "nanpa":
       return everyWordUnitInNanpa(modifier);
-    case "proper words":
+    case "name":
       return [];
   }
 }
@@ -64,7 +64,7 @@ export function everyWordUnitInMultiplePredicates(
   predicate: Predicate,
 ): ReadonlyArray<WordUnit> {
   switch (predicate.type) {
-    case "single":
+    case "simple":
       return everyWordUnitInPhrase(predicate.predicate);
     case "associated":
       return [
@@ -73,7 +73,7 @@ export function everyWordUnitInMultiplePredicates(
           .flatMap(everyWordUnitInMultiplePhrases),
         ...predicate.prepositions.flatMap(everyWordUnitInPreposition),
       ];
-    case "and conjunction":
+    case "and":
     case "anu":
       return predicate.predicates.flatMap(everyWordUnitInMultiplePredicates);
   }
@@ -150,9 +150,9 @@ export function everyPhraseInMultiplePhrases(
   phrases: MultiplePhrases,
 ): ReadonlyArray<Phrase> {
   switch (phrases.type) {
-    case "single":
+    case "simple":
       return [phrases.phrase];
-    case "and conjunction":
+    case "and":
     case "anu":
       return phrases.phrases.flatMap(everyPhraseInMultiplePhrases);
   }
@@ -161,12 +161,12 @@ export function everyObjectInMultiplePredicates(
   predicates: Predicate,
 ): ReadonlyArray<Phrase> {
   switch (predicates.type) {
-    case "single":
+    case "simple":
       return [];
     case "associated":
       return nullableAsArray(predicates.objects)
         .flatMap(everyPhraseInMultiplePhrases);
-    case "and conjunction":
+    case "and":
     case "anu":
       return predicates.predicates.flatMap(everyObjectInMultiplePredicates);
   }

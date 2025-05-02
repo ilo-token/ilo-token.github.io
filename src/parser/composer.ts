@@ -26,7 +26,7 @@ export function emphasis(emphasis: Emphasis): string {
 }
 export function filler(filler: Filler): string {
   switch (filler.type) {
-    case "multiple a":
+    case "reduplicated a":
       return repeatWithSpace("a", filler.count);
     default:
       return emphasis(filler);
@@ -61,7 +61,7 @@ export function modifier(modifier: Modifier): string {
   switch (modifier.type) {
     case "simple":
       return wordUnit(modifier.word);
-    case "proper words":
+    case "name":
       return modifier.words;
     case "pi":
       return `pi ${phrase(modifier.phrase)}`;
@@ -90,8 +90,8 @@ export function phrase(value: Phrase): string {
       return preposition(value);
   }
 }
-function particle(type: "and conjunction" | "anu", particle: null | string) {
-  if (type === "and conjunction") {
+function particle(type: "and" | "anu", particle: null | string) {
+  if (type === "and") {
     return particle!;
   } else {
     return "anu;";
@@ -102,9 +102,9 @@ export function multiplePhrases(
   andParticle: null | string,
 ): string {
   switch (phrases.type) {
-    case "single":
+    case "simple":
       return phrase(phrases.phrase);
-    case "and conjunction":
+    case "and":
     case "anu": {
       return phrases.phrases
         .map((phrases) => multiplePhrases(phrases, andParticle))
@@ -126,7 +126,7 @@ export function multiplePredicates(
   andParticle: string,
 ): string {
   switch (predicates.type) {
-    case "single":
+    case "simple":
       return phrase(predicates.predicate);
     case "associated": {
       return [
@@ -138,7 +138,7 @@ export function multiplePredicates(
       ]
         .join(" ");
     }
-    case "and conjunction":
+    case "and":
     case "anu":
       return predicates.predicates
         .map((predicates) => multiplePredicates(predicates, andParticle))
