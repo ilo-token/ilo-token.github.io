@@ -9,7 +9,7 @@ import { ExhaustedError, TranslationTodoError } from "./error.ts";
 import { nanpa } from "./nanpa.ts";
 import { noun } from "./noun.ts";
 import { number, numberAsText } from "./number.ts";
-import { phrase } from "./phrase.ts";
+import { phrase, PhraseTranslation } from "./phrase.ts";
 import { pronoun } from "./pronoun.ts";
 import { noEmphasis, word } from "./word.ts";
 import { getReduplicationCount } from "./word_unit.ts";
@@ -146,7 +146,9 @@ function defaultModifier(wordUnit: TokiPona.WordUnit) {
     }
   }
 }
-function pi(insidePhrase: TokiPona.Phrase) {
+function pi(
+  insidePhrase: TokiPona.Phrase,
+): IterableResult<ModifierTranslation> {
   return phrase({
     phrase: insidePhrase,
     place: "object",
@@ -159,7 +161,9 @@ function pi(insidePhrase: TokiPona.Phrase) {
     )
     .filter((modifier) =>
       modifier.type !== "adjective" || modifier.inWayPhrase == null
-    ) as IterableResult<ModifierTranslation>;
+    ) as IterableResult<
+      PhraseTranslation & { type: Exclude<PhraseTranslation["type"], "verb"> }
+    >;
 }
 function modifier(modifier: TokiPona.Modifier) {
   switch (modifier.type) {
