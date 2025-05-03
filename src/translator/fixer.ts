@@ -15,6 +15,15 @@ function rankNoun(noun: English.NounPhrase): number {
 function fixNounPhrase(noun: English.NounPhrase): English.NounPhrase {
   switch (noun.type) {
     case "simple":
+      // if (noun.postAdjective != null && noun.prepositions.length > 0) {
+      //   throw new FilteredError("named noun with preposition");
+      // }
+      if (
+        noun.postCompound != null && noun.postCompound.type === "simple" &&
+        noun.postCompound.prepositions.length > 0
+      ) {
+        new FilteredError(`preposition within "${noun.noun.word} X" phrase`);
+      }
       return {
         ...noun,
         determiners: fixMultipleDeterminers(noun.determiners),

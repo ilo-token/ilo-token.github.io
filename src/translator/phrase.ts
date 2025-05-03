@@ -65,10 +65,6 @@ function nounPhrase(
       );
     const prepositions = nullableAsArray(modifier.ofPhrase)
       .map((object) => nounAsPreposition(object, "of"));
-    // TODO: do this on `fixer.ts` instead
-    if (prepositions.length > 0 && postAdjective != null) {
-      throw new FilteredError("named noun with preposition");
-    }
     const { nounPreposition } = modifier;
     const headNoun = fromNounForms(noun, quantity)
       .map(({ noun: useWord, quantity }): English.NounPhrase => ({
