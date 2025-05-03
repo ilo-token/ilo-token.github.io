@@ -245,7 +245,7 @@ export function multipleModifiers(
             noun: noEmphasis("way"),
             quantity: "singular",
             perspective: "third",
-            postAdjective: null,
+            adjectiveName: null,
             postCompound: null,
             prepositions: [],
             emphasis: false,

@@ -2,7 +2,7 @@ export type NounForms = Readonly<{
   singular: null | string;
   plural: null | string;
 }>;
-export type PostAdjective = Readonly<{
+export type AdjectiveName = Readonly<{
   adjective: string;
   name: string;
 }>;
@@ -12,7 +12,7 @@ export type Noun =
     determiners: ReadonlyArray<Determiner>;
     adjectives: ReadonlyArray<Adjective>;
     gerund: boolean;
-    postAdjective: null | PostAdjective;
+    adjectiveName: null | AdjectiveName;
   }>;
 export type PronounForms = Readonly<{
   singular: null | Readonly<{ subject: string; object: string }>;

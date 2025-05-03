@@ -26,6 +26,7 @@ import {
 } from "../src/parser/parser_lib.ts";
 import {
   Adjective,
+  AdjectiveName,
   Adverb,
   Definition,
   Determiner,
@@ -34,7 +35,6 @@ import {
   IndirectObject,
   Noun,
   NounForms,
-  PostAdjective,
   VerbAccessory,
 } from "./type.ts";
 
@@ -263,14 +263,14 @@ const noun = sequence(
       simpleUnit("adj"),
       word.skip(tag(sequence(keyword("n"), keyword("proper")))),
     )
-      .map(([adjective, name]): PostAdjective => ({ adjective, name })),
+      .map(([adjective, name]): AdjectiveName => ({ adjective, name })),
   ),
 )
-  .map(([determiners, adjectives, noun, postAdjective]): Noun => ({
+  .map(([determiners, adjectives, noun, adjectiveName]): Noun => ({
     ...noun,
     determiners,
     adjectives,
-    postAdjective,
+    adjectiveName,
   }));
 const checkedNoun = new CheckedParser(
   choiceOnlyOne(

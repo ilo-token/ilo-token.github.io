@@ -123,7 +123,7 @@ export function wordUnit(
           reduplicationCount: 1,
           emphasis: wordUnit.emphasis != null,
           perspective: "third",
-          postAdjective: null,
+          adjectiveName: null,
         }));
     case "x ala x":
       return IterableResult.errors([new TranslationTodoError("x ala x")]);

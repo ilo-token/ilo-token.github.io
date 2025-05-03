@@ -32,7 +32,7 @@ export function nanpa(
           quantity: "singular",
           perspective: "third",
           postCompound: phrase.noun,
-          postAdjective: null,
+          adjectiveName: null,
           prepositions: [],
           emphasis: false,
         }

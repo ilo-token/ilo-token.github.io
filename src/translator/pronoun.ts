@@ -38,7 +38,7 @@ export function pronounAsPartialNoun(
     determiners: [],
     adjectives: [],
     perspective: pronoun.perspective,
-    postAdjective: null,
+    adjectiveName: null,
   };
 }
 export function pronoun(
@@ -59,7 +59,7 @@ export function pronoun(
       quantity,
       perspective: definition.perspective,
       postCompound: null,
-      postAdjective: null,
+      adjectiveName: null,
       prepositions: [],
       emphasis: false,
     }));

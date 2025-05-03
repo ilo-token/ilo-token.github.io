@@ -55,13 +55,13 @@ function nounPhrase(
       ...[...modifier.adjectives].reverse(),
       ...noun.adjectives,
     ];
-    if (noun.postAdjective != null && modifier.name != null) {
+    if (noun.adjectiveName != null && modifier.name != null) {
       throw new FilteredError("double name");
     }
-    const postAdjective = noun.postAdjective ??
+    const adjectiveName = noun.adjectiveName ??
       mapNullable(
         modifier.name,
-        (name): English.PostAdjective => ({ adjective: "named", name }),
+        (name): English.AdjectiveName => ({ adjective: "named", name }),
       );
     const prepositions = nullableAsArray(modifier.ofPhrase)
       .map((object) => nounAsPreposition(object, "of"));
@@ -79,7 +79,7 @@ function nounPhrase(
         quantity,
         perspective: noun.perspective,
         postCompound: null,
-        postAdjective,
+        adjectiveName,
         prepositions,
         emphasis: emphasis &&
           nounPreposition == null,

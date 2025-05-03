@@ -18,7 +18,7 @@ export function noun(phrases: English.NounPhrase, depth: number): string {
         ...phrases.determiners.map(({ determiner }) => word(determiner)),
         ...phrases.adjectives.map(adjective),
         word(phrases.noun),
-        ...nullableAsArray(phrases.postAdjective)
+        ...nullableAsArray(phrases.adjectiveName)
           .map(({ adjective, name }) => `${adjective} ${name}`),
         ...nullableAsArray(phrases.postCompound)
           .map((phrase) => noun(phrase, 0)),

@@ -19,7 +19,7 @@ export type PartialNoun =
     reduplicationCount: number;
     emphasis: boolean;
     perspective: Dictionary.Perspective;
-    postAdjective: null | { adjective: string; name: string };
+    adjectiveName: null | { adjective: string; name: string };
   }>;
 export function partialNoun(
   options: Readonly<{

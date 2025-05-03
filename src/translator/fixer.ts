@@ -15,7 +15,7 @@ function rankNoun(noun: English.NounPhrase): number {
 function fixNounPhrase(noun: English.NounPhrase): English.NounPhrase {
   switch (noun.type) {
     case "simple":
-      if (noun.postAdjective != null && noun.prepositions.length > 0) {
+      if (noun.adjectiveName != null && noun.prepositions.length > 0) {
         throw new FilteredError("named noun with preposition");
       }
       if (
