@@ -69,6 +69,7 @@ function nounPhrase(
     if (prepositions.length > 0 && postAdjective != null) {
       throw new FilteredError("named noun with preposition");
     }
+    const { nounPreposition } = modifier;
     const headNoun = fromNounForms(noun, quantity)
       .map(({ noun: useWord, quantity }): English.NounPhrase => ({
         type: "simple",
@@ -85,21 +86,25 @@ function nounPhrase(
         postAdjective,
         prepositions,
         emphasis: emphasis &&
-          modifier.nounPreposition == null,
+          nounPreposition == null,
       }));
-    if (modifier.nounPreposition == null) {
+    if (nounPreposition == null) {
       return headNoun;
     } else if (modifier.ofPhrase == null) {
-      return headNoun.map((noun): English.NounPhrase => ({
-        ...modifier.nounPreposition!.noun as English.NounPhrase & {
-          type: "simple";
-        },
-        prepositions: [nounAsPreposition(
-          noun,
-          modifier.nounPreposition!.preposition,
-        )],
-        emphasis,
-      }));
+      const { noun: nounOf } = nounPreposition;
+      switch (nounOf.type) {
+        case "simple":
+          return headNoun.map((noun): English.NounPhrase => ({
+            ...nounOf,
+            prepositions: [nounAsPreposition(
+              noun,
+              nounPreposition.preposition,
+            )],
+            emphasis,
+          }));
+        case "compound":
+          throw new FilteredError("compound nouns followed by preposition");
+      }
     } else {
       // will be filled by ExhaustedError on `defaultPhrase`
       return IterableResult.empty();
