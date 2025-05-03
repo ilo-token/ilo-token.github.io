@@ -75,7 +75,7 @@ export function encodeDeterminer(
     zip(strings, [
       ...determiners
         .map((determiners) =>
-          `(${determiners.map(({ determiner }) => determiner).join(" ")})`
+          `(${determiners.map(({ determiner: { word } }) => word).join(" ")})`
         ),
       "",
     ])
