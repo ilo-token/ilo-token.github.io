@@ -91,15 +91,12 @@ function nounPhrase(
     if (nounPreposition == null) {
       return headNoun;
     } else if (modifier.ofPhrase == null) {
-      const { noun: nounOf } = nounPreposition;
+      const { noun: nounOf, preposition } = nounPreposition;
       switch (nounOf.type) {
         case "simple":
           return headNoun.map((noun): English.NounPhrase => ({
             ...nounOf,
-            prepositions: [nounAsPreposition(
-              noun,
-              nounPreposition.preposition,
-            )],
+            prepositions: [nounAsPreposition(noun, preposition)],
             emphasis,
           }));
         case "compound":
