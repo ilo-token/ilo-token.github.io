@@ -4,6 +4,7 @@ import * as TokiPona from "../parser/ast.ts";
 import * as Composer from "../parser/composer.ts";
 import {
   AdjectiveWithInWay,
+  combineAdjective,
   extractNegativeFromAdjective,
 } from "./adjective.ts";
 import { extractNegativeFromMultipleAdverbs, NOT } from "./adverb.ts";
@@ -21,7 +22,12 @@ import {
   AdverbialModifier,
   multipleModifiers,
 } from "./modifier.ts";
-import { extractNegativeFromNoun, fromNounForms, PartialNoun } from "./noun.ts";
+import {
+  combineNoun,
+  extractNegativeFromNoun,
+  fromNounForms,
+  PartialNoun,
+} from "./noun.ts";
 import {
   extractNegativeFromPreposition,
   nounAsPreposition,
@@ -291,48 +297,6 @@ export function phrase(
       return IterableResult.errors([new TranslationTodoError(phrase.type)]);
   }
 }
-function compoundNoun(
-  conjunction: string,
-  phrases: ReadonlyArray<English.NounPhrase>,
-): English.NounPhrase {
-  const nouns = phrases
-    .flatMap((noun) => {
-      if (
-        noun.type === "compound" &&
-        noun.conjunction === conjunction
-      ) {
-        return noun.nouns;
-      } else {
-        return [noun];
-      }
-    });
-  return {
-    type: "compound",
-    conjunction,
-    nouns,
-  };
-}
-function compoundAdjective(
-  conjunction: string,
-  phrases: ReadonlyArray<English.AdjectivePhrase>,
-): English.AdjectivePhrase {
-  return {
-    type: "compound",
-    conjunction,
-    adjectives: phrases
-      .flatMap((adjective) => {
-        if (
-          adjective.type === "compound" &&
-          adjective.conjunction === conjunction
-        ) {
-          return adjective.adjectives;
-        } else {
-          return [adjective];
-        }
-      }),
-    emphasis: false,
-  };
-}
 export function phraseAsVerb(
   phrase: PhraseTranslation,
 ): PartialVerb {
@@ -420,7 +384,7 @@ export function multiplePhrases(
           if (phrase.every((phrase) => phrase.type === "noun")) {
             return {
               type: "noun",
-              noun: compoundNoun(
+              noun: combineNoun(
                 conjunction,
                 phrase.map((phrase) => phrase.noun),
               ),
@@ -431,7 +395,7 @@ export function multiplePhrases(
             } else {
               return {
                 type: "adjective",
-                adjective: compoundAdjective(
+                adjective: combineAdjective(
                   conjunction,
                   phrase.map((phrase) => phrase.adjective),
                 ),

@@ -170,3 +170,24 @@ export function extractNegativeFromNoun(
     }
   }
 }
+export function combineNoun(
+  conjunction: string,
+  phrases: ReadonlyArray<English.NounPhrase>,
+): English.NounPhrase {
+  const nouns = phrases
+    .flatMap((noun) => {
+      if (
+        noun.type === "compound" &&
+        noun.conjunction === conjunction
+      ) {
+        return noun.nouns;
+      } else {
+        return [noun];
+      }
+    });
+  return {
+    type: "compound",
+    conjunction,
+    nouns,
+  };
+}

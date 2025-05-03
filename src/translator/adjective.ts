@@ -74,12 +74,7 @@ export function compoundAdjective(
           adjective({ definition, reduplicationCount: 1, emphasis })
         ),
     )
-      .map((adjectives): English.AdjectivePhrase => ({
-        type: "compound",
-        conjunction: "and",
-        adjectives,
-        emphasis: false,
-      }));
+      .map((adjectives) => combineAdjective("and", adjectives));
   } else {
     return IterableResult.errors([
       new UntranslatableError("reduplication", "compound adjective"),
@@ -104,4 +99,25 @@ export function extractNegativeFromAdjective(
       }
     }
   }
+}
+export function combineAdjective(
+  conjunction: string,
+  phrases: ReadonlyArray<English.AdjectivePhrase>,
+): English.AdjectivePhrase {
+  return {
+    type: "compound",
+    conjunction,
+    adjectives: phrases
+      .flatMap((adjective) => {
+        if (
+          adjective.type === "compound" &&
+          adjective.conjunction === conjunction
+        ) {
+          return adjective.adjectives;
+        } else {
+          return [adjective];
+        }
+      }),
+    emphasis: false,
+  };
 }
