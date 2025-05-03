@@ -305,8 +305,10 @@ export function phraseAsVerb(
     case "adjective": {
       let negated: boolean;
       let subjectComplement: English.Complement;
+      let inWayPhrase: null | English.NounPhrase;
       switch (phrase.type) {
         case "noun": {
+          inWayPhrase = null;
           const extract = extractNegativeFromNoun(phrase.noun);
           negated = extract != null;
           subjectComplement = {
@@ -316,6 +318,7 @@ export function phraseAsVerb(
           break;
         }
         case "adjective": {
+          inWayPhrase = phrase.inWayPhrase;
           const extract = extractNegativeFromAdjective(phrase.adjective);
           negated = extract != null;
           subjectComplement = {
@@ -341,7 +344,8 @@ export function phraseAsVerb(
         subjectComplement,
         object: null,
         objectComplement: null,
-        prepositions: [],
+        prepositions: nullableAsArray(inWayPhrase)
+          .map((noun) => nounAsPreposition(noun, "in")),
         forObject: false,
         predicateType: null,
         emphasis: false,
