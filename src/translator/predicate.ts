@@ -26,10 +26,10 @@ function verbObject(
   if (useForObject === false) {
     throw new FilteredError("intransitive verb with object");
   } else {
-    const [englishObject, prepositions] = useForObject === true
+    const [useObject, prepositions] = useForObject === true
       ? [object, []]
       : [verb.object, [nounAsPreposition(object, useForObject)]];
-    return { ...verb, object: englishObject, prepositions };
+    return { ...verb, object: useObject, prepositions };
   }
 }
 function applyToAndTurnInto(
