@@ -424,14 +424,3 @@ export function multiplePhrases(
     }
   }
 }
-export function multiplePhrasesAsNoun(
-  options: Readonly<{
-    phrases: TokiPona.MultiplePhrases;
-    place: Place;
-    includeGerund: boolean;
-    andParticle: string;
-  }>,
-): IterableResult<English.NounPhrase> {
-  return multiplePhrases({ ...options, includeVerb: false })
-    .filterMap((phrase) => phrase.type === "noun" ? phrase.noun : null);
-}

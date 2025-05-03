@@ -5,9 +5,10 @@ import * as English from "./ast.ts";
 import { FilteredError, TranslationTodoError } from "./error.ts";
 import { nanpa } from "./nanpa.ts";
 import { perspective, quantity } from "./noun.ts";
-import { multiplePhrases, multiplePhrasesAsNoun } from "./phrase.ts";
+import { multiplePhrases } from "./phrase.ts";
 import { predicate } from "./predicate.ts";
 import { nounAsPreposition, preposition } from "./preposition.ts";
+import { Place } from "./pronoun.ts";
 import { addModalToAll, noAdverbs, verb } from "./verb.ts";
 import { noEmphasis } from "./word.ts";
 import { fromSimpleDefinition } from "./word_unit.ts";
@@ -69,9 +70,24 @@ function phraseClause(phrases: TokiPona.MultiplePhrases) {
       }
     });
 }
+export function subject(
+  options: Readonly<{
+    phrases: TokiPona.MultiplePhrases;
+    place: Place;
+    includeGerund: boolean;
+    andParticle: string;
+  }>,
+): IterableResult<English.NounPhrase> {
+  return multiplePhrases({ ...options, includeVerb: false })
+    .map((phrase) =>
+      phrase.type === "noun"
+        ? phrase.noun
+        : throwError(new FilteredError(`${phrase.type} as subject`))
+    );
+}
 function liClause(clause: TokiPona.Clause & { type: "li clause" }) {
   return IterableResult.combine(
-    multiplePhrasesAsNoun({
+    subject({
       phrases: clause.subjects,
       place: "subject",
       includeGerund: true,
@@ -129,8 +145,8 @@ function iWish(
   };
 }
 function oClause(clause: TokiPona.Clause & { type: "o clause" }) {
-  const subject = clause.subjects != null
-    ? multiplePhrasesAsNoun({
+  const useSubject = clause.subjects != null
+    ? subject({
       phrases: clause.subjects,
       place: "subject",
       includeGerund: true,
@@ -148,7 +164,7 @@ function oClause(clause: TokiPona.Clause & { type: "o clause" }) {
       prepositions: [],
       emphasis: false,
     });
-  return IterableResult.combine(subject, predicate(clause.predicates, "o"))
+  return IterableResult.combine(useSubject, predicate(clause.predicates, "o"))
     .flatMap(([subject, predicate]) => {
       const subjectPerspective = perspective(subject);
       const subjectQuantity = quantity(subject);
