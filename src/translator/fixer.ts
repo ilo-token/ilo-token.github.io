@@ -224,9 +224,21 @@ function fixVerbPhrase(verb: English.VerbPhrase): English.VerbPhrase {
       };
   }
 }
+function nounHasPreposition(noun: English.NounPhrase): boolean {
+  switch (noun.type) {
+    case "simple":
+      return noun.prepositions.length > 0 ||
+        (noun.postCompound != null && nounHasPreposition(noun.postCompound));
+    case "compound":
+      return noun.nouns.some(nounHasPreposition);
+  }
+}
 function fixPreposition(
   preposition: English.Preposition,
 ): English.Preposition {
+  if (nounHasPreposition(preposition.object)) {
+    throw new FilteredError("nested preposition");
+  }
   return {
     ...preposition,
     adverbs: fixMultipleAdverbs(preposition.adverbs),

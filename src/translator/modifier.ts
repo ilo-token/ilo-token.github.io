@@ -154,11 +154,6 @@ function pi(
     includeVerb: false,
   })
     .filter((modifier) =>
-      // TODO: do this in `fixer.ts` instead
-      modifier.type !== "noun" || modifier.noun.type !== "simple" ||
-      modifier.noun.prepositions.length === 0
-    )
-    .filter((modifier) =>
       modifier.type !== "adjective" || modifier.inWayPhrase == null
     ) as IterableResult<
       PhraseTranslation & { type: Exclude<PhraseTranslation["type"], "verb"> }
