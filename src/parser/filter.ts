@@ -235,7 +235,7 @@ export const CONTEXT_CLAUSE_RULES: ReadonlyArray<
   (contextClause: ContextClause) => boolean
 > = [
   // only allow "anu la" when allowed by the settings
-  (clause) => clause.type !== "anu" || settings.hardcodedAnuLa,
+  ({ type }) => type !== "anu" || settings.hardcodedAnuLa,
 
   // disallow "anu ala anu la"
   (clause) =>

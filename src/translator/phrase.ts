@@ -390,7 +390,7 @@ export function multiplePhrases(
               type: "noun",
               noun: combineNoun(
                 conjunction,
-                phrase.map((phrase) => phrase.noun),
+                phrase.map(({ noun }) => noun),
               ),
             };
           } else if (phrase.every((phrase) => phrase.type === "adjective")) {
@@ -401,7 +401,7 @@ export function multiplePhrases(
                 type: "adjective",
                 adjective: combineAdjective(
                   conjunction,
-                  phrase.map((phrase) => phrase.adjective),
+                  phrase.map(({ adjective }) => adjective),
                 ),
                 inWayPhrase: null,
               };

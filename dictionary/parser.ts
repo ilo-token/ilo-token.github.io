@@ -434,7 +434,7 @@ const compoundAdjectiveDefinition = checkedSequence(
     adjectives,
   }))
   .filterWithPositionedError(({ adjectives }) =>
-    adjectives.every((adjective) => adjective.adverbs.length === 0) ||
+    adjectives.every(({ adverbs: { length } }) => length === 0) ||
     throwError("compound adjective cannot have adverbs")
   );
 const verbDefinition = checkedSequence(
