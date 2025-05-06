@@ -78,10 +78,12 @@ function sentence(
     case "simple": {
       let startingAdverb: IterableResult<null | English.Word>;
       let startingConjunction: null | English.Word;
+      let contextClauses: ReadonlyArray<TokiPona.ContextClause>;
       if (sentence.startingParticle != null) {
         const { startingParticle } = sentence;
         const emphasis = startingParticle.emphasis != null;
         const reduplicationCount = getReduplicationCount(startingParticle);
+        contextClauses = sentence.contextClauses;
         switch (sentence.startingParticle.word as "taso" | "kin" | "anu") {
           case "taso":
             startingAdverb = IterableResult.single(null);
@@ -108,9 +110,22 @@ function sentence(
             });
             break;
         }
+      } else if (
+        sentence.contextClauses.length > 0 &&
+        sentence.contextClauses[0].type === "anu"
+      ) {
+        const anu = sentence.contextClauses[0];
+        startingAdverb = IterableResult.single(null);
+        startingConjunction = word({
+          reduplicationCount: getReduplicationCount(anu.anu),
+          emphasis: anu.anu.emphasis != null,
+          word: "or",
+        });
+        contextClauses = sentence.contextClauses.slice(1);
       } else {
         startingAdverb = IterableResult.single(null);
         startingConjunction = null;
+        contextClauses = sentence.contextClauses;
       }
       const useAnuSeme = nullableAsArray(sentence.anuSeme)
         .map((seme): English.Clause => ({
@@ -122,7 +137,7 @@ function sentence(
           }),
         }));
       const interjectionClause: IterableResult<English.Clause> =
-        sentence.contextClauses.length === 0 &&
+        contextClauses.length === 0 &&
           sentence.startingParticle == null
           ? IterableResult.fromArray(
             nullableAsArray(unwrapSingleWord(sentence.finalClause)),
@@ -143,7 +158,7 @@ function sentence(
           : IterableResult.empty();
       const clauses = IterableResult.combine(
         startingAdverb,
-        IterableResult.combine(...sentence.contextClauses.map(contextClause))
+        IterableResult.combine(...contextClauses.map(contextClause))
           .map((clause) => clause.flat()),
         IterableResult.concat(interjectionClause, clause(sentence.finalClause)),
       )
