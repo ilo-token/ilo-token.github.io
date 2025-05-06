@@ -346,6 +346,17 @@ export const SENTENCE_RULES: ReadonlyArray<(sentence: Sentence) => boolean> = [
     }
     return true;
   },
+  // "anu la" must only be at the beginning
+  (sentence) =>
+    sentence.type !== "simple" ||
+    sentence.contextClauses.slice(1).every(({ type }) => type !== "anu") ||
+    throwError(new UnrecognizedError('"anu la" inside a sentence')),
+
+  // there cannot be both "anu" as sentence starting particle and "anu la"
+  (sentence) =>
+    sentence.type !== "simple" || sentence.startingParticle == null ||
+    sentence.startingParticle.word !== "anu" ||
+    sentence.contextClauses.every(({ type }) => type !== "anu"),
 ];
 export const MULTIPLE_SENTENCES_RULES: ReadonlyArray<
   (sentences: ReadonlyArray<Sentence>) => boolean
