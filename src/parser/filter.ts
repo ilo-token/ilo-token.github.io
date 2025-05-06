@@ -323,15 +323,6 @@ export const SENTENCE_RULES: ReadonlyArray<(sentence: Sentence) => boolean> = [
     }
     return true;
   },
-  // if there is "la", there can't be starting particle e.g. taso
-  (sentence) =>
-    sentence.type !== "simple" || sentence.contextClauses.length === 0 ||
-    sentence.startingParticle == null || throwError(
-      new UnrecognizedError(
-        `${sentence.startingParticle.word} particle with "la"`,
-      ),
-    ),
-
   // there can't be more than 1 "x ala x" or "seme"
   (sentence) => {
     if (sentence.interrogative != null) {
