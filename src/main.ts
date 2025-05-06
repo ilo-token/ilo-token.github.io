@@ -269,7 +269,7 @@ function main() {
     while (i < Math.min(INITIAL_PAGE_SIZE * 2 ** size, MAX_PAGE_SIZE)) {
       const next = output!.next();
       if (!next.done) {
-        const result = next.value;
+        const { value: result } = next;
         switch (result.type) {
           case "value": {
             yielded = true;

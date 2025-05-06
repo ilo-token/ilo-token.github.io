@@ -183,36 +183,38 @@ export class IterableResult<T> {
     return this.flatMap((value) => IterableResult.single(mapper(value)));
   }
   flatMap<U>(mapper: (value: T) => IterableResult<U>): IterableResult<U> {
-    const iterable = this.iterable;
-    return new IterableResult(function* () {
-      const errors: Array<ResultError> = [];
-      let yielded = false;
-      for (const result of iterable()) {
-        switch (result.type) {
-          case "value": {
-            const more = IterableResult.from(() => mapper(result.value));
-            for (const result of more.iterable()) {
-              switch (result.type) {
-                case "value":
-                  yielded = false;
-                  yield result;
-                  break;
-                case "error":
-                  errors.push(result.error);
+    return new IterableResult(
+      function* (this: IterableResult<T>): Generator<Result<U>> {
+        const errors: Array<ResultError> = [];
+        let yielded = false;
+        for (const result of this.iterable()) {
+          switch (result.type) {
+            case "value": {
+              const more = IterableResult.from(() => mapper(result.value));
+              for (const result of more.iterable()) {
+                switch (result.type) {
+                  case "value":
+                    yielded = false;
+                    yield result;
+                    break;
+                  case "error":
+                    errors.push(result.error);
+                }
               }
+              break;
             }
-            break;
+            case "error":
+              yield result;
           }
-          case "error":
-            yield result;
+        }
+        if (!yielded) {
+          for (const error of errors) {
+            yield { type: "error", error };
+          }
         }
       }
-      if (!yielded) {
-        for (const error of errors) {
-          yield { type: "error", error };
-        }
-      }
-    });
+        .bind(this),
+    );
   }
   filterMap<U>(mapper: (value: T) => U): IterableResult<NonNullable<U>> {
     return this.flatMap((value) => {
@@ -225,17 +227,19 @@ export class IterableResult<T> {
     });
   }
   addErrorWhenNone(error: () => ResultError): IterableResult<T> {
-    const iterable = this.iterable;
-    return new IterableResult(function* () {
-      let yielded = false;
-      for (const result of iterable()) {
-        yielded = true;
-        yield result;
+    return new IterableResult(
+      function* (this: IterableResult<T>): Generator<Result<T>> {
+        let yielded = false;
+        for (const result of this.iterable()) {
+          yielded = true;
+          yield result;
+        }
+        if (!yielded) {
+          yield { type: "error", error: error() };
+        }
       }
-      if (!yielded) {
-        yield { type: "error", error: error() };
-      }
-    });
+        .bind(this),
+    );
   }
   static concat<T>(
     ...iterableResults: ReadonlyArray<IterableResult<T>>
@@ -282,7 +286,7 @@ export class IterableResult<T> {
                   for (const rightResult of right.iterable()) {
                     switch (rightResult.type) {
                       case "value": {
-                        const right = rightResult.value;
+                        const { value: right } = rightResult;
                         rightAggregate.push(right);
                         yielded = true;
                         yield {

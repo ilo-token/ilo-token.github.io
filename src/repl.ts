@@ -20,7 +20,7 @@ if (import.meta.main) {
     for (const result of iterableResult.iterable()) {
       switch (result.type) {
         case "value": {
-          const translation = result.value;
+          const { value: translation } = result;
           const count = translation.match(/<strong>/g)?.length ?? 0;
           const text = unescape(
             translation.replaceAll(/<\/?strong>/g, "%c"),

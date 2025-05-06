@@ -67,7 +67,7 @@ function displayError(source: string, errors: ReadonlyArray<ResultError>) {
   for (const error of errors) {
     console.error(`%cError%c: ${error.message}`, red, "");
     if (error instanceof PositionedError && error.position != null) {
-      const { position, length } = error.position;
+      const { position: { position, length } } = error;
       const end = position + length;
       // the only instance returning -1 is useful
       const startLine = source.lastIndexOf("\n", position) + 1;
