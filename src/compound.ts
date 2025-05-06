@@ -6,8 +6,9 @@ export class ResultError extends Error {
   isHtml: boolean;
   override name = "ArrayResultError";
   constructor(message: string, options: Partial<ResultErrorOptions> = {}) {
-    super(message, { cause: options.cause });
-    this.isHtml = options.isHtml ?? false;
+    const { cause, isHtml = false } = options;
+    super(message, { cause });
+    this.isHtml = isHtml;
   }
 }
 export class TodoError extends ResultError {
