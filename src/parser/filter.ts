@@ -352,6 +352,7 @@ export const SENTENCE_RULES: ReadonlyArray<(sentence: Sentence) => boolean> = [
     sentence.contextClauses.slice(1).every(({ type }) => type !== "anu") ||
     throwError(new UnrecognizedError('"anu la" inside a sentence')),
 
+  // TODO: also include "kin" and "anu" as content word
   // there cannot be both "anu" as sentence starting particle and "anu la"
   (sentence) =>
     sentence.type !== "simple" || sentence.startingParticle == null ||
