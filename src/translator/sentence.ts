@@ -76,12 +76,41 @@ function sentence(
     : sentence.punctuation;
   switch (sentence.type) {
     case "simple": {
+      let startingAdverb: IterableResult<null | English.Word>;
+      let startingConjunction: null | English.Word;
       if (sentence.startingParticle != null) {
-        return IterableResult.errors([
-          new TranslationTodoError(
-            `"${sentence.startingParticle.word}" starting particle`,
-          ),
-        ]);
+        const { startingParticle } = sentence;
+        const emphasis = startingParticle.emphasis != null;
+        const reduplicationCount = getReduplicationCount(startingParticle);
+        switch (sentence.startingParticle.word as "taso" | "kin" | "anu") {
+          case "taso":
+            startingAdverb = IterableResult.single(null);
+            startingConjunction = word({
+              reduplicationCount,
+              emphasis,
+              word: "but",
+            });
+            break;
+          case "kin":
+            startingAdverb = fromSimpleDefinition(
+              startingParticle,
+              (definition) =>
+                definition.type === "adverb" ? definition.adverb : null,
+            );
+            startingConjunction = null;
+            break;
+          case "anu":
+            startingAdverb = IterableResult.single(null);
+            startingConjunction = word({
+              reduplicationCount,
+              emphasis,
+              word: "or",
+            });
+            break;
+        }
+      } else {
+        startingAdverb = IterableResult.single(null);
+        startingConjunction = null;
       }
       const useAnuSeme = nullableAsArray(sentence.anuSeme)
         .map((seme): English.Clause => ({
@@ -113,21 +142,38 @@ function sentence(
             }))
           : IterableResult.empty();
       const clauses = IterableResult.combine(
+        startingAdverb,
         IterableResult.combine(...sentence.contextClauses.map(contextClause))
           .map((clause) => clause.flat()),
         IterableResult.concat(interjectionClause, clause(sentence.finalClause)),
       )
-        .map(([contextClauses, lastClause]) => [
+        .map(([adverb, contextClauses, lastClause]) => [
+          ...nullableAsArray(adverb)
+            .map((adverb): English.Clause => ({ type: "adverb", adverb })),
           ...contextClauses,
           lastClause,
           ...useAnuSeme,
         ]);
+      let withConjunction: IterableResult<ReadonlyArray<English.Clause>>;
+      if (startingConjunction != null) {
+        withConjunction = clauses
+          .map<ReadonlyArray<English.Clause>>(([first, ...rest]) => [
+            {
+              type: "dependent",
+              conjunction: startingConjunction,
+              clause: first,
+            },
+            ...rest,
+          ]);
+      } else {
+        withConjunction = clauses;
+      }
       const usePunctuation = emphasisAsPunctuation({
         emphasis: sentence.emphasis,
         interrogative: sentence.interrogative != null,
         originalPunctuation: punctuation,
       });
-      return clauses.map((clauses): English.Sentence => ({
+      return withConjunction.map((clauses): English.Sentence => ({
         clauses,
         punctuation: usePunctuation,
       }));
