@@ -77,9 +77,7 @@ export type Clause =
   }>;
 export type ContextClause =
   | Clause
-  | Readonly<
-    { type: "prepositions"; prepositions: ReadonlyArray<Preposition> }
-  >
+  | Readonly<{ type: "prepositions"; prepositions: ReadonlyArray<Preposition> }>
   | (Readonly<{ type: "nanpa" }> & Nanpa)
   | (Readonly<{ type: "anu"; anu: HeadedWordUnit }>);
 export type Sentence =
