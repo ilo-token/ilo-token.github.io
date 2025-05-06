@@ -25,6 +25,8 @@ do not communicate" instead of the grammatically awkward "I not communicate".
 ilo Token can now translate to modal verbs: "mi ken" can translate into "I can"
 and "I may". Preverb translation is not yet implemented.
 
+- Implement translation of "taso", "kin", and "anu" as sentence starting
+  particle.
 - Implement proper verb negation.
 - Implement modal verb translation.
 - Implement pagination. This also prevents browser crashes due to numerous
