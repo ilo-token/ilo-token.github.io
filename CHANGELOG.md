@@ -16,6 +16,9 @@ NOTE: Before publishing:
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
 
+ilo Token will now recognize "taso" as sentence starting particle along with
+other particle with similar function such as "kin" and "anu".
+
 ilo Token now performs proper verb negation: "mi toki ala" will translate to "I
 do not communicate" instead of the grammatically awkward "I not communicate".
 
