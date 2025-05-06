@@ -17,7 +17,9 @@ The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
 
 ilo Token will now recognize "taso" as sentence starting particle along with
-other particle with similar function such as "kin" and "anu".
+other particle with similar function such as "kin" and "anu". ilo Token will
+also recognize "anu la" treating it similarly as "anu" as sentence starting
+particle
 
 ilo Token now performs proper verb negation: "mi toki ala" will translate to "I
 do not communicate" instead of the grammatically awkward "I not communicate".
@@ -27,6 +29,7 @@ and "I may". Preverb translation is not yet implemented.
 
 - Implement translation of "taso", "kin", and "anu" as sentence starting
   particle.
+- Implement translation of "anu la".
 - Implement proper verb negation.
 - Implement modal verb translation.
 - Implement pagination. This also prevents browser crashes due to numerous
@@ -34,8 +37,9 @@ and "I may". Preverb translation is not yet implemented.
 - Reorder noun by perspective from third person then second then finally first.
 - Number as english words e.g. "ten" instead of "10" are now used for small
   numbers (&leq; 20). Thanks soweli Eweke for the suggestion!
-- Added "Use hardcoded anu la translation" setting anticipating "anu la"
-  translation which isn't implemented yet.
+- Added "Use hardcoded anu la translation" setting anticipating "anu la" in case
+  it can be supplemented by defining "anu" as content word via the custom
+  dictionary.
 
 </details>
 
