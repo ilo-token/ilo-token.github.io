@@ -381,8 +381,8 @@ kipisi:
     cut(v) [object];
     # slice(v) [object];
 
-    piece(n) of(prep) [headword];
-    part(n) of(prep) [headword];
+    piece(n);
+    part(n);
 
     sharp(adj physical quality);
     pointy(adj physical quality);
