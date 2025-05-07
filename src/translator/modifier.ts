@@ -32,7 +32,7 @@ export type AdjectivalModifier = Readonly<{
   determiners: ReadonlyArray<English.Determiner>;
   adjectives: ReadonlyArray<English.AdjectivePhrase>;
   name: null | string;
-  ofPhrase: null | English.NounPhrase;
+  ofPhrase: ReadonlyArray<English.NounPhrase>;
 }>;
 export type AdverbialModifier = Readonly<{
   adverbs: ReadonlyArray<English.Adverb>;
@@ -208,7 +208,6 @@ export function multipleModifiers(
 
       let adjectival: IterableResult<MultipleModifierTranslation>;
       if (
-        nouns.length <= 1 &&
         nounPrepositions.length <= 1 &&
         adverbs.length === 0 &&
         names.length <= 1
@@ -219,7 +218,7 @@ export function multipleModifiers(
           determiners,
           adjectives,
           name: names[0] ?? null,
-          ofPhrase: nouns[0] ?? null,
+          ofPhrase: nouns,
         });
       } else {
         adjectival = IterableResult.empty();

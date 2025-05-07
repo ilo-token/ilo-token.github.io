@@ -69,7 +69,7 @@ function nounPhrase(
         modifier.name,
         (name): English.AdjectiveName => ({ adjective: "named", name }),
       );
-    const prepositions = nullableAsArray(modifier.ofPhrase)
+    const prepositions = modifier.ofPhrase
       .map((object) => nounAsPreposition(object, "of"));
     const { nounPreposition } = modifier;
     const headNoun = fromNounForms(noun, quantity)

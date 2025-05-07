@@ -29,7 +29,7 @@ function fixNounPhrase(noun: English.NounPhrase): English.NounPhrase {
         determiners: fixMultipleDeterminers(noun.determiners),
         adjectives: fixMultipleAdjectives(noun.adjectives),
         postCompound: mapNullable(noun.postCompound, fixNounPhrase),
-        prepositions: noun.prepositions.map(fixPreposition),
+        prepositions: fixMultiplePrepositions(noun.prepositions),
       };
     case "compound":
       return {
@@ -212,7 +212,7 @@ function fixVerbPhrase(verb: English.VerbPhrase): English.VerbPhrase {
         contentClause: mapNullable(verb.contentClause, fixClause),
         object: mapNullable(verb.object, fixNounPhrase),
         objectComplement: mapNullable(verb.objectComplement, fixComplement),
-        prepositions: verb.prepositions.map(fixPreposition),
+        prepositions: fixMultiplePrepositions(verb.prepositions),
       };
     case "compound":
       return {
@@ -220,7 +220,7 @@ function fixVerbPhrase(verb: English.VerbPhrase): English.VerbPhrase {
         verbs: verb.verbs.map(fixVerbPhrase),
         object: mapNullable(verb.object, fixNounPhrase),
         objectComplement: mapNullable(verb.objectComplement, fixComplement),
-        prepositions: verb.prepositions.map(fixPreposition),
+        prepositions: fixMultiplePrepositions(verb.prepositions),
       };
   }
 }
@@ -244,6 +244,18 @@ function fixPreposition(
     adverbs: fixMultipleAdverbs(preposition.adverbs),
     object: fixNounPhrase(preposition.object),
   };
+}
+function fixMultiplePrepositions(
+  prepositions: ReadonlyArray<English.Preposition>,
+): ReadonlyArray<English.Preposition> {
+  if (
+    prepositions.filter((preposition) => preposition.preposition.word === "of")
+      .length > 1
+  ) {
+    throw new FilteredError('multiple "of"');
+  } else {
+    return prepositions.map(fixPreposition);
+  }
 }
 function fixClause(clause: English.Clause): English.Clause {
   switch (clause.type) {
