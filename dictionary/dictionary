@@ -387,6 +387,10 @@ kipisi:
     sharp(adj physical quality);
     pointy(adj physical quality);
 
+    # splitting(n gerund);
+    cutting(n gerund);
+    # slicing(n gerund);
+
 kiwen:
     hard(adj material) object(n);
     # metal(n);
