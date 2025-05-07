@@ -88,7 +88,10 @@ export class Parser<T> {
 export type Position = Readonly<{ position: number; length: number }>;
 export class PositionedError extends ResultError {
   override name = "PositionedError";
-  constructor(message: string, public readonly position: null | Position = null) {
+  constructor(
+    message: string,
+    public readonly position: null | Position = null,
+  ) {
     super(message);
   }
 }
