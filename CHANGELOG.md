@@ -37,9 +37,6 @@ do not communicate" instead of the grammatically awkward "I not communicate".
 - Reorder noun by perspective from third person then second then finally first.
 - Number as english words e.g. "ten" instead of "10" are now used for small
   numbers (&leq; 20). Thanks soweli Eweke for the suggestion!
-- Added "Use hardcoded anu la translation" setting anticipating "anu la" in case
-  it can be supplemented by defining "anu" as content word via the custom
-  dictionary.
 
 </details>
 
