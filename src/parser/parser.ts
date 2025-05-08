@@ -297,13 +297,15 @@ const modifiers = sequence(
       .filter(filter(MODIFIER_RULES)),
   ),
 )
-  .sortBy(([_, nanpaModifiers]) => -nanpaModifiers.length)
   .map(([modifiers, nanpaModifiers, piModifiers]) => [
     ...modifiers,
     ...nanpaModifiers,
     ...piModifiers,
   ])
-  .filter(filter(MULTIPLE_MODIFIERS_RULES));
+  .filter(filter(MULTIPLE_MODIFIERS_RULES))
+  .sortBy((modifiers) =>
+    -modifiers.filter(({ type }) => type === "nanpa").length
+  );
 const singlePhrase = phrase
   .map((phrase): MultiplePhrases => ({ type: "simple", phrase }));
 const longAnu = sequence(
