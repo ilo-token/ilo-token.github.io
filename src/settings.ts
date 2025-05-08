@@ -8,7 +8,6 @@ export type Settings = {
   quantity: Redundancy;
   tense: Redundancy;
   xAlaXPartialParsing: boolean;
-  separateRepeatedModifiers: boolean;
 };
 // the default value may change, also change `index.html`
 export const defaultSettings: Readonly<Settings> = Object.freeze({
@@ -18,7 +17,6 @@ export const defaultSettings: Readonly<Settings> = Object.freeze({
   quantity: "both",
   tense: "both",
   xAlaXPartialParsing: false,
-  separateRepeatedModifiers: false,
 });
 // this global constant is mutable
 export const settings: Settings = Object.seal({ ...defaultSettings });

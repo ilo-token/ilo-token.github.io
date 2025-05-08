@@ -45,7 +45,6 @@ const UPDATERS: Readonly<{ [K in keyof Settings]: Updater<Settings[K]> }> = {
   quantity: REDUNDANCY_UPDATER,
   tense: REDUNDANCY_UPDATER,
   xAlaXPartialParsing: BOOL_UPDATER,
-  separateRepeatedModifiers: BOOL_UPDATER,
 };
 const KEYS = Object.keys(UPDATERS) as ReadonlyArray<keyof Settings>;
 

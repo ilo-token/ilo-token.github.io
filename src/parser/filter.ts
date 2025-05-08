@@ -1,6 +1,5 @@
-import { compound, throwError } from "../../misc/misc.ts";
+import { throwError } from "../../misc/misc.ts";
 import { extractResultError } from "../compound.ts";
-import { settings } from "../settings.ts";
 import {
   Clause,
   ContextClause,
@@ -121,50 +120,6 @@ export const MULTIPLE_MODIFIERS_RULES: ReadonlyArray<
   (modifiers) =>
     modifiers.filter(modifierIsNumeric).length <= 1 ||
     throwError(new UnrecognizedError("multiple number words")),
-
-  // disallow duplicate modifiers when disabled by settings
-  (modifiers) => {
-    if (settings.separateRepeatedModifiers) {
-      return true;
-    } else {
-      const words = modifiers.flatMap((modifier) => {
-        switch (modifier.type) {
-          case "simple":
-            if (modifier.word.type !== "number") {
-              return [modifier.word.word];
-            } else {
-              return [];
-            }
-          case "pi":
-            if (
-              modifier.phrase.type === "simple" &&
-              modifier.phrase.headWord.type !== "number"
-            ) {
-              return [modifier.phrase.headWord.word];
-            } else {
-              return [];
-            }
-          case "name":
-          case "nanpa":
-            return [];
-        }
-      });
-      const duplicate = getDuplicate(words);
-      if (duplicate.size === 0) {
-        return true;
-      } else {
-        const repeatConjunction = false;
-        const list = compound(
-          [...duplicate].map((word) => `"${word}"`),
-          "and",
-          repeatConjunction,
-        );
-        throw new UnrecognizedError(
-          `duplicate ${list} in modifier`,
-        );
-      }
-    }
-  },
 ];
 export const PHRASE_RULES: ReadonlyArray<(phrase: Phrase) => boolean> = [
   // disallow preverb modifiers other than "ala"
@@ -426,16 +381,4 @@ function phraseHasTopLevelEmphasis(phrase: Phrase) {
     case "preposition":
       return phrase.emphasis != null;
   }
-}
-function getDuplicate<T>(iterable: Iterable<T>) {
-  const unique: Set<T> = new Set();
-  const duplicates: Set<T> = new Set();
-  for (const value of iterable) {
-    if (unique.has(value)) {
-      duplicates.add(value);
-    } else {
-      unique.add(value);
-    }
-  }
-  return duplicates;
 }
