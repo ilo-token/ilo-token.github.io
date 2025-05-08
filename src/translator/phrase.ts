@@ -10,12 +10,7 @@ import {
 import { extractNegativeFromMultipleAdverbs, NOT } from "./adverb.ts";
 import * as English from "./ast.ts";
 import { getNumber } from "./determiner.ts";
-import {
-  ExhaustedError,
-  FilteredError,
-  TranslationTodoError,
-  UntranslatableError,
-} from "./error.ts";
+import { ExhaustedError, FilteredError, UntranslatableError } from "./error.ts";
 import { CONJUNCTION } from "./misc.ts";
 import {
   AdjectivalModifier,
@@ -268,6 +263,83 @@ function prepositionAsVerb(
     emphasis: false,
   };
 }
+function preverb(
+  preverb: TokiPona.Phrase & { type: "preverb" },
+): IterableResult<PartialSimpleVerb> {
+  const emphasis = preverb.emphasis != null;
+  const verb = IterableResult.combine(
+    wordUnit({
+      wordUnit: preverb.preverb,
+      place: "object",
+      includeGerund: false,
+    }),
+    multipleModifiers(preverb.modifiers),
+  )
+    .filterMap(([verb, modifier]) =>
+      verb.type === "verb" && modifier.type === "adverbial"
+        ? verbPhrase({ verb, modifier, emphasis: false })
+        : null
+    );
+  return IterableResult.combine(
+    verb,
+    translatePhrase({
+      phrase: preverb.phrase,
+      place: "object",
+      includeGerund: false,
+      includeVerb: true,
+    }),
+  )
+    .filterMap(([verb, predicate]): null | PartialSimpleVerb => {
+      if (
+        verb.predicateType === "noun adjective" &&
+        (predicate.type === "noun" || predicate.type === "adjective")
+      ) {
+        let subjectComplement: English.Complement;
+        switch (predicate.type) {
+          case "noun":
+            subjectComplement = { type: "noun", noun: predicate.noun };
+            break;
+          case "adjective":
+            subjectComplement = {
+              type: "adjective",
+              adjective: predicate.adjective,
+            };
+            break;
+        }
+        return { ...verb, subjectComplement, emphasis };
+      } else if (
+        verb.predicateType === "verb" && predicate.type === "verb" &&
+        predicate.verb.type === "simple"
+      ) {
+        const first = predicate.verb.first;
+        let predicateVerb: English.Verb;
+        switch (first.type) {
+          case "modal":
+            return null;
+          case "non-modal":
+            predicateVerb = {
+              preAdverbs: first.adverbs,
+              verb: word({
+                ...first,
+                word: first.presentPlural,
+                emphasis: false,
+              }),
+              postAdverb: null,
+            };
+        }
+        return {
+          ...predicate.verb,
+          first: verb.first,
+          rest: [...verb.rest, predicateVerb, ...predicate.verb.rest],
+          emphasis,
+        };
+      } else {
+        return null;
+      }
+    })
+    .addErrorWhenNone(() => new ExhaustedError(Composer.phrase(preverb)));
+}
+const translatePhrase = phrase;
 export function phrase(
   options: Readonly<{
     phrase: TokiPona.Phrase;
@@ -294,7 +366,17 @@ export function phrase(
         ]);
       }
     case "preverb":
-      return IterableResult.errors([new TranslationTodoError(phrase.type)]);
+      if (includeVerb) {
+        return preverb(phrase)
+          .map((verb): PhraseTranslation => ({
+            type: "verb",
+            verb: { ...verb, type: "simple" },
+          }));
+      } else {
+        return IterableResult.errors([
+          new UntranslatableError("preverb", "noun or adjective"),
+        ]);
+      }
   }
 }
 export function phraseAsVerb(

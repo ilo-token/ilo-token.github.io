@@ -95,7 +95,7 @@ function defaultWordUnit(
             objectComplement: null,
             prepositions: [],
             forObject: false,
-            predicateType: null,
+            predicateType: "verb",
             emphasis: false,
           });
         default:
