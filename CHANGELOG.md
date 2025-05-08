@@ -20,7 +20,7 @@ ilo Token can now translate preverbs!
 
 ilo Token will now recognize "taso" as sentence starting particle along with
 other particle with similar function such as "kin" and "anu". ilo Token will
-also recognize "anu la" treating it similarly as "anu" as sentence starting
+also recognize "anu la" treating it similarly like "anu" as sentence starting
 particle.
 
 ilo Token now performs proper verb negation: "mi toki ala" will translate to "I
