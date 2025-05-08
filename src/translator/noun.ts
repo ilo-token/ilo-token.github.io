@@ -147,7 +147,6 @@ export function quantity(noun: English.NounPhrase): English.Quantity {
         case "and":
           return "plural";
         case "or":
-          // TODO: this doesn't work because nouns are reordered on `fixer.ts`
           return quantity(noun.nouns[noun.nouns.length - 1]);
       }
   }

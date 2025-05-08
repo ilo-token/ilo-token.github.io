@@ -4,14 +4,6 @@ import * as English from "./ast.ts";
 import { encodeDeterminer } from "./determiner.ts";
 import { FilteredError } from "./error.ts";
 
-function rankNoun(noun: English.NounPhrase): number {
-  switch (noun.type) {
-    case "simple":
-      return ["third", "second", "first"].indexOf(noun.perspective);
-    case "compound":
-      return rankNoun(noun.nouns[0]);
-  }
-}
 function fixNounPhrase(noun: English.NounPhrase): English.NounPhrase {
   switch (noun.type) {
     case "simple":
@@ -34,9 +26,7 @@ function fixNounPhrase(noun: English.NounPhrase): English.NounPhrase {
     case "compound":
       return {
         ...noun,
-        nouns: noun.nouns
-          .map(fixNounPhrase)
-          .sort((a, b) => rankNoun(a) - rankNoun(b)),
+        nouns: noun.nouns.map(fixNounPhrase),
       };
   }
 }

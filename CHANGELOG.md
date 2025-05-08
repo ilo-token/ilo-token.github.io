@@ -36,7 +36,6 @@ do not communicate" instead of the grammatically awkward "I not communicate".
 - Implement modal verb translation e.g. "mi ken" into "I can".
 - Implement pagination. This also prevents browser crashes due to numerous
   translation output.
-- Reorder noun by perspective from third person then second then finally first.
 - Number as english words e.g. "ten" instead of "10" are now used for small
   numbers (&leq; 20). Thanks soweli Eweke for the suggestion!
 - Remove "allow separate repeated modifiers". It'll be hardcoded to be turned
