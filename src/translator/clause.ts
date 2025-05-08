@@ -2,7 +2,7 @@ import { nullableAsArray, throwError } from "../../misc/misc.ts";
 import { IterableResult } from "../compound.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
-import { FilteredError, TranslationTodoError } from "./error.ts";
+import { FilteredError, UntranslatableError } from "./error.ts";
 import { nanpa } from "./nanpa.ts";
 import { perspective, quantity } from "./noun.ts";
 import { multiplePhrases } from "./phrase.ts";
@@ -244,7 +244,7 @@ export function contextClause(
         .map((clause) => [clause]);
     case "anu":
       return IterableResult.errors([
-        new TranslationTodoError(`${contextClause.type} context clause`),
+        new UntranslatableError(`"anu la"`, "English clause"),
       ]);
     default:
       return IterableResult.concat(
