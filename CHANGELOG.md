@@ -16,22 +16,22 @@ NOTE: Before publishing:
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
 
+ilo Token can now translate preverbs!
+
 ilo Token will now recognize "taso" as sentence starting particle along with
 other particle with similar function such as "kin" and "anu". ilo Token will
 also recognize "anu la" treating it similarly as "anu" as sentence starting
-particle
+particle.
 
 ilo Token now performs proper verb negation: "mi toki ala" will translate to "I
 do not communicate" instead of the grammatically awkward "I not communicate".
 
-ilo Token can now translate to modal verbs: "mi ken" can translate into "I can"
-and "I may". Preverb translation is not yet implemented.
-
+- Implement preverb translation.
 - Implement translation of "taso", "kin", and "anu" as sentence starting
   particle.
 - Implement translation of "anu la".
 - Implement proper verb negation.
-- Implement modal verb translation.
+- Implement modal verb translation e.g. "mi ken" into "I can".
 - Implement pagination. This also prevents browser crashes due to numerous
   translation output.
 - Reorder noun by perspective from third person then second then finally first.
