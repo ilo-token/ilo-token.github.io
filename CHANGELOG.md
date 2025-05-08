@@ -16,7 +16,8 @@ NOTE: Before publishing:
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
 
-ilo Token can now translate preverbs!
+ilo Token can now translate preverbs! Currently this only works when the
+predicate is translated as a verb.
 
 ilo Token will now recognize "taso" as sentence starting particle along with
 other particle with similar function such as "kin" and "anu". ilo Token will
