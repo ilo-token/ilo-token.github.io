@@ -340,6 +340,8 @@ ken:
     enable(v) [object];
 
 kepeken:
+    use(v) [object];
+
     using(prep) [indirect object];
     by means of(prep) [indirect object];
 
