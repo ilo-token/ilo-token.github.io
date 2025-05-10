@@ -74,6 +74,6 @@
     "@std/text": "jsr:@std/text@^1.0.13",
     "browser-dtector": "npm:browser-dtector@^4.1.0",
     "compromise": "npm:compromise@^14.14.3",
-    "esbuild": "npm:esbuild@^0.25.3"
+    "esbuild": "npm:esbuild@^0.25.4"
   }
 }
