@@ -9,13 +9,14 @@
     "jsr:@std/collections@^1.1.1": "1.1.1",
     "jsr:@std/encoding@^1.0.5": "1.0.10",
     "jsr:@std/encoding@^1.0.7": "1.0.8",
-    "jsr:@std/fs@^1.0.17": "1.0.17",
+    "jsr:@std/fs@^1.0.18": "1.0.18",
     "jsr:@std/html@^1.0.4": "1.0.4",
     "jsr:@std/internal@^1.0.6": "1.0.6",
-    "jsr:@std/path@^1.0.6": "1.0.9",
+    "jsr:@std/path@^1.0.6": "1.1.0",
     "jsr:@std/path@^1.0.8": "1.0.8",
     "jsr:@std/path@^1.0.9": "1.0.9",
-    "jsr:@std/random@~0.1.1": "0.1.1",
+    "jsr:@std/path@^1.1.0": "1.1.0",
+    "jsr:@std/random@~0.1.2": "0.1.2",
     "jsr:@std/regexp@^1.0.1": "1.0.1",
     "jsr:@std/text@^1.0.14": "1.0.14",
     "npm:@types/node@*": "22.15.15",
@@ -59,10 +60,10 @@
     "@std/encoding@1.0.10": {
       "integrity": "8783c6384a2d13abd5e9e87a7ae0520a30e9f56aeeaa3bdf910a3eaaf5c811a1"
     },
-    "@std/fs@1.0.17": {
-      "integrity": "1c00c632677c1158988ef7a004cb16137f870aafdb8163b9dce86ec652f3952b",
+    "@std/fs@1.0.18": {
+      "integrity": "24bcad99eab1af4fde75e05da6e9ed0e0dce5edb71b7e34baacf86ffe3969f3a",
       "dependencies": [
-        "jsr:@std/path@^1.0.9"
+        "jsr:@std/path@^1.1.0"
       ]
     },
     "@std/html@1.0.4": {
@@ -77,8 +78,11 @@
     "@std/path@1.0.9": {
       "integrity": "260a49f11edd3db93dd38350bf9cd1b4d1366afa98e81b86167b4e3dd750129e"
     },
-    "@std/random@0.1.1": {
-      "integrity": "e17e164558f9f209da3c254670378404677b36dcafe3b823eca1b2a52e3b6d4d"
+    "@std/path@1.1.0": {
+      "integrity": "ddc94f8e3c275627281cbc23341df6b8bcc874d70374f75fec2533521e3d6886"
+    },
+    "@std/random@0.1.2": {
+      "integrity": "21e28f39dcc72d522bb0d2bc13586567d6044c86ee77a0056fcde0e13758c3ee"
     },
     "@std/regexp@1.0.1": {
       "integrity": "5179d823465085c5480dafb44438466e83c424fadc61ba31f744050ecc0f596d"
@@ -532,9 +536,9 @@
       "jsr:@std/async@^1.0.13",
       "jsr:@std/cache@0.2",
       "jsr:@std/collections@^1.1.1",
-      "jsr:@std/fs@^1.0.17",
+      "jsr:@std/fs@^1.0.18",
       "jsr:@std/html@^1.0.4",
-      "jsr:@std/random@~0.1.1",
+      "jsr:@std/random@~0.1.2",
       "jsr:@std/regexp@^1.0.1",
       "jsr:@std/text@^1.0.14",
       "npm:browser-dtector@^4.1.0",
