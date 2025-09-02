@@ -39,7 +39,6 @@ const REDUNDANCY_UPDATER: Updater<Redundancy> = {
   },
 };
 const UPDATERS: Readonly<{ [K in keyof Settings]: Updater<Settings[K]> }> = {
-  teloMisikeke: BOOL_UPDATER,
   randomize: BOOL_UPDATER,
   multiline: BOOL_UPDATER,
   quantity: REDUNDANCY_UPDATER,

@@ -1,6 +1,5 @@
 import { dictionary as globalDictionary } from "../dictionary/dictionary.ts";
 import { Definition, Dictionary } from "../dictionary/type.ts";
-import { load } from "../telo_misikeke/telo_misikeke.js";
 
 // all of these global constants are mutable
 
@@ -49,7 +48,6 @@ function update() {
   redefineSetWithType(fillerSet, "filler");
   redefineSetWithType(numeralSet, "numeral");
   redefineSet(tokiPonaWordSet, () => true);
-  load([...words]);
 }
 function redefineSet(
   set: Set<string>,

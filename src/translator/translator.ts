@@ -1,5 +1,4 @@
 import { shuffle } from "@std/random/shuffle";
-import { errors } from "../../telo_misikeke/telo_misikeke.js";
 import { IterableResult, ResultError } from "../compound.ts";
 import { parser } from "../parser/parser.ts";
 import { settings } from "../settings.ts";
@@ -60,15 +59,6 @@ export function translate(tokiPona: string): IterableResult<string> {
     }
     if (!yielded) {
       let yielded = false;
-      if (settings.teloMisikeke) {
-        for (const error of errors(tokiPona)) {
-          yielded = true;
-          yield {
-            type: "error",
-            error: new ResultError(error, { isHtml: true }),
-          };
-        }
-      }
       if (!yielded) {
         const unique: Set<string> = new Set();
         for (const error of aggregateErrors) {

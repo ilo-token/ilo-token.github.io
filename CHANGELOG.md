@@ -2,7 +2,7 @@
 
 <!--
 NOTE: Before publishing:
-- run `deno task update` to update all dependencies including telo misikeke
+- run `deno outdated --update`
 - set parameters on `project-data.json`
 - update this very document, don't forget to add release date
 -->
@@ -38,6 +38,7 @@ do not communicate" instead of the grammatically awkward "I not communicate".
   translation output.
 - Number as english words e.g. "ten" instead of "10" are now used for small
   numbers (&leq; 20). Thanks soweli Eweke for the suggestion!
+- Remove telo misikeke
 - Remove "allow separate repeated modifiers". It'll be hardcoded to be turned
   on.
 

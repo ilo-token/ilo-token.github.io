@@ -16,10 +16,6 @@
       "command": "deno run --no-prompt --frozen --cached-only ./src/repl.ts",
       "dependencies": ["build-dictionary"]
     },
-    "update": {
-      "description": "Updates dependencies and telo misikeke",
-      "command": "deno outdated --update && deno run -N=gitlab.com -W=./telo_misikeke/linku_data.json,./telo_misikeke/Parser.js,./telo_misikeke/rules.js --no-prompt --frozen --cached-only ./telo_misikeke/update.ts"
-    },
     "build-dictionary": {
       "description": "Builds the dictionary at `./dictionary/dictionary.ts`",
       "command": "deno run -E=NO_COLOR,DEBUG_TAGS,DEBUG_CHUNKS -R=./dictionary/dictionary -W=./dictionary/dictionary.ts --no-prompt --frozen --cached-only ./dictionary/build.ts"
@@ -28,18 +24,13 @@
   "fmt": {
     "exclude": [
       "./dictionary/dictionary.ts",
-      "./dist/main.js",
-      "./telo_misikeke/linku_data.json",
-      "./telo_misikeke/rules.js",
-      "./telo_misikeke/Parser.js"
+      "./dist/main.js"
     ]
   },
   "lint": {
     "exclude": [
       "./dictionary/dictionary.ts",
-      "./dist/main.js",
-      "./telo_misikeke/rules.js",
-      "./telo_misikeke/Parser.js"
+      "./dist/main.js"
     ],
     "rules": {
       "tags": ["recommended"],
