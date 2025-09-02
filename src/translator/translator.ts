@@ -58,14 +58,11 @@ export function translate(tokiPona: string): IterableResult<string> {
       }
     }
     if (!yielded) {
-      let yielded = false;
-      if (!yielded) {
-        const unique: Set<string> = new Set();
-        for (const error of aggregateErrors) {
-          if (!unique.has(error.message)) {
-            yield { type: "error", error };
-            unique.add(error.message);
-          }
+      const unique: Set<string> = new Set();
+      for (const error of aggregateErrors) {
+        if (!unique.has(error.message)) {
+          yield { type: "error", error };
+          unique.add(error.message);
         }
       }
     }
