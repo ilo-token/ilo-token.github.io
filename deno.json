@@ -5,11 +5,13 @@
   "tasks": {
     "build": {
       "description": "Builds every static files needed for GitHub pages. This builds the dictionary first at `./dictionary/dictionary.ts` then the distribution code `./dist/main.js`.",
-      "command": "deno run -E -R -W -N=jsr.io --allow-run --no-prompt --frozen --cached-only ./build/build.ts"
+      "command": "deno bundle --output=./dist/main.js --minify --sourcemap=linked --platform=browser --format=iife ./src/main.ts",
+      "dependencies": ["build-dictionary"]
     },
     "start": {
-      "description": "Starts a development server. The provided page will auto-reload whenever there are changes to the code.",
-      "command": "deno run -E -R -W -N=jsr.io --allow-run --no-prompt --frozen --cached-only ./build/dev.ts"
+      "description": "Starts a development server which automatically rebuilds the project whenever there are changes to the code. However, there is no server that serves frontend and you have to manually refresh the page.",
+      "command": "(trap 'kill 0' SIGINT; deno run -E=NO_COLOR,DEBUG_TAGS,DEBUG_CHUNKS -R=./dictionary/dictionary -W=./dictionary/dictionary.ts --no-prompt --frozen --cached-only --watch --no-clear-screen ./dictionary/watch.ts & deno bundle --output=./dist/main.js --sourcemap=linked --platform=browser --format=iife --watch ./src/main.ts)",
+      "dependencies": ["soft-build-dictionary"]
     },
     "repl": {
       "description": "Starts a REPL",
@@ -19,6 +21,10 @@
     "build-dictionary": {
       "description": "Builds the dictionary at `./dictionary/dictionary.ts`",
       "command": "deno run -E=NO_COLOR,DEBUG_TAGS,DEBUG_CHUNKS -R=./dictionary/dictionary -W=./dictionary/dictionary.ts --no-prompt --frozen --cached-only ./dictionary/build.ts"
+    },
+    "soft-build-dictionary": {
+      "description": "Only builds the dictionary at `./dictionary/dictionary.ts` when it exists. When an error occurs, an empty dictionary is provided.",
+      "command": "deno run -E=NO_COLOR,DEBUG_TAGS,DEBUG_CHUNKS -R=./dictionary/dictionary,./dictionary/dictionary.ts -W=./dictionary/dictionary.ts --no-prompt --frozen --cached-only ./dictionary/soft-build.ts"
     }
   },
   "fmt": {
@@ -53,7 +59,6 @@
     }
   },
   "imports": {
-    "@luca/esbuild-deno-loader": "jsr:@luca/esbuild-deno-loader@^0.11.1",
     "@std/assert": "jsr:@std/assert@^1.0.14",
     "@std/async": "jsr:@std/async@^1.0.14",
     "@std/cache": "jsr:@std/cache@^0.2.0",
@@ -64,7 +69,6 @@
     "@std/regexp": "jsr:@std/regexp@^1.0.1",
     "@std/text": "jsr:@std/text@^1.0.16",
     "browser-dtector": "npm:browser-dtector@^4.1.0",
-    "compromise": "npm:compromise@^14.14.4",
-    "esbuild": "npm:esbuild@^0.25.9"
+    "compromise": "npm:compromise@^14.14.4"
   }
 }

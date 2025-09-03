@@ -1,13 +1,5 @@
 // this code is browser only
 
-// this is defined by esbuild
-declare const LIVE_RELOAD: boolean;
-
-// auto-refresh when source code have changed
-if (LIVE_RELOAD) {
-  new EventSource("/esbuild")
-    .addEventListener("change", () => location.reload());
-}
 import BrowserDetector from "browser-dtector";
 import { dictionary } from "../dictionary/dictionary.ts";
 import { dictionaryParser } from "../dictionary/parser.ts";

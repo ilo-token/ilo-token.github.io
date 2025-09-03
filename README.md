@@ -15,8 +15,8 @@ After using `git clone`, you'll need [Deno](https://deno.com/) for this project.
 Then you'll need to install the dependencies before running any command:
 `deno install --frozen`.
 
-After this, you can start away by running `deno task start` then open the link
-provided by the stdout to open a local copy of ilo Token. The server will
-auto-reload the webpage whenever there are changes on the code.
+After this, you can start away by running `deno task start` then open
+`./dist/index.html` using your favorite browser. The server will automatically
+rebuild the project. However, you need to manually refresh the page.
 
 Run `deno task` to see more useful command lines.
