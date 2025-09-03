@@ -151,13 +151,11 @@ function pi(
     phrase: insidePhrase,
     place: "object",
     includeGerund: true,
-    includeVerb: false,
   })
     .filter((modifier) =>
-      modifier.type !== "adjective" || modifier.inWayPhrase == null
-    ) as IterableResult<
-      PhraseTranslation & { type: Exclude<PhraseTranslation["type"], "verb"> }
-    >;
+      modifier.type !== "verb" &&
+      (modifier.type !== "adjective" || modifier.inWayPhrase == null)
+    );
 }
 function modifier(modifier: TokiPona.Modifier) {
   switch (modifier.type) {

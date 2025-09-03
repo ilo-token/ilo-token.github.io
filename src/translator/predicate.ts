@@ -165,7 +165,6 @@ export function predicate(
         phrase: tokiPonaPredicate.predicate,
         place: "object",
         includeGerund: false,
-        includeVerb: true,
       })
         .map(phraseAsVerb);
     case "associated": {
@@ -174,7 +173,6 @@ export function predicate(
         place: "object",
         includeGerund: false,
         andParticle,
-        includeVerb: true,
       });
       const object = IterableResult.single(tokiPonaPredicate.objects)
         .flatMap((object) => {
@@ -184,7 +182,6 @@ export function predicate(
               place: "object",
               includeGerund: true,
               andParticle: "e",
-              includeVerb: false,
             });
           } else {
             return IterableResult.single(null);

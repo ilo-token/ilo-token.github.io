@@ -12,7 +12,6 @@ export function nanpa(
     phrase: nanpa.phrase,
     place: "object",
     includeGerund: true,
-    includeVerb: false,
   })
     .map((phrase) =>
       phrase.type !== "noun"

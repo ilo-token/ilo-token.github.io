@@ -10,7 +10,7 @@ import {
 import { extractNegativeFromMultipleAdverbs, NOT } from "./adverb.ts";
 import * as English from "./ast.ts";
 import { getNumber } from "./determiner.ts";
-import { ExhaustedError, FilteredError, UntranslatableError } from "./error.ts";
+import { ExhaustedError, FilteredError } from "./error.ts";
 import { CONJUNCTION } from "./misc.ts";
 import {
   AdjectivalModifier,
@@ -196,10 +196,9 @@ function defaultPhrase(
     phrase: TokiPona.Phrase & { type: "simple" };
     place: Place;
     includeGerund: boolean;
-    includeVerb: boolean;
   }>,
 ) {
-  const { phrase, includeVerb } = options;
+  const { phrase } = options;
   const emphasis = phrase.emphasis != null;
   return IterableResult.combine(
     wordUnit({ ...options, wordUnit: phrase.headWord }),
@@ -221,7 +220,7 @@ function defaultPhrase(
           type: "adjective",
         });
       } else if (
-        includeVerb && headWord.type === "verb" && modifier.type === "adverbial"
+        headWord.type === "verb" && modifier.type === "adverbial"
       ) {
         return IterableResult.from(() =>
           IterableResult.single<PhraseTranslation>({
@@ -286,7 +285,6 @@ function preverb(
       phrase: preverb.phrase,
       place: "object",
       includeGerund: false,
-      includeVerb: true,
     }),
   )
     .filterMap(([verb, predicate]): null | PartialSimpleVerb => {
@@ -345,38 +343,25 @@ export function phrase(
     phrase: TokiPona.Phrase;
     place: Place;
     includeGerund: boolean;
-    includeVerb: boolean;
   }>,
 ): IterableResult<PhraseTranslation> {
-  const { phrase, includeVerb } = options;
+  const { phrase } = options;
   switch (phrase.type) {
     case "simple":
       return defaultPhrase({ ...options, phrase });
     case "preposition":
-      if (includeVerb) {
-        return preposition(phrase)
-          .map(prepositionAsVerb)
-          .map((verb): PhraseTranslation => ({
-            type: "verb",
-            verb: { ...verb, type: "simple" },
-          }));
-      } else {
-        return IterableResult.errors([
-          new UntranslatableError("preposition", "noun or adjective"),
-        ]);
-      }
+      return preposition(phrase)
+        .map(prepositionAsVerb)
+        .map((verb): PhraseTranslation => ({
+          type: "verb",
+          verb: { ...verb, type: "simple" },
+        }));
     case "preverb":
-      if (includeVerb) {
-        return preverb(phrase)
-          .map((verb): PhraseTranslation => ({
-            type: "verb",
-            verb: { ...verb, type: "simple" },
-          }));
-      } else {
-        return IterableResult.errors([
-          new UntranslatableError("preverb", "noun or adjective"),
-        ]);
-      }
+      return preverb(phrase)
+        .map((verb): PhraseTranslation => ({
+          type: "verb",
+          verb: { ...verb, type: "simple" },
+        }));
   }
 }
 export function phraseAsVerb(
@@ -443,10 +428,9 @@ export function multiplePhrases(
     place: Place;
     includeGerund: boolean;
     andParticle: null | string;
-    includeVerb: boolean;
   }>,
 ): IterableResult<PhraseTranslation> {
-  const { phrases, andParticle, includeVerb } = options;
+  const { phrases, andParticle } = options;
   switch (phrases.type) {
     case "simple":
       return phrase({ ...options, phrase: phrases.phrase });
@@ -488,7 +472,7 @@ export function multiplePhrases(
                 inWayPhrase: null,
               };
             }
-          } else if (includeVerb) {
+          } else {
             return {
               type: "verb",
               verb: {
@@ -500,8 +484,6 @@ export function multiplePhrases(
                 prepositions: [],
               },
             };
-          } else {
-            return null;
           }
         })
         .addErrorWhenNone(() =>

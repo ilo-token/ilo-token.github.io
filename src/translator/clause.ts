@@ -19,7 +19,6 @@ function phraseClause(phrases: TokiPona.MultiplePhrases) {
     place: "object",
     includeGerund: true,
     andParticle: "en",
-    includeVerb: false,
   })
     .map((phrase): English.Clause => {
       switch (phrase.type) {
@@ -78,7 +77,7 @@ export function subject(
     andParticle: string;
   }>,
 ): IterableResult<English.NounPhrase> {
-  return multiplePhrases({ ...options, includeVerb: false })
+  return multiplePhrases({ ...options })
     .map((phrase) =>
       phrase.type === "noun"
         ? phrase.noun
@@ -203,7 +202,6 @@ export function clause(
         place: "object",
         includeGerund: true,
         andParticle: "en",
-        includeVerb: false,
       })
         .map((phrase) =>
           phrase.type === "noun"
