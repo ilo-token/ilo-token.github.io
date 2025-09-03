@@ -423,6 +423,7 @@ if (document.readyState === "loading") {
   main();
 }
 // remove unused local storage data
+// TODO: when stable, remove this
 const used = [DICTIONARY_KEY, ...Object.keys(settings)];
 const unused = [...new Array(localStorage.length).keys()]
   .map((i) => localStorage.key(i)!)
