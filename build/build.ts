@@ -4,6 +4,7 @@ import * as ESBuild from "esbuild";
 import * as Dictionary from "../dictionary/build.ts";
 import { OPTIONS } from "./config.ts";
 
+// TODO: use `deno bundle` instead when stable
 const BUILD_OPTIONS: ESBuild.BuildOptions = {
   ...OPTIONS,
   minify: true,
