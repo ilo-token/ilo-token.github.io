@@ -38,7 +38,7 @@ do not communicate" instead of the grammatically awkward "I not communicate".
   translation output.
 - Number as english words e.g. "ten" instead of "10" are now used for small
   numbers (&leq; 20). Thanks soweli Eweke for the suggestion!
-- Remove telo misikeke
+- Remove telo misikeke. ilo Token's own error messages still needs more work.
 - Remove "allow separate repeated modifiers". It'll be hardcoded to be turned
   on.
 
