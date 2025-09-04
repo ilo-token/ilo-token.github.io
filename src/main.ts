@@ -296,9 +296,8 @@ function main() {
           break;
       }
       for (const item of errors) {
-        const property = item.isHtml ? "innerHTML" : "innerText";
         const list = document.createElement("li");
-        list[property] = item.message;
+        list.innerText = item.message;
         errorList.appendChild(list);
       }
     }

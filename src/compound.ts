@@ -1,15 +1,5 @@
-export type ResultErrorOptions = {
-  cause: unknown;
-  isHtml: boolean;
-};
 export class ResultError extends Error {
-  isHtml: boolean;
   override name = "ArrayResultError";
-  constructor(message: string, options: Partial<ResultErrorOptions> = {}) {
-    const { cause, isHtml = false } = options;
-    super(message, { cause });
-    this.isHtml = isHtml;
-  }
 }
 export class TodoError extends ResultError {
   override name = "TodoError";
