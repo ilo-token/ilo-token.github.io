@@ -153,7 +153,7 @@ const nounOnly = checkedSequence(
               "providing both singular and plural forms instead";
           }
           if (noun !== singular) {
-            throw `conjugation error: "${noun}" is not "${singular}". ` +
+            throw `declension error: "${noun}" is not "${singular}". ` +
               "consider providing both singular and plural forms instead";
           }
           return {
