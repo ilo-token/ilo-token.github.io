@@ -23,7 +23,7 @@
       "command": "deno run -E=NO_COLOR,DEBUG_TAGS,DEBUG_CHUNKS -R=./dictionary/dictionary -W=./dictionary/dictionary.ts --no-prompt --frozen --cached-only ./dictionary/build.ts"
     },
     "soft-build-dictionary": {
-      "description": "Only builds the dictionary at `./dictionary/dictionary.ts` when it exists. When an error occurs, an empty dictionary is provided.",
+      "description": "Only builds the dictionary at `./dictionary/dictionary.ts` when it doesn't exists. When an error occurs, an empty dictionary is provided.",
       "command": "deno run -E=NO_COLOR,DEBUG_TAGS,DEBUG_CHUNKS -R=./dictionary/dictionary,./dictionary/dictionary.ts -W=./dictionary/dictionary.ts --no-prompt --frozen --cached-only ./dictionary/soft-build.ts"
     }
   },
