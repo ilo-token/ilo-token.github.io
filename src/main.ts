@@ -403,7 +403,10 @@ function main() {
     errorBox.close();
   });
   addEventListener("beforeunload", (event) => {
-    if (customDictionaryDialogBox.open) {
+    if (
+      customDictionaryDialogBox.open &&
+      lastSavedText !== customDictionaryTextBox.value
+    ) {
       event.preventDefault();
     }
   });
