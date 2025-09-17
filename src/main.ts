@@ -177,7 +177,7 @@ function main() {
 
   // states for storing previous dictionary states for discarding dictionary edits
   let lastSavedText = checkLocalStorage()
-    ? localStorage.getItem(DICTIONARY_KEY) ?? ""
+    ? localStorage.getItem(DICTIONARY_KEY) ?? DEFAULT_CUSTOM_DICTIONARY_MESSAGE
     : customDictionaryTextBox.value;
   let lastSavedDictionary = dictionaryParser.parse(lastSavedText);
 
