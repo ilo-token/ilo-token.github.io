@@ -19,8 +19,8 @@ export const SENTENCE_TERMINATOR_TO_ASCII = new Map([
   ...ASCII_SENTENCE_TERMINATOR.map((symbol) => [symbol, symbol] as const),
   ...FULL_WIDTH_PERIOD.map((period) => [period, "."] as const),
   ...FULL_WIDTH_COLON.map((colon) => [colon, ":"] as const),
-  [ELLIPSIS, "..."] as const,
-  [MIDDLE_DOT, "."] as const,
+  [ELLIPSIS, "..."],
+  [MIDDLE_DOT, "."],
 ]);
 export const SENTENCE_TERMINATOR = characterClass(
   SENTENCE_TERMINATOR_TO_ASCII.keys(),
@@ -28,6 +28,6 @@ export const SENTENCE_TERMINATOR = characterClass(
 export const NSK_PERIOD = characterClass(NSK_PERIOD_SET);
 export const NSK_COLON = characterClass(FULL_WIDTH_COLON);
 
-function characterClass(characters: Iterable<string>): RegExp {
+function characterClass(characters: Iterable<string>) {
   return new RegExp(`[${escape([...characters].join(""))}]`, "u");
 }

@@ -1,8 +1,8 @@
 import { throwError } from "../../misc/misc.ts";
-import { ArrayResult } from "../array_result.ts";
+import { IterableResult } from "../compound.ts";
 import { dictionary } from "../dictionary.ts";
 import * as TokiPona from "../parser/ast.ts";
-import { fixAdverb } from "./adverb.ts";
+import { extractNegativeFromMultipleAdverbs } from "./adverb.ts";
 import * as English from "./ast.ts";
 import { FilteredError, TranslationTodoError } from "./error.ts";
 import { multipleModifiers } from "./modifier.ts";
@@ -12,36 +12,34 @@ import { getReduplicationCount } from "./word_unit.ts";
 
 export function preposition(
   preposition: TokiPona.Preposition,
-): ArrayResult<English.Preposition> {
-  return ArrayResult.combine(
+): IterableResult<English.Preposition> {
+  return IterableResult.combine(
     prepositionAsWord(preposition.preposition),
     multipleModifiers(preposition.modifiers)
-      .filterMap((modifier) =>
+      .map((modifier) =>
         modifier.type === "adverbial"
-          ? (modifier.inWayPhrase == null ? modifier.adverb : throwError(
+          ? (modifier.inWayPhrase == null ? modifier.adverbs : throwError(
             new FilteredError(
               '"in [adjective] way" prepositional phrase modifying ' +
                 "preposition",
             ),
           ))
           : throwError(new FilteredError("adjectives modifying preposition"))
-      )
-      .map(fixAdverb),
+      ),
     multiplePhrases({
       phrases: preposition.phrases,
       place: "object",
       includeGerund: true,
       andParticle: null,
-      includeVerb: false,
     })
-      .filterMap((phrases) =>
+      .map((phrases) =>
         phrases.type === "noun"
           ? phrases.noun
           : throwError(new FilteredError(`${phrases.type} as indirect object`))
       ),
   )
-    .map(([preposition, adverb, object]) => ({
-      adverb,
+    .map(([preposition, adverbs, object]): English.Preposition => ({
+      adverbs,
       preposition,
       object,
       emphasis: preposition.emphasis,
@@ -49,15 +47,15 @@ export function preposition(
 }
 function prepositionAsWord(
   preposition: TokiPona.HeadedWordUnit,
-): ArrayResult<English.Word> {
+): IterableResult<English.Word> {
   switch (preposition.type) {
     case "x ala x":
-      return new ArrayResult(
+      return IterableResult.errors([
         new TranslationTodoError("preposition ala preposition"),
-      );
-    case "default":
+      ]);
+    case "simple":
     case "reduplication":
-      return new ArrayResult(
+      return IterableResult.fromArray(
         dictionary.get(preposition.word)!.definitions,
       )
         .filterMap((definition) =>
@@ -76,9 +74,19 @@ export function nounAsPreposition(
   preposition: string,
 ): English.Preposition {
   return {
-    adverb: [],
+    adverbs: [],
     preposition: noEmphasis(preposition),
     object: phrase,
     emphasis: false,
   };
+}
+export function extractNegativeFromPreposition(
+  preposition: English.Preposition,
+): null | English.Preposition {
+  const adverbs = extractNegativeFromMultipleAdverbs(preposition.adverbs);
+  if (adverbs == null) {
+    return null;
+  } else {
+    return { ...preposition, adverbs };
+  }
 }

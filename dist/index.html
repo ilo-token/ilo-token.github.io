@@ -29,62 +29,70 @@
     <script src="./main.js"></script>
   </head>
   <body>
-    <h1 lang="tok">ilo Token</h1>
-    <p>
-      <strong>⚠ WARNING:</strong> Work in progress; Some things may not work
-      properly.
-    </p>
-    <p>
-      An open-source rule-based Toki Pona to English translator.
-      <a
-        href="https://github.com/ilo-token/ilo-token.github.io/wiki/Limitations"
-      >Limitations</a>.
-    </p>
-    <p>
-      <button id="custom-dictionary-button">Custom Dictionary</button>
-      <button id="settings-button">Settings</button>
-    </p>
-    <textarea
-      id="input"
-      placeholder="o toki tawa ni"
-      lang="tok"
-      cols="10"
-      rows="1"
-    ></textarea>
-    <div>
-      <button id="translate-button">Translate (Ctrl + Enter)</button>
-    </div>
-    <noscript>
-      <p>This page needs JavaScript enabled for translation.</p>
-    </noscript>
-    <ul id="output"></ul>
-    <p id="error"></p>
-    <ul id="error-list"></ul>
-    <details>
-      <summary>Provide feedback</summary>
-      <ul>
-        <li>
-          <a href="https://github.com/ilo-token/ilo-token.github.io">GitHub</a>
-          (public) (<a
-            href="https://github.com/ilo-token/ilo-token.github.io/blob/master/CONTRIBUTING.md"
-          >Contributing Instruction</a>)
-        </li>
-        <li>
-          <a
-            href="https://conlangsfrom.space/t/ilo-token-a-wip-rule-based-toki-pona-to-english-translator/452"
-          >Conlangs from Space</a>
-          (public)
-        </li>
-        <li>
-          <a
-            href="https://docs.google.com/forms/d/e/1FAIpQLSfdDEMbde9mieybZdbZr8haRzNzGsg0BVkuTIzuHaATCdcrlw/viewform?usp=sf_link"
-          >Google forms</a>
-          (private)
-        </li>
-        <li><a href="mailto:neverrare@proton.me">Email</a> (private)</li>
-      </ul>
-    </details>
+    <header>
+      <h1 lang="tok">ilo Token</h1>
+    </header>
+    <main>
+      <p>
+        <strong>⚠ WARNING:</strong> Work in progress; Some things may not work
+        properly.
+      </p>
+      <p>
+        An open-source rule-based Toki Pona to English translator.
+        <a
+          href="https://github.com/ilo-token/ilo-token.github.io/wiki/Limitations"
+        >Limitations</a>.
+      </p>
+      <p>
+        <button id="custom-dictionary-button">Custom Dictionary</button>
+        <button id="settings-button">Settings</button>
+      </p>
+      <textarea
+        id="input"
+        placeholder="o toki tawa ni"
+        lang="tok"
+        cols="10"
+        rows="1"
+      ></textarea>
+      <div>
+        <button id="translate-button">Translate (Ctrl + Enter)</button>
+      </div>
+      <noscript>
+        <p>This page needs JavaScript enabled for translation.</p>
+      </noscript>
+      <ul id="output"></ul>
+      <p id="error"></p>
+      <ul id="error-list"></ul>
+      <p>
+        <button id="load-more-button" style="display: none">Load more</button>
+      </p>
+    </main>
     <footer>
+      <details>
+        <summary>Provide feedback</summary>
+        <ul>
+          <li>
+            <a href="https://github.com/ilo-token/ilo-token.github.io"
+            >GitHub</a>
+            (public) (<a
+              href="https://github.com/ilo-token/ilo-token.github.io/blob/master/CONTRIBUTING.md"
+            >Contributing Instruction</a>)
+          </li>
+          <li>
+            <a
+              href="https://conlangsfrom.space/t/ilo-token-a-wip-rule-based-toki-pona-to-english-translator/452"
+            >Conlangs from Space</a>
+            (public)
+          </li>
+          <li>
+            <a
+              href="https://docs.google.com/forms/d/e/1FAIpQLSfdDEMbde9mieybZdbZr8haRzNzGsg0BVkuTIzuHaATCdcrlw/viewform?usp=sf_link"
+            >Google forms</a>
+            (private)
+          </li>
+          <li><a href="mailto:neverrare@proton.me">Email</a> (private)</li>
+        </ul>
+      </details>
       <p>
         <a
           href="https://github.com/ilo-token/ilo-token.github.io/blob/master/CHANGELOG.md"
@@ -101,31 +109,24 @@
           target="_blank"
         >(Help)</a>
       </h1>
-      <label><input type="checkbox" id="telo-misikeke" />
-        Use telo misikeke error messages</label>
       <label><input type="checkbox" id="randomize" />
         Randomize output order</label>
       <label><input type="checkbox" id="multiline" />
         Multiline input</label>
       <label for="quantity">Singular and plural forms</label>
       <select id="quantity">
-        <option value="both">Show all</option>
+        <option value="both" selected>Show all</option>
         <option value="condensed">Condensed</option>
         <option value="default only">Show singular only</option>
       </select>
       <label for="tense">Verb tenses</label>
       <select id="tense">
-        <option value="both">Show all</option>
+        <option value="both" selected>Show all</option>
         <option value="condensed">Condensed</option>
         <option value="default only">Show present only</option>
       </select>
-      <details class="flex">
-        <summary>Advance settings</summary>
-        <label><input type="checkbox" id="x-ala-x-partial-parsing" />
-          Allow X ala X partial parsing</label>
-        <label><input type="checkbox" id="separate-repeated-modifiers" />
-          Allow separate repeated modifiers</label>
-      </details>
+      <label><input type="checkbox" id="x-ala-x-partial-parsing" />
+        Allow X ala X partial parsing</label>
       <div>
         <button id="reset-button">Reset to default</button>
         <div></div>
@@ -167,9 +168,9 @@
       <h1>An error has occurred</h1>
       <p>
         This is not supposed to happen. If you're using an outdated browser,
-        please consider updating it. Otherwise please consider reporting this.
-        We respect user's privacy and so we rely on user-submitted bug reports.
-        Here are the contact options:
+        please consider updating it. It might be due to that reason. Otherwise
+        please consider reporting this. We respect user's privacy and so we rely
+        on user-submitted bug reports. Here are the contact options:
       </p>
       <ul>
         <li>
@@ -195,7 +196,11 @@
       <ul>
         <li>What did you do before this error occurred.</li>
         <li>The following error message: <code id="error-code"></code></li>
-        <li>Your browser and its version (optional).</li>
+        <li>
+          Your browser, its version, and your operating system: <span
+            id="browser-details"
+          ></span>
+        </li>
       </ul>
       <button id="error-close-button">Close</button>
     </dialog>

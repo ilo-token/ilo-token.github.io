@@ -1,28 +1,51 @@
 import { sumOf } from "@std/collections/sum-of";
 import { nullableAsArray } from "../../misc/misc.ts";
-import { ArrayResult } from "../array_result.ts";
+import { IterableResult } from "../compound.ts";
 import { dictionary } from "../dictionary.ts";
 import { FilteredError } from "./error.ts";
 
-function singleNumber(word: string): ArrayResult<number> {
-  return new ArrayResult(dictionary.get(word)!.definitions)
+const WORDS = [
+  "zero",
+  "one",
+  "two",
+  "three",
+  "four",
+  "five",
+  "six",
+  "seven",
+  "eight",
+  "nine",
+  "ten",
+  "eleven",
+  "twelve",
+  "thirteen",
+  "fourteen",
+  "fifteen",
+  "sixteen",
+  "seventeen",
+  "eighteen",
+  "nineteen",
+  "twenty",
+];
+function singleNumber(word: string) {
+  return IterableResult.fromArray(dictionary.get(word)!.definitions)
     .filterMap((definition) =>
       definition.type === "numeral" ? definition.numeral : null
     );
 }
-function regularNumber(number: ReadonlyArray<number>): number {
-  const duplicate = number.some((a, i) =>
-    i < number.length - 1 && number[i + 1] !== a &&
-    number.slice(i + 2).some((b) => a === b)
+function regularNumber(numbers: ReadonlyArray<number>) {
+  const duplicate = numbers.some((a, i) =>
+    i < numbers.length - 1 && numbers[i + 1] !== a &&
+    numbers.slice(i + 2).some((b) => a === b)
   );
   if (duplicate) {
     throw new FilteredError("separate repeated numeral");
   } else {
-    return sumOf(number, (number) => number);
+    return sumOf(numbers, (number) => number);
   }
 }
-function subHundred(number: ReadonlyArray<number>): number {
-  const total = regularNumber(number);
+function subHundred(numbers: ReadonlyArray<number>) {
+  const total = regularNumber(numbers);
   if (total >= 100) {
     throw new FilteredError("nasin nanpa pona position exceeding 99");
   } else {
@@ -30,52 +53,61 @@ function subHundred(number: ReadonlyArray<number>): number {
   }
 }
 function unfilteredNasinNanpaPona(
-  number: ReadonlyArray<number>,
+  numbers: ReadonlyArray<number>,
   previousHundredCount: number,
 ): number {
-  if (number.length === 0) {
+  if (numbers.length === 0) {
     return 0;
   } else {
-    const aleStart = number.indexOf(100);
+    const aleStart = numbers.indexOf(100);
     if (aleStart === -1) {
-      return subHundred(number);
+      return subHundred(numbers);
     } else {
-      const index = number
+      const index = numbers
         .slice(aleStart)
         .findIndex((number) => number !== 100);
-      const hundredCount = index !== -1 ? index : number.length - aleStart;
+      const hundredCount = index !== -1 ? index : numbers.length - aleStart;
       if (previousHundredCount <= hundredCount) {
         throw new FilteredError('unsorted "ale"');
       } else {
-        return subHundred(number.slice(0, aleStart)) * 100 ** hundredCount +
+        return subHundred(numbers.slice(0, aleStart)) * 100 ** hundredCount +
           unfilteredNasinNanpaPona(
-            number.slice(aleStart + hundredCount),
+            numbers.slice(aleStart + hundredCount),
             hundredCount,
           );
       }
     }
   }
 }
-function nasinNanpaPona(number: ReadonlyArray<number>): null | number {
-  if (number.includes(0) || !number.includes(100) || number[0] === 100) {
+function nasinNanpaPona(numbers: ReadonlyArray<number>) {
+  if (numbers.includes(0) || !numbers.includes(100) || numbers[0] === 100) {
     return null;
   } else {
-    return unfilteredNasinNanpaPona(number, Infinity);
+    return unfilteredNasinNanpaPona(numbers, Infinity);
   }
 }
-function combineNumbers(numbers: ReadonlyArray<number>): ArrayResult<number> {
+function combineNumbers(numbers: ReadonlyArray<number>) {
   if (numbers.length === 1 || !numbers.includes(0)) {
-    return ArrayResult.concat(
-      ArrayResult.from(() =>
-        new ArrayResult(nullableAsArray(nasinNanpaPona(numbers)))
+    return IterableResult.concat(
+      IterableResult.from(() =>
+        IterableResult.fromArray(nullableAsArray(nasinNanpaPona(numbers)))
       ),
-      ArrayResult.from(() => new ArrayResult([regularNumber(numbers)])),
+      IterableResult.from(() => IterableResult.single(regularNumber(numbers))),
     );
   } else {
-    return new ArrayResult(new FilteredError('"ala" along with other numeral'));
+    return IterableResult.errors([
+      new FilteredError('"ala" along with other numeral'),
+    ]);
   }
 }
-export function number(number: ReadonlyArray<string>): ArrayResult<number> {
-  return ArrayResult.combine(...number.map(singleNumber))
+export function number(numbers: ReadonlyArray<string>): IterableResult<number> {
+  return IterableResult.combine(...numbers.map(singleNumber))
     .flatMap(combineNumbers);
+}
+export function numberAsText(number: number): string {
+  if (number <= 20) {
+    return WORDS[number];
+  } else {
+    return `${number}`;
+  }
 }

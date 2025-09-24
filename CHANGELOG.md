@@ -2,21 +2,53 @@
 
 <!--
 NOTE: Before publishing:
-- run `deno task update` to update all dependencies including telo misikeke
+- run `deno outdated --update`
 - set parameters on `project-data.json`
 - update this very document, don't forget to add release date
 -->
 
 <!--
 <details>
+
 <summary>On development changelog</summary>
 
-## (On development)
+## 0.7.1 (On development)
 
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
+
 </details>
 -->
+
+## 0.7.0
+
+Released 25 September 2025
+
+ilo Token can now translate preverbs! Currently this only works when the
+predicate is translated as a verb unless the preverb is translated as a linking
+verb. This will be expanded soon.
+
+ilo Token will now recognize "taso" as sentence starting particle along with
+other particle with similar function such as "kin" and "anu". ilo Token will
+also recognize "anu la" treating it similarly like "anu" as sentence starting
+particle.
+
+ilo Token now performs proper verb negation: "mi toki ala" will translate to "I
+do not communicate" instead of the grammatically awkward "I not communicate".
+
+- Implement preverb translation.
+- Implement translation of "taso", "kin", and "anu" as sentence starting
+  particle.
+- Implement translation of "anu la".
+- Implement proper verb negation.
+- Implement modal verb translation e.g. "mi ken" into "I can".
+- Implement pagination. This also prevents browser crashes due to numerous
+  translation output.
+- Number as english words e.g. "ten" instead of "10" are now used for small
+  numbers (&leq; 20). Thanks soweli Eweke for the suggestion!
+- Remove telo misikeke. ilo Token's own error messages still needs more work.
+- Remove "allow separate repeated modifiers". It'll be hardcoded to be turned
+  on.
 
 ## 0.6.0
 

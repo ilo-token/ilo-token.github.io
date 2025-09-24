@@ -29,11 +29,11 @@ export type Token =
     type: "inside long glyph";
     words: ReadonlyArray<string>;
   }>
-  | Readonly<{ type: "multiple a"; count: number }>
+  | Readonly<{ type: "reduplicated a"; count: number }>
   | Readonly<{ type: "long word"; word: string; length: number }>
   | Readonly<{ type: "x ala x"; word: string }>
   | Readonly<{
-    type: "proper word";
+    type: "name";
     words: string;
     kind: "cartouche" | "latin";
   }>
@@ -53,7 +53,7 @@ export function describe(token: Token): string {
     case "headed long glyph end":
     case "inside long glyph":
       return "end of long glyph";
-    case "multiple a":
+    case "reduplicated a":
       return `"${repeatWithSpace("a", token.count)}"`;
     case "long word":
       return `"${token.word.repeat(token.length)}"`;
@@ -61,7 +61,7 @@ export function describe(token: Token): string {
       return `"${token.word} ala ${token.word}"`;
     case "punctuation":
       return `punctuation mark "${token.punctuation}"`;
-    case "proper word":
+    case "name":
       switch (token.kind) {
         case "cartouche":
           return "cartouche";

@@ -1,7 +1,9 @@
-// Ensure this module don't have imports and as runtime agnostic as possible,
+// ensure this module don't have imports and as runtime agnostic as possible,
 // make separate module when necessary
 
-export function nullableAsArray<T>(value?: T): ReadonlyArray<NonNullable<T>> {
+export function nullableAsArray<T>(
+  value?: T,
+): ReadonlyArray<NonNullable<T>> {
   if (value == null) {
     return [];
   } else {
@@ -18,8 +20,11 @@ export function mapNullable<T, U>(
     return mapper(value);
   }
 }
-export function repeatArray<T>(element: T, count: number): ReadonlyArray<T> {
-  return new Array(count).fill(element);
+export function repeatArray<T>(
+  value: T,
+  count: number,
+): ReadonlyArray<T> {
+  return new Array(count).fill(value);
 }
 export function repeatWithSpace(text: string, count: number): string {
   return repeatArray(text, count).join(" ");
@@ -28,23 +33,23 @@ export function throwError(error: unknown): never {
   throw error;
 }
 export function compound(
-  elements: ReadonlyArray<string>,
+  values: ReadonlyArray<string>,
   conjunction: string,
   repeat: boolean,
 ): string {
-  if (repeat || elements.length <= 2) {
-    return elements.join(` ${conjunction} `);
+  if (repeat || values.length <= 2) {
+    return values.join(` ${conjunction} `);
   } else {
-    const lastIndex = elements.length - 1;
-    const init = elements.slice(0, lastIndex);
-    const last = elements[lastIndex];
+    const lastIndex = values.length - 1;
+    const init = values.slice(0, lastIndex);
+    const last = values[lastIndex];
     const initText = init.map((item) => `${item},`).join(" ");
     return `${initText} ${conjunction} ${last}`;
   }
 }
 export function lazy<T>(fn: () => T): () => T {
   let defined = false;
-  let value: null | T;
+  let value: T;
   return () => {
     if (!defined) {
       defined = true;

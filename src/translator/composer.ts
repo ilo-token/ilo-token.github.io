@@ -4,7 +4,7 @@ import * as English from "./ast.ts";
 const EMPHASIS_STARTING_TAG = "<strong>";
 const EMPHASIS_ENDING_TAG = "</strong>";
 
-function word(word: English.Word): string {
+function word(word: English.Word) {
   if (word.emphasis) {
     return `${EMPHASIS_STARTING_TAG}${word.word}${EMPHASIS_ENDING_TAG}`;
   } else {
@@ -15,14 +15,14 @@ export function noun(phrases: English.NounPhrase, depth: number): string {
   switch (phrases.type) {
     case "simple": {
       const text = [
-        ...phrases.determiner.map(({ determiner }) => word(determiner)),
-        ...phrases.adjective.map(adjective),
+        ...phrases.determiners.map(({ determiner }) => word(determiner)),
+        ...phrases.adjectives.map(adjective),
         word(phrases.noun),
-        ...nullableAsArray(phrases.postAdjective)
+        ...nullableAsArray(phrases.adjectiveName)
           .map(({ adjective, name }) => `${adjective} ${name}`),
         ...nullableAsArray(phrases.postCompound)
           .map((phrase) => noun(phrase, 0)),
-        ...phrases.preposition.map(preposition),
+        ...phrases.prepositions.map(preposition),
       ]
         .join(" ");
       return word({ word: text, emphasis: phrases.emphasis });
@@ -42,27 +42,28 @@ export function adjective(
   let text: string;
   switch (phrases.type) {
     case "simple":
-      text = [...phrases.adverb.map(word), word(phrases.adjective)]
+      text = [
+        ...phrases.adverbs.map(({ adverb }) => word(adverb)),
+        word(phrases.adjective),
+      ]
         .join(" ");
       break;
     case "compound":
       text = compound(
-        phrases.adjective.map((phrase) => adjective(phrase, depth + 1)),
+        phrases.adjectives.map((phrase) => adjective(phrase, depth + 1)),
         phrases.conjunction,
         depth !== 0,
       );
   }
   return word({ word: text, emphasis: phrases.emphasis });
 }
-function preposition(preposition: English.Preposition): string {
+function preposition(preposition: English.Preposition) {
   return word({
     word: `${word(preposition.preposition)} ${noun(preposition.object, 0)}`,
     emphasis: preposition.emphasis,
   });
 }
-function complement(
-  complement: English.Complement,
-): string {
+function complement(complement: English.Complement) {
   switch (complement.type) {
     case "noun":
       return noun(complement.noun, 0);
@@ -70,21 +71,31 @@ function complement(
       return adjective(complement.adjective, 0);
   }
 }
-export function adverbVerb(verbAdverb: English.AdverbVerb): string {
-  const { adverb, verb } = verbAdverb;
-  return [...adverb, verb].map(word).join(" ");
+function singeVerb(verbAdverb: English.Verb) {
+  const { preAdverbs, verb, postAdverb } = verbAdverb;
+  const verbPost = verb.word === "can" && postAdverb != null &&
+      postAdverb.adverb.word === "not"
+    ? `${word(verb)}${word(postAdverb.adverb)}`
+    : [verb, ...nullableAsArray(postAdverb).map(({ adverb }) => adverb)]
+      .map(word)
+      .join(" ");
+  return [
+    ...preAdverbs.map(({ adverb }) => word(adverb)),
+    verbPost,
+  ]
+    .join(" ");
 }
 export function verb(phrase: English.VerbPhrase, depth: number): string {
   let text: string;
   switch (phrase.type) {
-    case "default": {
-      const { verb: { modal, verb } } = phrase;
+    case "simple": {
+      const { verb: { modal, verbs } } = phrase;
       const verbText = !phrase.hideVerb
         ? [
           ...nullableAsArray(modal),
-          ...verb,
+          ...verbs,
         ]
-          .map(adverbVerb)
+          .map(singeVerb)
         : [];
       text = [
         ...verbText,
@@ -105,13 +116,13 @@ export function verb(phrase: English.VerbPhrase, depth: number): string {
     text,
     ...nullableAsArray(phrase.object).map(noun, 0),
     ...nullableAsArray(phrase.objectComplement).map(complement),
-    ...phrase.preposition.map(preposition),
+    ...phrase.prepositions.map(preposition),
   ]
     .join(" ");
 }
 function clause(ast: English.Clause): string {
   switch (ast.type) {
-    case "default": {
+    case "simple": {
       const subject = !ast.hideSubject ? [noun(ast.subject, 0)] : [];
       return [
         ...subject,
@@ -147,7 +158,7 @@ export function multipleSentences(
       return sentences.sentences.map(sentence).join(" ");
   }
 }
-function capitalize(text: string): string {
+function capitalize(text: string) {
   return text.replace(
     /(?<![<&\p{Alpha}\p{Nd}\p{Nl}\p{No}])[\p{Alpha}\p{Nd}\p{Nl}\p{No}]/u,
     (character) => character.toLocaleUpperCase(),

@@ -1,5 +1,5 @@
 import * as Dictionary from "../../dictionary/type.ts";
-import { ArrayResult } from "../array_result.ts";
+import { IterableResult } from "../compound.ts";
 import * as English from "./ast.ts";
 import { fromNounForms, PartialNoun } from "./noun.ts";
 import { word } from "./word.ts";
@@ -23,7 +23,7 @@ function pronounForms(
       };
   }
 }
-export function partialPronoun(
+export function pronounAsPartialNoun(
   options: Readonly<{
     pronoun: Dictionary.Pronoun;
     reduplicationCount: number;
@@ -35,10 +35,10 @@ export function partialPronoun(
   return {
     ...options,
     ...pronounForms(pronoun, place),
-    determiner: [],
-    adjective: [],
+    determiners: [],
+    adjectives: [],
     perspective: pronoun.perspective,
-    postAdjective: null,
+    adjectiveName: null,
   };
 }
 export function pronoun(
@@ -48,19 +48,19 @@ export function pronoun(
     emphasis: boolean;
     place: Place;
   }>,
-): ArrayResult<English.NounPhrase> {
+): IterableResult<English.NounPhrase> {
   const { definition, place } = options;
   return fromNounForms(pronounForms(definition, place), "both")
-    .map(({ noun, quantity }) => ({
+    .map(({ noun, quantity }): English.NounPhrase => ({
       type: "simple",
-      determiner: [],
-      adjective: [],
+      determiners: [],
+      adjectives: [],
       noun: word({ ...options, word: noun }),
       quantity,
       perspective: definition.perspective,
       postCompound: null,
-      postAdjective: null,
-      preposition: [],
+      adjectiveName: null,
+      prepositions: [],
       emphasis: false,
     }));
 }

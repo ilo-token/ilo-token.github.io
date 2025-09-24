@@ -26,20 +26,20 @@ export function emphasis(emphasis: Emphasis): string {
 }
 export function filler(filler: Filler): string {
   switch (filler.type) {
-    case "multiple a":
+    case "reduplicated a":
       return repeatWithSpace("a", filler.count);
     default:
       return emphasis(filler);
   }
 }
-function emphasisAsArray(value: null | Emphasis): ReadonlyArray<string> {
+function emphasisAsArray(value: null | Emphasis) {
   return nullableAsArray(value).map(emphasis);
 }
 export function simpleWordUnit(wordUnit: SimpleWordUnit): string {
   switch (wordUnit.type) {
     case "number":
       return wordUnit.words.join(" ");
-    case "default":
+    case "simple":
       return wordUnit.word;
     case "x ala x":
       return `${wordUnit.word} ala ${wordUnit.word}`;
@@ -59,9 +59,9 @@ export function nanpa(nanpa: Nanpa): string {
 }
 export function modifier(modifier: Modifier): string {
   switch (modifier.type) {
-    case "default":
+    case "simple":
       return wordUnit(modifier.word);
-    case "proper words":
+    case "name":
       return modifier.words;
     case "pi":
       return `pi ${phrase(modifier.phrase)}`;
@@ -71,7 +71,7 @@ export function modifier(modifier: Modifier): string {
 }
 export function phrase(value: Phrase): string {
   switch (value.type) {
-    case "default":
+    case "simple":
       return [
         wordUnit(value.headWord),
         ...value.modifiers.map(modifier),
@@ -90,11 +90,8 @@ export function phrase(value: Phrase): string {
       return preposition(value);
   }
 }
-function particle(
-  type: "and conjunction" | "anu",
-  particle: null | string,
-): string {
-  if (type === "and conjunction") {
+function particle(type: "and" | "anu", particle: null | string) {
+  if (type === "and") {
     return particle!;
   } else {
     return "anu;";
@@ -105,9 +102,9 @@ export function multiplePhrases(
   andParticle: null | string,
 ): string {
   switch (phrases.type) {
-    case "single":
+    case "simple":
       return phrase(phrases.phrase);
-    case "and conjunction":
+    case "and":
     case "anu": {
       return phrases.phrases
         .map((phrases) => multiplePhrases(phrases, andParticle))
@@ -129,7 +126,7 @@ export function multiplePredicates(
   andParticle: string,
 ): string {
   switch (predicates.type) {
-    case "single":
+    case "simple":
       return phrase(predicates.predicate);
     case "associated": {
       return [
@@ -141,7 +138,7 @@ export function multiplePredicates(
       ]
         .join(" ");
     }
-    case "and conjunction":
+    case "and":
     case "anu":
       return predicates.predicates
         .map((predicates) => multiplePredicates(predicates, andParticle))
@@ -188,7 +185,7 @@ export function contextClause(contextClause: ContextClause): string {
 export function sentence(sentence: Sentence): string {
   let text: string;
   switch (sentence.type) {
-    case "default":
+    case "simple":
       text = [
         ...nullableAsArray(sentence.startingParticle).map(wordUnit),
         ...sentence.contextClauses

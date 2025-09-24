@@ -1,26 +1,26 @@
-import { ArrayResultError, TodoError } from "../array_result.ts";
+import { ResultError, TodoError } from "../compound.ts";
 
 export class TranslationTodoError extends TodoError {
+  override name = "TranslationTodoError";
   constructor(type: string) {
     super(`translation of ${type}`);
-    this.name = "TranslationTodoError";
   }
 }
-export class ExhaustedError extends ArrayResultError {
+export class ExhaustedError extends ResultError {
+  override name = "ExhaustedError";
   constructor(text: string) {
     super(`no possible translation found for "${text}"`);
-    this.name = "ExhaustedError";
   }
 }
-export class FilteredError extends ArrayResultError {
+export class FilteredError extends ResultError {
+  override name = "FilteredOutError";
   constructor(element: string) {
     super(`${element} is filtered out`);
-    this.name = "FilteredOutError";
   }
 }
-export class UntranslatableError extends ArrayResultError {
+export class UntranslatableError extends ResultError {
+  override name = "UntranslatableError";
   constructor(source: string, target: string) {
     super(`cannot translate ${source} into ${target}`);
-    this.name = "UntranslatableError";
   }
 }

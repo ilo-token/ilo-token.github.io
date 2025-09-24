@@ -1,8 +1,7 @@
 import { dictionary as globalDictionary } from "../dictionary/dictionary.ts";
 import { Definition, Dictionary } from "../dictionary/type.ts";
-import { load } from "../telo_misikeke/telo_misikeke.js";
 
-// All of these global constants are mutable
+// all of these global constants are mutable
 
 const customDictionary: Dictionary = new Map();
 export const dictionary: Dictionary = new Map();
@@ -23,7 +22,7 @@ export function loadCustomDictionary(dictionary: Dictionary): void {
   }
   update();
 }
-function update(): void {
+function update() {
   dictionary.clear();
   const words = new Set([
     ...globalDictionary.keys(),
@@ -49,12 +48,11 @@ function update(): void {
   redefineSetWithType(fillerSet, "filler");
   redefineSetWithType(numeralSet, "numeral");
   redefineSet(tokiPonaWordSet, () => true);
-  load([...words]);
 }
 function redefineSet(
   set: Set<string>,
   filter: (definition: Definition) => boolean,
-): void {
+) {
   set.clear();
   for (const [word, { definitions }] of dictionary) {
     if (definitions.some(filter)) {
@@ -62,9 +60,6 @@ function redefineSet(
     }
   }
 }
-function redefineSetWithType(
-  set: Set<string>,
-  type: Definition["type"],
-): void {
+function redefineSetWithType(set: Set<string>, type: Definition["type"]) {
   redefineSet(set, ({ type: compareType }) => compareType === type);
 }

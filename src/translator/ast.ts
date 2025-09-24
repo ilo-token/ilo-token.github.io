@@ -1,28 +1,30 @@
 import * as Dictionary from "../../dictionary/type.ts";
 
+// When editing, update `./fixer.ts` as well
+
 export type Word = Readonly<{
   word: string;
   emphasis: boolean;
 }>;
 export type Quantity = "singular" | "plural" | "condensed";
+export type AdjectiveName = Readonly<{ adjective: string; name: string }>;
 export type NounPhrase =
   | Readonly<{
     type: "simple";
-    determiner: ReadonlyArray<Determiner>;
-    adjective: ReadonlyArray<AdjectivePhrase>;
+    determiners: ReadonlyArray<Determiner>;
+    adjectives: ReadonlyArray<AdjectivePhrase>;
     noun: Word;
     quantity: Quantity;
     perspective: Dictionary.Perspective;
-    postAdjective: null | Readonly<{ adjective: string; name: string }>;
+    adjectiveName: null | AdjectiveName;
     postCompound: null | NounPhrase;
-    preposition: ReadonlyArray<Preposition>;
+    prepositions: ReadonlyArray<Preposition>;
     emphasis: boolean;
   }>
   | Readonly<{
     type: "compound";
     conjunction: string;
     nouns: ReadonlyArray<NounPhrase>;
-    quantity: Quantity;
   }>;
 export type Determiner = Readonly<{
   kind: Dictionary.DeterminerType;
@@ -33,36 +35,41 @@ export type AdjectivePhrase =
   | Readonly<{
     type: "simple";
     kind: Dictionary.AdjectiveType;
-    adverb: ReadonlyArray<Word>;
+    adverbs: ReadonlyArray<Adverb>;
     adjective: Word;
     emphasis: boolean;
   }>
   | Readonly<{
     type: "compound";
     conjunction: string;
-    adjective: ReadonlyArray<AdjectivePhrase>;
+    adjectives: ReadonlyArray<AdjectivePhrase>;
     emphasis: boolean;
   }>;
 export type Complement =
   | Readonly<{ type: "noun"; noun: NounPhrase }>
   | Readonly<{ type: "adjective"; adjective: AdjectivePhrase }>;
-export type AdverbVerb = {
-  adverb: ReadonlyArray<Word>;
+export type Adverb = Readonly<{
+  adverb: Word;
+  negative: boolean;
+}>;
+export type Verb = {
+  preAdverbs: ReadonlyArray<Adverb>;
   verb: Word;
+  postAdverb: null | Adverb;
 };
-export type Verb = Readonly<{
-  modal: null | AdverbVerb;
-  verb: ReadonlyArray<AdverbVerb>;
+export type WholeVerb = Readonly<{
+  modal: null | Verb;
+  verbs: ReadonlyArray<Verb>;
 }>;
 export type VerbPhrase =
   | Readonly<{
-    type: "default";
-    verb: Verb;
+    type: "simple";
+    verb: WholeVerb;
     subjectComplement: null | Complement;
     contentClause: null | Clause;
     object: null | NounPhrase;
     objectComplement: null | Complement;
-    preposition: ReadonlyArray<Preposition>;
+    prepositions: ReadonlyArray<Preposition>;
     hideVerb: boolean;
   }>
   | Readonly<{
@@ -71,11 +78,11 @@ export type VerbPhrase =
     verbs: ReadonlyArray<VerbPhrase>;
     object: null | NounPhrase;
     objectComplement: null | Complement;
-    preposition: ReadonlyArray<Preposition>;
+    prepositions: ReadonlyArray<Preposition>;
   }>;
 export type Clause =
   | Readonly<{
-    type: "default";
+    type: "simple";
     subject: NounPhrase;
     verb: VerbPhrase;
     hideSubject: boolean;
@@ -87,7 +94,7 @@ export type Clause =
   | Readonly<{ type: "adverb"; adverb: Word }>
   | Readonly<{ type: "dependent"; conjunction: Word; clause: Clause }>;
 export type Preposition = Readonly<{
-  adverb: ReadonlyArray<Word>;
+  adverbs: ReadonlyArray<Adverb>;
   preposition: Word;
   object: NounPhrase;
   emphasis: boolean;

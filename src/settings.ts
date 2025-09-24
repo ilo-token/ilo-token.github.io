@@ -1,24 +1,20 @@
-export type RedundancySettings = "both" | "condensed" | "default only";
+export type Redundancy = "both" | "condensed" | "default only";
 
 // may be extended but existing properties must stay unchanged
 export type Settings = {
-  teloMisikeke: boolean;
   randomize: boolean;
   multiline: boolean;
-  quantity: RedundancySettings;
-  tense: RedundancySettings;
+  quantity: Redundancy;
+  tense: Redundancy;
   xAlaXPartialParsing: boolean;
-  separateRepeatedModifiers: boolean;
 };
-// the default value may change
+// the default value may change, also change `index.html`
 export const defaultSettings: Readonly<Settings> = Object.freeze({
-  teloMisikeke: true,
   randomize: false,
   multiline: false,
   quantity: "both",
   tense: "both",
   xAlaXPartialParsing: false,
-  separateRepeatedModifiers: false,
 });
-// This global constant is mutable
+// this global constant is mutable
 export const settings: Settings = Object.seal({ ...defaultSettings });

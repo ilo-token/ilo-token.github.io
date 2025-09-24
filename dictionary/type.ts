@@ -2,18 +2,17 @@ export type NounForms = Readonly<{
   singular: null | string;
   plural: null | string;
 }>;
+export type AdjectiveName = Readonly<{
+  adjective: string;
+  name: string;
+}>;
 export type Noun =
   & NounForms
   & Readonly<{
-    determiner: ReadonlyArray<Determiner>;
-    adjective: ReadonlyArray<Adjective>;
+    determiners: ReadonlyArray<Determiner>;
+    adjectives: ReadonlyArray<Adjective>;
     gerund: boolean;
-    postAdjective:
-      | null
-      | Readonly<{
-        adjective: string;
-        name: string;
-      }>;
+    adjectiveName: null | AdjectiveName;
   }>;
 export type PronounForms = Readonly<{
   singular: null | Readonly<{ subject: string; object: string }>;
@@ -46,8 +45,12 @@ export type AdjectiveType =
   | "origin"
   | "material"
   | "qualifier";
+export type Adverb = Readonly<{
+  adverb: string;
+  negative: boolean;
+}>;
 export type Adjective = Readonly<{
-  adverb: ReadonlyArray<string>;
+  adverbs: ReadonlyArray<Adverb>;
   adjective: string;
   kind: AdjectiveType;
   gerundLike: boolean;
@@ -57,18 +60,17 @@ export type VerbForms = Readonly<{
   presentSingular: string;
   past: string;
 }>;
-export type PartialVerb = Readonly<{
+export type IndirectObject = Readonly<{
+  preposition: string;
+  object: Noun;
+}>;
+export type VerbAccessory = Readonly<{
   directObject: null | Noun;
-  indirectObject: ReadonlyArray<
-    Readonly<{
-      preposition: string;
-      object: Noun;
-    }>
-  >;
+  indirectObjects: ReadonlyArray<IndirectObject>;
   forObject: boolean | string;
   predicateType: null | "verb" | "noun adjective";
 }>;
-export type Verb = VerbForms & PartialVerb;
+export type Verb = VerbForms & VerbAccessory;
 export type Definition =
   | Readonly<{ type: "filler"; before: string; repeat: string; after: string }>
   | Readonly<{ type: "particle definition"; definition: string }>
@@ -84,9 +86,9 @@ export type Definition =
   | (Readonly<{ type: "adjective" }> & Adjective)
   | Readonly<{
     type: "compound adjective";
-    adjective: ReadonlyArray<Adjective>;
+    adjectives: ReadonlyArray<Adjective>;
   }>
-  | Readonly<{ type: "adverb"; adverb: string }>
+  | (Readonly<{ type: "adverb" }> & Adverb)
   | (Readonly<{ type: "verb" }> & Verb)
   | Readonly<{ type: "modal verb"; verb: string }>
   | Readonly<{ type: "preposition"; preposition: string }>

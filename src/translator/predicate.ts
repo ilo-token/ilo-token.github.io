@@ -1,10 +1,14 @@
 import { nullableAsArray } from "../../misc/misc.ts";
-import { ArrayResult } from "../array_result.ts";
+import { IterableResult } from "../compound.ts";
 import * as TokiPona from "../parser/ast.ts";
-import { AdjectiveWithInWay } from "./adjective.ts";
+import {
+  AdjectiveWithInWay,
+  extractNegativeFromAdjective,
+} from "./adjective.ts";
 import * as English from "./ast.ts";
 import { FilteredError, UntranslatableError } from "./error.ts";
 import { CONJUNCTION } from "./misc.ts";
+import { extractNegativeFromNoun } from "./noun.ts";
 import {
   multiplePhrases,
   phrase,
@@ -12,145 +16,155 @@ import {
   PhraseTranslation,
 } from "./phrase.ts";
 import { nounAsPreposition, preposition } from "./preposition.ts";
-import { forObject, PartialCompoundVerb } from "./verb.ts";
+import { forObject, PartialVerb } from "./verb.ts";
 
 function verbObject(
-  verb: PartialCompoundVerb,
+  verb: PartialVerb,
   object: English.NounPhrase,
-): PartialCompoundVerb {
+): PartialVerb {
   const useForObject = forObject(verb);
   if (useForObject === false) {
     throw new FilteredError("intransitive verb with object");
   } else {
-    const [englishObject, preposition] = useForObject === true
+    const [useObject, prepositions] = useForObject === true
       ? [object, []]
       : [verb.object, [nounAsPreposition(object, useForObject)]];
-    return { ...verb, object: englishObject, preposition };
+    return { ...verb, object: useObject, prepositions };
   }
 }
-function applyTo(
+function applyToAndTurnInto(
   predicate: English.NounPhrase,
   object: English.NounPhrase,
-): PartialCompoundVerb {
-  return {
-    type: "simple",
-    adverb: [],
-    modal: null,
-    first: {
-      presentPlural: "apply",
-      presentSingular: "applies",
-      past: "applied",
-    },
-    reduplicationCount: 1,
-    wordEmphasis: false,
-    rest: [],
-    subjectComplement: null,
-    object: predicate,
-    objectComplement: null,
-    preposition: [nounAsPreposition(object, "to")],
-    forObject: false,
-    predicateType: null,
-    phraseEmphasis: false,
-  };
+) {
+  return IterableResult.fromArray([
+    ...nullableAsArray(extractNegativeFromNoun(predicate))
+      .map((predicate) => [true, predicate] as const),
+    [false, predicate] as const,
+  ])
+    .flatMap(([negated, predicate]) =>
+      IterableResult.fromArray<PartialVerb>([
+        {
+          type: "simple",
+          first: {
+            type: "non-modal",
+            adverbs: [],
+            presentPlural: "apply",
+            presentSingular: "applies",
+            past: "applied",
+            negated,
+            reduplicationCount: 1,
+            emphasis: false,
+          },
+          rest: [],
+          subjectComplement: null,
+          object: predicate,
+          objectComplement: null,
+          prepositions: [nounAsPreposition(object, "to")],
+          forObject: false,
+          predicateType: null,
+          emphasis: false,
+        },
+        {
+          type: "simple",
+          first: {
+            type: "non-modal",
+            adverbs: [],
+            presentPlural: "turn",
+            presentSingular: "turns",
+            past: "turned",
+            negated,
+            reduplicationCount: 1,
+            emphasis: false,
+          },
+          rest: [],
+          subjectComplement: null,
+          object,
+          objectComplement: null,
+          prepositions: [nounAsPreposition(predicate, "into")],
+          forObject: false,
+          predicateType: null,
+          emphasis: false,
+        },
+      ])
+    );
 }
-function turnInto(
-  predicate: English.NounPhrase,
-  object: English.NounPhrase,
-): PartialCompoundVerb {
-  return {
-    type: "simple",
-    adverb: [],
-    modal: null,
-    first: {
-      presentPlural: "turn",
-      presentSingular: "turns",
-      past: "turned",
-    },
-    reduplicationCount: 1,
-    wordEmphasis: false,
-    rest: [],
-    subjectComplement: null,
-    object,
-    objectComplement: null,
-    preposition: [nounAsPreposition(predicate, "into")],
-    forObject: false,
-    predicateType: null,
-    phraseEmphasis: false,
-  };
-}
-function make(
-  predicate: AdjectiveWithInWay,
-  object: English.NounPhrase,
-): PartialCompoundVerb {
-  return {
-    type: "simple",
-    adverb: [],
-    modal: null,
-    first: {
-      presentPlural: "make",
-      presentSingular: "makes",
-      past: "made",
-    },
-    reduplicationCount: 1,
-    wordEmphasis: false,
-    rest: [],
-    subjectComplement: null,
-    object,
-    objectComplement: { type: "adjective", adjective: predicate.adjective },
-    preposition: nullableAsArray(predicate.inWayPhrase)
-      .map((phrase) => nounAsPreposition(phrase, "in")),
-    forObject: false,
-    predicateType: null,
-    phraseEmphasis: false,
-  };
+function make(predicate: AdjectiveWithInWay, object: English.NounPhrase) {
+  return IterableResult.fromArray([
+    ...nullableAsArray(extractNegativeFromAdjective(predicate.adjective))
+      .map((adjective) => [true, adjective] as const),
+    [false, predicate.adjective] as const,
+  ])
+    .map(([negated, adjective]): PartialVerb => ({
+      type: "simple",
+      first: {
+        type: "non-modal",
+        adverbs: [],
+        presentPlural: "make",
+        presentSingular: "makes",
+        past: "made",
+        negated,
+        reduplicationCount: 1,
+        emphasis: false,
+      },
+      rest: [],
+      subjectComplement: null,
+      object,
+      objectComplement: {
+        type: "adjective",
+        adjective,
+      },
+      prepositions: nullableAsArray(predicate.inWayPhrase)
+        .map((phrase) => nounAsPreposition(phrase, "in")),
+      forObject: false,
+      predicateType: null,
+      emphasis: false,
+    }));
 }
 function predicateVerb(
   predicate: PhraseTranslation,
   object: English.NounPhrase,
-): ArrayResult<PartialCompoundVerb> {
+) {
   switch (predicate.type) {
     case "noun":
-      return new ArrayResult([
-        applyTo(predicate.noun, object),
-        turnInto(predicate.noun, object),
-      ]);
+      return applyToAndTurnInto(predicate.noun, object);
     case "adjective":
-      return new ArrayResult([make(predicate, object)]);
+      return make(predicate, object);
     case "verb":
-      return ArrayResult.from(() =>
-        new ArrayResult([verbObject(predicate.verb, object)])
+      return IterableResult.from(() =>
+        IterableResult.single(verbObject(predicate.verb, object))
       );
   }
 }
 function associatedPredicate(
   predicate: PhraseTranslation,
   object: null | PhraseTranslation,
-  preposition: ReadonlyArray<English.Preposition>,
-): ArrayResult<PartialCompoundVerb> {
-  let verbObject: ArrayResult<PartialCompoundVerb>;
+  prepositions: ReadonlyArray<English.Preposition>,
+) {
+  let verbObject: IterableResult<PartialVerb>;
   if (object == null) {
-    verbObject = new ArrayResult([phraseAsVerb(predicate)]);
+    verbObject = IterableResult.single(phraseAsVerb(predicate));
   } else if (object.type === "noun") {
     verbObject = predicateVerb(predicate, object.noun);
   } else {
-    return new ArrayResult(new UntranslatableError(object.type, "object"));
+    return IterableResult.errors([
+      new UntranslatableError(object.type, "object"),
+    ]);
   }
-  return verbObject.map((verbObject) => ({
+  return verbObject.map((verbObject): PartialVerb => ({
     ...verbObject,
-    preposition: [...verbObject.preposition, ...preposition],
+    prepositions: [...verbObject.prepositions, ...prepositions],
   }));
 }
 export function predicate(
   tokiPonaPredicate: TokiPona.Predicate,
   andParticle: string,
-): ArrayResult<PartialCompoundVerb> {
+): IterableResult<PartialVerb> {
   switch (tokiPonaPredicate.type) {
-    case "single":
+    case "simple":
       return phrase({
         phrase: tokiPonaPredicate.predicate,
         place: "object",
         includeGerund: false,
-        includeVerb: true,
       })
         .map(phraseAsVerb);
     case "associated": {
@@ -159,44 +173,41 @@ export function predicate(
         place: "object",
         includeGerund: false,
         andParticle,
-        includeVerb: true,
       });
-      const object = new ArrayResult([tokiPonaPredicate.objects]).flatMap(
-        (object) => {
+      const object = IterableResult.single(tokiPonaPredicate.objects)
+        .flatMap((object) => {
           if (object != null) {
             return multiplePhrases({
               phrases: object,
               place: "object",
               includeGerund: true,
               andParticle: "e",
-              includeVerb: false,
             });
           } else {
-            return new ArrayResult([null]);
+            return IterableResult.single(null);
           }
-        },
-      );
-      const prepositionPhrase = ArrayResult.combine(
+        });
+      const prepositionPhrase = IterableResult.combine(
         ...tokiPonaPredicate.prepositions.map(preposition),
       );
-      return ArrayResult.combine(predicatePhrase, object, prepositionPhrase)
+      return IterableResult.combine(predicatePhrase, object, prepositionPhrase)
         .flatMap(([predicate, object, preposition]) =>
           associatedPredicate(predicate, object, preposition)
         );
     }
-    case "and conjunction":
+    case "and":
     case "anu":
-      return ArrayResult.combine(
+      return IterableResult.combine(
         ...tokiPonaPredicate.predicates
           .map((predicates) => predicate(predicates, andParticle)),
       )
-        .map((predicates) => ({
+        .map((predicates): PartialVerb => ({
           type: "compound",
           conjunction: CONJUNCTION[tokiPonaPredicate.type],
-          verb: predicates,
+          verbs: predicates,
           object: null,
           objectComplement: null,
-          preposition: [],
+          prepositions: [],
         }));
   }
 }

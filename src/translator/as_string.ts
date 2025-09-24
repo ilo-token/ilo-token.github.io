@@ -1,19 +1,23 @@
 import * as Dictionary from "../../dictionary/type.ts";
-import { ArrayResult } from "../array_result.ts";
+import { IterableResult } from "../compound.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";
 import * as EnglishComposer from "./composer.ts";
-import { nounAsPlainString, simpleNounForms } from "./noun.ts";
+import { noun, simpleNounForms } from "./noun.ts";
 import { pronoun } from "./pronoun.ts";
-import { partialVerb, verb } from "./verb.ts";
+import { partialSimpleVerb, verb } from "./verb.ts";
 
+function nounAsPlainString(definition: Dictionary.Noun) {
+  return noun({ definition, reduplicationCount: 1, emphasis: false })
+    .map((noun) => EnglishComposer.noun(noun, 0));
+}
 export function definitionAsPlainString(
   definition: Dictionary.Definition,
-): ArrayResult<string> {
+): IterableResult<string> {
   switch (definition.type) {
     case "noun":
       return nounAsPlainString(definition);
     case "personal pronoun":
-      return ArrayResult.concat(
+      return IterableResult.concat(
         pronoun({
           definition,
           reduplicationCount: 1,
@@ -33,7 +37,7 @@ export function definitionAsPlainString(
         .map((adjective) => EnglishComposer.adjective(adjective, 0));
     case "compound adjective": {
       return compoundAdjective({
-        adjectives: definition.adjective,
+        adjectives: definition.adjectives,
         reduplicationCount: 1,
         emphasis: null,
       })
@@ -45,30 +49,34 @@ export function definitionAsPlainString(
         plural: definition.plural,
       });
     case "adverb":
-      return new ArrayResult([definition.adverb]);
+      return IterableResult.single(definition.adverb);
     case "interjection":
-      return new ArrayResult([definition.interjection]);
+      return IterableResult.single(definition.interjection);
     case "verb": {
-      return partialVerb({ definition, reduplicationCount: 1, emphasis: false })
-        .flatMap((partialVerb) =>
-          verb({ ...partialVerb, type: "simple" }, "third", "plural")
+      return partialSimpleVerb({
+        definition,
+        reduplicationCount: 1,
+        emphasis: false,
+      })
+        .flatMap((partialSimpleVerb) =>
+          verb({ ...partialSimpleVerb, type: "simple" }, "third", "plural")
         )
         .map((verb) => EnglishComposer.verb(verb, 0));
     }
     case "filler":
-      return new ArrayResult([
+      return IterableResult.single(
         `${definition.before}${definition.repeat}${definition.after}`,
-      ]);
+      );
     case "particle definition":
-      return new ArrayResult([definition.definition]);
+      return IterableResult.single(definition.definition);
     case "noun preposition":
       return nounAsPlainString(definition.noun)
         .map((noun) => `${noun} ${definition.preposition}`);
     case "numeral":
-      return new ArrayResult([`${definition.numeral}`]);
+      return IterableResult.single(`${definition.numeral}`);
     case "preposition":
-      return new ArrayResult([definition.preposition]);
+      return IterableResult.single(definition.preposition);
     case "modal verb":
-      return new ArrayResult([definition.verb]);
+      return IterableResult.single(definition.verb);
   }
 }

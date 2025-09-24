@@ -1,12 +1,19 @@
 import * as English from "./ast.ts";
-import { FilteredError } from "./error.ts";
+import { noEmphasis } from "./word.ts";
 
-export function fixAdverb(
-  adverb: ReadonlyArray<English.Word>,
-): ReadonlyArray<English.Word> {
-  if (adverb.length > 1) {
-    throw new FilteredError("multiple adverbs");
+export const NOT: English.Adverb = {
+  adverb: noEmphasis("not"),
+  negative: true,
+};
+export function extractNegativeFromMultipleAdverbs(
+  adverbs: ReadonlyArray<English.Adverb>,
+): null | ReadonlyArray<English.Adverb> {
+  const index = adverbs.findIndex(({ negative }) => negative);
+  if (index === -1) {
+    return null;
   } else {
-    return adverb;
+    const spliced = [...adverbs];
+    spliced.splice(index, 1);
+    return spliced;
   }
 }

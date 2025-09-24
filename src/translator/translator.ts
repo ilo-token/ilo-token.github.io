@@ -1,33 +1,70 @@
-import { distinct } from "@std/collections/distinct";
 import { shuffle } from "@std/random/shuffle";
-import { deduplicateErrors } from "../../misc/deduplicate_errors.ts";
-import { errors } from "../../telo_misikeke/telo_misikeke.js";
-import { ArrayResult, ArrayResultError } from "../array_result.ts";
+import { IterableResult, ResultError } from "../compound.ts";
 import { parser } from "../parser/parser.ts";
 import { settings } from "../settings.ts";
 import * as EnglishComposer from "./composer.ts";
 import { multipleSentences } from "./sentence.ts";
+import { fixMultipleSentences } from "./fixer.ts";
 
-export function translate(tokiPona: string): ArrayResult<string> {
-  const arrayResult = parser
-    .parse(tokiPona)
-    .flatMap(multipleSentences)
-    .map(EnglishComposer.multipleSentences);
-  if (!arrayResult.isError()) {
-    const values = distinct(arrayResult.array);
+const RANDOMIZATION_LIMIT = 25248;
+
+export function translate(tokiPona: string): IterableResult<string> {
+  return new IterableResult(function* () {
+    const iterableResult = parser
+      .parse(tokiPona)
+      .asIterableResult()
+      .flatMap(multipleSentences)
+      .map(fixMultipleSentences)
+      .map(EnglishComposer.multipleSentences);
+    let yielded = false;
+    const aggregateErrors: Array<ResultError> = [];
+    const unique: Set<string> = new Set();
     if (settings.randomize) {
-      return new ArrayResult(shuffle(values));
+      for (const result of iterableResult.iterable()) {
+        if (unique.size > RANDOMIZATION_LIMIT) {
+          yield {
+            type: "error",
+            error: new ResultError("too many output to shuffle"),
+          };
+          return;
+        }
+        switch (result.type) {
+          case "value":
+            unique.add(result.value);
+            break;
+          case "error":
+            aggregateErrors.push(result.error);
+            break;
+        }
+      }
+      for (const value of shuffle([...unique])) {
+        yielded = true;
+        yield { type: "value", value };
+      }
     } else {
-      return new ArrayResult(values);
+      for (const result of iterableResult.iterable()) {
+        switch (result.type) {
+          case "value":
+            if (!unique.has(result.value)) {
+              yielded = true;
+              yield result;
+              unique.add(result.value);
+            }
+            break;
+          case "error":
+            aggregateErrors.push(result.error);
+            break;
+        }
+      }
     }
-  } else {
-    const teloMisikekeErrors = settings.teloMisikeke
-      ? errors(tokiPona)
-        .map((message) => new ArrayResultError(message, { isHtml: true }))
-      : [];
-    const error = teloMisikekeErrors.length === 0
-      ? deduplicateErrors(arrayResult.errors)
-      : teloMisikekeErrors;
-    return ArrayResult.errors(error);
-  }
+    if (!yielded) {
+      const unique: Set<string> = new Set();
+      for (const error of aggregateErrors) {
+        if (!unique.has(error.message)) {
+          yield { type: "error", error };
+          unique.add(error.message);
+        }
+      }
+    }
+  });
 }

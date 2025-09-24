@@ -1,16 +1,30 @@
-// This code is Deno only
+// this code is Deno only
 
 import { assertArrayIncludes } from "@std/assert/array-includes";
 import { number } from "./number.ts";
 import { translate } from "./translator.ts";
+import { assert } from "@std/assert/assert";
 
 Deno.test("verb with adverb", () => {
-  const translations = translate("mi toki pona").unwrap();
+  const translations = translate("mi toki pona").collect();
   assertArrayIncludes(translations, ["I nicely communicate"]);
 });
 Deno.test("adjective with adverb", () => {
-  const translations = translate("pona ike").unwrap();
+  const translations = translate("pona ike").collect();
   assertArrayIncludes(translations, ["Badly good"]);
+});
+Deno.test("no ignored adverb with compound adjective", () => {
+  const translations = translate("ona li palisa pona").collect();
+  const incorrectTranslations = [
+    "They are long and hard",
+    "They are hard and long",
+  ];
+  for (const translation of translations) {
+    assert(
+      !incorrectTranslations.includes(translation),
+      `Error at ${translation}`,
+    );
+  }
 });
 Deno.test("numeral translation", () => {
   const NUMBER_TESTS = new Map(Object.entries({
@@ -37,7 +51,7 @@ Deno.test("numeral translation", () => {
     "mute ale mute tu tu": 2024,
   }));
   for (const [tokiPona, expected] of NUMBER_TESTS) {
-    const numbers = number(tokiPona.trim().split(" ")).unwrap();
+    const numbers = number(tokiPona.trim().split(" ")).collect();
     assertArrayIncludes(numbers, [expected], `Error at "${tokiPona}"`);
   }
 });

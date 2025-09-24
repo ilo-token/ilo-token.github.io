@@ -1,30 +1,32 @@
 import { assertGreater } from "@std/assert/greater";
 import { MemoizationCacheResult, memoize } from "@std/cache/memoize";
-import { ArrayResult, ArrayResultError } from "../array_result.ts";
+import { lazy as lazyEval } from "../../misc/misc.ts";
+import { ArrayResult, ResultError } from "../compound.ts";
 
-type ParserResult<T> = ArrayResult<Readonly<{ value: T; length: number }>>;
-type InnerParser<T> = (input: number) => ParserResult<T>;
-type Memo<T> = Map<number, MemoizationCacheResult<ParserResult<T>>>;
+type ValueLength<T> = Readonly<{ value: T; length: number }>;
+type ParserResult<T> = ArrayResult<ValueLength<T>>;
+type RawParser<T> = (input: number) => ParserResult<T>;
+type Cache<T> = Map<number, MemoizationCacheResult<ParserResult<T>>>;
 
 let currentSource = "";
-const allMemo: Set<WeakRef<Memo<unknown>>> = new Set();
+const allCache: Set<WeakRef<Cache<unknown>>> = new Set();
 
 export class Parser<T> {
-  readonly rawParser: InnerParser<T>;
-  constructor(parser: InnerParser<T>) {
-    const cache: Memo<T> = new Map();
-    allMemo.add(new WeakRef(cache));
-    this.rawParser = memoize<InnerParser<T>, number, Memo<T>>(
+  readonly rawParser: RawParser<T>;
+  constructor(parser: RawParser<T>) {
+    const cache: Cache<T> = new Map();
+    allCache.add(new WeakRef(cache));
+    this.rawParser = memoize<RawParser<T>, number, Cache<T>>(
       parser,
       { cache },
     );
   }
   parse(source: string): ArrayResult<T> {
     currentSource = source;
-    for (const memo of allMemo) {
+    for (const memo of allCache) {
       const ref = memo.deref();
       if (ref == null) {
-        allMemo.delete(memo);
+        allCache.delete(memo);
       } else {
         ref.clear();
       }
@@ -34,7 +36,10 @@ export class Parser<T> {
   map<U>(mapper: (value: T) => U): Parser<U> {
     return new Parser((input) =>
       this.rawParser(input)
-        .map(({ value, length }) => ({ value: mapper(value), length }))
+        .map(({ value, length }): ValueLength<U> => ({
+          value: mapper(value),
+          length,
+        }))
     );
   }
   mapWithPositionedError<U>(mapper: (value: T) => U): Parser<U> {
@@ -57,7 +62,7 @@ export class Parser<T> {
         .flatMap(({ value, length }) =>
           mapper(value)
             .rawParser(position + length)
-            .map(({ value, length: addedLength }) => ({
+            .map(({ value, length: addedLength }): ValueLength<U> => ({
               value,
               length: length + addedLength,
             }))
@@ -81,15 +86,16 @@ export class Parser<T> {
   }
 }
 export type Position = Readonly<{ position: number; length: number }>;
-export class PositionedError extends ArrayResultError {
-  public position: null | Position;
-  constructor(message: string, position?: Position) {
+export class PositionedError extends ResultError {
+  override name = "PositionedError";
+  constructor(
+    message: string,
+    public readonly position: null | Position = null,
+  ) {
     super(message);
-    this.position = position ?? null;
-    this.name = "PositionedError";
   }
 }
-function withPositionedError<T>(fn: () => T, position: Position): T {
+function withPositionedError<T>(fn: () => T, position: Position) {
   try {
     return fn();
   } catch (error) {
@@ -101,38 +107,40 @@ function withPositionedError<T>(fn: () => T, position: Position): T {
   }
 }
 export class UnexpectedError extends PositionedError {
+  override name = "UnexpectedError";
   constructor(unexpected: string, expected: string, position?: Position) {
     super(
       `unexpected ${unexpected}. ${expected} were expected instead`,
       position,
     );
-    this.name = "UnexpectedError";
   }
 }
 export class UnrecognizedError extends PositionedError {
+  override name = "UnrecognizedError";
   constructor(element: string, position?: Position) {
     super(`${element} is unrecognized`, position);
-    this.name = "UnrecognizedError";
   }
 }
-export function error(error: ArrayResultError): Parser<never> {
-  return new Parser(() => new ArrayResult(error));
+export function error(error: ResultError): Parser<never> {
+  return new Parser(() => ArrayResult.errors([error]));
 }
-export const empty = new Parser<never>(() => new ArrayResult());
-export const nothing = new Parser(() =>
-  new ArrayResult([{ value: null, length: 0 }])
+export const empty: Parser<never> = new Parser(() => ArrayResult.empty());
+export const nothing: Parser<null> = new Parser(() =>
+  new ArrayResult<ValueLength<null>>([{ value: null, length: 0 }])
 );
-export const emptyArray = nothing.map(() => []);
+export const emptyArray: Parser<ReadonlyArray<never>> = nothing.map(() => []);
 export function lookAhead<T>(parser: Parser<T>): Parser<T> {
   return new Parser((input) =>
     parser.rawParser(input)
-      .map(({ value }) => ({ value, length: 0 }))
+      .map(({ value }): ValueLength<T> => ({ value, length: 0 }))
   );
 }
 export function lazy<T>(parser: () => Parser<T>): Parser<T> {
   return new Parser((input) => parser().rawParser(input));
 }
-export function choice<T>(...choices: ReadonlyArray<Parser<T>>): Parser<T> {
+export function choice<T>(
+  ...choices: ReadonlyArray<Parser<T>>
+): Parser<T> {
   assertGreater(
     choices.length,
     1,
@@ -179,17 +187,19 @@ export function sequence<T extends ReadonlyArray<unknown>>(
     1,
     "`sequence` called with less than 2 arguments",
   );
-  // We resorted to using `any` types here, make sure it works properly
+  // we resorted to using `any` types here, make sure it works properly
   return sequence.reduceRight(
     (right: Parser<any>, left) =>
       left.then((value) => right.map((newValue) => [value, ...newValue])),
     emptyArray,
   ) as Parser<any>;
 }
-export const many = memoize(<T>(parser: Parser<T>): Parser<ReadonlyArray<T>> =>
+export const many = memoize(<T>(
+  parser: Parser<T>,
+): Parser<ReadonlyArray<T>> =>
   choice(
-    sequence(parser, lazy(() => many(parser)))
-      .map(([first, rest]) => [first, ...rest]),
+    sequence(parser, lazy(lazyEval(() => many(parser))))
+      .map(([first, rest]): ReadonlyArray<T> => [first, ...rest]),
     emptyArray,
   )
 );
@@ -199,14 +209,18 @@ export function manyAtLeastOnce<T>(
   return sequence(parser, many(parser))
     .map(([first, rest]) => [first, ...rest]);
 }
-export const all = memoize(<T>(parser: Parser<T>): Parser<ReadonlyArray<T>> =>
+export const all = memoize(<T>(
+  parser: Parser<T>,
+): Parser<ReadonlyArray<T>> =>
   choiceOnlyOne(
-    sequence(parser, lazy(() => all(parser)))
-      .map(([first, rest]) => [first, ...rest]),
+    sequence(parser, lazy(lazyEval(() => all(parser))))
+      .map(([first, rest]): ReadonlyArray<T> => [first, ...rest]),
     emptyArray,
   )
 );
-export function allAtLeastOnce<T>(parser: Parser<T>): Parser<ReadonlyArray<T>> {
+export function allAtLeastOnce<T>(
+  parser: Parser<T>,
+): Parser<ReadonlyArray<T>> {
   return sequence(parser, all(parser))
     .map(([first, rest]) => [first, ...rest]);
 }
@@ -215,10 +229,7 @@ export function count(
 ): Parser<number> {
   return parser.map(({ length }) => length);
 }
-function generateError(
-  position: number,
-  expected: string,
-): ArrayResult<never> {
+function generateError(position: number, expected: string) {
   let unexpected: string;
   let length: number;
   if (position === currentSource.length) {
@@ -241,9 +252,9 @@ function generateError(
       length = token.length;
     }
   }
-  return new ArrayResult(
+  return ArrayResult.errors([
     new UnexpectedError(unexpected, expected, { position, length }),
-  );
+  ]);
 }
 export function matchCapture(
   regex: RegExp,
@@ -253,7 +264,10 @@ export function matchCapture(
   return new Parser((position) => {
     const match = currentSource.slice(position).match(newRegex);
     if (match != null) {
-      return new ArrayResult([{ value: match, length: match[0].length }]);
+      return new ArrayResult<ValueLength<RegExpMatchArray>>([{
+        value: match,
+        length: match[0].length,
+      }]);
     } else {
       return generateError(position, description);
     }
@@ -271,7 +285,7 @@ export function matchString(
       currentSource.length - position >= match.length &&
       currentSource.slice(position, position + match.length) === match
     ) {
-      return new ArrayResult([{
+      return new ArrayResult<ValueLength<string>>([{
         value: match,
         length: match.length,
       }]);
@@ -280,49 +294,51 @@ export function matchString(
     }
   });
 }
-export const allRest = new Parser((position) =>
-  new ArrayResult([{
+export const allRest: Parser<string> = new Parser((position) =>
+  new ArrayResult<ValueLength<string>>([{
     value: currentSource.slice(position),
     length: currentSource.length - position,
   }])
 );
-export const end = new Parser((position) =>
+export const end: Parser<null> = new Parser((position) =>
   position === currentSource.length
-    ? new ArrayResult([{ value: null, length: 0 }])
+    ? new ArrayResult<ValueLength<null>>([{ value: null, length: 0 }])
     : generateError(position, "end of text")
 );
-export const notEnd = new Parser((position) =>
+export const notEnd: Parser<null> = new Parser((position) =>
   position < currentSource.length
-    ? new ArrayResult([{ value: null, length: 0 }])
-    : new ArrayResult(
+    ? new ArrayResult<ValueLength<null>>([{ value: null, length: 0 }])
+    : ArrayResult.errors([
       new UnexpectedError(
         "end of text",
         "not end of text",
         { position, length: currentSource.length - position },
       ),
-    )
+    ])
 );
-export function withSource<T>(
-  parser: Parser<T>,
-): Parser<readonly [value: T, source: string]> {
+export type WithSource<T> = readonly [value: T, source: string];
+export function withSource<T>(parser: Parser<T>): Parser<WithSource<T>> {
   return new Parser((position) =>
-    parser.rawParser(position).map(({ value, length }) => ({
-      value: [
-        value,
-        currentSource.slice(position, position + length),
-      ] as const,
-      length,
-    }))
+    parser.rawParser(position).map(
+      ({ value, length }): ValueLength<WithSource<T>> => ({
+        value: [
+          value,
+          currentSource.slice(position, position + length),
+        ],
+        length,
+      }),
+    )
   );
 }
-export function withPosition<T>(
-  parser: Parser<T>,
-): Parser<Readonly<{ value: T }> & Position> {
+export type WithPosition<T> = Readonly<{ value: T }> & Position;
+export function withPosition<T>(parser: Parser<T>): Parser<WithPosition<T>> {
   return new Parser((position) =>
-    parser.rawParser(position).map(({ value, length }) => ({
-      value: { value, position, length },
-      length,
-    }))
+    parser.rawParser(position).map(
+      ({ value, length }): ValueLength<WithPosition<T>> => ({
+        value: { value, position, length },
+        length,
+      }),
+    )
   );
 }
 export class CheckedParser<T> {
@@ -359,7 +375,7 @@ export function choiceWithCheck<T>(
   ...choices: ReadonlyArray<CheckedParser<T>>
 ): Parser<T> {
   return new Parser((position) => {
-    const errors: Array<ArrayResultError> = [];
+    const errors: Array<ResultError> = [];
     for (const { check, parser } of choices) {
       const result = check.rawParser(position);
       if (result.isError()) {
@@ -376,17 +392,16 @@ export function optionalWithCheck<T>(
 ): Parser<null | T> {
   return choiceWithCheck(parser, checkedAsWhole(nothing));
 }
-export const allWithCheck = memoize(<T>(
-  parser: CheckedParser<T>,
-): Parser<ReadonlyArray<T>> =>
-  choiceWithCheck(
-    new CheckedParser(
-      parser.check,
-      sequence(parser.parser, lazy(() => allWithCheck(parser)))
-        .map(([first, rest]) => [first, ...rest]),
+export const allWithCheck = memoize(
+  <T>(parser: CheckedParser<T>): Parser<ReadonlyArray<T>> =>
+    choiceWithCheck(
+      new CheckedParser(
+        parser.check,
+        sequence(parser.parser, lazy(lazyEval(() => allWithCheck(parser))))
+          .map(([first, rest]): ReadonlyArray<T> => [first, ...rest]),
+      ),
+      checkedAsWhole(emptyArray),
     ),
-    checkedAsWhole(emptyArray),
-  )
 );
 export function allAtLeastOnceWithCheck<T>(
   parser: CheckedParser<T>,

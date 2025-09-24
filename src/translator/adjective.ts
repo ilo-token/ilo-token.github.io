@@ -1,7 +1,8 @@
 import * as Dictionary from "../../dictionary/type.ts";
-import { nullableAsArray } from "../../misc/misc.ts";
-import { ArrayResult } from "../array_result.ts";
+import { mapNullable, nullableAsArray } from "../../misc/misc.ts";
+import { IterableResult } from "../compound.ts";
 import * as TokiPona from "../parser/ast.ts";
+import { extractNegativeFromMultipleAdverbs } from "./adverb.ts";
 import * as English from "./ast.ts";
 import { UntranslatableError } from "./error.ts";
 import { noEmphasis, word } from "./word.ts";
@@ -10,7 +11,7 @@ export type AdjectiveWithInWay = Readonly<{
   adjective: English.AdjectivePhrase;
   inWayPhrase: null | English.NounPhrase;
 }>;
-function so(emphasis: null | TokiPona.Emphasis): string {
+function so(emphasis: null | TokiPona.Emphasis) {
   if (emphasis == null) {
     throw new UntranslatableError("missing emphasis", "adverb");
   } else {
@@ -28,17 +29,28 @@ export function adjective(
     reduplicationCount: number;
     emphasis: null | TokiPona.Emphasis;
   }>,
-): ArrayResult<English.AdjectivePhrase & { type: "simple" }> {
+): IterableResult<English.AdjectivePhrase> {
   const { definition, reduplicationCount, emphasis } = options;
-  return ArrayResult.concat<{ emphasis: boolean; so: null | string }>(
-    ArrayResult.from(() => new ArrayResult([so(emphasis)]))
-      .map((so) => ({ emphasis: false, so })),
-    new ArrayResult([{ emphasis: emphasis != null, so: null }]),
+  type EmphasisSo = Readonly<{ emphasis: boolean; so: null | string }>;
+  return IterableResult.concat(
+    IterableResult.from(() => IterableResult.single(so(emphasis)))
+      .map((so): EmphasisSo => ({ emphasis: false, so })),
+    IterableResult.single<EmphasisSo>({ emphasis: emphasis != null, so: null }),
   )
-    .map(({ emphasis, so }) => ({
+    .map(({ emphasis, so }): English.AdjectivePhrase => ({
       type: "simple",
       kind: definition.kind,
-      adverb: [...definition.adverb, ...nullableAsArray(so)].map(noEmphasis),
+      adverbs: [
+        ...definition.adverbs,
+        ...nullableAsArray(so).map((so): Dictionary.Adverb => ({
+          adverb: so,
+          negative: false,
+        })),
+      ]
+        .map(({ adverb, negative }): English.Adverb => ({
+          adverb: noEmphasis(adverb),
+          negative: negative,
+        })),
       adjective: word({
         word: definition.adjective,
         reduplicationCount,
@@ -53,53 +65,59 @@ export function compoundAdjective(
     reduplicationCount: number;
     emphasis: null | TokiPona.Emphasis;
   }>,
-): ArrayResult<English.AdjectivePhrase & { type: "compound" }> {
+): IterableResult<English.AdjectivePhrase> {
   const { adjectives, reduplicationCount, emphasis } = options;
   if (reduplicationCount === 1) {
-    return ArrayResult.combine(
+    return IterableResult.combine(
       ...adjectives
         .map((definition) =>
           adjective({ definition, reduplicationCount: 1, emphasis })
         ),
     )
-      .map((adjective) => ({
-        type: "compound",
-        conjunction: "and",
-        adjective,
-        emphasis: false,
-      }));
+      .map((adjectives) => combineAdjective("and", adjectives));
   } else {
-    return new ArrayResult(
+    return IterableResult.errors([
       new UntranslatableError("reduplication", "compound adjective"),
-    );
+    ]);
   }
 }
-export function rankAdjective(kind: Dictionary.AdjectiveType): number {
-  return [
-    "opinion",
-    "size",
-    "physical quality",
-    "age",
-    "color",
-    "origin",
-    "material",
-    "qualifier",
-  ]
-    .indexOf(kind);
-}
-export function fixAdjective(
-  adjective: ReadonlyArray<English.AdjectivePhrase>,
-): ReadonlyArray<English.AdjectivePhrase> {
-  return adjective
-    .flatMap((adjective) => {
-      switch (adjective.type) {
-        case "simple":
-          return [adjective];
-        case "compound":
-          return adjective.adjective as ReadonlyArray<
-            English.AdjectivePhrase & { type: "simple" }
-          >;
+export function extractNegativeFromAdjective(
+  adjective: English.AdjectivePhrase,
+): null | English.AdjectivePhrase {
+  switch (adjective.type) {
+    case "simple":
+      return mapNullable(
+        extractNegativeFromMultipleAdverbs(adjective.adverbs),
+        (adverbs): English.AdjectivePhrase => ({ ...adjective, adverbs }),
+      );
+    case "compound": {
+      const adjectives = adjective.adjectives.map(extractNegativeFromAdjective);
+      if (adjectives.every((adjective) => adjective != null)) {
+        return { ...adjective, adjectives };
+      } else {
+        return null;
       }
-    })
-    .sort((a, b) => rankAdjective(a.kind) - rankAdjective(b.kind));
+    }
+  }
+}
+export function combineAdjective(
+  conjunction: string,
+  phrases: ReadonlyArray<English.AdjectivePhrase>,
+): English.AdjectivePhrase {
+  return {
+    type: "compound",
+    conjunction,
+    adjectives: phrases
+      .flatMap((adjective) => {
+        if (
+          adjective.type === "compound" &&
+          adjective.conjunction === conjunction
+        ) {
+          return adjective.adjectives;
+        } else {
+          return [adjective];
+        }
+      }),
+    emphasis: false,
+  };
 }

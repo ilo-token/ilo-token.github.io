@@ -1,4 +1,4 @@
-export const CONJUNCTION = { "and conjunction": "and", "anu": "or" } as const;
+export const CONJUNCTION = { "and": "and", "anu": "or" };
 
 export function condense(first: string, second: string): string {
   if (first === second) {

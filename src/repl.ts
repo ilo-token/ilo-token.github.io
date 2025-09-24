@@ -1,4 +1,4 @@
-// This code is Deno only
+// this code is Deno only
 
 import { unescape } from "@std/html/entities";
 import entityList from "@std/html/named-entity-list.json" with { type: "json" };
@@ -15,23 +15,33 @@ if (import.meta.main) {
     if (input == null) {
       break;
     }
-    const result = translate(input);
-    if (result.isError()) {
-      // deno-lint-ignore no-console
-      console.error(new AggregateError(result.errors));
-    } else {
-      const translations = result.array;
-      for (const translation of translations) {
-        const count = translation.match(/<strong>/g)?.length ?? 0;
-        const text = unescape(
-          translation.replaceAll(/<\/?strong>/g, "%c"),
-          { entityList },
-        );
-        // deno-lint-ignore no-console
-        console.log(
-          `  - ${text}`,
-          ...repeatArray(["font-weight: bold", ""], count).flat(),
-        );
+    const iterableResult = translate(input);
+    let errorHeaderShown = false;
+    for (const result of iterableResult.iterable()) {
+      switch (result.type) {
+        case "value": {
+          const { value: translation } = result;
+          const count = translation.match(/<strong>/g)?.length ?? 0;
+          const text = unescape(
+            translation.replaceAll(/<\/?strong>/g, "%c"),
+            { entityList },
+          );
+          // deno-lint-ignore no-console
+          console.log(
+            `  - ${text}`,
+            ...repeatArray(["font-weight: bold", ""], count).flat(),
+          );
+          break;
+        }
+        case "error": {
+          if (!errorHeaderShown) {
+            // deno-lint-ignore no-console
+            console.error("Errors have occurred:");
+            errorHeaderShown = true;
+          }
+          // deno-lint-ignore no-console
+          console.error(`- ${result.error.message}`);
+        }
       }
     }
   }

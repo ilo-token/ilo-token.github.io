@@ -15,25 +15,26 @@ export const END_OF_REVERSE_LONG_GLYPH = "\u{F199B}";
 export const UCSUR_MIDDLE_DOT = "\u{F199C}";
 export const UCSUR_COLON = "\u{F199D}";
 
-export const SPECIAL_UCSUR_DESCRIPTIONS = new Map(
-  Object.entries({
-    [START_OF_CARTOUCHE]: "start of cartouche",
-    [END_OF_CARTOUCHE]: "end of cartouche",
-    [COMBINING_CARTOUCHE_EXTENSION]: "combining cartouche extension",
-    [START_OF_LONG_PI]: "start of long pi",
-    [COMBINING_LONG_PI_EXTENSION]: "combining long pi extension",
-    [STACKING_JOINER]: "stacking joiner",
-    [SCALING_JOINER]: "scaling joiner",
-    [START_OF_LONG_GLYPH]: "start of long glyph",
-    [END_OF_LONG_GLYPH]: "end of long glyph",
-    [COMBINING_LONG_GLYPH_EXTENSION]: "combining long glyph extension",
-    [START_OF_REVERSE_LONG_GLYPH]: "start of reverse long glyph",
-    [END_OF_REVERSE_LONG_GLYPH]: "end of reverse long glyph",
-    [UCSUR_MIDDLE_DOT]: "middle dot",
-    [UCSUR_COLON]: "colon",
-  }),
-);
-export const PU = [
+export const SPECIAL_UCSUR_DESCRIPTIONS = {
+  [START_OF_CARTOUCHE]: "start of cartouche",
+  [END_OF_CARTOUCHE]: "end of cartouche",
+  [COMBINING_CARTOUCHE_EXTENSION]: "combining cartouche extension",
+  [START_OF_LONG_PI]: "start of long pi",
+  [COMBINING_LONG_PI_EXTENSION]: "combining long pi extension",
+  [STACKING_JOINER]: "stacking joiner",
+  [SCALING_JOINER]: "scaling joiner",
+  [START_OF_LONG_GLYPH]: "start of long glyph",
+  [END_OF_LONG_GLYPH]: "end of long glyph",
+  [COMBINING_LONG_GLYPH_EXTENSION]: "combining long glyph extension",
+  [START_OF_REVERSE_LONG_GLYPH]: "start of reverse long glyph",
+  [END_OF_REVERSE_LONG_GLYPH]: "end of reverse long glyph",
+  [UCSUR_MIDDLE_DOT]: "middle dot",
+  [UCSUR_COLON]: "colon",
+};
+
+export type SpecialUcsur = keyof typeof SPECIAL_UCSUR_DESCRIPTIONS;
+
+export const PU_WORDS = [
   "a",
   "akesi",
   "ala",
@@ -155,7 +156,7 @@ export const PU = [
   "weka",
   "wile",
 ];
-export const KU_SULI = [
+export const KU_SULI_WORDS = [
   "namako",
   "kin",
   "oko",
@@ -174,7 +175,7 @@ export const KU_SULI = [
   "misikeke",
   "ku",
 ];
-export const KU_LILI = [
+export const KU_LILI_WORDS = [
   "pake",
   "apeja",
   "majuna",
@@ -182,8 +183,8 @@ export const KU_LILI = [
 ];
 export const UCSUR_TO_LATIN = new Map(
   [
-    { start: 0xF1900, words: [...PU, ...KU_SULI] } as const,
-    { start: 0xF19A0, words: KU_LILI } as const,
+    { start: 0xF1900, words: [...PU_WORDS, ...KU_SULI_WORDS] },
+    { start: 0xF19A0, words: KU_LILI_WORDS },
   ]
     .flatMap(({ start, words }) =>
       words.map((latin, i) => [String.fromCodePoint(start + i), latin] as const)

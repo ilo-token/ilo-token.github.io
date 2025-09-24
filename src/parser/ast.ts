@@ -3,9 +3,9 @@ export type Emphasis =
   | Readonly<{ type: "long word"; word: string; length: number }>;
 export type Filler =
   | Emphasis
-  | Readonly<{ type: "multiple a"; count: number }>;
+  | Readonly<{ type: "reduplicated a"; count: number }>;
 export type SimpleHeadedWordUnit =
-  | Readonly<{ type: "default"; word: string }>
+  | Readonly<{ type: "simple"; word: string }>
   | Readonly<{ type: "x ala x"; word: string }>
   | Readonly<{ type: "reduplication"; word: string; count: number }>;
 export type SimpleWordUnit =
@@ -19,13 +19,13 @@ export type WordUnit =
   & Readonly<{ emphasis: null | Emphasis }>;
 export type Nanpa = Readonly<{ nanpa: WordUnit; phrase: Phrase }>;
 export type Modifier =
-  | Readonly<{ type: "default"; word: WordUnit }>
-  | Readonly<{ type: "proper words"; words: string }>
+  | Readonly<{ type: "simple"; word: WordUnit }>
+  | Readonly<{ type: "name"; words: string }>
   | Readonly<{ type: "pi"; phrase: Phrase }>
   | (Readonly<{ type: "nanpa" }> & Nanpa);
 export type Phrase =
   | Readonly<{
-    type: "default";
+    type: "simple";
     headWord: WordUnit;
     modifiers: ReadonlyArray<Modifier>;
     emphasis: null | Emphasis;
@@ -39,27 +39,27 @@ export type Phrase =
   }>
   | (Readonly<{ type: "preposition" }> & Preposition);
 export type MultiplePhrases =
-  | Readonly<{ type: "single"; phrase: Phrase }>
+  | Readonly<{ type: "simple"; phrase: Phrase }>
   | Readonly<{
-    type: "and conjunction";
+    type: "and";
     phrases: ReadonlyArray<MultiplePhrases>;
   }>
   | Readonly<{ type: "anu"; phrases: ReadonlyArray<MultiplePhrases> }>;
 export type Preposition = Readonly<{
   preposition: HeadedWordUnit;
   modifiers: ReadonlyArray<Modifier>;
-  phrases: MultiplePhrases & Readonly<{ type: "single" | "anu" }>;
+  phrases: Readonly<{ type: "simple" | "anu" }> & MultiplePhrases;
   emphasis: null | Emphasis;
 }>;
 export type Predicate =
-  | Readonly<{ type: "single"; predicate: Phrase }>
+  | Readonly<{ type: "simple"; predicate: Phrase }>
   | Readonly<{
     type: "associated";
     predicates: MultiplePhrases;
     objects: null | MultiplePhrases;
     prepositions: ReadonlyArray<Preposition>;
   }>
-  | Readonly<{ type: "and conjunction"; predicates: ReadonlyArray<Predicate> }>
+  | Readonly<{ type: "and"; predicates: ReadonlyArray<Predicate> }>
   | Readonly<{ type: "anu"; predicates: ReadonlyArray<Predicate> }>;
 export type Clause =
   | Readonly<{ type: "phrases"; phrases: MultiplePhrases }>
@@ -77,14 +77,12 @@ export type Clause =
   }>;
 export type ContextClause =
   | Clause
-  | Readonly<
-    { type: "prepositions"; prepositions: ReadonlyArray<Preposition> }
-  >
+  | Readonly<{ type: "prepositions"; prepositions: ReadonlyArray<Preposition> }>
   | (Readonly<{ type: "nanpa" }> & Nanpa)
   | (Readonly<{ type: "anu"; anu: HeadedWordUnit }>);
 export type Sentence =
   | Readonly<{
-    type: "default";
+    type: "simple";
     startingParticle: null | HeadedWordUnit;
     contextClauses: ReadonlyArray<ContextClause>;
     finalClause: Clause;
