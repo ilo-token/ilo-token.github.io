@@ -7,18 +7,26 @@ NOTE: Before publishing:
 - update this very document, don't forget to add release date
 -->
 
+<!--
 <details>
 
 <summary>On development changelog</summary>
 
-## 0.7.0 (On development)
+## 0.7.1 (On development)
 
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
 
+</details>
+-->
+
+## 0.7.0
+
+Released 25 September 2025
+
 ilo Token can now translate preverbs! Currently this only works when the
 predicate is translated as a verb unless the preverb is translated as a linking
-verb.
+verb. This will be expanded soon.
 
 ilo Token will now recognize "taso" as sentence starting particle along with
 other particle with similar function such as "kin" and "anu". ilo Token will
@@ -41,8 +49,6 @@ do not communicate" instead of the grammatically awkward "I not communicate".
 - Remove telo misikeke. ilo Token's own error messages still needs more work.
 - Remove "allow separate repeated modifiers". It'll be hardcoded to be turned
   on.
-
-</details>
 
 ## 0.6.0
 
