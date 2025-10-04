@@ -18,8 +18,8 @@ Also check the [changelog](./CHANGELOG.md) and open the on-development
 changelog, it might be already fixed but hasn't published yet! Duplicate issues
 are unnecessary.
 
-Note to maintainer: When there's a bug discovered, make a test for
-it if possible. Use Deno's own testing tools:
+Note to maintainer: When there's a bug discovered, make a test for it if
+possible. Use Deno's own testing tools:
 [examples](https://github.com/ilo-token/ilo-token.github.io/blob/master/src/translator/test.ts).
 Then edit the issue to link the test in following format:
 
