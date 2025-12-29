@@ -21,7 +21,6 @@ function defaultWordUnit(
     word: string;
     reduplicationCount: number;
     emphasis: null | TokiPona.Emphasis;
-    place: Place; // TODO: Add subject/object forms on AST instead
     includeGerund: boolean;
   }>,
 ) {
@@ -118,20 +117,26 @@ export function wordUnit(
   switch (wordUnit.type) {
     case "number":
       return number(wordUnit.words)
-        .map((number): WordUnitTranslation => ({
-          type: "noun",
-          determiners: [],
-          adjectives: [],
-          singular: numberAsText(number),
-          plural: null,
-          reduplicationCount: 1,
-          wordEmphasis: wordUnit.emphasis != null,
-          perspective: "third",
-          adjectiveName: null,
-          postCompound: null,
-          prepositions: [],
-          phraseEmphasis: false,
-        }));
+        .map((number): WordUnitTranslation => {
+          const noun = numberAsText(number);
+          return {
+            type: "noun",
+            determiners: [],
+            adjectives: [],
+            singular: {
+              subject: noun,
+              object: noun,
+            },
+            plural: null,
+            reduplicationCount: 1,
+            wordEmphasis: wordUnit.emphasis != null,
+            perspective: "third",
+            adjectiveName: null,
+            postCompound: null,
+            prepositions: [],
+            phraseEmphasis: false,
+          };
+        });
     case "x ala x":
       return IterableResult.errors([new TranslationTodoError("x ala x")]);
     case "simple":

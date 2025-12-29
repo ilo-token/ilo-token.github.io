@@ -1,4 +1,5 @@
 import * as Dictionary from "../../dictionary/type.ts";
+import { mapNullable } from "../../misc/misc.ts";
 import { IterableResult } from "../compound.ts";
 import { adjective } from "./adjective.ts";
 import * as English from "./ast.ts";
@@ -21,6 +22,14 @@ export function noun(
     .map(([adjectives]): English.SimpleNounPhrase => ({
       ...options,
       ...definition,
+      singular: mapNullable(
+        definition.singular,
+        (noun) => ({ subject: noun, object: noun }),
+      ),
+      plural: mapNullable(
+        definition.plural,
+        (noun) => ({ subject: noun, object: noun }),
+      ),
       determiners: definition.determiners,
       adjectives,
       wordEmphasis: emphasis,

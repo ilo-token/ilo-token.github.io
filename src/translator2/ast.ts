@@ -7,7 +7,7 @@ export type Word = Readonly<{
 export type Quantity = "singular" | "plural" | "condensed";
 export type AdjectiveName = Readonly<{ adjective: string; name: string }>;
 export type SimpleNounPhrase =
-  & Dictionary.NounForms
+  & Dictionary.PronounForms
   & Readonly<{
     determiners: ReadonlyArray<Dictionary.Determiner>;
     adjectives: ReadonlyArray<AdjectivePhrase>;
@@ -20,7 +20,7 @@ export type SimpleNounPhrase =
     phraseEmphasis: boolean;
   }>;
 export type NounPhrase =
-  | (Dictionary.NounForms & Readonly<{ type: "simple" }>)
+  | (SimpleNounPhrase & Readonly<{ type: "simple" }>)
   | Readonly<{
     type: "compound";
     conjunction: string;
