@@ -4,7 +4,6 @@ import {
   Clause,
   ContextClause,
   Modifier,
-  MultiplePhrases,
   Nanpa,
   Phrase,
   Preposition,
@@ -12,8 +11,6 @@ import {
   WordUnit,
 } from "./ast.ts";
 import {
-  everyObjectInMultiplePredicates,
-  everyPhraseInMultiplePhrases,
   everyWordUnitInPhrase,
   everyWordUnitInPreposition,
   everyWordUnitInSentence,
