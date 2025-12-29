@@ -5,13 +5,13 @@ import * as Composer from "../parser/composer.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";
 import * as English from "./ast.ts";
 import { determiner } from "./determiner.ts";
-import { ExhaustedError, TranslationTodoError } from "./error.ts";
+import { ExhaustedError, TranslationTodoError } from "../translator2/error.ts";
 import { nanpa } from "./nanpa.ts";
 import { noun } from "./noun.ts";
-import { number, numberAsText } from "./number.ts";
+import { number, numberAsText } from "../translator2/number.ts";
 import { phrase, PhraseTranslation } from "./phrase.ts";
 import { pronoun } from "./pronoun.ts";
-import { noEmphasis, word } from "./word.ts";
+import { noEmphasis, word } from "../translator2/word.ts";
 import { getReduplicationCount } from "./word_unit.ts";
 
 export type ModifierTranslation =

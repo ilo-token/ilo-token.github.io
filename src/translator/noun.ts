@@ -9,7 +9,7 @@ import {
   extractNegativeFromMultipleDeterminers,
 } from "./determiner.ts";
 import { condense } from "./misc.ts";
-import { word } from "./word.ts";
+import { word } from "../translator2/word.ts";
 
 export type PartialNoun =
   & Dictionary.NounForms

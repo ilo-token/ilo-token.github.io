@@ -4,10 +4,10 @@ import { dictionary } from "../dictionary.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { extractNegativeFromMultipleAdverbs } from "./adverb.ts";
 import * as English from "./ast.ts";
-import { FilteredError, TranslationTodoError } from "./error.ts";
+import { FilteredError, TranslationTodoError } from "../translator2/error.ts";
 import { multipleModifiers } from "./modifier.ts";
 import { multiplePhrases } from "./phrase.ts";
-import { noEmphasis, word } from "./word.ts";
+import { noEmphasis, word } from "../translator2/word.ts";
 import { getReduplicationCount } from "./word_unit.ts";
 
 export function preposition(

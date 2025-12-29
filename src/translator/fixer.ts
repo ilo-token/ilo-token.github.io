@@ -2,7 +2,7 @@ import * as Dictionary from "../../dictionary/type.ts";
 import { mapNullable } from "../../misc/misc.ts";
 import * as English from "./ast.ts";
 import { encodeDeterminer } from "./determiner.ts";
-import { FilteredError } from "./error.ts";
+import { FilteredError } from "../translator2/error.ts";
 
 function fixNounPhrase(noun: English.NounPhrase): English.NounPhrase {
   switch (noun.type) {

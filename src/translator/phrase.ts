@@ -10,7 +10,7 @@ import {
 import { extractNegativeFromMultipleAdverbs, NOT } from "./adverb.ts";
 import * as English from "./ast.ts";
 import { getNumber } from "./determiner.ts";
-import { ExhaustedError, FilteredError } from "./error.ts";
+import { ExhaustedError, FilteredError } from "../translator2/error.ts";
 import { CONJUNCTION } from "./misc.ts";
 import {
   AdjectivalModifier,
@@ -30,7 +30,7 @@ import {
 } from "./preposition.ts";
 import { Place } from "./pronoun.ts";
 import { PartialSimpleVerb, PartialVerb } from "./verb.ts";
-import { word } from "./word.ts";
+import { word } from "../translator2/word.ts";
 import { wordUnit } from "./word_unit.ts";
 
 export type PhraseTranslation =

@@ -9,11 +9,10 @@ export type AdjectiveName = Readonly<{ adjective: string; name: string }>;
 export type SimpleNounPhrase =
   & Dictionary.NounForms
   & Readonly<{
-    determiners: ReadonlyArray<Determiner>;
+    determiners: ReadonlyArray<Dictionary.Determiner>;
     adjectives: ReadonlyArray<AdjectivePhrase>;
     reduplicationCount: number;
     wordEmphasis: boolean;
-    quantity: Quantity;
     perspective: Dictionary.Perspective;
     adjectiveName: null | AdjectiveName;
     postCompound: null | NounPhrase;
@@ -27,11 +26,6 @@ export type NounPhrase =
     conjunction: string;
     nouns: ReadonlyArray<NounPhrase>;
   }>;
-export type Determiner = Readonly<{
-  kind: Dictionary.DeterminerType;
-  determiner: Word;
-  quantity: Dictionary.Quantity;
-}>;
 export type AdjectivePhrase =
   | Readonly<{
     type: "simple";
@@ -74,6 +68,8 @@ export type SimpleVerbPhrase = Readonly<{
   contentClause: null | Clause;
   object: null | NounPhrase;
   objectComplement: null | Complement;
+  forObject: boolean | string;
+  predicateType: null | "verb" | "noun adjective";
   prepositions: ReadonlyArray<Preposition>;
   hideVerb: boolean;
 }>;

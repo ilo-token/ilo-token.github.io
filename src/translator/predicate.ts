@@ -6,7 +6,7 @@ import {
   extractNegativeFromAdjective,
 } from "./adjective.ts";
 import * as English from "./ast.ts";
-import { FilteredError, UntranslatableError } from "./error.ts";
+import { FilteredError, UntranslatableError } from "../translator2/error.ts";
 import { CONJUNCTION } from "./misc.ts";
 import { extractNegativeFromNoun } from "./noun.ts";
 import {
