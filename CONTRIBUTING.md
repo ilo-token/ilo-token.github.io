@@ -22,8 +22,8 @@ are unnecessary.
 
 <summary>Note to maintainer</summary>
 
-When there's a bug discovered, make a test for it if
-possible. Use Deno's own testing tools:
+When there's a bug discovered, make a test for it if possible. Use Deno's own
+testing tools:
 [examples](https://github.com/ilo-token/ilo-token.github.io/blob/master/src/translator/test.ts).
 Then edit the issue to link the test in following format:
 
@@ -32,7 +32,6 @@ Test: [src/translator/test.ts "verb with adverb"](permalink including the lines)
 ```
 
 </details>
-
 
 ## [Discussion](https://github.com/ilo-token/ilo-token.github.io/discussions)
 
