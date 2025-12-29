@@ -1,7 +1,5 @@
 // this code is Deno only
 
-// deno-lint-ignore-file no-console
-
 import { ResultError } from "../src/compound.ts";
 import { PositionedError } from "../src/parser/parser_lib.ts";
 import { dictionaryParser } from "./parser.ts";
@@ -30,6 +28,7 @@ export const dictionary: Dictionary = new Map(Object.entries(json));
   await Deno.writeTextFile(DESTINATION, code);
 }
 export async function build(): Promise<boolean> {
+  // deno-lint-ignore no-console
   console.log("Building dictionary...");
   const start = performance.now();
   const text = await Deno.readTextFile(SOURCE);
@@ -47,6 +46,7 @@ export async function build(): Promise<boolean> {
   const end = performance.now();
   const total = Math.floor(end - start);
   const parsing = Math.floor(endDictionary - startDictionary);
+  // deno-lint-ignore no-console
   console.log(
     `Building dictionary done in ${total}ms (parsing dictionary took ${parsing}ms)`,
   );
@@ -67,6 +67,7 @@ function displayError(source: string, errors: ReadonlyArray<ResultError>) {
   const red = color ? "color: red" : "";
   const sourceStyle = color ? "color: blue" : "";
   for (const error of errors) {
+    // deno-lint-ignore no-console
     console.error(`%cError%c: ${error.message}`, red, "");
     if (error instanceof PositionedError && error.position != null) {
       const { position: { position, length } } = error;
@@ -80,6 +81,7 @@ function displayError(source: string, errors: ReadonlyArray<ResultError>) {
         const index = source.indexOf("\n", currentLine);
         const nextLine = index === -1 ? source.length : index + 1;
         const line = source.slice(currentLine, nextLine).trimEnd();
+        // deno-lint-ignore no-console
         console.error(line);
         let relativeStart = Math.min(
           currentPosition - currentLine,
@@ -94,6 +96,7 @@ function displayError(source: string, errors: ReadonlyArray<ResultError>) {
             relativeEnd++;
           }
         }
+        // deno-lint-ignore no-console
         console.error(
           `${" ".repeat(relativeStart)}%c${
             "^".repeat(relativeEnd - relativeStart)
@@ -108,7 +111,9 @@ function displayError(source: string, errors: ReadonlyArray<ResultError>) {
       }
       const line = source.slice(0, startLine).match(/\n/g)?.length ?? 1;
       const column = position - startLine + 1;
+      // deno-lint-ignore no-console
       console.error(`    at %c${SOURCE}:${line}:${column}`, sourceStyle);
+      // deno-lint-ignore no-console
       console.error();
     }
   }
