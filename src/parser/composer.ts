@@ -86,8 +86,6 @@ export function phrase(value: Phrase): string {
         ...emphasisAsArray(value.emphasis),
       ]
         .join(" ");
-    case "preposition":
-      return preposition(value);
   }
 }
 function particle(type: "and" | "anu", particle: null | string) {

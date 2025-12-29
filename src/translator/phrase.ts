@@ -349,13 +349,6 @@ export function phrase(
   switch (phrase.type) {
     case "simple":
       return defaultPhrase({ ...options, phrase });
-    case "preposition":
-      return preposition(phrase)
-        .map(prepositionAsVerb)
-        .map((verb): PhraseTranslation => ({
-          type: "verb",
-          verb: { ...verb, type: "simple" },
-        }));
     case "preverb":
       return preverb(phrase)
         .map((verb): PhraseTranslation => ({
