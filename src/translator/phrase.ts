@@ -26,6 +26,7 @@ import {
 import {
   extractNegativeFromPreposition,
   nounAsPreposition,
+  preposition,
 } from "./preposition.ts";
 import { Place } from "./pronoun.ts";
 import { PartialSimpleVerb, PartialVerb } from "./verb.ts";
