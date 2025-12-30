@@ -17,7 +17,7 @@ export type HeadedWordUnit =
 export type WordUnit =
   & SimpleWordUnit
   & Readonly<{ emphasis: null | Emphasis }>;
-export type Nanpa = Readonly<{ nanpa: HeadedWordUnit; phrase: Phrase }>;
+export type Nanpa = Readonly<{ nanpa: WordUnit; phrase: Phrase }>;
 export type Modifier =
   | Readonly<{ type: "simple"; word: WordUnit }>
   | Readonly<{ type: "name"; words: string }>
@@ -36,7 +36,8 @@ export type Phrase =
     modifiers: ReadonlyArray<Modifier>;
     phrase: Phrase;
     emphasis: null | Emphasis;
-  }>;
+  }>
+  | (Readonly<{ type: "preposition" }> & Preposition);
 export type MultiplePhrases =
   | Readonly<{ type: "simple"; phrase: Phrase }>
   | Readonly<{

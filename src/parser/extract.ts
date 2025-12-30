@@ -42,6 +42,8 @@ export function everyWordUnitInPhrase(phrase: Phrase): ReadonlyArray<WordUnit> {
         ...phrase.modifiers.flatMap(everyWordUnitInModifier),
         ...everyWordUnitInPhrase(phrase.phrase),
       ];
+    case "preposition":
+      return everyWordUnitInPreposition(phrase);
   }
 }
 export function everyWordUnitInMultiplePhrases(
@@ -131,6 +133,11 @@ export function everyModifierInPhrase(phrase: Phrase): ReadonlyArray<Modifier> {
       return [
         ...phrase.modifiers,
         ...everyModifierInPhrase(phrase.phrase),
+      ];
+    case "preposition":
+      return [
+        ...phrase.modifiers,
+        ...everyModifierInMultiplePhrases(phrase.phrases),
       ];
   }
 }

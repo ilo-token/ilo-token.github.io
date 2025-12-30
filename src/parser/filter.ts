@@ -32,6 +32,11 @@ export const NANPA_RULES: ReadonlyArray<(nanpa: Nanpa) => boolean> = [
     type !== "x ala x" ||
     throwError(new UnrecognizedError('"nanpa ala nanpa"')),
 
+  // nanpa construction cannot contain prepositions
+  ({ phrase: { type } }) =>
+    type !== "preposition" ||
+    throwError(new UnrecognizedError("preposition inside nanpa")),
+
   // nanpa construction cannot contain preverbs
   ({ phrase: { type } }) =>
     type !== "preverb" ||
@@ -53,6 +58,11 @@ export const NANPA_RULES: ReadonlyArray<(nanpa: Nanpa) => boolean> = [
   ({ phrase: { emphasis } }) => emphasis == null,
 ];
 export const MODIFIER_RULES: ReadonlyArray<(modifier: Modifier) => boolean> = [
+  // pi cannot contain prepositions
+  (modifier) =>
+    modifier.type !== "pi" || modifier.phrase.type !== "preposition" ||
+    throwError(new UnrecognizedError("preposition inside pi")),
+
   // pi must follow phrases with modifier
   (modifier) => {
     if (modifier.type === "pi") {
@@ -154,6 +164,12 @@ export const PREPOSITION_RULES: ReadonlyArray<
       new UnrecognizedError('preverb with modifiers other than "ala"'),
     ),
 
+  // disallow nested preposition
+  (preposition) =>
+    !everyPhraseInMultiplePhrases(preposition.phrases)
+      .some(hasPrepositionInPhrase) ||
+    throwError(new UnrecognizedError("preposition inside preposition")),
+
   // preposition with "anu" must not have emphasis particle
   (preposition) =>
     preposition.emphasis == null || preposition.phrases.type !== "anu",
@@ -179,6 +195,48 @@ export const CONTEXT_CLAUSE_RULES: ReadonlyArray<
     throwError(new UnrecognizedError('"anu ala anu la"')),
 ];
 export const CLAUSE_RULES: ReadonlyArray<(clause: Clause) => boolean> = [
+  // disallow preposition in subject
+  (clause) => {
+    let phrases: MultiplePhrases;
+    switch (clause.type) {
+      case "phrases":
+      case "o vocative":
+        phrases = clause.phrases;
+        break;
+      case "li clause":
+      case "o clause":
+        if (clause.subjects) {
+          phrases = clause.subjects;
+        } else {
+          return true;
+        }
+        break;
+    }
+    if (
+      everyPhraseInMultiplePhrases(phrases).some(hasPrepositionInPhrase)
+    ) {
+      throw new UnrecognizedError("preposition in subject");
+    } else {
+      return true;
+    }
+  },
+  // disallow preposition in object
+  (clause) => {
+    switch (clause.type) {
+      case "li clause":
+      case "o clause":
+        if (
+          everyObjectInMultiplePredicates(clause.predicates)
+            .some(hasPrepositionInPhrase)
+        ) {
+          throw new UnrecognizedError("preposition in object");
+        } else {
+          return true;
+        }
+      default:
+        return true;
+    }
+  },
   // disallow "mi li" or "sina li"
   (clause) => {
     if (
@@ -306,10 +364,21 @@ function modifiersIsAlaOrNone(modifiers: ReadonlyArray<Modifier>) {
       return false;
   }
 }
+function hasPrepositionInPhrase(phrase: Phrase) {
+  switch (phrase.type) {
+    case "simple":
+      return false;
+    case "preposition":
+      return true;
+    case "preverb":
+      return hasPrepositionInPhrase(phrase.phrase);
+  }
+}
 function phraseHasTopLevelEmphasis(phrase: Phrase) {
   switch (phrase.type) {
     case "simple":
     case "preverb":
+    case "preposition":
       return phrase.emphasis != null;
   }
 }

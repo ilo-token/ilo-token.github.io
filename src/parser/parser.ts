@@ -247,6 +247,8 @@ const phrase: Parser<Phrase> = lazy(lazyEval(() =>
         phrase,
         emphasis,
       })),
+    preposition
+      .map((preposition): Phrase => ({ ...preposition, type: "preposition" })),
     sequence(
       optionalCombined(contentWordSet, "content word"),
       modifiers,
