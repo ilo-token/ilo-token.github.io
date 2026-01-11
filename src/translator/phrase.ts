@@ -87,7 +87,7 @@ function nounPhrase(
       }));
     if (nounPreposition == null) {
       return headNoun;
-    } else if (modifier.ofPhrase == null) {
+    } else if (modifier.ofPhrase.length === 0) {
       const { noun: nounOf, preposition } = nounPreposition;
       switch (nounOf.type) {
         case "simple":
