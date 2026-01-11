@@ -48,12 +48,12 @@ function nounPhrase(
   const { emphasis, noun, modifier } = options;
   return IterableResult.from(() => {
     const determiners = [
-      ...[...modifier.determiners].reverse(),
+      ...modifier.determiners.toReversed(),
       ...noun.determiners,
     ];
     const quantity = getNumber(determiners);
     const adjectives = [
-      ...[...modifier.adjectives].reverse(),
+      ...modifier.adjectives.toReversed(),
       ...noun.adjectives,
     ];
     if (noun.adjectiveName != null && modifier.name != null) {
@@ -116,7 +116,7 @@ function adjectivePhrase(
   switch (adjective.type) {
     case "simple": {
       const adverbs = [
-        ...[...modifier.adverbs].reverse(),
+        ...modifier.adverbs.toReversed(),
         ...adjective.adverbs,
       ];
       return {
@@ -152,7 +152,7 @@ function verbPhrase(
     ...nullableAsArray(modifier.inWayPhrase)
       .map((object) => nounAsPreposition(object, "in")),
   ];
-  const adverbs = [...modifier.adverbs].reverse();
+  const adverbs = modifier.adverbs.toReversed();
   const extracted = extractNegativeFromMultipleAdverbs(adverbs);
   if (
     extracted != null && extractNegativeFromMultipleAdverbs(extracted) != null
