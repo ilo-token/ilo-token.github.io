@@ -59,5 +59,6 @@ export function verb(
       objectComplement: null,
       prepositions,
       hideVerb: false,
+      emphasis,
     }));
 }
