@@ -5,7 +5,7 @@ import { settings } from "../settings.ts";
 import { NOT } from "./adverb.ts";
 import * as English from "./ast.ts";
 import { FilteredError } from "../translator2/error.ts";
-import { condense } from "./misc.ts";
+import { condense } from "../translator2/misc.ts";
 import { noun } from "./noun.ts";
 import { nounAsPreposition } from "./preposition.ts";
 import { noEmphasis, word } from "../translator2/word.ts";

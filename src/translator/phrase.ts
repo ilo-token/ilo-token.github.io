@@ -11,7 +11,7 @@ import { extractNegativeFromMultipleAdverbs, NOT } from "./adverb.ts";
 import * as English from "./ast.ts";
 import { getNumber } from "./determiner.ts";
 import { ExhaustedError, FilteredError } from "../translator2/error.ts";
-import { CONJUNCTION } from "./misc.ts";
+import { CONJUNCTION } from "../translator2/misc.ts";
 import {
   AdjectivalModifier,
   AdverbialModifier,

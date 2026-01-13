@@ -8,7 +8,7 @@ import {
   determiner,
   extractNegativeFromMultipleDeterminers,
 } from "./determiner.ts";
-import { condense } from "./misc.ts";
+import { condense } from "../translator2/misc.ts";
 import { word } from "../translator2/word.ts";
 
 export type PartialNoun =

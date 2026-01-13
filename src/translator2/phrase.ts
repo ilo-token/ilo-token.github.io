@@ -14,7 +14,7 @@ import { IterableResult } from "../compound.ts";
 import { wordUnit } from "./word_unit.ts";
 import { multipleModifiers } from "./modifier.ts";
 import * as Composer from "../parser/composer.ts";
-import { CONJUNCTION } from "../translator/misc.ts";
+import { CONJUNCTION } from "./misc.ts";
 
 export type PhraseTranslation =
   | Readonly<{ type: "noun"; noun: English.NounPhrase }>
