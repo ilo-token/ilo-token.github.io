@@ -1,4 +1,3 @@
-import * as Dictionary from "../../dictionary/type.ts";
 import * as English from "./ast.ts";
 import { number, numberAsText } from "./number.ts";
 import { noEmphasis, word } from "./word.ts";
@@ -28,7 +27,7 @@ export type AdjectivalModifier = Readonly<{
   nounPreposition:
     | null
     | Readonly<{ noun: English.NounPhrase; preposition: string }>;
-  determiners: ReadonlyArray<Dictionary.Determiner>;
+  determiners: ReadonlyArray<English.Determiner>;
   adjectives: ReadonlyArray<English.AdjectivePhrase>;
   name: null | string;
   ofPhrase: ReadonlyArray<English.NounPhrase>;
