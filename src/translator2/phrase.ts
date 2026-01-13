@@ -1,7 +1,11 @@
 import * as English from "./ast.ts";
 import { AdjectiveWithInWay } from "./adjective.ts";
 import { AdjectivalModifier } from "./modifier.ts";
-import { ExhaustedError, FilteredError } from "./error.ts";
+import {
+  ExhaustedError,
+  FilteredError,
+  TranslationTodoError,
+} from "./error.ts";
 import { mapNullable, nullableAsArray } from "../../misc/misc.ts";
 import { nounAsPreposition } from "./preposition.ts";
 import { AdverbialModifier } from "./modifier.ts";
@@ -10,6 +14,8 @@ import { IterableResult } from "../compound.ts";
 import { wordUnit } from "./word_unit.ts";
 import { multipleModifiers } from "./modifier.ts";
 import * as Composer from "../parser/composer.ts";
+import { verb } from "./verb.ts";
+import { word } from "./word.ts";
 
 export type PhraseTranslation =
   | Readonly<{ type: "noun"; noun: English.NounPhrase }>
@@ -185,4 +191,119 @@ function defaultPhrase(
       }
     })
     .addErrorWhenNone(() => new ExhaustedError(Composer.phrase(phrase)));
+}
+function prepositionAsVerb(
+  preposition: English.Preposition,
+): English.SimpleVerbPhrase {
+  return {
+    verb: [{
+      preAdverbs: [],
+      verb: {
+        type: "non-modal",
+        presentPlural: "are",
+        presentSingular: "is",
+        past: "were",
+        reduplicationCount: 1,
+        emphasis: false,
+      },
+      postAdverb: null,
+    }],
+    subjectComplement: null,
+    contentClause: null,
+    object: null,
+    objectComplement: null,
+    prepositions: [preposition],
+    forObject: false,
+    predicateType: null,
+    emphasis: false,
+    hideVerb: false,
+  };
+}
+function preverb(
+  preverb: TokiPona.Phrase & { type: "preverb" },
+): IterableResult<English.SimpleVerbPhrase> {
+  const emphasis = preverb.emphasis != null;
+  const verb = IterableResult.combine(
+    wordUnit({
+      wordUnit: preverb.preverb,
+      includeGerund: false,
+    }),
+    multipleModifiers(preverb.modifiers),
+  )
+    .filterMap(([verb, modifier]) =>
+      verb.type === "verb" && modifier.type === "adverbial"
+        ? verbPhrase({ verb, modifier, emphasis: false })
+        : null
+    );
+  return IterableResult.combine(
+    verb,
+    translatePhrase({
+      phrase: preverb.phrase,
+      includeGerund: false,
+    }),
+  )
+    .filterMap(([verb, predicate]): null | English.SimpleVerbPhrase => {
+      if (
+        verb.predicateType === "noun adjective" &&
+        (predicate.type === "noun" || predicate.type === "adjective")
+      ) {
+        let subjectComplement: English.Complement;
+        switch (predicate.type) {
+          case "noun":
+            subjectComplement = { type: "noun", noun: predicate.noun };
+            break;
+          case "adjective":
+            subjectComplement = {
+              type: "adjective",
+              adjective: predicate.adjective,
+            };
+            break;
+        }
+        return { ...verb, subjectComplement, emphasis };
+      } else if (
+        verb.predicateType === "verb" && predicate.type === "verb" &&
+        predicate.verb.type === "simple"
+      ) {
+        const first = predicate.verb.verb[0];
+        // TODO: filter out modal verb when found in the middle
+        const predicateVerb: English.AdverbVerb = {
+          preAdverbs: first.preAdverbs,
+          verb: first.verb,
+          postAdverb: null,
+        };
+        return {
+          ...predicate.verb,
+          verb: [
+            ...verb.verb,
+            predicateVerb,
+            ...predicate.verb.verb.slice(1),
+          ],
+          emphasis,
+        };
+      } else {
+        return null;
+      }
+    })
+    .addErrorWhenNone(() => new ExhaustedError(Composer.phrase(preverb)));
+}
+const translatePhrase = phrase;
+export function phrase(
+  options: Readonly<{
+    phrase: TokiPona.Phrase;
+    includeGerund: boolean;
+  }>,
+): IterableResult<PhraseTranslation> {
+  const { phrase } = options;
+  switch (phrase.type) {
+    case "simple":
+      return defaultPhrase({ ...options, phrase });
+    case "preposition":
+      return IterableResult.errors([new TranslationTodoError("preposition")]);
+    case "preverb":
+      return preverb(phrase)
+        .map((verb): PhraseTranslation => ({
+          type: "verb",
+          verb: { ...verb, type: "simple" },
+        }));
+  }
 }
