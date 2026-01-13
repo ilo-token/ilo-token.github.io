@@ -1,11 +1,7 @@
 import * as English from "./ast.ts";
 import { AdjectiveWithInWay } from "./adjective.ts";
 import { AdjectivalModifier } from "./modifier.ts";
-import {
-  ExhaustedError,
-  FilteredError,
-  TranslationTodoError,
-} from "./error.ts";
+import { ExhaustedError, FilteredError } from "./error.ts";
 import { mapNullable, nullableAsArray } from "../../misc/misc.ts";
 import { nounAsPreposition } from "./preposition.ts";
 import { AdverbialModifier } from "./modifier.ts";
@@ -15,6 +11,7 @@ import { wordUnit } from "./word_unit.ts";
 import { multipleModifiers } from "./modifier.ts";
 import * as Composer from "../parser/composer.ts";
 import { CONJUNCTION } from "./misc.ts";
+import { preposition } from "./preposition.ts";
 
 export type PhraseTranslation =
   | Readonly<{ type: "noun"; noun: English.NounPhrase }>
@@ -297,7 +294,12 @@ export function phrase(
     case "simple":
       return defaultPhrase({ ...options, phrase });
     case "preposition":
-      return IterableResult.errors([new TranslationTodoError("preposition")]);
+      return preposition(phrase)
+        .map(prepositionAsVerb)
+        .map((verb): PhraseTranslation => ({
+          type: "verb",
+          verb: { ...verb, type: "simple" },
+        }));
     case "preverb":
       return preverb(phrase)
         .map((verb): PhraseTranslation => ({

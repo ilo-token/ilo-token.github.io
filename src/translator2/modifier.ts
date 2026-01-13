@@ -10,6 +10,8 @@ import { pronoun } from "./pronoun.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";
 import * as Composer from "../parser/composer.ts";
 import { word } from "./word.ts";
+import { phrase, PhraseTranslation } from "./phrase.ts";
+import { nanpa } from "./nanpa.ts";
 
 export type ModifierTranslation =
   | Readonly<{ type: "noun"; noun: English.NounPhrase }>
@@ -143,6 +145,20 @@ function defaultModifier(wordUnit: TokiPona.WordUnit) {
     }
   }
 }
+function pi(
+  insidePhrase: TokiPona.Phrase,
+): IterableResult<ModifierTranslation> {
+  return phrase({
+    phrase: insidePhrase,
+    includeGerund: true,
+  })
+    .filter((modifier) =>
+      modifier.type !== "verb" &&
+      (modifier.type !== "adjective" || modifier.inWayPhrase == null)
+    ) as IterableResult<
+      PhraseTranslation & { type: Exclude<PhraseTranslation["type"], "verb"> }
+    >;
+}
 function modifier(modifier: TokiPona.Modifier) {
   switch (modifier.type) {
     case "simple":
@@ -153,8 +169,13 @@ function modifier(modifier: TokiPona.Modifier) {
         name: modifier.words,
       });
     case "pi":
+      return pi(modifier.phrase);
     case "nanpa":
-      return IterableResult.errors([new TranslationTodoError(modifier.type)]);
+      return nanpa(modifier)
+        .map((noun): ModifierTranslation => ({
+          type: "noun",
+          noun: { ...noun, type: "simple" },
+        }));
   }
 }
 export function multipleModifiers(
