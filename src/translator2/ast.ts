@@ -6,10 +6,16 @@ export type Word = Readonly<{
 }>;
 export type Quantity = "singular" | "plural" | "condensed";
 export type AdjectiveName = Readonly<{ adjective: string; name: string }>;
+export type Determiner =
+  & Dictionary.Determiner
+  & Readonly<{
+    reduplicationCount: number;
+    emphasis: boolean;
+  }>;
 export type SimpleNounPhrase =
   & Dictionary.PronounForms
   & Readonly<{
-    determiners: ReadonlyArray<Dictionary.Determiner>;
+    determiners: ReadonlyArray<Determiner>;
     adjectives: ReadonlyArray<AdjectivePhrase>;
     reduplicationCount: number;
     wordEmphasis: boolean;

@@ -30,7 +30,11 @@ export function noun(
         definition.plural,
         (noun) => ({ subject: noun, object: noun }),
       ),
-      determiners: definition.determiners,
+      determiners: definition.determiners.map((determiner) => ({
+        ...determiner,
+        reduplicationCount: 1,
+        emphasis: false,
+      })),
       adjectives,
       wordEmphasis: emphasis,
       postCompound: null,
