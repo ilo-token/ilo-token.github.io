@@ -100,6 +100,7 @@ function defaultWordUnit(
             prepositions: [],
             predicateType: "verb",
             hideVerb: false,
+            emphasis: false,
           });
         default:
           return IterableResult.empty();
@@ -109,7 +110,6 @@ function defaultWordUnit(
 export function wordUnit(
   options: Readonly<{
     wordUnit: TokiPona.WordUnit;
-    place: Place;
     includeGerund: boolean;
   }>,
 ): IterableResult<WordUnitTranslation> {
