@@ -9,6 +9,7 @@ import { noun } from "./noun.ts";
 import { pronoun } from "./pronoun.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";
 import * as Composer from "../parser/composer.ts";
+import { word } from "./word.ts";
 
 export type ModifierTranslation =
   | Readonly<{ type: "noun"; noun: English.NounPhrase }>
