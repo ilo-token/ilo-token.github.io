@@ -78,6 +78,7 @@ export type SimpleVerbPhrase = Readonly<{
   predicateType: null | "verb" | "noun adjective";
   prepositions: ReadonlyArray<Preposition>;
   hideVerb: boolean;
+  emphasis: boolean;
 }>;
 export type VerbPhrase =
   | (SimpleVerbPhrase & Readonly<{ type: "simple" }>)

@@ -2,8 +2,9 @@ import * as English from "./ast.ts";
 import { AdjectiveWithInWay } from "./adjective.ts";
 import { AdjectivalModifier } from "./modifier.ts";
 import { FilteredError } from "./error.ts";
-import { mapNullable } from "../../misc/misc.ts";
+import { mapNullable, nullableAsArray } from "../../misc/misc.ts";
 import { nounAsPreposition } from "./preposition.ts";
+import { AdverbialModifier } from "./modifier.ts";
 
 export type PhraseTranslation =
   | Readonly<{ type: "noun"; noun: English.NounPhrase }>
@@ -67,4 +68,66 @@ function nounPhrase(
   } else {
     return null;
   }
+}
+function adjectivePhrase(
+  options: Readonly<{
+    emphasis: boolean;
+    adjective: English.AdjectivePhrase;
+    modifier: AdverbialModifier;
+  }>,
+): AdjectiveWithInWay {
+  const { emphasis, adjective, modifier } = options;
+  switch (adjective.type) {
+    case "simple": {
+      const adverbs = [
+        ...modifier.adverbs.toReversed(),
+        ...adjective.adverbs,
+      ];
+      return {
+        adjective: {
+          ...adjective,
+          adverbs,
+          emphasis,
+        },
+        inWayPhrase: modifier.inWayPhrase,
+      };
+    }
+    case "compound":
+      if (modifier.adverbs.length === 0) {
+        return {
+          adjective: { ...adjective, emphasis: adjective.emphasis || emphasis },
+          inWayPhrase: modifier.inWayPhrase,
+        };
+      } else {
+        throw new FilteredError("adverb with compound adjective");
+      }
+  }
+}
+function verbPhrase(
+  options: Readonly<{
+    emphasis: boolean;
+    verb: English.SimpleVerbPhrase;
+    modifier: AdverbialModifier;
+  }>,
+): English.SimpleVerbPhrase {
+  const { emphasis, verb, modifier } = options;
+  const prepositions = [
+    ...verb.prepositions,
+    ...nullableAsArray(modifier.inWayPhrase)
+      .map((object) => nounAsPreposition(object, "in")),
+  ];
+  const adverbs = modifier.adverbs.toReversed();
+  return {
+    ...verb,
+    verb: [
+      {
+        preAdverbs: adverbs,
+        verb: verb.verb[0].verb,
+        postAdverb: null,
+      },
+      ...verb.verb.slice(1),
+    ],
+    prepositions,
+    emphasis,
+  };
 }
