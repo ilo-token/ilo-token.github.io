@@ -1,10 +1,15 @@
 import * as English from "./ast.ts";
 import { AdjectiveWithInWay } from "./adjective.ts";
 import { AdjectivalModifier } from "./modifier.ts";
-import { FilteredError } from "./error.ts";
+import { ExhaustedError, FilteredError } from "./error.ts";
 import { mapNullable, nullableAsArray } from "../../misc/misc.ts";
 import { nounAsPreposition } from "./preposition.ts";
 import { AdverbialModifier } from "./modifier.ts";
+import * as TokiPona from "../parser/ast.ts";
+import { IterableResult } from "../compound.ts";
+import { wordUnit } from "./word_unit.ts";
+import { multipleModifiers } from "./modifier.ts";
+import * as Composer from "../parser/composer.ts";
 
 export type PhraseTranslation =
   | Readonly<{ type: "noun"; noun: English.NounPhrase }>
@@ -130,4 +135,54 @@ function verbPhrase(
     prepositions,
     emphasis,
   };
+}
+function defaultPhrase(
+  options: Readonly<{
+    phrase: TokiPona.Phrase & { type: "simple" };
+    includeGerund: boolean;
+  }>,
+) {
+  const { phrase } = options;
+  const emphasis = phrase.emphasis != null;
+  return IterableResult.combine(
+    wordUnit({ ...options, wordUnit: phrase.headWord }),
+    multipleModifiers(phrase.modifiers),
+  )
+    .flatMap(([headWord, modifier]) => {
+      if (headWord.type === "noun" && modifier.type === "adjectival") {
+        return IterableResult.fromArray(
+          nullableAsArray(nounPhrase({ emphasis, noun: headWord, modifier })),
+        )
+          .map((noun): PhraseTranslation => ({
+            type: "noun",
+            noun: { ...noun, type: "simple" },
+          }));
+      } else if (
+        headWord.type === "adjective" && modifier.type === "adverbial"
+      ) {
+        return IterableResult.single<PhraseTranslation>({
+          ...adjectivePhrase({
+            emphasis,
+            adjective: headWord.adjective,
+            modifier,
+          }),
+          type: "adjective",
+        });
+      } else if (
+        headWord.type === "verb" && modifier.type === "adverbial"
+      ) {
+        return IterableResult.from(() =>
+          IterableResult.single<PhraseTranslation>({
+            type: "verb",
+            verb: {
+              ...verbPhrase({ emphasis, verb: headWord, modifier }),
+              type: "simple",
+            },
+          })
+        );
+      } else {
+        return IterableResult.empty();
+      }
+    })
+    .addErrorWhenNone(() => new ExhaustedError(Composer.phrase(phrase)));
 }
