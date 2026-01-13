@@ -44,7 +44,6 @@ export type AdjectivePhrase =
     type: "compound";
     conjunction: string;
     adjectives: ReadonlyArray<AdjectivePhrase>;
-    emphasis: boolean;
   }>;
 export type Complement =
   | Readonly<{ type: "noun"; noun: NounPhrase }>

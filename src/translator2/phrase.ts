@@ -105,7 +105,7 @@ function adjectivePhrase(
     case "compound":
       if (modifier.adverbs.length === 0) {
         return {
-          adjective: { ...adjective, emphasis: adjective.emphasis || emphasis },
+          adjective: { ...adjective },
           inWayPhrase: modifier.inWayPhrase,
         };
       } else {
@@ -415,7 +415,6 @@ export function multiplePhrases(
                   type: "compound",
                   conjunction,
                   adjectives: phrase.map(({ adjective }) => adjective),
-                  emphasis: false,
                 },
                 inWayPhrase: null,
               };
