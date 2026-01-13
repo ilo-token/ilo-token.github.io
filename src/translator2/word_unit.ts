@@ -1,7 +1,6 @@
 import { IterableResult } from "../compound.ts";
 import { dictionary } from "../dictionary.ts";
 import * as TokiPona from "../parser/ast.ts";
-import { Place } from "../translator/pronoun.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";
 import * as English from "./ast.ts";
 import { noun } from "./noun.ts";
