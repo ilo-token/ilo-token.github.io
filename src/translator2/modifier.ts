@@ -1,15 +1,17 @@
 import * as Dictionary from "../../dictionary/type.ts";
 import * as English from "./ast.ts";
 import { number, numberAsText } from "./number.ts";
-import { word } from "./word.ts";
+import { noEmphasis, word } from "./word.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { IterableResult } from "../compound.ts";
-import { TranslationTodoError } from "./error.ts";
+import { ExhaustedError, TranslationTodoError } from "./error.ts";
 import { dictionary } from "../dictionary.ts";
 import { getReduplicationCount } from "./word_unit.ts";
 import { noun } from "./noun.ts";
 import { pronoun } from "./pronoun.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";
+import { nanpa } from "../translator/nanpa.ts";
+import * as Composer from "../parser/composer.ts";
 
 export type ModifierTranslation =
   | Readonly<{ type: "noun"; noun: English.NounPhrase }>
@@ -142,4 +144,101 @@ function defaultModifier(wordUnit: TokiPona.WordUnit) {
         });
     }
   }
+}
+function modifier(modifier: TokiPona.Modifier) {
+  switch (modifier.type) {
+    case "simple":
+      return defaultModifier(modifier.word);
+    case "name":
+      return IterableResult.single<ModifierTranslation>({
+        type: "name",
+        name: modifier.words,
+      });
+    case "pi":
+    case "nanpa":
+      return IterableResult.errors([new TranslationTodoError(modifier.type)]);
+  }
+}
+export function multipleModifiers(
+  modifiers: ReadonlyArray<TokiPona.Modifier>,
+): IterableResult<MultipleModifierTranslation> {
+  return IterableResult.combine(...modifiers.map(modifier))
+    .flatMap((modifiers) => {
+      const nouns = modifiers
+        .flatMap((modifier) => modifier.type === "noun" ? [modifier.noun] : []);
+
+      const nounPrepositions = modifiers
+        .filter(({ type }) => type === "noun preposition") as ReadonlyArray<
+          ModifierTranslation & { type: "noun preposition" }
+        >;
+
+      const determiners = modifiers.flatMap((modifier) =>
+        modifier.type === "determiner" ? [modifier.determiner] : []
+      );
+
+      const adjectives = modifiers.flatMap((modifier) =>
+        modifier.type === "adjective" ? [modifier.adjective] : []
+      );
+
+      const adverbs = modifiers.flatMap((modifier) =>
+        modifier.type === "adverb" ? [modifier.adverb] : []
+      );
+
+      const names = modifiers
+        .flatMap((modifier) => modifier.type === "name" ? [modifier.name] : []);
+
+      let adjectival: IterableResult<MultipleModifierTranslation>;
+      if (
+        nounPrepositions.length <= 1 &&
+        adverbs.length === 0 &&
+        names.length <= 1
+      ) {
+        adjectival = IterableResult.single<MultipleModifierTranslation>({
+          type: "adjectival",
+          nounPreposition: nounPrepositions[0] ?? null,
+          determiners,
+          adjectives,
+          name: names[0] ?? null,
+          ofPhrase: nouns,
+        });
+      } else {
+        adjectival = IterableResult.empty();
+      }
+      let adverbial: IterableResult<MultipleModifierTranslation>;
+      if (
+        nouns.length === 0 &&
+        nounPrepositions.length === 0 &&
+        determiners.length === 0 &&
+        adjectives.length <= 1 &&
+        names.length === 0
+      ) {
+        const inWayPhrase: null | English.NounPhrase = adjectives.length > 0
+          ? {
+            type: "simple",
+            determiners: [],
+            adjectives,
+            singular: { subject: "way", object: "way" },
+            plural: null,
+            reduplicationCount: 1,
+            wordEmphasis: false,
+            perspective: "third",
+            adjectiveName: null,
+            postCompound: null,
+            prepositions: [],
+            phraseEmphasis: false,
+          }
+          : null;
+        adverbial = IterableResult.single<MultipleModifierTranslation>({
+          type: "adverbial",
+          adverbs,
+          inWayPhrase,
+        });
+      } else {
+        adverbial = IterableResult.empty();
+      }
+      return IterableResult.concat(adjectival, adverbial);
+    })
+    .addErrorWhenNone(() =>
+      new ExhaustedError(modifiers.map(Composer.modifier).join(" "))
+    );
 }
