@@ -14,8 +14,7 @@ import { IterableResult } from "../compound.ts";
 import { wordUnit } from "./word_unit.ts";
 import { multipleModifiers } from "./modifier.ts";
 import * as Composer from "../parser/composer.ts";
-import { verb } from "./verb.ts";
-import { word } from "./word.ts";
+import { CONJUNCTION } from "../translator/misc.ts";
 
 export type PhraseTranslation =
   | Readonly<{ type: "noun"; noun: English.NounPhrase }>
@@ -305,5 +304,139 @@ export function phrase(
           type: "verb",
           verb: { ...verb, type: "simple" },
         }));
+  }
+}
+export function phraseAsVerb(
+  phrase: PhraseTranslation,
+): English.VerbPhrase {
+  // TODO: on grammar fixer, extract noun and adjective negative modifier and put it on the verb
+  switch (phrase.type) {
+    case "noun":
+    case "adjective": {
+      let subjectComplement: English.Complement;
+      let inWayPhrase: null | English.NounPhrase;
+      switch (phrase.type) {
+        case "noun": {
+          inWayPhrase = null;
+          subjectComplement = {
+            type: "noun",
+            noun: phrase.noun,
+          };
+          break;
+        }
+        case "adjective": {
+          inWayPhrase = phrase.inWayPhrase;
+          subjectComplement = {
+            type: "adjective",
+            adjective: phrase.adjective,
+          };
+          break;
+        }
+      }
+      return {
+        type: "simple",
+        verb: [
+          {
+            verb: {
+              type: "non-modal",
+              presentPlural: "are",
+              presentSingular: "is",
+              past: "were",
+              emphasis: false,
+              reduplicationCount: 1,
+            },
+            preAdverbs: [],
+            postAdverb: null,
+          },
+        ],
+        subjectComplement,
+        contentClause: null,
+        object: null,
+        objectComplement: null,
+        prepositions: nullableAsArray(inWayPhrase)
+          .map((noun) => nounAsPreposition(noun, "in")),
+        forObject: false,
+        predicateType: null,
+        emphasis: false,
+        hideVerb: false,
+      };
+    }
+    case "verb":
+      return phrase.verb;
+  }
+}
+
+export function multiplePhrases(
+  options: Readonly<{
+    phrases: TokiPona.MultiplePhrases;
+    includeGerund: boolean;
+    andParticle: null | string;
+  }>,
+): IterableResult<PhraseTranslation> {
+  const { phrases, andParticle } = options;
+  switch (phrases.type) {
+    case "simple":
+      return phrase({ ...options, phrase: phrases.phrase });
+    case "and":
+    case "anu": {
+      const conjunction = CONJUNCTION[phrases.type];
+      return IterableResult.combine(
+        ...phrases.phrases
+          .map((phrases) => multiplePhrases({ ...options, phrases })),
+      )
+        .filterMap((phrase): null | PhraseTranslation => {
+          if (
+            phrase.some((phrase) =>
+              phrase.type === "adjective" && phrase.inWayPhrase != null
+            )
+          ) {
+            throw new FilteredError(
+              "in [adjective] way phrase within compound",
+            );
+          }
+          if (phrase.every((phrase) => phrase.type === "noun")) {
+            return {
+              type: "noun",
+              // TODO: flatten compound nouns on the grammar fixer
+              noun: {
+                type: "compound",
+                conjunction,
+                nouns: phrase.map(({ noun }) => noun),
+              },
+            };
+          } else if (phrase.every((phrase) => phrase.type === "adjective")) {
+            if (andParticle === "en" && conjunction === "and") {
+              return null;
+            } else {
+              return {
+                type: "adjective",
+                // TODO: flatten compound adjective on the grammar fixer
+                adjective: {
+                  type: "compound",
+                  conjunction,
+                  adjectives: phrase.map(({ adjective }) => adjective),
+                  emphasis: false,
+                },
+                inWayPhrase: null,
+              };
+            }
+          } else {
+            return {
+              type: "verb",
+              verb: {
+                type: "compound",
+                conjunction,
+                verbs: phrase.map(phraseAsVerb),
+                object: null,
+                objectComplement: null,
+                prepositions: [],
+              },
+            };
+          }
+        })
+        .addErrorWhenNone(() =>
+          new ExhaustedError(Composer.multiplePhrases(phrases, andParticle))
+        );
+    }
   }
 }
