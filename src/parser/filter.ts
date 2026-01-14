@@ -1,4 +1,4 @@
-import { throwError } from "../../misc/misc.ts";
+import { throwError } from "../misc/misc.ts";
 import { extractResultError } from "../compound.ts";
 import {
   Clause,

@@ -1,9 +1,5 @@
 import { memoize } from "@std/cache/memoize";
-import {
-  lazy as lazyEval,
-  nullableAsArray,
-  throwError,
-} from "../../misc/misc.ts";
+import { lazy as lazyEval, nullableAsArray, throwError } from "../misc/misc.ts";
 import {
   contentWordSet,
   fillerSet,

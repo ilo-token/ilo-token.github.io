@@ -1,6 +1,6 @@
 import { assertGreater } from "@std/assert/greater";
 import { MemoizationCacheResult, memoize } from "@std/cache/memoize";
-import { lazy as lazyEval } from "../../misc/misc.ts";
+import { lazy as lazyEval } from "../misc/misc.ts";
 import { ArrayResult, ResultError } from "../compound.ts";
 
 type ValueLength<T> = Readonly<{ value: T; length: number }>;

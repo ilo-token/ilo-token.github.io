@@ -1,5 +1,5 @@
 import { sumOf } from "@std/collections/sum-of";
-import { nullableAsArray } from "../../misc/misc.ts";
+import { nullableAsArray } from "../misc/misc.ts";
 import { IterableResult } from "../compound.ts";
 import { dictionary } from "../dictionary.ts";
 import { FilteredError } from "./error.ts";

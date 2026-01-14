@@ -1,4 +1,4 @@
-import { mapNullable, nullableAsArray } from "../../misc/misc.ts";
+import { mapNullable, nullableAsArray } from "../misc/misc.ts";
 import { IterableResult } from "../compound.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as Composer from "../parser/composer.ts";

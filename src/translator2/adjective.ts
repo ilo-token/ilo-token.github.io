@@ -1,5 +1,5 @@
 import * as Dictionary from "../../dictionary/type.ts";
-import { nullableAsArray } from "../../misc/misc.ts";
+import { nullableAsArray } from "../misc/misc.ts";
 import { IterableResult } from "../compound.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";

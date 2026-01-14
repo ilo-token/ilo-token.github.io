@@ -1,4 +1,4 @@
-import { throwError } from "../../misc/misc.ts";
+import { throwError } from "../misc/misc.ts";
 import { IterableResult } from "../compound.ts";
 import { dictionary } from "../dictionary.ts";
 import * as TokiPona from "../parser/ast.ts";

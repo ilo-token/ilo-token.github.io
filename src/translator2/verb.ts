@@ -1,5 +1,5 @@
 import * as Dictionary from "../../dictionary/type.ts";
-import { mapNullable } from "../../misc/misc.ts";
+import { mapNullable } from "../misc/misc.ts";
 import { IterableResult } from "../compound.ts";
 import * as English from "./ast.ts";
 import { noun } from "./noun.ts";

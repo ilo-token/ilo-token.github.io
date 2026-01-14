@@ -3,7 +3,7 @@ import { noEmphasis, word } from "./word.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { IterableResult } from "../compound.ts";
 import { multipleModifiers } from "./modifier.ts";
-import { throwError } from "../../misc/misc.ts";
+import { throwError } from "../misc/misc.ts";
 import { FilteredError, TranslationTodoError } from "./error.ts";
 import { multiplePhrases } from "./phrase.ts";
 import { dictionary } from "../dictionary.ts";

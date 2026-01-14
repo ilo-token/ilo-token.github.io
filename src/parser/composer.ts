@@ -1,4 +1,4 @@
-import { nullableAsArray, repeatWithSpace } from "../../misc/misc.ts";
+import { nullableAsArray, repeatWithSpace } from "../misc/misc.ts";
 import {
   Clause,
   ContextClause,

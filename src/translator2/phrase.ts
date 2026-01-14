@@ -2,7 +2,7 @@ import * as English from "./ast.ts";
 import { AdjectiveWithInWay } from "./adjective.ts";
 import { AdjectivalModifier } from "./modifier.ts";
 import { ExhaustedError, FilteredError } from "./error.ts";
-import { mapNullable, nullableAsArray } from "../../misc/misc.ts";
+import { mapNullable, nullableAsArray } from "../misc/misc.ts";
 import { nounAsPreposition } from "./preposition.ts";
 import { AdverbialModifier } from "./modifier.ts";
 import * as TokiPona from "../parser/ast.ts";

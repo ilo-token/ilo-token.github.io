@@ -1,6 +1,6 @@
 import { memoize } from "@std/cache/memoize";
 import { sumOf } from "@std/collections/sum-of";
-import { throwError } from "../../misc/misc.ts";
+import { throwError } from "../misc/misc.ts";
 import { settings } from "../settings.ts";
 import {
   all,
