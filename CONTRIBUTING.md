@@ -55,14 +55,14 @@ You **don't** have to open a new issue this if:
 - It is a contribution to the dictionary
 - It is a minor edit e.g. a typo fix
 
-Please don't do the following, we can do this ourselves.
+Please don't do the following, the maintainers can do this.
 
 - Updating dependencies
 
 More things to remember:
 
-- Keep the source code as runtime agnostic as possible. We target the browser
-  and Deno. This is necessary because we use `deno test`. If a module is
+- Keep the source code as runtime agnostic as possible: Browser and Deno are
+  needed. This is necessary because `deno test` is used. If a module is
   exclusive to one runtime, add a note above the code:
   `// this code is browser/Deno only`.
 

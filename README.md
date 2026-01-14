@@ -6,8 +6,7 @@ interpretation of the text. No machine learning involved.
 
 [Try it](https://ilo-token.github.io/)
 
-**It is work in progress!**
-[We welcome contributors however!](./CONTRIBUTING.md)
+**It is work in progress!** [Contributors are welcome!](./CONTRIBUTING.md)
 
 ## Starting development server
 

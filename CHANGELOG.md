@@ -24,10 +24,9 @@ On this on-development version, things can be broken.
 
 Released 14 January 2026
 
-I'm in the middle of translator rewrite and I usually don't include here
-dictionary updates. However, this one is important. I want to avoid dead naming
-the Toki Pona founder Mrs. Lang. The definition for "su", which has the name,
-has changed.
+ilo Token is in the middle of rewrite and dictionary updates aren't usually
+included here. However, this one is important. Dead naming should be avoided.
+The definition for "su", which mentions Mrs. Lang, has changed.
 
 ## 0.7.0
 
@@ -166,8 +165,8 @@ ilo Token with more non-pu words. However, it comes with limitations.
 [Read the guidelines for using custom dictionary editor](https://github.com/ilo-token/ilo-token.github.io/wiki/Guidelines-for-editing-dictionary).
 
 Some of the settings may reset. Please reconfigure it again to your preferred
-settings. Sorry for the inconvenience. We've decided to reset some of the
-settings after refactoring to make the code easier to work with.
+settings. Sorry for the inconvenience. The maintainers decided to reset some of
+the settings after refactoring to make the code easier to work with.
 
 - Implement translation to verbs.
 - Implement custom dictionary editor.
@@ -215,8 +214,8 @@ settings, UCSUR support, and expanded vocabulary!
 - Multiline text will no longer be recognized.
 - Add icons.
 
-You may not notice this, we take good grammar for granted, but ilo Token now has
-generally better quality translations thanks to the following:
+You may not notice this, good grammar is taken for granted, but ilo Token now
+has generally better quality translations thanks to the following:
 
 - It is now aware determiners are separate from adjectives. So you won't see
   adjectives like "nicely my", since adverbs can't modify determiners.
