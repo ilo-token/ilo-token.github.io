@@ -8,6 +8,7 @@ import { noEmphasis, word } from "./word.ts";
 
 export type AdjectiveWithInWay = Readonly<{
   adjective: English.AdjectivePhrase;
+  // TODO: this can simply be an adjective instead
   inWayPhrase: null | English.NounPhrase;
 }>;
 function so(emphasis: null | TokiPona.Emphasis) {
