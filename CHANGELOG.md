@@ -20,6 +20,15 @@ On this on-development version, things can be broken.
 </details>
 -->
 
+## 0.7.1
+
+Released 14 January 2026
+
+I'm in the middle of translator rewrite and I usually don't include here
+dictionary updates. However, this one is important. I want to avoid dead naming
+the Toki Pona founder Mrs. Lang. The definition for "su", which has the name,
+has changed.
+
 ## 0.7.0
 
 Released 25 September 2025
