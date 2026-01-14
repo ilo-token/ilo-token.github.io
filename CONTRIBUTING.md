@@ -76,11 +76,11 @@ these for any reason e.g. you just want to fix typo.)
 - Make use of linter: Run `deno lint`. If a lint rule is deemed unnecessary and
   more of an annoyance, you can remove it from [`deno.json`](./deno.json).
 
-As a thank you for contributing, you'll get a shout out in the changelog!
+As a thank you for contributing, you'll get a shout-out in the changelog!
 
 ## Alternative contact options
 
-If you have no github account or want to provide feedback privately, these are
+If you have no GitHub account or want to provide feedback privately, these are
 alternative contact options:
 
 - [Google forms](https://docs.google.com/forms/d/e/1FAIpQLSfdDEMbde9mieybZdbZr8haRzNzGsg0BVkuTIzuHaATCdcrlw/viewform?usp=sf_link)

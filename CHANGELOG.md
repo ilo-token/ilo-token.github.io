@@ -33,7 +33,7 @@ has changed.
 
 Released 25 September 2025
 
-ilo Token can now translate preverbs! Currently this only works when the
+ilo Token can now translate preverbs! Currently, this only works when the
 predicate is translated as a verb unless the preverb is translated as a linking
 verb. This will be expanded soon.
 
@@ -162,7 +162,7 @@ It still can't do the following however:
 
 ilo Token now has custom dictionary editor! This allows users to customize the
 dictionary to their liking. Users can customize existing words and also extend
-ilo Token with more non-pu words. It comes with limitations however.
+ilo Token with more non-pu words. However, it comes with limitations.
 [Read the guidelines for using custom dictionary editor](https://github.com/ilo-token/ilo-token.github.io/wiki/Guidelines-for-editing-dictionary).
 
 Some of the settings may reset. Please reconfigure it again to your preferred
@@ -195,7 +195,7 @@ Released 15 Aug 2024
 This is a huge update now with better quality translations, configurable
 settings, UCSUR support, and expanded vocabulary!
 
-- Reimplement the word "a". This were dropped due to parser rewrite.
+- Reimplement the word "a". This was dropped due to parser rewrite.
 - The vocabulary has been expanded to _nimi ku suli_ plus _nimi su!_.
 - New "dictionary mode", just enter a single word and ilo Token will output all
   definition from its own dictionary. This also works for particles. To bypass
@@ -284,7 +284,7 @@ Inside update (intended for developers):
 
 - Rewritten whole code to use TypeScript, module, and functional programming.
 - Rewritten parser to use parser combinator.
-- Add language codes to html.
+- Add language codes to HTML.
 - New wiki for contributors and tinkerers.
 - Overhaul `README.md`, only including build instruction. Information about the
   translator is now moved to wiki.
@@ -339,7 +339,7 @@ ctrl + shift + R.
     into "celestial object" and "celestial objects".
   - _pilin_ &ndash; remove "feeling" and "feelings", "emotion" and "emotions"
     seems enough
-  - _sona_ &ndash; remove "knowledgeably", doesn't seems to match the definition
+  - _sona_ &ndash; remove "knowledgeably", doesn't seem to match the definition
     of _sona_.
 - Replace translation words:
   - _ante_ &ndash; replace nouns "change" and "changes" with noun "changing".
@@ -400,8 +400,8 @@ channel.
   - _linja_ &ndash; deduplicate "long flexible"
   - _mama_ &ndash; remove "caring" as noun
   - _ni_ &ndash; remove "these" and "those", "this" and "that" seems enough
-  - _pana_ &ndash; remove "emission" and "emissions", these doesn't makes sense
-    (smh my head, why did I added these)
+  - _pana_ &ndash; remove "emission" and "emissions", these don't make sense
+    (smh my head, why did I add these)
   - _pimeja_ &ndash; remove "grey", "gray" is kept
   - _sama_ &ndash; remove "likeness", "similarity" seems enough
   - _sewi_ &ndash; remove "divinities", "divinity" seems enough
