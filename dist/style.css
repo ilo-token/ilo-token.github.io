@@ -42,9 +42,7 @@ select {
   padding: 10px;
 }
 dialog {
-  padding: 0px;
-  padding-top: 20px;
-  padding-bottom: 20px;
+  padding: 20px 0;
   resize: both;
 }
 dialog.flex:modal {
@@ -75,8 +73,7 @@ dialog.flex > label[for] {
   padding-bottom: 5px;
 }
 dialog.flex > select {
-  margin: 10px;
-  margin-top: 0px;
+  margin: 0 10px 10px;
 }
 dialog.flex > textarea {
   font-family: monospace;
