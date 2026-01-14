@@ -53,7 +53,7 @@ do not communicate" instead of the grammatically awkward "I not communicate".
 - Implement modal verb translation e.g. "mi ken" into "I can".
 - Implement pagination. This also prevents browser crashes due to numerous
   translation output.
-- Number as english words e.g. "ten" instead of "10" are now used for small
+- Number as English words e.g. "ten" instead of "10" are now used for small
   numbers (&leq; 20). Thanks soweli Eweke for the suggestion!
 - Remove telo misikeke. ilo Token's own error messages still needs more work.
 - Remove "allow separate repeated modifiers". It'll be hardcoded to be turned
@@ -86,7 +86,7 @@ Released 2 April 2025
 
 - Fix adverbs not showing along with verbs.
 - Fix UCSUR translation. Previously, some UCSUR words are translated into wrong
-  words in latin script.
+  words in Latin script.
 
 ## 0.5.2
 
@@ -229,7 +229,7 @@ generally better quality translations thanks to the following:
 
 Inside update (intended for developers):
 
-- Implement lexer and english AST.
+- Implement lexer and English AST.
 - Overhaul dictionary: It is now a separate file with nicer syntax as opposed to
   written inside the code.
 
