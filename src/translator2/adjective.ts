@@ -1,11 +1,10 @@
 import * as Dictionary from "../../dictionary/type.ts";
-import { mapNullable, nullableAsArray } from "../../misc/misc.ts";
+import { nullableAsArray } from "../../misc/misc.ts";
 import { IterableResult } from "../compound.ts";
 import * as TokiPona from "../parser/ast.ts";
-import { extractNegativeFromMultipleAdverbs } from "./adverb.ts";
 import * as English from "./ast.ts";
-import { UntranslatableError } from "../translator2/error.ts";
-import { noEmphasis, word } from "../translator2/word.ts";
+import { UntranslatableError } from "./error.ts";
+import { noEmphasis, word } from "./word.ts";
 
 export type AdjectiveWithInWay = Readonly<{
   adjective: English.AdjectivePhrase;
@@ -66,6 +65,7 @@ export function compoundAdjective(
     emphasis: null | TokiPona.Emphasis;
   }>,
 ): IterableResult<English.AdjectivePhrase> {
+  // TODO: flattening of adjectives in AST fixer
   const { adjectives, reduplicationCount, emphasis } = options;
   if (reduplicationCount === 1) {
     return IterableResult.combine(
@@ -74,50 +74,15 @@ export function compoundAdjective(
           adjective({ definition, reduplicationCount: 1, emphasis })
         ),
     )
-      .map((adjectives) => combineAdjective("and", adjectives));
+      .map((adjectives) => ({
+        type: "compound",
+        conjunction: "and",
+        adjectives,
+        emphasis: false,
+      }));
   } else {
     return IterableResult.errors([
       new UntranslatableError("reduplication", "compound adjective"),
     ]);
   }
-}
-export function extractNegativeFromAdjective(
-  adjective: English.AdjectivePhrase,
-): null | English.AdjectivePhrase {
-  switch (adjective.type) {
-    case "simple":
-      return mapNullable(
-        extractNegativeFromMultipleAdverbs(adjective.adverbs),
-        (adverbs): English.AdjectivePhrase => ({ ...adjective, adverbs }),
-      );
-    case "compound": {
-      const adjectives = adjective.adjectives.map(extractNegativeFromAdjective);
-      if (adjectives.every((adjective) => adjective != null)) {
-        return { ...adjective, adjectives };
-      } else {
-        return null;
-      }
-    }
-  }
-}
-export function combineAdjective(
-  conjunction: string,
-  phrases: ReadonlyArray<English.AdjectivePhrase>,
-): English.AdjectivePhrase {
-  return {
-    type: "compound",
-    conjunction,
-    adjectives: phrases
-      .flatMap((adjective) => {
-        if (
-          adjective.type === "compound" &&
-          adjective.conjunction === conjunction
-        ) {
-          return adjective.adjectives;
-        } else {
-          return [adjective];
-        }
-      }),
-    emphasis: false,
-  };
 }

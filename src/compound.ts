@@ -58,7 +58,7 @@ export class ArrayResult<T> {
     if (this.isError()) {
       return this;
     } else {
-      return new ArrayResult([...this.array].sort(comparer));
+      return new ArrayResult(this.array.toSorted(comparer));
     }
   }
   // sortBy(mapper: (value: T) => number): ArrayResult<T> {

@@ -1,18 +1,17 @@
-import { IterableResult } from "../compound.ts";
-import { dictionary } from "../dictionary.ts";
-import * as TokiPona from "../parser/ast.ts";
-import * as Composer from "../parser/composer.ts";
-import { adjective, compoundAdjective } from "./adjective.ts";
 import * as English from "./ast.ts";
-import { determiner } from "./determiner.ts";
-import { ExhaustedError, TranslationTodoError } from "../translator2/error.ts";
-import { nanpa } from "./nanpa.ts";
-import { noun } from "./noun.ts";
-import { number, numberAsText } from "../translator2/number.ts";
-import { phrase, PhraseTranslation } from "./phrase.ts";
-import { pronoun } from "./pronoun.ts";
-import { noEmphasis, word } from "../translator2/word.ts";
+import { number, numberAsText } from "./number.ts";
+import * as TokiPona from "../parser/ast.ts";
+import { IterableResult } from "../compound.ts";
+import { ExhaustedError, TranslationTodoError } from "./error.ts";
+import { dictionary } from "../dictionary.ts";
 import { getReduplicationCount } from "./word_unit.ts";
+import { noun } from "./noun.ts";
+import { pronoun } from "./pronoun.ts";
+import { adjective, compoundAdjective } from "./adjective.ts";
+import * as Composer from "../parser/composer.ts";
+import { word } from "./word.ts";
+import { phrase, PhraseTranslation } from "./phrase.ts";
+import { nanpa } from "./nanpa.ts";
 
 export type ModifierTranslation =
   | Readonly<{ type: "noun"; noun: English.NounPhrase }>
@@ -50,13 +49,12 @@ function defaultModifier(wordUnit: TokiPona.WordUnit) {
         return {
           type: "determiner",
           determiner: {
-            determiner: word({
-              word: numberAsText(number),
-              reduplicationCount: 1,
-              emphasis,
-            }),
+            determiner: numberAsText(number),
+            plural: null,
             kind: "numeral",
             quantity,
+            reduplicationCount: 1,
+            emphasis,
           },
         };
       });
@@ -68,13 +66,13 @@ function defaultModifier(wordUnit: TokiPona.WordUnit) {
       return IterableResult.fromArray(
         dictionary.get(wordUnit.word)!.definitions,
       )
-        .flatMap((definition) => {
+        .flatMap((definition): IterableResult<ModifierTranslation> => {
           switch (definition.type) {
             case "noun":
               return noun({ definition, reduplicationCount, emphasis })
                 .map((noun): ModifierTranslation => ({
                   type: "noun",
-                  noun,
+                  noun: { ...noun, type: "simple" },
                 }));
             case "noun preposition":
               return noun({
@@ -84,27 +82,30 @@ function defaultModifier(wordUnit: TokiPona.WordUnit) {
               })
                 .map((noun): ModifierTranslation => ({
                   type: "noun preposition",
-                  noun,
+                  noun: { ...noun, type: "simple" },
                   preposition: definition.preposition,
                 }));
             case "personal pronoun":
-              return pronoun({
-                definition,
-                reduplicationCount,
-                emphasis,
-                place: "object",
-              })
-                .map((noun): ModifierTranslation => ({ type: "noun", noun }));
+              return IterableResult.single({
+                type: "noun",
+                noun: {
+                  ...pronoun({
+                    pronoun: definition,
+                    reduplicationCount,
+                    emphasis,
+                  }),
+                  type: "simple",
+                },
+              });
             case "determiner":
-              return determiner({
-                definition,
-                reduplicationCount,
-                emphasis: wordUnit.emphasis != null,
-              })
-                .map((determiner): ModifierTranslation => ({
-                  type: "determiner",
-                  determiner,
-                }));
+              return IterableResult.single({
+                type: "determiner",
+                determiner: {
+                  ...definition,
+                  emphasis,
+                  reduplicationCount,
+                },
+              });
             case "adjective":
               return adjective({
                 definition,
@@ -149,7 +150,6 @@ function pi(
 ): IterableResult<ModifierTranslation> {
   return phrase({
     phrase: insidePhrase,
-    place: "object",
     includeGerund: true,
   })
     .filter((modifier) =>
@@ -174,7 +174,7 @@ function modifier(modifier: TokiPona.Modifier) {
       return nanpa(modifier)
         .map((noun): ModifierTranslation => ({
           type: "noun",
-          noun,
+          noun: { ...noun, type: "simple" },
         }));
   }
 }
@@ -236,13 +236,15 @@ export function multipleModifiers(
             type: "simple",
             determiners: [],
             adjectives,
-            noun: noEmphasis("way"),
-            quantity: "singular",
+            singular: { subject: "way", object: "way" },
+            plural: null,
+            reduplicationCount: 1,
+            wordEmphasis: false,
             perspective: "third",
             adjectiveName: null,
             postCompound: null,
             prepositions: [],
-            emphasis: false,
+            phraseEmphasis: false,
           }
           : null;
         adverbial = IterableResult.single<MultipleModifierTranslation>({

@@ -1,13 +1,12 @@
-import { throwError } from "../../misc/misc.ts";
-import { IterableResult } from "../compound.ts";
-import { dictionary } from "../dictionary.ts";
-import * as TokiPona from "../parser/ast.ts";
-import { extractNegativeFromMultipleAdverbs } from "./adverb.ts";
 import * as English from "./ast.ts";
-import { FilteredError, TranslationTodoError } from "../translator2/error.ts";
+import { noEmphasis, word } from "./word.ts";
+import * as TokiPona from "../parser/ast.ts";
+import { IterableResult } from "../compound.ts";
 import { multipleModifiers } from "./modifier.ts";
+import { throwError } from "../../misc/misc.ts";
+import { FilteredError, TranslationTodoError } from "./error.ts";
 import { multiplePhrases } from "./phrase.ts";
-import { noEmphasis, word } from "../translator2/word.ts";
+import { dictionary } from "../dictionary.ts";
 import { getReduplicationCount } from "./word_unit.ts";
 
 export function preposition(
@@ -28,7 +27,6 @@ export function preposition(
       ),
     multiplePhrases({
       phrases: preposition.phrases,
-      place: "object",
       includeGerund: true,
       andParticle: null,
     })
@@ -79,14 +77,4 @@ export function nounAsPreposition(
     object: phrase,
     emphasis: false,
   };
-}
-export function extractNegativeFromPreposition(
-  preposition: English.Preposition,
-): null | English.Preposition {
-  const adverbs = extractNegativeFromMultipleAdverbs(preposition.adverbs);
-  if (adverbs == null) {
-    return null;
-  } else {
-    return { ...preposition, adverbs };
-  }
 }

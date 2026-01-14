@@ -1,109 +1,80 @@
-import { mapNullable, nullableAsArray } from "../../misc/misc.ts";
-import { IterableResult } from "../compound.ts";
-import * as TokiPona from "../parser/ast.ts";
-import * as Composer from "../parser/composer.ts";
-import {
-  AdjectiveWithInWay,
-  combineAdjective,
-  extractNegativeFromAdjective,
-} from "./adjective.ts";
-import { extractNegativeFromMultipleAdverbs, NOT } from "./adverb.ts";
 import * as English from "./ast.ts";
-import { getNumber } from "./determiner.ts";
-import { ExhaustedError, FilteredError } from "../translator2/error.ts";
-import { CONJUNCTION } from "../translator2/misc.ts";
-import {
-  AdjectivalModifier,
-  AdverbialModifier,
-  multipleModifiers,
-} from "./modifier.ts";
-import {
-  combineNoun,
-  extractNegativeFromNoun,
-  fromNounForms,
-  PartialNoun,
-} from "./noun.ts";
-import {
-  extractNegativeFromPreposition,
-  nounAsPreposition,
-  preposition,
-} from "./preposition.ts";
-import { Place } from "./pronoun.ts";
-import { PartialSimpleVerb, PartialVerb } from "./verb.ts";
-import { word } from "../translator2/word.ts";
+import { AdjectiveWithInWay } from "./adjective.ts";
+import { AdjectivalModifier } from "./modifier.ts";
+import { ExhaustedError, FilteredError } from "./error.ts";
+import { mapNullable, nullableAsArray } from "../../misc/misc.ts";
+import { nounAsPreposition } from "./preposition.ts";
+import { AdverbialModifier } from "./modifier.ts";
+import * as TokiPona from "../parser/ast.ts";
+import { IterableResult } from "../compound.ts";
 import { wordUnit } from "./word_unit.ts";
+import { multipleModifiers } from "./modifier.ts";
+import * as Composer from "../parser/composer.ts";
+import { CONJUNCTION } from "./misc.ts";
+import { preposition } from "./preposition.ts";
 
 export type PhraseTranslation =
   | Readonly<{ type: "noun"; noun: English.NounPhrase }>
   | (Readonly<{ type: "adjective" }> & AdjectiveWithInWay)
-  | Readonly<{ type: "verb"; verb: PartialVerb }>;
+  | Readonly<{ type: "verb"; verb: English.VerbPhrase }>;
 
 function nounPhrase(
   options: Readonly<{
     emphasis: boolean;
-    noun: PartialNoun;
+    noun: English.SimpleNounPhrase;
     modifier: AdjectivalModifier;
   }>,
-) {
+): null | English.SimpleNounPhrase {
   const { emphasis, noun, modifier } = options;
-  return IterableResult.from(() => {
-    const determiners = [
-      ...modifier.determiners.toReversed(),
-      ...noun.determiners,
-    ];
-    const quantity = getNumber(determiners);
-    const adjectives = [
-      ...modifier.adjectives.toReversed(),
-      ...noun.adjectives,
-    ];
-    if (noun.adjectiveName != null && modifier.name != null) {
-      throw new FilteredError("double name");
+  const determiners = [
+    ...modifier.determiners.toReversed(),
+    ...noun.determiners,
+  ];
+  const adjectives = [
+    ...modifier.adjectives.toReversed(),
+    ...noun.adjectives,
+  ];
+  if (noun.adjectiveName != null && modifier.name != null) {
+    throw new FilteredError("double name");
+  }
+  const adjectiveName = noun.adjectiveName ??
+    mapNullable(
+      modifier.name,
+      (name): English.AdjectiveName => ({ adjective: "named", name }),
+    );
+  const prepositions = modifier.ofPhrase
+    .map((object) => nounAsPreposition(object, "of"));
+  const { nounPreposition } = modifier;
+  const headNoun: English.SimpleNounPhrase = {
+    ...noun,
+    determiners,
+    adjectives,
+    perspective: noun.perspective,
+    postCompound: null,
+    adjectiveName,
+    prepositions,
+    phraseEmphasis: emphasis &&
+      nounPreposition == null,
+  };
+  if (nounPreposition == null) {
+    return headNoun;
+  } else if (modifier.ofPhrase.length === 0) {
+    const { noun: nounOf, preposition } = nounPreposition;
+    switch (nounOf.type) {
+      case "simple":
+        return {
+          ...nounOf,
+          prepositions: [
+            nounAsPreposition({ ...headNoun, type: "simple" }, preposition),
+          ],
+          phraseEmphasis: emphasis,
+        };
+      case "compound":
+        throw new FilteredError("compound nouns followed by preposition");
     }
-    const adjectiveName = noun.adjectiveName ??
-      mapNullable(
-        modifier.name,
-        (name): English.AdjectiveName => ({ adjective: "named", name }),
-      );
-    const prepositions = modifier.ofPhrase
-      .map((object) => nounAsPreposition(object, "of"));
-    const { nounPreposition } = modifier;
-    const headNoun = fromNounForms(noun, quantity)
-      .map(({ noun: useWord, quantity }): English.NounPhrase => ({
-        type: "simple",
-        determiners,
-        adjectives,
-        noun: word({
-          word: useWord,
-          reduplicationCount: noun.reduplicationCount,
-          emphasis: noun.emphasis,
-        }),
-        quantity,
-        perspective: noun.perspective,
-        postCompound: null,
-        adjectiveName,
-        prepositions,
-        emphasis: emphasis &&
-          nounPreposition == null,
-      }));
-    if (nounPreposition == null) {
-      return headNoun;
-    } else if (modifier.ofPhrase.length === 0) {
-      const { noun: nounOf, preposition } = nounPreposition;
-      switch (nounOf.type) {
-        case "simple":
-          return headNoun.map((noun): English.NounPhrase => ({
-            ...nounOf,
-            prepositions: [nounAsPreposition(noun, preposition)],
-            emphasis,
-          }));
-        case "compound":
-          throw new FilteredError("compound nouns followed by preposition");
-      }
-    } else {
-      // will be filled by ExhaustedError on `defaultPhrase`
-      return IterableResult.empty();
-    }
-  });
+  } else {
+    return null;
+  }
 }
 function adjectivePhrase(
   options: Readonly<{
@@ -131,7 +102,7 @@ function adjectivePhrase(
     case "compound":
       if (modifier.adverbs.length === 0) {
         return {
-          adjective: { ...adjective, emphasis: adjective.emphasis || emphasis },
+          adjective: { ...adjective },
           inWayPhrase: modifier.inWayPhrase,
         };
       } else {
@@ -142,10 +113,10 @@ function adjectivePhrase(
 function verbPhrase(
   options: Readonly<{
     emphasis: boolean;
-    verb: PartialSimpleVerb;
+    verb: English.SimpleVerbPhrase;
     modifier: AdverbialModifier;
   }>,
-): PartialSimpleVerb {
+): English.SimpleVerbPhrase {
   const { emphasis, verb, modifier } = options;
   const prepositions = [
     ...verb.prepositions,
@@ -153,48 +124,23 @@ function verbPhrase(
       .map((object) => nounAsPreposition(object, "in")),
   ];
   const adverbs = modifier.adverbs.toReversed();
-  const extracted = extractNegativeFromMultipleAdverbs(adverbs);
-  if (
-    extracted != null && extractNegativeFromMultipleAdverbs(extracted) != null
-  ) {
-    throw new FilteredError("double negative");
-  }
-  const negated = extracted != null;
-  const useAdverbs = extracted ?? adverbs;
-  const { first } = verb;
-  switch (first.type) {
-    case "modal": {
-      const postAdverb = negated ? NOT : null;
-      return {
-        ...verb,
-        first: {
-          type: "modal",
-          preAdverbs: useAdverbs,
-          verb: first.verb,
-          postAdverb,
-        },
-        emphasis: emphasis,
-        prepositions,
-      };
-    }
-    case "non-modal":
-      return {
-        ...verb,
-        first: {
-          ...first,
-          type: "non-modal",
-          negated,
-          adverbs: useAdverbs,
-        },
-        emphasis: emphasis,
-        prepositions,
-      };
-  }
+  return {
+    ...verb,
+    verb: [
+      {
+        preAdverbs: adverbs,
+        verb: verb.verb[0].verb,
+        postAdverb: null,
+      },
+      ...verb.verb.slice(1),
+    ],
+    prepositions,
+    emphasis,
+  };
 }
 function defaultPhrase(
   options: Readonly<{
     phrase: TokiPona.Phrase & { type: "simple" };
-    place: Place;
     includeGerund: boolean;
   }>,
 ) {
@@ -206,8 +152,13 @@ function defaultPhrase(
   )
     .flatMap(([headWord, modifier]) => {
       if (headWord.type === "noun" && modifier.type === "adjectival") {
-        return nounPhrase({ emphasis, noun: headWord, modifier })
-          .map((noun): PhraseTranslation => ({ type: "noun", noun }));
+        return IterableResult.fromArray(
+          nullableAsArray(nounPhrase({ emphasis, noun: headWord, modifier })),
+        )
+          .map((noun): PhraseTranslation => ({
+            type: "noun",
+            noun: { ...noun, type: "simple" },
+          }));
       } else if (
         headWord.type === "adjective" && modifier.type === "adverbial"
       ) {
@@ -239,37 +190,38 @@ function defaultPhrase(
 }
 function prepositionAsVerb(
   preposition: English.Preposition,
-): PartialSimpleVerb {
-  const extracted = extractNegativeFromPreposition(preposition);
+): English.SimpleVerbPhrase {
   return {
-    first: {
-      type: "non-modal",
-      adverbs: [],
-      presentPlural: "are",
-      presentSingular: "is",
-      past: "were",
-      negated: extracted != null,
-      reduplicationCount: 1,
-      emphasis: false,
-    },
-    rest: [],
+    verb: [{
+      preAdverbs: [],
+      verb: {
+        type: "non-modal",
+        presentPlural: "are",
+        presentSingular: "is",
+        past: "were",
+        reduplicationCount: 1,
+        emphasis: false,
+      },
+      postAdverb: null,
+    }],
     subjectComplement: null,
+    contentClause: null,
     object: null,
     objectComplement: null,
-    prepositions: [extracted ?? preposition],
+    prepositions: [preposition],
     forObject: false,
     predicateType: null,
     emphasis: false,
+    hideVerb: false,
   };
 }
 function preverb(
   preverb: TokiPona.Phrase & { type: "preverb" },
-): IterableResult<PartialSimpleVerb> {
+): IterableResult<English.SimpleVerbPhrase> {
   const emphasis = preverb.emphasis != null;
   const verb = IterableResult.combine(
     wordUnit({
       wordUnit: preverb.preverb,
-      place: "object",
       includeGerund: false,
     }),
     multipleModifiers(preverb.modifiers),
@@ -283,11 +235,10 @@ function preverb(
     verb,
     translatePhrase({
       phrase: preverb.phrase,
-      place: "object",
       includeGerund: false,
     }),
   )
-    .filterMap(([verb, predicate]): null | PartialSimpleVerb => {
+    .filterMap(([verb, predicate]): null | English.SimpleVerbPhrase => {
       if (
         verb.predicateType === "noun adjective" &&
         (predicate.type === "noun" || predicate.type === "adjective")
@@ -309,26 +260,20 @@ function preverb(
         verb.predicateType === "verb" && predicate.type === "verb" &&
         predicate.verb.type === "simple"
       ) {
-        const first = predicate.verb.first;
-        let predicateVerb: English.Verb;
-        switch (first.type) {
-          case "modal":
-            return null;
-          case "non-modal":
-            predicateVerb = {
-              preAdverbs: first.adverbs,
-              verb: word({
-                ...first,
-                word: first.presentPlural,
-                emphasis: false,
-              }),
-              postAdverb: null,
-            };
-        }
+        const first = predicate.verb.verb[0];
+        // TODO: filter out modal verb when found in the middle
+        const predicateVerb: English.AdverbVerb = {
+          preAdverbs: first.preAdverbs,
+          verb: first.verb,
+          postAdverb: null,
+        };
         return {
           ...predicate.verb,
-          first: verb.first,
-          rest: [...verb.rest, predicateVerb, ...predicate.verb.rest],
+          verb: [
+            ...verb.verb,
+            predicateVerb,
+            ...predicate.verb.verb.slice(1),
+          ],
           emphasis,
         };
       } else {
@@ -341,7 +286,6 @@ const translatePhrase = phrase;
 export function phrase(
   options: Readonly<{
     phrase: TokiPona.Phrase;
-    place: Place;
     includeGerund: boolean;
   }>,
 ): IterableResult<PhraseTranslation> {
@@ -366,49 +310,49 @@ export function phrase(
 }
 export function phraseAsVerb(
   phrase: PhraseTranslation,
-): PartialVerb {
+): English.VerbPhrase {
+  // TODO: on grammar fixer, extract noun and adjective negative modifier and put it on the verb
   switch (phrase.type) {
     case "noun":
     case "adjective": {
-      let negated: boolean;
       let subjectComplement: English.Complement;
       let inWayPhrase: null | English.NounPhrase;
       switch (phrase.type) {
         case "noun": {
           inWayPhrase = null;
-          const extract = extractNegativeFromNoun(phrase.noun);
-          negated = extract != null;
           subjectComplement = {
             type: "noun",
-            noun: extract ?? phrase.noun,
+            noun: phrase.noun,
           };
           break;
         }
         case "adjective": {
           inWayPhrase = phrase.inWayPhrase;
-          const extract = extractNegativeFromAdjective(phrase.adjective);
-          negated = extract != null;
           subjectComplement = {
             type: "adjective",
-            adjective: extract ?? phrase.adjective,
+            adjective: phrase.adjective,
           };
           break;
         }
       }
       return {
         type: "simple",
-        first: {
-          type: "non-modal",
-          adverbs: [],
-          presentPlural: "are",
-          presentSingular: "is",
-          past: "were",
-          negated,
-          emphasis: false,
-          reduplicationCount: 1,
-        },
-        rest: [],
+        verb: [
+          {
+            verb: {
+              type: "non-modal",
+              presentPlural: "are",
+              presentSingular: "is",
+              past: "were",
+              emphasis: false,
+              reduplicationCount: 1,
+            },
+            preAdverbs: [],
+            postAdverb: null,
+          },
+        ],
         subjectComplement,
+        contentClause: null,
         object: null,
         objectComplement: null,
         prepositions: nullableAsArray(inWayPhrase)
@@ -416,16 +360,17 @@ export function phraseAsVerb(
         forObject: false,
         predicateType: null,
         emphasis: false,
+        hideVerb: false,
       };
     }
     case "verb":
       return phrase.verb;
   }
 }
+
 export function multiplePhrases(
   options: Readonly<{
     phrases: TokiPona.MultiplePhrases;
-    place: Place;
     includeGerund: boolean;
     andParticle: null | string;
   }>,
@@ -454,10 +399,12 @@ export function multiplePhrases(
           if (phrase.every((phrase) => phrase.type === "noun")) {
             return {
               type: "noun",
-              noun: combineNoun(
+              // TODO: flatten compound nouns on the grammar fixer
+              noun: {
+                type: "compound",
                 conjunction,
-                phrase.map(({ noun }) => noun),
-              ),
+                nouns: phrase.map(({ noun }) => noun),
+              },
             };
           } else if (phrase.every((phrase) => phrase.type === "adjective")) {
             if (andParticle === "en" && conjunction === "and") {
@@ -465,10 +412,12 @@ export function multiplePhrases(
             } else {
               return {
                 type: "adjective",
-                adjective: combineAdjective(
+                // TODO: flatten compound adjective on the grammar fixer
+                adjective: {
+                  type: "compound",
                   conjunction,
-                  phrase.map(({ adjective }) => adjective),
-                ),
+                  adjectives: phrase.map(({ adjective }) => adjective),
+                },
                 inWayPhrase: null,
               };
             }

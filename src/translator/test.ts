@@ -1,7 +1,7 @@
 // this code is Deno only
 
 import { assertArrayIncludes } from "@std/assert/array-includes";
-import { number } from "./number.ts";
+import { number } from "../translator2/number.ts";
 import { translate } from "./translator.ts";
 import { assert } from "@std/assert/assert";
 

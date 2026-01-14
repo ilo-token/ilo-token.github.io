@@ -18,14 +18,20 @@ Also check the [changelog](./CHANGELOG.md) and open the on-development
 changelog, it might be already fixed but hasn't published yet! Duplicate issues
 are unnecessary.
 
-Note to maintainer/contributor: When there's a bug discovered, make a test for
-it if possible. Use Deno's own testing tools:
+<details>
+
+<summary>Note to maintainer</summary>
+
+When there's a bug discovered, make a test for it if possible. Use Deno's own
+testing tools:
 [examples](https://github.com/ilo-token/ilo-token.github.io/blob/master/src/translator/test.ts).
 Then edit the issue to link the test in following format:
 
 ```md
 Test: [src/translator/test.ts "verb with adverb"](permalink including the lines)
 ```
+
+</details>
 
 ## [Discussion](https://github.com/ilo-token/ilo-token.github.io/discussions)
 
@@ -68,7 +74,7 @@ these for any reason e.g. you just want to fix typo.)
   `deno test --parallel` before and after making changes to the code. Some tests
   may already be failing.
 - Make use of linter: Run `deno lint`. If a lint rule is deemed unnecessary and
-  more of an annoyance, open an [issue](#issue). We can remove lint rules.
+  more of an annoyance, you can remove it from [`deno.json`](./deno.json).
 
 As a thank you for contributing, you'll get a shout out in the changelog!
 

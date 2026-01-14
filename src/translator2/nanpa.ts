@@ -1,19 +1,18 @@
-import { throwError } from "../../misc/misc.ts";
-import { IterableResult } from "../compound.ts";
 import * as TokiPona from "../parser/ast.ts";
+import { IterableResult } from "../compound.ts";
 import * as English from "./ast.ts";
-import { FilteredError } from "../translator2/error.ts";
 import { phrase } from "./phrase.ts";
+import { throwError } from "../../misc/misc.ts";
+import { FilteredError } from "./error.ts";
 
 export function nanpa(
   nanpa: TokiPona.Nanpa,
-): IterableResult<English.NounPhrase> {
+): IterableResult<English.SimpleNounPhrase> {
   return phrase({
     phrase: nanpa.phrase,
-    place: "object",
     includeGerund: true,
   })
-    .map((phrase) =>
+    .map((phrase): English.SimpleNounPhrase =>
       phrase.type !== "noun"
         ? throwError(
           new FilteredError(
@@ -21,19 +20,17 @@ export function nanpa(
           ),
         )
         : {
-          type: "simple",
           determiners: [],
           adjectives: [],
-          noun: {
-            word: "position",
-            emphasis: nanpa.nanpa.emphasis != null,
-          },
-          quantity: "singular",
+          singular: { subject: "position", object: "position" },
+          plural: null,
+          reduplicationCount: 1,
+          wordEmphasis: false,
           perspective: "third",
           postCompound: phrase.noun,
           adjectiveName: null,
           prepositions: [],
-          emphasis: false,
+          phraseEmphasis: false,
         }
     );
 }

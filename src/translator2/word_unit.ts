@@ -1,27 +1,25 @@
-import { Definition } from "../../dictionary/type.ts";
 import { IterableResult } from "../compound.ts";
 import { dictionary } from "../dictionary.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";
 import * as English from "./ast.ts";
-import { TranslationTodoError } from "../translator2/error.ts";
-import { PartialNoun, partialNoun } from "./noun.ts";
-import { number, numberAsText } from "../translator2/number.ts";
-import { Place, pronounAsPartialNoun } from "./pronoun.ts";
-import { PartialSimpleVerb, partialSimpleVerb } from "./verb.ts";
-import { word } from "../translator2/word.ts";
+import { noun } from "./noun.ts";
+import { pronoun } from "./pronoun.ts";
+import { word } from "./word.ts";
+import { verb } from "./verb.ts";
+import { TranslationTodoError } from "./error.ts";
+import { number, numberAsText } from "./number.ts";
 
 export type WordUnitTranslation =
-  | (Readonly<{ type: "noun" }> & PartialNoun)
+  | (Readonly<{ type: "noun" }> & English.SimpleNounPhrase)
   | Readonly<{ type: "adjective"; adjective: English.AdjectivePhrase }>
-  | (Readonly<{ type: "verb" }> & PartialSimpleVerb);
+  | (Readonly<{ type: "verb" }> & English.SimpleVerbPhrase);
 
 function defaultWordUnit(
   options: Readonly<{
     word: string;
     reduplicationCount: number;
     emphasis: null | TokiPona.Emphasis;
-    place: Place;
     includeGerund: boolean;
   }>,
 ) {
@@ -34,7 +32,7 @@ function defaultWordUnit(
           if (!includeGerund && definition.gerund) {
             return IterableResult.empty();
           } else {
-            return partialNoun({
+            return noun({
               ...options,
               definition,
               emphasis: emphasis != null,
@@ -43,7 +41,7 @@ function defaultWordUnit(
           }
         case "personal pronoun":
           return IterableResult.single<WordUnitTranslation>({
-            ...pronounAsPartialNoun({
+            ...pronoun({
               ...options,
               pronoun: definition,
               emphasis: emphasis != null,
@@ -70,7 +68,7 @@ function defaultWordUnit(
               adjective,
             }));
         case "verb":
-          return partialSimpleVerb({
+          return verb({
             ...options,
             definition,
             emphasis: emphasis != null,
@@ -79,23 +77,28 @@ function defaultWordUnit(
         case "modal verb":
           return IterableResult.single<WordUnitTranslation>({
             type: "verb",
-            first: {
-              type: "modal",
-              preAdverbs: [],
-              verb: word({
-                word: definition.verb,
-                reduplicationCount,
-                emphasis: emphasis != null,
-              }),
-              postAdverb: null,
-            },
-            rest: [],
+            verb: [
+              {
+                preAdverbs: [],
+                verb: {
+                  ...word({
+                    word: definition.verb,
+                    reduplicationCount,
+                    emphasis: emphasis != null,
+                  }),
+                  type: "modal",
+                },
+                postAdverb: null,
+              },
+            ],
             subjectComplement: null,
+            contentClause: null,
             object: null,
             objectComplement: null,
-            prepositions: [],
             forObject: false,
+            prepositions: [],
             predicateType: "verb",
+            hideVerb: false,
             emphasis: false,
           });
         default:
@@ -106,7 +109,6 @@ function defaultWordUnit(
 export function wordUnit(
   options: Readonly<{
     wordUnit: TokiPona.WordUnit;
-    place: Place;
     includeGerund: boolean;
   }>,
 ): IterableResult<WordUnitTranslation> {
@@ -114,17 +116,26 @@ export function wordUnit(
   switch (wordUnit.type) {
     case "number":
       return number(wordUnit.words)
-        .map((number): WordUnitTranslation => ({
-          type: "noun",
-          determiners: [],
-          adjectives: [],
-          singular: numberAsText(number),
-          plural: null,
-          reduplicationCount: 1,
-          emphasis: wordUnit.emphasis != null,
-          perspective: "third",
-          adjectiveName: null,
-        }));
+        .map((number): WordUnitTranslation => {
+          const noun = numberAsText(number);
+          return {
+            type: "noun",
+            determiners: [],
+            adjectives: [],
+            singular: {
+              subject: noun,
+              object: noun,
+            },
+            plural: null,
+            reduplicationCount: 1,
+            wordEmphasis: wordUnit.emphasis != null,
+            perspective: "third",
+            adjectiveName: null,
+            postCompound: null,
+            prepositions: [],
+            phraseEmphasis: false,
+          };
+        });
     case "x ala x":
       return IterableResult.errors([new TranslationTodoError("x ala x")]);
     case "simple":
@@ -137,30 +148,6 @@ export function wordUnit(
         emphasis: wordUnit.emphasis,
       });
     }
-  }
-}
-export function fromSimpleDefinition(
-  wordUnit: TokiPona.WordUnit,
-  mapper: (definition: Definition) => null | string,
-): IterableResult<English.Word> {
-  switch (wordUnit.type) {
-    case "simple":
-    case "reduplication":
-      return IterableResult.fromArray(
-        dictionary.get(wordUnit.word)!.definitions,
-      )
-        .filterMap(mapper)
-        .map((useWord) =>
-          word({
-            word: useWord,
-            reduplicationCount: getReduplicationCount(wordUnit),
-            emphasis: wordUnit.emphasis != null,
-          })
-        );
-    case "number":
-      return IterableResult.empty();
-    case "x ala x":
-      return IterableResult.errors([new TranslationTodoError("x ala x")]);
   }
 }
 export function getReduplicationCount(wordUnit: TokiPona.WordUnit): number {
