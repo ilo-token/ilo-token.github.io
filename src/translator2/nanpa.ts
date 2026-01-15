@@ -4,6 +4,7 @@ import * as English from "./ast.ts";
 import { phrase } from "./phrase.ts";
 import { throwError } from "../misc/misc.ts";
 import { FilteredError } from "./error.ts";
+import { adverbialIsNone } from "./modifier.ts";
 
 export function nanpa(
   nanpa: TokiPona.Nanpa,
@@ -12,14 +13,15 @@ export function nanpa(
     phrase: nanpa.phrase,
     includeGerund: true,
   })
-    .map((phrase): English.SimpleNounPhrase =>
+    .filterMap((phrase): null | English.SimpleNounPhrase =>
       phrase.type !== "noun"
         ? throwError(
           new FilteredError(
             `${phrase.type} within "position X" phrase`,
           ),
         )
-        : {
+        : adverbialIsNone(phrase.adverbialModifier)
+        ? {
           determiners: [],
           adjectives: [],
           singular: { subject: "position", object: "position" },
@@ -32,5 +34,6 @@ export function nanpa(
           prepositions: [],
           phraseEmphasis: false,
         }
+        : null
     );
 }

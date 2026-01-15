@@ -2,7 +2,11 @@ import * as English from "./ast.ts";
 import { noEmphasis, word } from "./word.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { IterableResult } from "../compound.ts";
-import { adjectivalIsNone, multipleModifiers } from "./modifier.ts";
+import {
+  adjectivalIsNone,
+  adverbialIsNone,
+  multipleModifiers,
+} from "./modifier.ts";
 import { throwError } from "../misc/misc.ts";
 import { FilteredError, TranslationTodoError } from "./error.ts";
 import { multiplePhrases } from "./phrase.ts";
@@ -32,9 +36,9 @@ export function preposition(
       includeGerund: true,
       andParticle: null,
     })
-      .map((phrases) =>
+      .filterMap((phrases) =>
         phrases.type === "noun"
-          ? phrases.noun
+          ? adverbialIsNone(phrases.adverbialModifier) ? phrases.noun : null
           : throwError(new FilteredError(`${phrases.type} as indirect object`))
       ),
   )

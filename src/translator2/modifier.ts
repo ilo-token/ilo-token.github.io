@@ -56,6 +56,9 @@ export function adjectivalIsNone(modifier: AdjectivalModifier): boolean {
     modifier.determiners.length === 0 && modifier.adjectives.length === 0 &&
     modifier.name == null && modifier.ofPhrase.length === 0;
 }
+export function adverbialIsNone(modifier: AdverbialModifier): boolean {
+  return modifier.adverbs.length === 0 && modifier.inWayPhrase == null;
+}
 function defaultModifier(wordUnit: TokiPona.WordUnit) {
   const emphasis = wordUnit.emphasis != null;
   switch (wordUnit.type) {
@@ -170,7 +173,8 @@ function pi(
   })
     .filter((modifier) =>
       modifier.type !== "verb" &&
-      (modifier.type !== "adjective" || modifier.inWayPhrase == null)
+      (modifier.type !== "adjective" || modifier.inWayPhrase == null) &&
+      (modifier.type !== "noun" || adverbialIsNone(modifier.adverbialModifier))
     ) as IterableResult<
       PhraseTranslation & { type: Exclude<PhraseTranslation["type"], "verb"> }
     >;
