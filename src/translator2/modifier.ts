@@ -45,7 +45,7 @@ export type AdjectivalModifier = Readonly<{
 }>;
 export type AdverbialModifier = Readonly<{
   adverbs: ReadonlyArray<English.Adverb>;
-  inWayPhrase: null | English.NounPhrase;
+  inWayPhrase: null | English.AdjectivePhrase;
 }>;
 export type MultipleModifierTranslation = Readonly<{
   adjectival: AdjectivalModifier;
@@ -260,25 +260,9 @@ function adverbialModifier(
     raw.adjectives.length <= 1 &&
     raw.names.length === 0
   ) {
-    const inWayPhrase: null | English.NounPhrase = raw.adjectives.length > 0
-      ? {
-        type: "simple",
-        determiners: [],
-        adjectives: raw.adjectives,
-        singular: { subject: "way", object: "way" },
-        plural: null,
-        reduplicationCount: 1,
-        wordEmphasis: false,
-        perspective: "third",
-        adjectiveName: null,
-        postCompound: null,
-        prepositions: [],
-        phraseEmphasis: false,
-      }
-      : null;
     return {
       adverbs: raw.adverbs,
-      inWayPhrase,
+      inWayPhrase: raw.adjectives.length > 0 ? raw.adjectives[0] : null,
     };
   } else {
     return null;

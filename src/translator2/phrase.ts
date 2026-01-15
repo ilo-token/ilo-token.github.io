@@ -1,5 +1,5 @@
 import * as English from "./ast.ts";
-import { AdjectiveWithInWay } from "./adjective.ts";
+import { addWay, AdjectiveWithInWay } from "./adjective.ts";
 import { adjectivalIsNone, AdjectivalModifier } from "./modifier.ts";
 import { ExhaustedError, FilteredError } from "./error.ts";
 import { mapNullable, nullableAsArray } from "../misc/misc.ts";
@@ -126,7 +126,9 @@ function verbPhrase(
   const prepositions = [
     ...verb.prepositions,
     ...nullableAsArray(modifier.inWayPhrase)
-      .map((object) => nounAsPreposition(object, "in")),
+      .map((object) =>
+        nounAsPreposition({ ...addWay(object), type: "simple" }, "in")
+      ),
   ];
   const adverbs = modifier.adverbs.toReversed();
   return {
@@ -332,7 +334,7 @@ export function phraseAsVerb(
     case "noun":
     case "adjective": {
       let subjectComplement: English.Complement;
-      let inWayPhrase: null | English.NounPhrase;
+      let inWayPhrase: null | English.AdjectivePhrase;
       switch (phrase.type) {
         case "noun": {
           inWayPhrase = null;
@@ -372,7 +374,9 @@ export function phraseAsVerb(
         object: null,
         objectComplement: null,
         prepositions: nullableAsArray(inWayPhrase)
-          .map((noun) => nounAsPreposition(noun, "in")),
+          .map((adjective) =>
+            nounAsPreposition({ ...addWay(adjective), type: "simple" }, "in")
+          ),
         forObject: false,
         predicateType: null,
         emphasis: false,

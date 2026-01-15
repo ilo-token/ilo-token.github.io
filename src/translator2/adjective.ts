@@ -8,8 +8,7 @@ import { noEmphasis, word } from "./word.ts";
 
 export type AdjectiveWithInWay = Readonly<{
   adjective: English.AdjectivePhrase;
-  // TODO: this can simply be an adjective instead
-  inWayPhrase: null | English.NounPhrase;
+  inWayPhrase: null | English.AdjectivePhrase;
 }>;
 function so(emphasis: null | TokiPona.Emphasis) {
   if (emphasis == null) {
@@ -86,4 +85,21 @@ export function compoundAdjective(
       new UntranslatableError("reduplication", "compound adjective"),
     ]);
   }
+}
+export function addWay(
+  adjective: English.AdjectivePhrase,
+): English.SimpleNounPhrase {
+  return {
+    determiners: [],
+    adjectives: [adjective],
+    singular: { subject: "way", object: "way" },
+    plural: null,
+    reduplicationCount: 1,
+    wordEmphasis: false,
+    perspective: "third",
+    adjectiveName: null,
+    postCompound: null,
+    prepositions: [],
+    phraseEmphasis: false,
+  };
 }
