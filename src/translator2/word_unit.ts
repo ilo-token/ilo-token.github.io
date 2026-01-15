@@ -15,30 +15,25 @@ export type WordUnitTranslation =
   | Readonly<{ type: "adjective"; adjective: English.AdjectivePhrase }>
   | (Readonly<{ type: "verb" }> & English.SimpleVerbPhrase);
 
+// TODO: filter out gerund and gerund-like on fixer
 function defaultWordUnit(
   options: Readonly<{
     word: string;
     reduplicationCount: number;
     emphasis: null | TokiPona.Emphasis;
-    includeGerund: boolean;
   }>,
 ) {
-  const { word: useWord, reduplicationCount, emphasis, includeGerund } =
-    options;
+  const { word: useWord, reduplicationCount, emphasis } = options;
   return IterableResult.fromArray(dictionary.get(useWord)!.definitions)
     .flatMap((definition) => {
       switch (definition.type) {
         case "noun":
-          if (!includeGerund && definition.gerund) {
-            return IterableResult.empty();
-          } else {
-            return noun({
-              ...options,
-              definition,
-              emphasis: emphasis != null,
-            })
-              .map((noun): WordUnitTranslation => ({ ...noun, type: "noun" }));
-          }
+          return noun({
+            ...options,
+            definition,
+            emphasis: emphasis != null,
+          })
+            .map((noun): WordUnitTranslation => ({ ...noun, type: "noun" }));
         case "personal pronoun":
           return IterableResult.single<WordUnitTranslation>({
             ...pronoun({
@@ -49,15 +44,12 @@ function defaultWordUnit(
             type: "noun",
           });
         case "adjective":
-          if (!includeGerund && definition.gerundLike) {
-            return IterableResult.empty();
-          } else {
-            return adjective({ ...options, definition })
-              .map((adjective): WordUnitTranslation => ({
-                type: "adjective",
-                adjective,
-              }));
-          }
+          return adjective({ ...options, definition })
+            .map((adjective): WordUnitTranslation => ({
+              type: "adjective",
+              adjective,
+            }));
+
         case "compound adjective":
           return compoundAdjective({
             ...options,
@@ -107,12 +99,8 @@ function defaultWordUnit(
     });
 }
 export function wordUnit(
-  options: Readonly<{
-    wordUnit: TokiPona.WordUnit;
-    includeGerund: boolean;
-  }>,
+  wordUnit: TokiPona.WordUnit,
 ): IterableResult<WordUnitTranslation> {
-  const { wordUnit } = options;
   switch (wordUnit.type) {
     case "number":
       return number(wordUnit.words)
@@ -134,6 +122,7 @@ export function wordUnit(
             postCompound: null,
             prepositions: [],
             phraseEmphasis: false,
+            gerund: false,
           };
         });
     case "x ala x":
@@ -142,7 +131,6 @@ export function wordUnit(
     case "reduplication": {
       const reduplicationCount = getReduplicationCount(wordUnit);
       return defaultWordUnit({
-        ...options,
         word: wordUnit.word,
         reduplicationCount,
         emphasis: wordUnit.emphasis,

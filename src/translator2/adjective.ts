@@ -56,6 +56,7 @@ export function adjective(
         emphasis,
       }),
       emphasis: false,
+      gerundLike: definition.gerundLike,
     }));
 }
 export function compoundAdjective(
@@ -101,5 +102,6 @@ export function addWay(
     postCompound: null,
     prepositions: [],
     phraseEmphasis: false,
+    gerund: false,
   };
 }

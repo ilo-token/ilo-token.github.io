@@ -22,5 +22,6 @@ export function pronoun(
     prepositions: [],
     adjectiveName: null,
     phraseEmphasis: false,
+    gerund: false,
   };
 }

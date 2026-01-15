@@ -24,6 +24,7 @@ export type SimpleNounPhrase =
     postCompound: null | NounPhrase;
     prepositions: ReadonlyArray<Preposition>;
     phraseEmphasis: boolean;
+    gerund: boolean;
   }>;
 export type NounPhrase =
   | (SimpleNounPhrase & Readonly<{ type: "simple" }>)
@@ -39,6 +40,7 @@ export type AdjectivePhrase =
     adverbs: ReadonlyArray<Adverb>;
     adjective: Word;
     emphasis: boolean;
+    gerundLike: boolean;
   }>
   | Readonly<{
     type: "compound";

@@ -33,6 +33,7 @@ export function nanpa(
           adjectiveName: null,
           prepositions: [],
           phraseEmphasis: false,
+          gerund: false,
         }
         : null
     );

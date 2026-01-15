@@ -154,7 +154,7 @@ function defaultPhrase(
   const { phrase } = options;
   const emphasis = phrase.emphasis != null;
   return IterableResult.combine(
-    wordUnit({ ...options, wordUnit: phrase.headWord }),
+    wordUnit(phrase.headWord),
     multipleModifiers(phrase.modifiers),
   )
     .flatMap(([headWord, modifier]) => {
@@ -238,10 +238,7 @@ function preverb(
 ): IterableResult<English.SimpleVerbPhrase> {
   const emphasis = preverb.emphasis != null;
   const verb = IterableResult.combine(
-    wordUnit({
-      wordUnit: preverb.preverb,
-      includeGerund: false,
-    }),
+    wordUnit(preverb.preverb),
     multipleModifiers(preverb.modifiers),
   )
     .filterMap(([verb, modifier]) =>
