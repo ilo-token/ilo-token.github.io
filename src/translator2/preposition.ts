@@ -2,7 +2,7 @@ import * as English from "./ast.ts";
 import { noEmphasis, word } from "./word.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { IterableResult } from "../compound.ts";
-import { multipleModifiers } from "./modifier.ts";
+import { adjectivalIsNone, multipleModifiers } from "./modifier.ts";
 import { throwError } from "../misc/misc.ts";
 import { FilteredError, TranslationTodoError } from "./error.ts";
 import { multiplePhrases } from "./phrase.ts";
@@ -16,13 +16,15 @@ export function preposition(
     prepositionAsWord(preposition.preposition),
     multipleModifiers(preposition.modifiers)
       .map((modifier) =>
-        modifier.type === "adverbial"
-          ? (modifier.inWayPhrase == null ? modifier.adverbs : throwError(
-            new FilteredError(
-              '"in [adjective] way" prepositional phrase modifying ' +
-                "preposition",
-            ),
-          ))
+        adjectivalIsNone(modifier.adjectival)
+          ? (modifier.adverbial.inWayPhrase == null
+            ? modifier.adverbial.adverbs
+            : throwError(
+              new FilteredError(
+                '"in [adjective] way" prepositional phrase modifying ' +
+                  "preposition",
+              ),
+            ))
           : throwError(new FilteredError("adjectives modifying preposition"))
       ),
     multiplePhrases({

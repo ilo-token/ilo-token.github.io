@@ -1,6 +1,6 @@
 import * as English from "./ast.ts";
 import { AdjectiveWithInWay } from "./adjective.ts";
-import { AdjectivalModifier } from "./modifier.ts";
+import { adjectivalIsNone, AdjectivalModifier } from "./modifier.ts";
 import { ExhaustedError, FilteredError } from "./error.ts";
 import { mapNullable, nullableAsArray } from "../misc/misc.ts";
 import { nounAsPreposition } from "./preposition.ts";
@@ -12,9 +12,14 @@ import { multipleModifiers } from "./modifier.ts";
 import * as Composer from "../parser/composer.ts";
 import { CONJUNCTION } from "./misc.ts";
 import { preposition } from "./preposition.ts";
+import { equal } from "@std/assert/equal";
 
 export type PhraseTranslation =
-  | Readonly<{ type: "noun"; noun: English.NounPhrase }>
+  | Readonly<{
+    type: "noun";
+    noun: English.NounPhrase;
+    adverbialModifier: AdverbialModifier;
+  }>
   | (Readonly<{ type: "adjective" }> & AdjectiveWithInWay)
   | Readonly<{ type: "verb"; verb: English.VerbPhrase }>;
 
@@ -151,33 +156,44 @@ function defaultPhrase(
     multipleModifiers(phrase.modifiers),
   )
     .flatMap(([headWord, modifier]) => {
-      if (headWord.type === "noun" && modifier.type === "adjectival") {
+      if (headWord.type === "noun") {
         return IterableResult.fromArray(
-          nullableAsArray(nounPhrase({ emphasis, noun: headWord, modifier })),
+          nullableAsArray(
+            nounPhrase({
+              emphasis,
+              noun: headWord,
+              modifier: modifier.adjectival,
+            }),
+          ),
         )
           .map((noun): PhraseTranslation => ({
             type: "noun",
             noun: { ...noun, type: "simple" },
+            adverbialModifier: modifier.adverbial,
           }));
       } else if (
-        headWord.type === "adjective" && modifier.type === "adverbial"
+        headWord.type === "adjective" && adjectivalIsNone(modifier.adjectival)
       ) {
         return IterableResult.single<PhraseTranslation>({
           ...adjectivePhrase({
             emphasis,
             adjective: headWord.adjective,
-            modifier,
+            modifier: modifier.adverbial,
           }),
           type: "adjective",
         });
       } else if (
-        headWord.type === "verb" && modifier.type === "adverbial"
+        headWord.type === "verb" && adjectivalIsNone(modifier.adjectival)
       ) {
         return IterableResult.from(() =>
           IterableResult.single<PhraseTranslation>({
             type: "verb",
             verb: {
-              ...verbPhrase({ emphasis, verb: headWord, modifier }),
+              ...verbPhrase({
+                emphasis,
+                verb: headWord,
+                modifier: modifier.adverbial,
+              }),
               type: "simple",
             },
           })
@@ -227,8 +243,8 @@ function preverb(
     multipleModifiers(preverb.modifiers),
   )
     .filterMap(([verb, modifier]) =>
-      verb.type === "verb" && modifier.type === "adverbial"
-        ? verbPhrase({ verb, modifier, emphasis: false })
+      verb.type === "verb" && adjectivalIsNone(modifier.adjectival)
+        ? verbPhrase({ verb, modifier: modifier.adverbial, emphasis: false })
         : null
     );
   return IterableResult.combine(
@@ -397,15 +413,24 @@ export function multiplePhrases(
             );
           }
           if (phrase.every((phrase) => phrase.type === "noun")) {
-            return {
-              type: "noun",
-              // TODO: flatten compound nouns on the grammar fixer
-              noun: {
-                type: "compound",
-                conjunction,
-                nouns: phrase.map(({ noun }) => noun),
-              },
-            };
+            const firstAdverbial = phrase[0].adverbialModifier;
+            const allEqual = phrase.slice(1).every((phrase) =>
+              equal(phrase.adverbialModifier, firstAdverbial)
+            );
+            if (allEqual) {
+              return {
+                type: "noun",
+                // TODO: flatten compound nouns on the grammar fixer
+                noun: {
+                  type: "compound",
+                  conjunction,
+                  nouns: phrase.map(({ noun }) => noun),
+                },
+                adverbialModifier: firstAdverbial,
+              };
+            } else {
+              return null;
+            }
           } else if (phrase.every((phrase) => phrase.type === "adjective")) {
             if (andParticle === "en" && conjunction === "and") {
               return null;

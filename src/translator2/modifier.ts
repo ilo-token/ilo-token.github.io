@@ -24,6 +24,16 @@ export type ModifierTranslation =
   | Readonly<{ type: "determiner"; determiner: English.Determiner }>
   | Readonly<{ type: "adverb"; adverb: English.Adverb }>
   | Readonly<{ type: "name"; name: string }>;
+type RawMultipleModifierTranslation = Readonly<{
+  nounPrepositions: ReadonlyArray<
+    Readonly<{ noun: English.NounPhrase; preposition: string }>
+  >;
+  determiners: ReadonlyArray<English.Determiner>;
+  adjectives: ReadonlyArray<English.AdjectivePhrase>;
+  names: ReadonlyArray<string>;
+  nouns: ReadonlyArray<English.NounPhrase>;
+  adverbs: ReadonlyArray<English.Adverb>;
+}>;
 export type AdjectivalModifier = Readonly<{
   nounPreposition:
     | null
@@ -37,9 +47,15 @@ export type AdverbialModifier = Readonly<{
   adverbs: ReadonlyArray<English.Adverb>;
   inWayPhrase: null | English.NounPhrase;
 }>;
-export type MultipleModifierTranslation =
-  | (Readonly<{ type: "adjectival" }> & AdjectivalModifier)
-  | (Readonly<{ type: "adverbial" }> & AdverbialModifier);
+export type MultipleModifierTranslation = Readonly<{
+  adjectival: AdjectivalModifier;
+  adverbial: AdverbialModifier;
+}>;
+export function adjectivalIsNone(modifier: AdjectivalModifier): boolean {
+  return modifier.nounPreposition == null &&
+    modifier.determiners.length === 0 && modifier.adjectives.length === 0 &&
+    modifier.name == null && modifier.ofPhrase.length === 0;
+}
 function defaultModifier(wordUnit: TokiPona.WordUnit) {
   const emphasis = wordUnit.emphasis != null;
   switch (wordUnit.type) {
@@ -178,86 +194,128 @@ function modifier(modifier: TokiPona.Modifier) {
         }));
   }
 }
+function rawMultipleModifier(
+  modifiers: ReadonlyArray<ModifierTranslation>,
+): RawMultipleModifierTranslation {
+  const nouns = modifiers
+    .flatMap((modifier) => modifier.type === "noun" ? [modifier.noun] : []);
+
+  const nounPrepositions = modifiers
+    .filter(({ type }) => type === "noun preposition") as ReadonlyArray<
+      ModifierTranslation & { type: "noun preposition" }
+    >;
+
+  const determiners = modifiers.flatMap((modifier) =>
+    modifier.type === "determiner" ? [modifier.determiner] : []
+  );
+
+  const adjectives = modifiers.flatMap((modifier) =>
+    modifier.type === "adjective" ? [modifier.adjective] : []
+  );
+
+  const adverbs = modifiers.flatMap((modifier) =>
+    modifier.type === "adverb" ? [modifier.adverb] : []
+  );
+
+  const names = modifiers
+    .flatMap((modifier) => modifier.type === "name" ? [modifier.name] : []);
+
+  return {
+    nouns,
+    nounPrepositions,
+    determiners,
+    adjectives,
+    adverbs,
+    names,
+  };
+}
+function adjectivalModifier(
+  modifiers: ReadonlyArray<ModifierTranslation>,
+): null | AdjectivalModifier {
+  const raw = rawMultipleModifier(modifiers);
+  if (
+    raw.nounPrepositions.length <= 1 &&
+    raw.adverbs.length === 0 &&
+    raw.names.length <= 1
+  ) {
+    return {
+      nounPreposition: raw.nounPrepositions[0] ?? null,
+      determiners: raw.determiners,
+      adjectives: raw.adjectives,
+      name: raw.names[0] ?? null,
+      ofPhrase: raw.nouns,
+    };
+  } else {
+    return null;
+  }
+}
+function adverbialModifier(
+  modifiers: ReadonlyArray<ModifierTranslation>,
+): null | AdverbialModifier {
+  const raw = rawMultipleModifier(modifiers);
+  if (
+    raw.nouns.length === 0 &&
+    raw.nounPrepositions.length === 0 &&
+    raw.determiners.length === 0 &&
+    raw.adjectives.length <= 1 &&
+    raw.names.length === 0
+  ) {
+    const inWayPhrase: null | English.NounPhrase = raw.adjectives.length > 0
+      ? {
+        type: "simple",
+        determiners: [],
+        adjectives: raw.adjectives,
+        singular: { subject: "way", object: "way" },
+        plural: null,
+        reduplicationCount: 1,
+        wordEmphasis: false,
+        perspective: "third",
+        adjectiveName: null,
+        postCompound: null,
+        prepositions: [],
+        phraseEmphasis: false,
+      }
+      : null;
+    return {
+      adverbs: raw.adverbs,
+      inWayPhrase,
+    };
+  } else {
+    return null;
+  }
+}
 export function multipleModifiers(
   modifiers: ReadonlyArray<TokiPona.Modifier>,
 ): IterableResult<MultipleModifierTranslation> {
   return IterableResult.combine(...modifiers.map(modifier))
-    .flatMap((modifiers) => {
-      const nouns = modifiers
-        .flatMap((modifier) => modifier.type === "noun" ? [modifier.noun] : []);
-
-      const nounPrepositions = modifiers
-        .filter(({ type }) => type === "noun preposition") as ReadonlyArray<
-          ModifierTranslation & { type: "noun preposition" }
-        >;
-
-      const determiners = modifiers.flatMap((modifier) =>
-        modifier.type === "determiner" ? [modifier.determiner] : []
-      );
-
-      const adjectives = modifiers.flatMap((modifier) =>
-        modifier.type === "adjective" ? [modifier.adjective] : []
-      );
-
-      const adverbs = modifiers.flatMap((modifier) =>
-        modifier.type === "adverb" ? [modifier.adverb] : []
-      );
-
-      const names = modifiers
-        .flatMap((modifier) => modifier.type === "name" ? [modifier.name] : []);
-
-      let adjectival: IterableResult<MultipleModifierTranslation>;
-      if (
-        nounPrepositions.length <= 1 &&
-        adverbs.length === 0 &&
-        names.length <= 1
-      ) {
-        adjectival = IterableResult.single<MultipleModifierTranslation>({
-          type: "adjectival",
-          nounPreposition: nounPrepositions[0] ?? null,
-          determiners,
-          adjectives,
-          name: names[0] ?? null,
-          ofPhrase: nouns,
-        });
+    .flatMap(combinationOnTwo)
+    .filterMap(([forAdjectival, forAdverbial]) => {
+      const adjectival = adjectivalModifier(forAdjectival);
+      const adverbial = adverbialModifier(forAdverbial);
+      if (adjectival == null || adverbial == null) {
+        return null;
       } else {
-        adjectival = IterableResult.empty();
+        return { adjectival, adverbial };
       }
-      let adverbial: IterableResult<MultipleModifierTranslation>;
-      if (
-        nouns.length === 0 &&
-        nounPrepositions.length === 0 &&
-        determiners.length === 0 &&
-        adjectives.length <= 1 &&
-        names.length === 0
-      ) {
-        const inWayPhrase: null | English.NounPhrase = adjectives.length > 0
-          ? {
-            type: "simple",
-            determiners: [],
-            adjectives,
-            singular: { subject: "way", object: "way" },
-            plural: null,
-            reduplicationCount: 1,
-            wordEmphasis: false,
-            perspective: "third",
-            adjectiveName: null,
-            postCompound: null,
-            prepositions: [],
-            phraseEmphasis: false,
-          }
-          : null;
-        adverbial = IterableResult.single<MultipleModifierTranslation>({
-          type: "adverbial",
-          adverbs,
-          inWayPhrase,
-        });
-      } else {
-        adverbial = IterableResult.empty();
-      }
-      return IterableResult.concat(adjectival, adverbial);
     })
     .addErrorWhenNone(() =>
       new ExhaustedError(modifiers.map(Composer.modifier).join(" "))
     );
+}
+function combinationOnTwo<T>(
+  array: ReadonlyArray<T>,
+): IterableResult<readonly [ReadonlyArray<T>, ReadonlyArray<T>]> {
+  if (array.length == 0) {
+    return IterableResult.single([[], []]);
+  } else {
+    const init = array.slice(0, array.length - 1);
+    const last = array[array.length - 1];
+    return combinationOnTwo(init)
+      .flatMap(([left, right]) =>
+        IterableResult.fromArray([
+          [[...left, last], right],
+          [left, [...right, last]],
+        ])
+      );
+  }
 }
