@@ -52,6 +52,7 @@ export class IterableResult<T> {
     const peeked = this[Symbol.iterator]().next();
     return peeked.done || peeked.value.type === "error";
   }
+  // TODO: use tagged union instead
   collect(): Readonly<
     { array: ReadonlyArray<T>; errors: ReadonlyArray<ResultError> }
   > {
