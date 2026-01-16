@@ -7,18 +7,20 @@ NOTE: Before publishing:
 - update this very document, don't forget to add release date
 -->
 
-<!--
 <details>
 
 <summary>On development changelog</summary>
 
-## 0.7.1 (On development)
+## 0.7.2 (On development)
 
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
 
+- Remove X ala X partial parsing setting. It is now always turned on.
+- Warn user when X ala X is used. It is still not implemented.
+- Link related projects.
+
 </details>
--->
 
 ## 0.7.1
 
