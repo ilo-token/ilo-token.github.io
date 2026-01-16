@@ -1,5 +1,4 @@
 import { sumOf } from "@std/collections/sum-of";
-import { nullableAsArray } from "../misc/misc.ts";
 import { IterableResult } from "../compound.ts";
 import { dictionary } from "../dictionary.ts";
 import { FilteredError } from "./error.ts";
@@ -90,7 +89,7 @@ function combineNumbers(numbers: ReadonlyArray<number>) {
   if (numbers.length === 1 || !numbers.includes(0)) {
     return IterableResult.concat(
       IterableResult.from(() =>
-        IterableResult.fromArray(nullableAsArray(nasinNanpaPona(numbers)))
+        IterableResult.fromNullable(nasinNanpaPona(numbers))
       ),
       IterableResult.from(() => IterableResult.single(regularNumber(numbers))),
     );

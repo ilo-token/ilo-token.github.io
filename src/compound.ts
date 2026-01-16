@@ -33,6 +33,13 @@ export class IterableResult<T> {
       }
     });
   }
+  static fromNullable<T>(value?: T): IterableResult<NonNullable<T>> {
+    return new IterableResult(function* () {
+      if (value != null) {
+        yield { type: "value", value };
+      }
+    });
+  }
   static single<T>(value: T): IterableResult<T> {
     return new IterableResult(function* () {
       yield { type: "value", value };

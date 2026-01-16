@@ -68,7 +68,7 @@ export function fromNounForms(
           noun = plural;
           break;
       }
-      return IterableResult.fromArray(nullableAsArray(noun))
+      return IterableResult.fromNullable(noun)
         .map((noun): NounQuantity => ({ noun, quantity: determinerNumber }));
     }
     case "both":

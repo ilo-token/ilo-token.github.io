@@ -246,9 +246,7 @@ export function contextClause(
       ]);
     default:
       return IterableResult.concat(
-        IterableResult.fromArray(
-          nullableAsArray(unwrapSingleWord(contextClause)),
-        )
+        IterableResult.fromNullable(unwrapSingleWord(contextClause))
           .flatMap((wordUnit) =>
             fromSimpleDefinition(
               wordUnit,

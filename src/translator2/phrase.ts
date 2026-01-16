@@ -159,14 +159,12 @@ function defaultPhrase(
   )
     .flatMap(([headWord, modifier]) => {
       if (headWord.type === "noun") {
-        return IterableResult.fromArray(
-          nullableAsArray(
-            nounPhrase({
-              emphasis,
-              noun: headWord,
-              modifier: modifier.adjectival,
-            }),
-          ),
+        return IterableResult.fromNullable(
+          nounPhrase({
+            emphasis,
+            noun: headWord,
+            modifier: modifier.adjectival,
+          }),
         )
           .map((noun): PhraseTranslation => ({
             type: "noun",

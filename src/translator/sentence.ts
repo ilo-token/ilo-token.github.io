@@ -139,9 +139,7 @@ function sentence(
       const interjectionClause: IterableResult<English.Clause> =
         contextClauses.length === 0 &&
           sentence.startingParticle == null
-          ? IterableResult.fromArray(
-            nullableAsArray(unwrapSingleWord(sentence.finalClause)),
-          )
+          ? IterableResult.fromNullable(unwrapSingleWord(sentence.finalClause))
             .flatMap((wordUnit) =>
               fromSimpleDefinition(
                 wordUnit,
