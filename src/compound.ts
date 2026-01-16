@@ -26,12 +26,16 @@ export class IterableResult<T> {
     yield* this.#generator;
   }
   peek(): null | Result<T> {
-    const peeked = this.#generator.next();
-    if (peeked.done) {
-      return null;
+    if (this.#peeked != null) {
+      return this.#peeked
     } else {
-      this.#peeked = peeked.value;
-      return peeked.value;
+      const peeked = this.#generator.next();
+      if (peeked.done) {
+        return null;
+      } else {
+        this.#peeked = peeked.value;
+        return peeked.value;
+      }
     }
   }
   static fromArray<T>(array: ReadonlyArray<T>): IterableResult<T> {
