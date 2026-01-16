@@ -7,123 +7,33 @@ export class TodoError extends ResultError {
     super(`${functionality} is not yet implemented`);
   }
 }
-export class ArrayResult<T> {
-  constructor(array?: ReadonlyArray<T>);
-  constructor(array: undefined, errors: ReadonlyArray<ResultError>);
-  constructor(
-    public readonly array: ReadonlyArray<T> = [],
-    public readonly errors: ReadonlyArray<ResultError> = [],
-  ) {}
-  static errors(errors: ReadonlyArray<ResultError>): ArrayResult<never> {
-    return new ArrayResult(undefined, errors);
-  }
-  static empty(): ArrayResult<never> {
-    return new ArrayResult();
-  }
-  isError(): boolean {
-    return this.array.length === 0;
-  }
-  unwrap(): ReadonlyArray<T> {
-    if (this.isError()) {
-      throw new AggregateError(this.errors);
-    } else {
-      return this.array;
-    }
-  }
-  filter(mapper: (value: T) => boolean): ArrayResult<T> {
-    return this.flatMap((value) =>
-      mapper(value) ? new ArrayResult([value]) : ArrayResult.empty()
-    );
-  }
-  map<U>(mapper: (value: T) => U): ArrayResult<U> {
-    return this.flatMap((value) => new ArrayResult([mapper(value)]));
-  }
-  flatMap<U>(mapper: (value: T) => ArrayResult<U>): ArrayResult<U> {
-    if (this.isError()) {
-      return this as unknown as ArrayResult<U>;
-    } else {
-      return this.array.reduce<ArrayResult<U>>(
-        (rest, value) =>
-          ArrayResult.concat(rest, ArrayResult.from(() => mapper(value))),
-        ArrayResult.empty(),
-      );
-    }
-  }
-  // filterMap<U>(mapper: (value: T) => U): ArrayResult<NonNullable<U>> {
-  //   return this.flatMap((value) =>
-  //     new ArrayResult(nullableAsArray(mapper(value)))
-  //   );
-  // }
-  sort(comparer: (left: T, right: T) => number): ArrayResult<T> {
-    if (this.isError()) {
-      return this;
-    } else {
-      return new ArrayResult(this.array.toSorted(comparer));
-    }
-  }
-  // sortBy(mapper: (value: T) => number): ArrayResult<T> {
-  //   return this.sort((left, right) => mapper(left) - mapper(right));
-  // }
-  // addErrorWhenNone(error: () => ResultError): ArrayResult<T> {
-  //   if (this.isError() && this.errors.length === 0) {
-  //     return ArrayResult.errors([error()]);
-  //   } else {
-  //     return this;
-  //   }
-  // }
-  asIterableResult(): IterableResult<T> {
-    if (this.isError()) {
-      return IterableResult.errors(this.errors);
-    } else {
-      return IterableResult.fromArray(this.unwrap());
-    }
-  }
-  static concat<T>(
-    ...arrayResults: ReadonlyArray<ArrayResult<T>>
-  ): ArrayResult<T> {
-    return arrayResults.reduce(
-      (left, right) =>
-        left.isError() && right.isError()
-          ? ArrayResult.errors([...left.errors, ...right.errors])
-          : new ArrayResult([...left.array, ...right.array]),
-      ArrayResult.empty(),
-    );
-  }
-  // static combine<T extends ReadonlyArray<unknown>>(
-  //   ...arrayResults:
-  //     & Readonly<{ [I in keyof T]: ArrayResult<T[I]> }>
-  //     & Readonly<{ length: T["length"] }>
-  // ): ArrayResult<T> {
-  //   // we resorted to using `any` types here, make sure it works properly
-  //   return arrayResults.reduce(
-  //     (left: ArrayResult<any>, right) => {
-  //       if (left.isError() && right.isError()) {
-  //         return ArrayResult.concat(left, right);
-  //       } else if (left.isError()) {
-  //         return left;
-  //       } else if (right.isError()) {
-  //         return right;
-  //       } else {
-  //         return left.flatMap((left) => right.map((right) => [...left, right]));
-  //       }
-  //     },
-  //     new ArrayResult<any>([[]]),
-  //   ) as ArrayResult<T>;
-  // }
-  static from<T>(arrayResult: () => ArrayResult<T>): ArrayResult<T> {
-    try {
-      return arrayResult();
-    } catch (error) {
-      return ArrayResult.errors(extractResultError(error));
-    }
-  }
-}
 export type Result<T> =
   | Readonly<{ type: "value"; value: T }>
   | Readonly<{ type: "error"; error: ResultError }>;
 
 export class IterableResult<T> {
-  constructor(public readonly iterable: () => Generator<Result<T>>) {}
+  #peeked: null | Result<T> = null;
+  #generator: Generator<Result<T>>;
+  constructor(iterable: () => Generator<Result<T>>) {
+    this.#generator = iterable();
+  }
+  *iterable(): Generator<Result<T>> {
+    if (this.#peeked != null) {
+      const peeked = this.#peeked;
+      this.#peeked = null;
+      yield peeked;
+    }
+    yield* this.#generator;
+  }
+  peek(): null | Result<T> {
+    const peeked = this.#generator.next();
+    if (peeked.done) {
+      return null;
+    } else {
+      this.#peeked = peeked.value;
+      return peeked.value;
+    }
+  }
   static fromArray<T>(array: ReadonlyArray<T>): IterableResult<T> {
     return new IterableResult(function* () {
       for (const value of array) {
@@ -146,7 +56,13 @@ export class IterableResult<T> {
   static empty(): IterableResult<never> {
     return new IterableResult(function* () {});
   }
-  collect(): ReadonlyArray<T> {
+  isError(): boolean {
+    const peeked = this.peek();
+    return peeked == null || peeked.type === "error";
+  }
+  collect(): Readonly<
+    { array: ReadonlyArray<T>; errors: ReadonlyArray<ResultError> }
+  > {
     const array: Array<T> = [];
     const errors: Array<ResultError> = [];
     for (const result of this.iterable()) {
@@ -159,10 +75,14 @@ export class IterableResult<T> {
           break;
       }
     }
-    if (errors.length > 0) {
-      throw new AggregateError(errors);
+    return { array, errors };
+  }
+  unwrapCollect(): ReadonlyArray<T> {
+    const result = this.collect();
+    if (result.errors.length > 0) {
+      throw new AggregateError(result.errors);
     } else {
-      return array;
+      return result.array;
     }
   }
   filter(mapper: (value: T) => boolean): IterableResult<T> {
@@ -201,6 +121,32 @@ export class IterableResult<T> {
         if (!yielded) {
           for (const error of errors) {
             yield { type: "error", error };
+          }
+        }
+      }
+        .bind(this),
+    );
+  }
+  sort(comparer: (left: T, right: T) => number): IterableResult<T> {
+    return new IterableResult(
+      function* (this: IterableResult<T>) {
+        let hasError = false;
+        const array: Array<T> = [];
+        for (const result of this.iterable()) {
+          switch (result.type) {
+            case "value":
+              array.push(result.value);
+              break;
+            case "error":
+              hasError = true;
+              yield result;
+              break;
+          }
+          if (!hasError) {
+            const sorted = array.toSorted(comparer);
+            for (const value of sorted) {
+              yield { type: "value" as const, value };
+            }
           }
         }
       }

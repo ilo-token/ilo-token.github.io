@@ -33,11 +33,11 @@ export async function build(): Promise<boolean> {
   const start = performance.now();
   const text = await Deno.readTextFile(SOURCE);
   const startDictionary = performance.now();
-  const result = dictionaryParser.parse(text);
+  const result = dictionaryParser.parse(text).collect();
   const endDictionary = performance.now();
   let dictionary: Dictionary;
-  if (!result.isError()) {
-    dictionary = result.unwrap()[0];
+  if (result.errors.length === 0) {
+    dictionary = result.array[0];
   } else {
     displayError(text, result.errors);
     return false;

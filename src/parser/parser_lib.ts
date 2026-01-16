@@ -1,10 +1,10 @@
 import { assertGreater } from "@std/assert/greater";
 import { MemoizationCacheResult, memoize } from "@std/cache/memoize";
 import { lazy as lazyEval } from "../misc/misc.ts";
-import { ArrayResult, ResultError } from "../compound.ts";
+import { IterableResult, ResultError } from "../compound.ts";
 
 type ValueLength<T> = Readonly<{ value: T; length: number }>;
-type ParserResult<T> = ArrayResult<ValueLength<T>>;
+type ParserResult<T> = IterableResult<ValueLength<T>>;
 type RawParser<T> = (input: number) => ParserResult<T>;
 type Cache<T> = Map<number, MemoizationCacheResult<ParserResult<T>>>;
 
@@ -21,7 +21,7 @@ export class Parser<T> {
       { cache },
     );
   }
-  parse(source: string): ArrayResult<T> {
+  parse(source: string): IterableResult<T> {
     currentSource = source;
     for (const memo of allCache) {
       const ref = memo.deref();
@@ -122,11 +122,11 @@ export class UnrecognizedError extends PositionedError {
   }
 }
 export function error(error: ResultError): Parser<never> {
-  return new Parser(() => ArrayResult.errors([error]));
+  return new Parser(() => IterableResult.errors([error]));
 }
-export const empty: Parser<never> = new Parser(() => ArrayResult.empty());
+export const empty: Parser<never> = new Parser(() => IterableResult.empty());
 export const nothing: Parser<null> = new Parser(() =>
-  new ArrayResult<ValueLength<null>>([{ value: null, length: 0 }])
+  IterableResult.single<ValueLength<null>>({ value: null, length: 0 })
 );
 export const emptyArray: Parser<ReadonlyArray<never>> = nothing.map(() => []);
 export function lookAhead<T>(parser: Parser<T>): Parser<T> {
@@ -147,7 +147,9 @@ export function choice<T>(
     "`choice` called with less than 2 arguments",
   );
   return new Parser((input) =>
-    new ArrayResult(choices).flatMap((parser) => parser.rawParser(input))
+    IterableResult.fromArray(choices).flatMap((parser) =>
+      parser.rawParser(input)
+    )
   );
 }
 export function choiceOnlyOne<T>(
@@ -163,7 +165,7 @@ export function choiceOnlyOne<T>(
       new Parser((input) => {
         const arrayResult = left.rawParser(input);
         if (arrayResult.isError()) {
-          return ArrayResult.concat(arrayResult, right.rawParser(input));
+          return IterableResult.concat(arrayResult, right.rawParser(input));
         } else {
           return arrayResult;
         }
@@ -252,7 +254,7 @@ function generateError(position: number, expected: string) {
       length = token.length;
     }
   }
-  return ArrayResult.errors([
+  return IterableResult.errors([
     new UnexpectedError(unexpected, expected, { position, length }),
   ]);
 }
@@ -264,10 +266,10 @@ export function matchCapture(
   return new Parser((position) => {
     const match = currentSource.slice(position).match(newRegex);
     if (match != null) {
-      return new ArrayResult<ValueLength<RegExpMatchArray>>([{
+      return IterableResult.single<ValueLength<RegExpMatchArray>>({
         value: match,
         length: match[0].length,
-      }]);
+      });
     } else {
       return generateError(position, description);
     }
@@ -285,30 +287,30 @@ export function matchString(
       currentSource.length - position >= match.length &&
       currentSource.slice(position, position + match.length) === match
     ) {
-      return new ArrayResult<ValueLength<string>>([{
+      return IterableResult.single<ValueLength<string>>({
         value: match,
         length: match.length,
-      }]);
+      });
     } else {
       return generateError(position, description);
     }
   });
 }
 export const allRest: Parser<string> = new Parser((position) =>
-  new ArrayResult<ValueLength<string>>([{
+  IterableResult.single<ValueLength<string>>({
     value: currentSource.slice(position),
     length: currentSource.length - position,
-  }])
+  })
 );
 export const end: Parser<null> = new Parser((position) =>
   position === currentSource.length
-    ? new ArrayResult<ValueLength<null>>([{ value: null, length: 0 }])
+    ? IterableResult.single<ValueLength<null>>({ value: null, length: 0 })
     : generateError(position, "end of text")
 );
 export const notEnd: Parser<null> = new Parser((position) =>
   position < currentSource.length
-    ? new ArrayResult<ValueLength<null>>([{ value: null, length: 0 }])
-    : ArrayResult.errors([
+    ? IterableResult.single<ValueLength<null>>({ value: null, length: 0 })
+    : IterableResult.errors([
       new UnexpectedError(
         "end of text",
         "not end of text",
@@ -379,12 +381,16 @@ export function choiceWithCheck<T>(
     for (const { check, parser } of choices) {
       const result = check.rawParser(position);
       if (result.isError()) {
-        errors.push(...result.errors);
+        for (const error of result.iterable()) {
+          if (error.type === "error") {
+            errors.push(error.error);
+          }
+        }
       } else {
         return parser.rawParser(position);
       }
     }
-    return ArrayResult.errors(errors);
+    return IterableResult.errors(errors);
   });
 }
 export function optionalWithCheck<T>(

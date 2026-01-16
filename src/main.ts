@@ -179,14 +179,14 @@ function main() {
   let lastSavedText = checkLocalStorage()
     ? localStorage.getItem(DICTIONARY_KEY) ?? DEFAULT_CUSTOM_DICTIONARY_MESSAGE
     : customDictionaryTextBox.value;
-  let lastSavedDictionary = dictionaryParser.parse(lastSavedText);
+  let lastSavedDictionary = dictionaryParser.parse(lastSavedText).collect();
 
   // this variable also holds error messages
   let currentDictionary = lastSavedDictionary;
 
   // load custom dictionary
-  if (!currentDictionary.isError()) {
-    loadCustomDictionary(currentDictionary.unwrap()[0]);
+  if (currentDictionary.errors.length === 0) {
+    loadCustomDictionary(currentDictionary.array[0]);
   } else {
     showDictionaryError();
     showMessage(DICTIONARY_LOADING_FAILED_MESSAGE);
@@ -332,8 +332,8 @@ function main() {
   function importWord() {
     const word = importWordTextBox.value.trim();
     if (
-      autoParse() && !currentDictionary.isError() &&
-      currentDictionary.unwrap()[0].has(word)
+      autoParse() && currentDictionary.errors.length === 0 &&
+      currentDictionary.array[0].has(word)
     ) {
       showMessage(WORD_ALREADY_IMPORTED_MESSAGE(word));
     } else {
@@ -377,7 +377,8 @@ function main() {
     tryCloseDictionary();
   });
   function updateDictionary() {
-    currentDictionary = dictionaryParser.parse(customDictionaryTextBox.value);
+    currentDictionary = dictionaryParser.parse(customDictionaryTextBox.value)
+      .collect();
     showDictionaryError();
   }
   function updateIfCanAutoParse() {
@@ -386,10 +387,10 @@ function main() {
     }
   }
   function tryCloseDictionary() {
-    if (!currentDictionary.isError()) {
+    if (currentDictionary.errors.length === 0) {
       lastSavedText = customDictionaryTextBox.value;
       lastSavedDictionary = currentDictionary;
-      loadCustomDictionary(currentDictionary.unwrap()[0]);
+      loadCustomDictionary(currentDictionary.array[0]);
       setIgnoreError(DICTIONARY_KEY, customDictionaryTextBox.value);
       customDictionaryDialogBox.close();
     } else {

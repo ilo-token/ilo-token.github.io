@@ -6,15 +6,15 @@ import { translate } from "./translator.ts";
 import { assert } from "@std/assert/assert";
 
 Deno.test("verb with adverb", () => {
-  const translations = translate("mi toki pona").collect();
+  const translations = translate("mi toki pona").unwrapCollect();
   assertArrayIncludes(translations, ["I nicely communicate"]);
 });
 Deno.test("adjective with adverb", () => {
-  const translations = translate("pona ike").collect();
+  const translations = translate("pona ike").unwrapCollect();
   assertArrayIncludes(translations, ["Badly good"]);
 });
 Deno.test("no ignored adverb with compound adjective", () => {
-  const translations = translate("ona li palisa pona").collect();
+  const translations = translate("ona li palisa pona").unwrapCollect();
   const incorrectTranslations = [
     "They are long and hard",
     "They are hard and long",
@@ -51,7 +51,7 @@ Deno.test("numeral translation", () => {
     "mute ale mute tu tu": 2024,
   }));
   for (const [tokiPona, expected] of NUMBER_TESTS) {
-    const numbers = number(tokiPona.trim().split(" ")).collect();
+    const numbers = number(tokiPona.trim().split(" ")).unwrapCollect();
     assertArrayIncludes(numbers, [expected], `Error at "${tokiPona}"`);
   }
 });

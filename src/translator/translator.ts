@@ -12,7 +12,6 @@ export function translate(tokiPona: string): IterableResult<string> {
   return new IterableResult(function* () {
     const iterableResult = parser
       .parse(tokiPona)
-      .asIterableResult()
       .flatMap(multipleSentences)
       .map(fixMultipleSentences)
       .map(EnglishComposer.multipleSentences);

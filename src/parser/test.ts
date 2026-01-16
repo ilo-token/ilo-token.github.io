@@ -201,7 +201,7 @@ Deno.test("AST all distinct", () => {
     "jan sona li alasa sona e ijo mute",
   ];
   for (const sentence of EXAMPLE_SENTENCES) {
-    const pairs = uniquePairs(parser.parse(sentence).unwrap());
+    const pairs = uniquePairs(parser.parse(sentence).unwrapCollect());
     for (const [a, b] of pairs) {
       assertNotEquals(a, b, `Error at "${sentence}"`);
     }
@@ -226,7 +226,7 @@ Deno.test("parser all error", () => {
   ];
 
   for (const sentence of MALFORMED_SENTENCES) {
-    assertThrows(() => parser.parse(sentence).unwrap());
+    assertThrows(() => parser.parse(sentence).unwrapCollect());
   }
 });
 Deno.test("ucsur have proper length", () => {
@@ -254,17 +254,21 @@ Deno.test("small parser", () => {
     matchString("pona").skip(space),
     match(/a/, '"a"').skip(end),
   );
-  assertEquals(parser.parse("toki pona a").unwrap(), [["toki", "pona", "a"]]);
+  assertEquals(parser.parse("toki pona a").unwrapCollect(), [[
+    "toki",
+    "pona",
+    "a",
+  ]]);
 });
 Deno.test("many", () => {
   const space = match(/\s*/, "space");
   const parser = many(matchString("a").skip(space)).skip(end);
-  assertEquals(parser.parse("a a a").unwrap(), [["a", "a", "a"]]);
+  assertEquals(parser.parse("a a a").unwrapCollect(), [["a", "a", "a"]]);
 });
 Deno.test("all", () => {
   const space = match(/\s*/, "space");
   const parser = all(matchString("a").skip(space)).skip(end);
-  assertEquals(parser.parse("a a a").unwrap(), [["a", "a", "a"]]);
+  assertEquals(parser.parse("a a a").unwrapCollect(), [["a", "a", "a"]]);
 });
 function uniquePairs<T>(array: ReadonlyArray<T>) {
   return array.flatMap((a, i) =>
