@@ -210,7 +210,7 @@ Deno.test("AST all distinct", () => {
     "jan sona li alasa sona e ijo mute",
   ];
   for (const sentence of EXAMPLE_SENTENCES) {
-    const pairs = uniquePairs(parser.parse(sentence).unwrapCollect());
+    const pairs = uniquePairs(parser.parse(sentence).collect());
     for (const [a, b] of pairs) {
       assertNotEquals(a, b, `Error at "${sentence}"`);
     }
@@ -235,7 +235,7 @@ Deno.test("parser all error", () => {
   ];
 
   for (const sentence of MALFORMED_SENTENCES) {
-    assertThrows(() => parser.parse(sentence).unwrapCollect());
+    assertThrows(() => parser.parse(sentence).collect());
   }
 });
 Deno.test("ucsur have proper length", () => {
@@ -263,7 +263,7 @@ Deno.test("small parser", () => {
     matchString("pona").skip(space),
     match(/a/, '"a"').skip(end),
   );
-  assertEquals(parser.parse("toki pona a").unwrapCollect(), [[
+  assertEquals(parser.parse("toki pona a").collect(), [[
     "toki",
     "pona",
     "a",
@@ -272,22 +272,22 @@ Deno.test("small parser", () => {
 Deno.test("many", () => {
   const space = match(/\s*/, "space");
   const parser = many(matchString("a").skip(space)).skip(end);
-  assertEquals(parser.parse("a a a").unwrapCollect(), [["a", "a", "a"]]);
+  assertEquals(parser.parse("a a a").collect(), [["a", "a", "a"]]);
 });
 Deno.test("all", () => {
   const space = match(/\s*/, "space");
   const parser = all(matchString("a").skip(space)).skip(end);
-  assertEquals(parser.parse("a a a").unwrapCollect(), [["a", "a", "a"]]);
+  assertEquals(parser.parse("a a a").collect(), [["a", "a", "a"]]);
 });
 Deno.test("choice", () => {
   const parser = choice(matchString("a"), matchString("b")).skip(end);
-  assertEquals(parser.parse("a").unwrapCollect(), ["a"]);
-  assertEquals(parser.parse("b").unwrapCollect(), ["b"]);
+  assertEquals(parser.parse("a").collect(), ["a"]);
+  assertEquals(parser.parse("b").collect(), ["b"]);
 });
 Deno.test("choiceOnlyOne", () => {
   const parser = choiceOnlyOne(matchString("a"), matchString("b")).skip(end);
-  assertEquals(parser.parse("a").unwrapCollect(), ["a"]);
-  assertEquals(parser.parse("b").unwrapCollect(), ["b"]);
+  assertEquals(parser.parse("a").collect(), ["a"]);
+  assertEquals(parser.parse("b").collect(), ["b"]);
 });
 function uniquePairs<T>(array: ReadonlyArray<T>) {
   return array.flatMap((a, i) =>

@@ -37,7 +37,6 @@ import {
   NounForms,
   VerbAccessory,
 } from "./type.ts";
-import { ResultError } from "../src/compound.ts";
 import { assert } from "@std/assert/assert";
 
 const RESERVED_SYMBOLS = "#()*+/:;<=>@[\\]^`{|}~";
@@ -656,15 +655,8 @@ const dictionaryParser: Parser<Dictionary> = ignore
       );
     }
   });
-export type DictionaryResult =
-  | Readonly<{ type: "dictionary"; dictionary: Dictionary }>
-  | Readonly<{ type: "error"; errors: ReadonlyArray<ResultError> }>;
-export function parseDictionary(dictionary: string): DictionaryResult {
+export function parseDictionary(dictionary: string): Dictionary {
   const result = dictionaryParser.parse(dictionary).collect();
-  if (result.errors.length === 0) {
-    assert(result.array.length === 1);
-    return { type: "dictionary", dictionary: result.array[0] };
-  } else {
-    return { type: "error", errors: result.errors };
-  }
+  assert(result.length === 1);
+  return result[0];
 }

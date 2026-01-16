@@ -1,6 +1,6 @@
 // this code is Deno only
 
-import { ResultError } from "../src/compound.ts";
+import { extractResultError, ResultError } from "../src/compound.ts";
 import { PositionedError } from "../src/parser/parser_lib.ts";
 import { parseDictionary } from "./parser.ts";
 import { Dictionary } from "./type.ts";
@@ -33,17 +33,14 @@ export async function build(): Promise<boolean> {
   const start = performance.now();
   const text = await Deno.readTextFile(SOURCE);
   const startDictionary = performance.now();
-  const result = parseDictionary(text);
-  const endDictionary = performance.now();
   let dictionary: Dictionary;
-  switch (result.type) {
-    case "dictionary":
-      dictionary = result.dictionary;
-      break;
-    case "error":
-      displayError(text, result.errors);
-      return false;
+  try {
+    dictionary = parseDictionary(text);
+  } catch (error) {
+    displayError(text, extractResultError(error));
+    return false;
   }
+  const endDictionary = performance.now();
   await buildWithDictionary(dictionary);
   const end = performance.now();
   const total = Math.floor(end - start);

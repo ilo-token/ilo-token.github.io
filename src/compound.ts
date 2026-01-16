@@ -52,10 +52,7 @@ export class IterableResult<T> {
     const peeked = this[Symbol.iterator]().next();
     return peeked.done || peeked.value.type === "error";
   }
-  // TODO: use tagged union instead
-  collect(): Readonly<
-    { array: ReadonlyArray<T>; errors: ReadonlyArray<ResultError> }
-  > {
+  collect(): ReadonlyArray<T> {
     const array: Array<T> = [];
     const errors: Array<ResultError> = [];
     for (const result of this) {
@@ -68,14 +65,10 @@ export class IterableResult<T> {
           break;
       }
     }
-    return { array, errors };
-  }
-  unwrapCollect(): ReadonlyArray<T> {
-    const result = this.collect();
-    if (result.errors.length > 0) {
-      throw new AggregateError(result.errors);
+    if (errors.length > 0) {
+      throw new AggregateError(errors);
     } else {
-      return result.array;
+      return array;
     }
   }
   filter(mapper: (value: T) => boolean): IterableResult<T> {

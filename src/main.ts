@@ -4,7 +4,7 @@ import BrowserDetector from "browser-dtector";
 import { dictionary } from "../dictionary/dictionary.ts";
 import { parseDictionary } from "../dictionary/parser.ts";
 import PROJECT_DATA from "../project_data.json" with { type: "json" };
-import { Result, ResultError } from "./compound.ts";
+import { extractResultError, Result, ResultError } from "./compound.ts";
 import { loadCustomDictionary } from "./dictionary.ts";
 import { checkLocalStorage, setIgnoreError } from "./local_storage.ts";
 import { PositionedError } from "./parser/parser_lib.ts";
@@ -17,6 +17,7 @@ import {
 } from "./settings_frontend.ts";
 import { translate } from "./translator/translator.ts";
 import { closestString } from "@std/text/closest-string";
+import { Dictionary } from "../dictionary/type.ts";
 
 const DICTIONARY_AUTO_PARSE_THRESHOLD = 5000;
 const INITIAL_PAGE_SIZE = 100;
@@ -176,20 +177,17 @@ function main() {
   let lastSavedText = checkLocalStorage()
     ? localStorage.getItem(DICTIONARY_KEY) ?? DEFAULT_CUSTOM_DICTIONARY_MESSAGE
     : customDictionaryTextBox.value;
-  let lastSavedDictionary = parseDictionary(lastSavedText);
-
-  // this variable also holds error messages
+  let lastSavedDictionary: null | Dictionary = null;
+  try {
+    lastSavedDictionary = parseDictionary(lastSavedText);
+  } catch (error) {
+    showDictionaryError(extractResultError(error));
+    showMessage(DICTIONARY_LOADING_FAILED_MESSAGE);
+  }
   let currentDictionary = lastSavedDictionary;
 
-  // load custom dictionary
-  switch (currentDictionary.type) {
-    case "dictionary":
-      loadCustomDictionary(currentDictionary.dictionary);
-      break;
-    case "error":
-      showDictionaryError();
-      showMessage(DICTIONARY_LOADING_FAILED_MESSAGE);
-      break;
+  if (currentDictionary != null) {
+    loadCustomDictionary(currentDictionary);
   }
 
   // state for output
@@ -212,26 +210,23 @@ function main() {
   }
 
   // show custom dictionary errors
-  function showDictionaryError() {
-    if (currentDictionary.type === "error") {
-      customDictionaryErrorSummary.innerText =
-        `Errors (${currentDictionary.errors.length}):`;
-      customDictionaryErrorList.innerHTML = "";
-      for (const error of currentDictionary.errors) {
-        const list = document.createElement("li");
-        list.innerText = error.message;
-        const { position: { position, length } } = error as PositionedError & {
-          position: { position: number; length: number };
-        };
-        list.addEventListener("click", () => {
-          customDictionaryTextBox.focus();
-          customDictionaryTextBox.setSelectionRange(
-            position,
-            position + length,
-          );
-        });
-        customDictionaryErrorList.appendChild(list);
-      }
+  function showDictionaryError(errors: ReadonlyArray<ResultError>) {
+    customDictionaryErrorSummary.innerText = `Errors (${errors.length}):`;
+    customDictionaryErrorList.innerHTML = "";
+    for (const error of errors) {
+      const list = document.createElement("li");
+      list.innerText = error.message;
+      const { position: { position, length } } = error as PositionedError & {
+        position: { position: number; length: number };
+      };
+      list.addEventListener("click", () => {
+        customDictionaryTextBox.focus();
+        customDictionaryTextBox.setSelectionRange(
+          position,
+          position + length,
+        );
+      });
+      customDictionaryErrorList.appendChild(list);
     }
   }
   // add all event listener
@@ -288,7 +283,9 @@ function main() {
     if (!yielded) {
       switch (errors.length) {
         case 0:
-          throw new Error("no error information found when there should be some");
+          throw new Error(
+            "no error information found when there should be some",
+          );
         case 1:
           errorDisplay.innerText = SINGULAR_ERROR_MESSAGE;
           break;
@@ -333,8 +330,7 @@ function main() {
   function importWord() {
     const word = importWordTextBox.value.trim();
     if (
-      autoParse() && currentDictionary.type === "dictionary" &&
-      currentDictionary.dictionary.has(word)
+      autoParse() && currentDictionary != null && currentDictionary.has(word)
     ) {
       showMessage(WORD_ALREADY_IMPORTED_MESSAGE(word));
     } else {
@@ -378,8 +374,11 @@ function main() {
     tryCloseDictionary();
   });
   function updateDictionary() {
-    currentDictionary = parseDictionary(customDictionaryTextBox.value);
-    showDictionaryError();
+    try {
+      currentDictionary = parseDictionary(customDictionaryTextBox.value);
+    } catch (error) {
+      showDictionaryError(extractResultError(error));
+    }
   }
   function updateIfCanAutoParse() {
     if (autoParse()) {
@@ -387,10 +386,10 @@ function main() {
     }
   }
   function tryCloseDictionary() {
-    if (currentDictionary.type === "dictionary") {
+    if (currentDictionary != null) {
       lastSavedText = customDictionaryTextBox.value;
       lastSavedDictionary = currentDictionary;
-      loadCustomDictionary(currentDictionary.dictionary);
+      loadCustomDictionary(currentDictionary);
       setIgnoreError(DICTIONARY_KEY, customDictionaryTextBox.value);
       customDictionaryDialogBox.close();
     } else {
