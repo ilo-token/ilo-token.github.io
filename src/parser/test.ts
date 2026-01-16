@@ -5,7 +5,16 @@ import { assertLess } from "@std/assert/less";
 import { assertNotEquals } from "@std/assert/not-equals";
 import { assertThrows } from "@std/assert/throws";
 import { parser } from "./parser.ts";
-import { all, choice, choiceOnlyOne, end, many, match, matchString, sequence } from './parser_lib.ts'
+import {
+  all,
+  choice,
+  choiceOnlyOne,
+  end,
+  many,
+  match,
+  matchString,
+  sequence,
+} from "./parser_lib.ts";
 import { KU_LILI_WORDS, KU_SULI_WORDS, PU_WORDS } from "./ucsur.ts";
 
 Deno.test("AST all distinct", () => {
