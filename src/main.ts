@@ -28,9 +28,6 @@ const DICTIONARY_KEY = "dictionary";
 const TRANSLATE_LABEL = "Translate";
 const TRANSLATE_LABEL_MULTILINE = "Translate (Ctrl + Enter)";
 
-const UNKNOWN_ERROR_MESSAGE =
-  "An unknown error has occurred (Errors should be known, please report " +
-  "this).";
 const SINGULAR_ERROR_MESSAGE = "An error has been found:";
 const MULTIPLE_ERROR_MESSAGE = "Multiple errors has been found:";
 
@@ -291,8 +288,7 @@ function main() {
     if (!yielded) {
       switch (errors.length) {
         case 0:
-          errorDisplay.innerText = UNKNOWN_ERROR_MESSAGE;
-          break;
+          throw new Error("no error information found when there should be some");
         case 1:
           errorDisplay.innerText = SINGULAR_ERROR_MESSAGE;
           break;
