@@ -12,30 +12,16 @@ export type Result<T> =
   | Readonly<{ type: "error"; error: ResultError }>;
 
 export class IterableResult<T> {
-  #peeked: null | Result<T> = null;
+  #evaluated: Array<Result<T>> = [];
   #generator: Generator<Result<T>>;
   constructor(iterable: () => Generator<Result<T>>) {
     this.#generator = iterable();
   }
   *iterable(): Generator<Result<T>> {
-    if (this.#peeked != null) {
-      const peeked = this.#peeked;
-      this.#peeked = null;
-      yield peeked;
-    }
-    yield* this.#generator;
-  }
-  peek(): null | Result<T> {
-    if (this.#peeked != null) {
-      return this.#peeked;
-    } else {
-      const peeked = this.#generator.next();
-      if (peeked.done) {
-        return null;
-      } else {
-        this.#peeked = peeked.value;
-        return peeked.value;
-      }
+    yield* this.#evaluated;
+    for (const result of this.#generator) {
+      this.#evaluated.push(result);
+      yield result;
     }
   }
   static fromArray<T>(array: ReadonlyArray<T>): IterableResult<T> {
@@ -61,8 +47,8 @@ export class IterableResult<T> {
     return new IterableResult(function* () {});
   }
   isError(): boolean {
-    const peeked = this.peek();
-    return peeked == null || peeked.type === "error";
+    const peeked = this.iterable().next();
+    return peeked.done || peeked.value.type === "error";
   }
   collect(): Readonly<
     { array: ReadonlyArray<T>; errors: ReadonlyArray<ResultError> }
