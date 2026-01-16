@@ -97,7 +97,7 @@ export class IterableResult<T> {
               for (const result of more) {
                 switch (result.type) {
                   case "value":
-                    yielded = false;
+                    yielded = true;
                     yield result;
                     break;
                   case "error":
