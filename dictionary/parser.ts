@@ -38,6 +38,7 @@ import {
   VerbAccessory,
 } from "./type.ts";
 import { ResultError } from "../src/compound.ts";
+import { assert } from "@std/assert/assert";
 
 const RESERVED_SYMBOLS = "#()*+/:;<=>@[\\]^`{|}~";
 
@@ -661,6 +662,7 @@ export type DictionaryResult =
 export function parseDictionary(dictionary: string): DictionaryResult {
   const result = dictionaryParser.parse(dictionary).collect();
   if (result.errors.length === 0) {
+    assert(result.array.length === 1);
     return { type: "dictionary", dictionary: result.array[0] };
   } else {
     return { type: "error", errors: result.errors };
