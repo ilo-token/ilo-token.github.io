@@ -21,6 +21,7 @@ import {
 import { translate } from "./translator/translator.ts";
 import { closestString } from "@std/text/closest-string";
 import { Dictionary } from "../dictionary/type.ts";
+import { hasXAlaX } from "./parser/lexer.ts";
 
 const DICTIONARY_AUTO_PARSE_THRESHOLD = 5000;
 const INITIAL_PAGE_SIZE = 100;
@@ -62,6 +63,8 @@ const DICTIONARY_ERROR_MESSAGE = "Please fix the errors before saving";
 const QUOTA_EXCEEDED_MESSAGE = "Browser storage quota exceeded due to the " +
   "length of your custom dictionary. It may not be saved properly.";
 
+const X_ALA_X_WARNING = "ilo Token doesn't recognize X ala X";
+
 function main() {
   // load DOM
   const inputTextBox = document.getElementById(
@@ -69,6 +72,9 @@ function main() {
   ) as HTMLTextAreaElement;
 
   const outputList = document.getElementById("output") as HTMLUListElement;
+  const warning = document.getElementById(
+    "warning",
+  ) as HTMLParagraphElement;
   const errorDisplay = document.getElementById(
     "error",
   ) as HTMLParagraphElement;
@@ -253,10 +259,14 @@ function main() {
   loadMoreButton.addEventListener("click", moreOutput);
   function updateOutput() {
     outputList.innerHTML = "";
+    warning.innerHTML = "";
     errorList.innerHTML = "";
     errorDisplay.innerText = "";
     loadMoreButton.style.display = "";
     output = translate(inputTextBox.value)[Symbol.iterator]();
+    if (hasXAlaX(inputTextBox.value)) {
+      warning.innerText = `Warning: ${X_ALA_X_WARNING}`;
+    }
     size = 0;
     moreOutput();
   }

@@ -1,15 +1,13 @@
 import { memoize } from "@std/cache/memoize";
 import { sumOf } from "@std/collections/sum-of";
 import { throwError } from "../misc/misc.ts";
-import { settings } from "../settings.ts";
 import {
   all,
   allAtLeastOnce,
   choice,
   choiceOnlyOne,
   count,
-  empty,
-  lazy,
+  many,
   match,
   matchString,
   nothing,
@@ -91,11 +89,6 @@ const longWord = allAtLeastOnce(repeatingLetter)
   })
   .filter(({ word, length }) => /^[a-z]/.test(word) && length > 1);
 
-const alaX = memoize((word: string) =>
-  sequence(specificWord("ala"), specificWord(word)).map(() => word)
-);
-const xAlaX = lazy(() => settings.xAlaXPartialParsing ? empty : word.then(alaX))
-  .map((word): Token => ({ type: "x ala x", word }));
 const punctuation = choiceOnlyOne(
   allAtLeastOnce(
     match(SENTENCE_TERMINATOR, "punctuation")
@@ -188,7 +181,6 @@ const combinedGlyphsToken = combinedGlyphs
 const wordToken = word.map((word): Token => ({ type: "word", word }));
 
 export const token: Parser<Token> = choiceOnlyOne(
-  xAlaX,
   multipleA,
   choice(longWord, wordToken),
   properWords,
@@ -204,3 +196,13 @@ export const token: Parser<Token> = choiceOnlyOne(
   headlessLongGlyphStart,
   insideLongGlyph,
 );
+
+const alaX = memoize((word: string) =>
+  sequence(specificWord("ala"), specificWord(word)).map(() => word)
+);
+const xAlaX = word.then(alaX).map((word): Token => ({ type: "x ala x", word }));
+const xAlaXInside = sequence(many(token), xAlaX);
+
+export function hasXAlaX(src: string): boolean {
+  return !xAlaXInside.parse(src).isError();
+}
