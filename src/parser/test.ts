@@ -5,7 +5,7 @@ import { assertLess } from "@std/assert/less";
 import { assertNotEquals } from "@std/assert/not-equals";
 import { assertThrows } from "@std/assert/throws";
 import { parser } from "./parser.ts";
-import { all, end, many, match, matchString, sequence } from "./parser_lib.ts";
+import { all, choice, choiceOnlyOne, end, many, match, matchString, sequence } from './parser_lib.ts'
 import { KU_LILI_WORDS, KU_SULI_WORDS, PU_WORDS } from "./ucsur.ts";
 
 Deno.test("AST all distinct", () => {
@@ -269,6 +269,16 @@ Deno.test("all", () => {
   const space = match(/\s*/, "space");
   const parser = all(matchString("a").skip(space)).skip(end);
   assertEquals(parser.parse("a a a").unwrapCollect(), [["a", "a", "a"]]);
+});
+Deno.test("choice", () => {
+  const parser = choice(matchString("a"), matchString("b")).skip(end);
+  assertEquals(parser.parse("a").unwrapCollect(), ["a"]);
+  assertEquals(parser.parse("b").unwrapCollect(), ["b"]);
+});
+Deno.test("choiceOnlyOne", () => {
+  const parser = choiceOnlyOne(matchString("a"), matchString("b")).skip(end);
+  assertEquals(parser.parse("a").unwrapCollect(), ["a"]);
+  assertEquals(parser.parse("b").unwrapCollect(), ["b"]);
 });
 function uniquePairs<T>(array: ReadonlyArray<T>) {
   return array.flatMap((a, i) =>
