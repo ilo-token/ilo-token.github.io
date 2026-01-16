@@ -161,7 +161,7 @@ It still can't do the following however:
 
 ilo Token now has custom dictionary editor! This allows users to customize the
 dictionary to their liking. Users can customize existing words and also extend
-ilo Token with more non-pu words. However, it comes with limitations.
+ilo Token with more words. However, it comes with limitations.
 [Read the guidelines for using custom dictionary editor](https://github.com/ilo-token/ilo-token.github.io/wiki/Guidelines-for-editing-dictionary).
 
 Some of the settings may reset. Please reconfigure it again to your preferred

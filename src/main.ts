@@ -44,10 +44,9 @@ const DEFAULT_CUSTOM_DICTIONARY_MESSAGE = `\
 # used in ilo Token. You may change the
 # definitions of existing words and
 # even extend ilo Token with more
-# non-pu words. Just know that the
-# custom dictionary comes with
-# limitations. Press Help above to get
-# started.
+# words. Just know that the custom
+# dictionary comes with limitations.
+# Press Help above to get started.
 `;
 
 const DICTIONARY_LOADING_FAILED_MESSAGE =
