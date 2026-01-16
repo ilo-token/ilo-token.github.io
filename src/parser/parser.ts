@@ -99,7 +99,7 @@ function filterCombinedGlyphs(words: ReadonlyArray<string>, expected: string) {
       describe({ type: "combined glyphs", words }),
       description,
     );
-  } else if (words[0] !== "a") {
+  } else if (words[0] !== expected) {
     throw new UnexpectedError(`"${word}"`, description);
   } else {
     return true;
