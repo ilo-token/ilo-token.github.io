@@ -141,8 +141,6 @@ function xAlaX(useWord: Set<string>, description: string) {
           .filter(({ words }) => filterCombinedGlyphs(words, "ala")),
       )
       .then(alaXLongGlyph),
-    specificToken("x ala x")
-      .map(({ word }): SimpleHeadedWordUnit => ({ type: "x ala x", word })),
     word
       .then(alaX),
   );

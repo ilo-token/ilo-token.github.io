@@ -31,7 +31,6 @@ export type Token =
   }>
   | Readonly<{ type: "reduplicated a"; count: number }>
   | Readonly<{ type: "long word"; word: string; length: number }>
-  | Readonly<{ type: "x ala x"; word: string }>
   | Readonly<{
     type: "name";
     words: string;
@@ -57,8 +56,6 @@ export function describe(token: Token): string {
       return `"${repeatWithSpace("a", token.count)}"`;
     case "long word":
       return `"${token.word.repeat(token.length)}"`;
-    case "x ala x":
-      return `"${token.word} ala ${token.word}"`;
     case "punctuation":
       return `punctuation mark "${token.punctuation}"`;
     case "name":

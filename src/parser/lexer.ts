@@ -200,7 +200,7 @@ export const token: Parser<Token> = choiceOnlyOne(
 const alaX = memoize((word: string) =>
   sequence(specificWord("ala"), specificWord(word)).map(() => word)
 );
-const xAlaX = word.then(alaX).map((word): Token => ({ type: "x ala x", word }));
+const xAlaX = word.then(alaX);
 const xAlaXInside = sequence(many(token), xAlaX);
 
 export function hasXAlaX(src: string): boolean {
