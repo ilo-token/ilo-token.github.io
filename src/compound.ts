@@ -13,14 +13,14 @@ export type Result<T> =
 
 export class IterableResult<T> {
   #evaluated: Array<Result<T>> = [];
-  #generator: Iterator<Result<T>>;
-  constructor(iterable: () => Iterator<Result<T>>) {
-    this.#generator = iterable();
+  #iterator: Iterator<Result<T>>;
+  constructor(generator: () => Iterator<Result<T>>) {
+    this.#iterator = generator();
   }
   *[Symbol.iterator](): Iterator<Result<T>> {
     yield* this.#evaluated;
     while (true) {
-      const result = this.#generator.next();
+      const result = this.#iterator.next();
       if (result.done) break;
       this.#evaluated.push(result.value);
       yield result.value;
