@@ -61,7 +61,7 @@ const spaces = checkedSequence(
 );
 const ignore = allWithCheck(
   new CheckedParser(
-    choiceOnlyOne(hashSign, spaces.check),
+    choiceOnlyOne(comment.check, spaces.check),
     choiceWithCheck(spaces, comment),
   ),
 );
@@ -98,7 +98,7 @@ const unescapedWord = sequence(
   choiceWithCheck(checkedCharacter, escape),
   allWithCheck(
     new CheckedParser(
-      choiceOnlyOne(wordCharacter, backtick, hashSign),
+      choiceOnlyOne(wordCharacter, escape.check, comment.check),
       choiceWithCheck(checkedCharacter, escape, comment.map(() => "")),
     ),
   ),
