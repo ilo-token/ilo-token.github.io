@@ -6,7 +6,10 @@ import { parseDictionary } from "../dictionary/parser.ts";
 import PROJECT_DATA from "../project_data.json" with { type: "json" };
 import { extractResultError, Result, ResultError } from "./compound.ts";
 import { loadCustomDictionary } from "./dictionary.ts";
-import { checkLocalStorage, setIgnoreError } from "./local_storage.ts";
+import {
+  assertQuotaExceededError,
+  checkLocalStorage,
+} from "./local_storage.ts";
 import { PositionedError } from "./parser/parser_lib.ts";
 import { settings } from "./settings.ts";
 import {
@@ -57,6 +60,8 @@ const WORD_NOT_FOUND_MESSAGE = (word: string, suggestion: string) =>
 const WORD_ALREADY_IMPORTED_MESSAGE = (word: string) =>
   `"${word}" is already imported`;
 const DICTIONARY_ERROR_MESSAGE = "Please fix the errors before saving";
+const QUOTA_EXCEEDED_MESSAGE = "Browser storage quota exceeded due to the " +
+  "length of your custom dictionary. It may not be saved properly.";
 
 function main() {
   // load DOM
@@ -174,9 +179,14 @@ function main() {
   loadFromLocalStorage();
 
   // states for storing previous dictionary states for discarding dictionary edits
-  let lastSavedText = checkLocalStorage()
-    ? localStorage.getItem(DICTIONARY_KEY) ?? DEFAULT_CUSTOM_DICTIONARY_MESSAGE
-    : customDictionaryTextBox.value;
+  let lastSavedText: string = customDictionaryTextBox.value;
+  if (checkLocalStorage()) {
+    const savedText = localStorage.getItem(DICTIONARY_KEY);
+    if (savedText != null) {
+      lastSavedText = savedText;
+    }
+  }
+
   let lastSavedDictionary: null | Dictionary = null;
   try {
     lastSavedDictionary = parseDictionary(lastSavedText);
@@ -316,8 +326,13 @@ function main() {
   customDictionaryButton.addEventListener("click", () => {
     customDictionaryDialogBox.showModal();
     if (checkLocalStorage()) {
-      customDictionaryTextBox.value = localStorage.getItem(DICTIONARY_KEY) ??
-        DEFAULT_CUSTOM_DICTIONARY_MESSAGE;
+      const savedText = localStorage.getItem(DICTIONARY_KEY);
+      if (savedText != null) {
+        customDictionaryTextBox.value = savedText;
+      }
+    }
+    if (customDictionaryTextBox.value.trim() === "") {
+      customDictionaryTextBox.value = DEFAULT_CUSTOM_DICTIONARY_MESSAGE;
     }
   });
   importWordButton.addEventListener("click", importWord);
@@ -390,8 +405,20 @@ function main() {
       lastSavedText = customDictionaryTextBox.value;
       lastSavedDictionary = currentDictionary;
       loadCustomDictionary(currentDictionary);
-      setIgnoreError(DICTIONARY_KEY, customDictionaryTextBox.value);
+      let exceeded = false;
+      if (checkLocalStorage()) {
+        try {
+          localStorage.setItem(DICTIONARY_KEY, customDictionaryTextBox.value);
+        } catch (error) {
+          assertQuotaExceededError(error);
+          exceeded = true;
+          localStorage.removeItem(DICTIONARY_KEY);
+        }
+      }
       customDictionaryDialogBox.close();
+      if (exceeded) {
+        showMessage(QUOTA_EXCEEDED_MESSAGE);
+      }
     } else {
       showMessage(DICTIONARY_ERROR_MESSAGE);
     }

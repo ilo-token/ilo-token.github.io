@@ -20,11 +20,14 @@ export function setIgnoreError(key: string, value: string): void {
     try {
       localStorage.setItem(key, value);
     } catch (error) {
-      if (
-        !(error instanceof DOMException) || error.name !== "QuotaExceededError"
-      ) {
-        throw error;
-      }
+      assertQuotaExceededError(error);
     }
+  }
+}
+export function assertQuotaExceededError(error: unknown): void {
+  if (
+    !(error instanceof DOMException) || error.name !== "QuotaExceededError"
+  ) {
+    throw error;
   }
 }
