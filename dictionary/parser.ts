@@ -37,6 +37,7 @@ import {
   NounForms,
   VerbAccessory,
 } from "./type.ts";
+import { ResultError } from "../src/compound.ts";
 
 const RESERVED_SYMBOLS = "#()*+/:;<=>@[\\]^`{|}~";
 
@@ -624,7 +625,7 @@ const entry = withSource(
     definitions,
     source: source.trimEnd(),
   }));
-export const dictionaryParser: Parser<Dictionary> = ignore
+const dictionaryParser: Parser<Dictionary> = ignore
   .with(
     allWithCheck(new CheckedParser(notEnd, sequence(positionedHead, entry))),
   )
@@ -654,3 +655,14 @@ export const dictionaryParser: Parser<Dictionary> = ignore
       );
     }
   });
+export type DictionaryResult =
+  | Readonly<{ type: "dictionary"; dictionary: Dictionary }>
+  | Readonly<{ type: "error"; errors: ReadonlyArray<ResultError> }>;
+export function parseDictionary(dictionary: string): DictionaryResult {
+  const result = dictionaryParser.parse(dictionary).collect();
+  if (result.errors.length === 0) {
+    return { type: "dictionary", dictionary: result.array[0] };
+  } else {
+    return { type: "error", errors: result.errors };
+  }
+}

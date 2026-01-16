@@ -2,7 +2,7 @@
 
 import { ResultError } from "../src/compound.ts";
 import { PositionedError } from "../src/parser/parser_lib.ts";
-import { dictionaryParser } from "./parser.ts";
+import { parseDictionary } from "./parser.ts";
 import { Dictionary } from "./type.ts";
 
 const SOURCE = new URL("./dictionary", import.meta.url);
@@ -33,14 +33,16 @@ export async function build(): Promise<boolean> {
   const start = performance.now();
   const text = await Deno.readTextFile(SOURCE);
   const startDictionary = performance.now();
-  const result = dictionaryParser.parse(text).collect();
+  const result = parseDictionary(text);
   const endDictionary = performance.now();
   let dictionary: Dictionary;
-  if (result.errors.length === 0) {
-    dictionary = result.array[0];
-  } else {
-    displayError(text, result.errors);
-    return false;
+  switch (result.type) {
+    case "dictionary":
+      dictionary = result.dictionary;
+      break;
+    case "error":
+      displayError(text, result.errors);
+      return false;
   }
   await buildWithDictionary(dictionary);
   const end = performance.now();

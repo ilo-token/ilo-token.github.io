@@ -2,7 +2,7 @@
 
 import BrowserDetector from "browser-dtector";
 import { dictionary } from "../dictionary/dictionary.ts";
-import { dictionaryParser } from "../dictionary/parser.ts";
+import { parseDictionary } from "../dictionary/parser.ts";
 import PROJECT_DATA from "../project_data.json" with { type: "json" };
 import { Result, ResultError } from "./compound.ts";
 import { loadCustomDictionary } from "./dictionary.ts";
@@ -179,17 +179,20 @@ function main() {
   let lastSavedText = checkLocalStorage()
     ? localStorage.getItem(DICTIONARY_KEY) ?? DEFAULT_CUSTOM_DICTIONARY_MESSAGE
     : customDictionaryTextBox.value;
-  let lastSavedDictionary = dictionaryParser.parse(lastSavedText).collect();
+  let lastSavedDictionary = parseDictionary(lastSavedText);
 
   // this variable also holds error messages
   let currentDictionary = lastSavedDictionary;
 
   // load custom dictionary
-  if (currentDictionary.errors.length === 0) {
-    loadCustomDictionary(currentDictionary.array[0]);
-  } else {
-    showDictionaryError();
-    showMessage(DICTIONARY_LOADING_FAILED_MESSAGE);
+  switch (currentDictionary.type) {
+    case "dictionary":
+      loadCustomDictionary(currentDictionary.dictionary);
+      break;
+    case "error":
+      showDictionaryError();
+      showMessage(DICTIONARY_LOADING_FAILED_MESSAGE);
+      break;
   }
 
   // state for output
@@ -213,23 +216,25 @@ function main() {
 
   // show custom dictionary errors
   function showDictionaryError() {
-    customDictionaryErrorSummary.innerText =
-      `Errors (${currentDictionary.errors.length}):`;
-    customDictionaryErrorList.innerHTML = "";
-    for (const error of currentDictionary.errors) {
-      const list = document.createElement("li");
-      list.innerText = error.message;
-      const { position: { position, length } } = error as PositionedError & {
-        position: { position: number; length: number };
-      };
-      list.addEventListener("click", () => {
-        customDictionaryTextBox.focus();
-        customDictionaryTextBox.setSelectionRange(
-          position,
-          position + length,
-        );
-      });
-      customDictionaryErrorList.appendChild(list);
+    if (currentDictionary.type === "error") {
+      customDictionaryErrorSummary.innerText =
+        `Errors (${currentDictionary.errors.length}):`;
+      customDictionaryErrorList.innerHTML = "";
+      for (const error of currentDictionary.errors) {
+        const list = document.createElement("li");
+        list.innerText = error.message;
+        const { position: { position, length } } = error as PositionedError & {
+          position: { position: number; length: number };
+        };
+        list.addEventListener("click", () => {
+          customDictionaryTextBox.focus();
+          customDictionaryTextBox.setSelectionRange(
+            position,
+            position + length,
+          );
+        });
+        customDictionaryErrorList.appendChild(list);
+      }
     }
   }
   // add all event listener
@@ -332,8 +337,8 @@ function main() {
   function importWord() {
     const word = importWordTextBox.value.trim();
     if (
-      autoParse() && currentDictionary.errors.length === 0 &&
-      currentDictionary.array[0].has(word)
+      autoParse() && currentDictionary.type === "dictionary" &&
+      currentDictionary.dictionary.has(word)
     ) {
       showMessage(WORD_ALREADY_IMPORTED_MESSAGE(word));
     } else {
@@ -377,8 +382,7 @@ function main() {
     tryCloseDictionary();
   });
   function updateDictionary() {
-    currentDictionary = dictionaryParser.parse(customDictionaryTextBox.value)
-      .collect();
+    currentDictionary = parseDictionary(customDictionaryTextBox.value);
     showDictionaryError();
   }
   function updateIfCanAutoParse() {
@@ -387,10 +391,10 @@ function main() {
     }
   }
   function tryCloseDictionary() {
-    if (currentDictionary.errors.length === 0) {
+    if (currentDictionary.type === "dictionary") {
       lastSavedText = customDictionaryTextBox.value;
       lastSavedDictionary = currentDictionary;
-      loadCustomDictionary(currentDictionary.array[0]);
+      loadCustomDictionary(currentDictionary.dictionary);
       setIgnoreError(DICTIONARY_KEY, customDictionaryTextBox.value);
       customDictionaryDialogBox.close();
     } else {

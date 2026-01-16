@@ -27,7 +27,7 @@ export class IterableResult<T> {
   }
   peek(): null | Result<T> {
     if (this.#peeked != null) {
-      return this.#peeked
+      return this.#peeked;
     } else {
       const peeked = this.#generator.next();
       if (peeked.done) {
