@@ -381,7 +381,7 @@ export function choiceWithCheck<T>(
     for (const { check, parser } of choices) {
       const result = check.rawParser(position);
       if (result.isError()) {
-        for (const error of result.iterable()) {
+        for (const error of result) {
           if (error.type === "error") {
             errors.push(error.error);
           }

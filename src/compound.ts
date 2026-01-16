@@ -13,15 +13,17 @@ export type Result<T> =
 
 export class IterableResult<T> {
   #evaluated: Array<Result<T>> = [];
-  #generator: Generator<Result<T>>;
-  constructor(iterable: () => Generator<Result<T>>) {
+  #generator: Iterator<Result<T>>;
+  constructor(iterable: () => Iterator<Result<T>>) {
     this.#generator = iterable();
   }
-  *iterable(): Generator<Result<T>> {
+  *[Symbol.iterator](): Iterator<Result<T>> {
     yield* this.#evaluated;
-    for (const result of this.#generator) {
-      this.#evaluated.push(result);
-      yield result;
+    while (true) {
+      const result = this.#generator.next();
+      if (result.done) break;
+      this.#evaluated.push(result.value);
+      yield result.value;
     }
   }
   static fromArray<T>(array: ReadonlyArray<T>): IterableResult<T> {
@@ -47,7 +49,7 @@ export class IterableResult<T> {
     return new IterableResult(function* () {});
   }
   isError(): boolean {
-    const peeked = this.iterable().next();
+    const peeked = this[Symbol.iterator]().next();
     return peeked.done || peeked.value.type === "error";
   }
   collect(): Readonly<
@@ -55,7 +57,7 @@ export class IterableResult<T> {
   > {
     const array: Array<T> = [];
     const errors: Array<ResultError> = [];
-    for (const result of this.iterable()) {
+    for (const result of this) {
       switch (result.type) {
         case "value":
           array.push(result.value);
@@ -88,11 +90,11 @@ export class IterableResult<T> {
       function* (this: IterableResult<T>): Generator<Result<U>> {
         const errors: Array<ResultError> = [];
         let yielded = false;
-        for (const result of this.iterable()) {
+        for (const result of this) {
           switch (result.type) {
             case "value": {
               const more = IterableResult.from(() => mapper(result.value));
-              for (const result of more.iterable()) {
+              for (const result of more) {
                 switch (result.type) {
                   case "value":
                     yielded = false;
@@ -122,7 +124,7 @@ export class IterableResult<T> {
       function* (this: IterableResult<T>) {
         let hasError = false;
         const array: Array<T> = [];
-        for (const result of this.iterable()) {
+        for (const result of this) {
           switch (result.type) {
             case "value":
               array.push(result.value);
@@ -157,7 +159,7 @@ export class IterableResult<T> {
     return new IterableResult(
       function* (this: IterableResult<T>): Generator<Result<T>> {
         let yielded = false;
-        for (const result of this.iterable()) {
+        for (const result of this) {
           yielded = true;
           yield result;
         }
@@ -175,7 +177,7 @@ export class IterableResult<T> {
       const errors: Array<ResultError> = [];
       let yielded = false;
       for (const iterable of iterableResults) {
-        for (const result of iterable.iterable()) {
+        for (const result of iterable) {
           switch (result.type) {
             case "value":
               yielded = true;
@@ -205,12 +207,12 @@ export class IterableResult<T> {
         new IterableResult(function* () {
           let rightAggregate: null | Array<any> = null;
           let yielded = false;
-          for (const leftResult of left.iterable()) {
+          for (const leftResult of left) {
             switch (leftResult.type) {
               case "value":
                 if (rightAggregate == null) {
                   rightAggregate = [];
-                  for (const rightResult of right.iterable()) {
+                  for (const rightResult of right) {
                     switch (rightResult.type) {
                       case "value": {
                         const { value: right } = rightResult;
@@ -243,7 +245,7 @@ export class IterableResult<T> {
             }
           }
           if (!yielded && rightAggregate == null) {
-            for (const result of right.iterable()) {
+            for (const result of right) {
               if (result.type === "error") {
                 yield result;
               }

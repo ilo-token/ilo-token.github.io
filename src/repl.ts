@@ -17,7 +17,7 @@ if (import.meta.main) {
     }
     const iterableResult = translate(input);
     let errorHeaderShown = false;
-    for (const result of iterableResult.iterable()) {
+    for (const result of iterableResult) {
       switch (result.type) {
         case "value": {
           const { value: translation } = result;

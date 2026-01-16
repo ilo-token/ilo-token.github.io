@@ -19,7 +19,7 @@ export function translate(tokiPona: string): IterableResult<string> {
     const aggregateErrors: Array<ResultError> = [];
     const unique: Set<string> = new Set();
     if (settings.randomize) {
-      for (const result of iterableResult.iterable()) {
+      for (const result of iterableResult) {
         if (unique.size > RANDOMIZATION_LIMIT) {
           yield {
             type: "error",
@@ -41,7 +41,7 @@ export function translate(tokiPona: string): IterableResult<string> {
         yield { type: "value", value };
       }
     } else {
-      for (const result of iterableResult.iterable()) {
+      for (const result of iterableResult) {
         switch (result.type) {
           case "value":
             if (!unique.has(result.value)) {

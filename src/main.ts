@@ -196,7 +196,7 @@ function main() {
   }
 
   // state for output
-  let output: null | Generator<Result<string>> = null;
+  let output: null | Iterator<Result<string>> = null;
   let size = 0;
 
   // initial text area size
@@ -255,7 +255,7 @@ function main() {
     errorList.innerHTML = "";
     errorDisplay.innerText = "";
     loadMoreButton.style.display = "";
-    output = translate(inputTextBox.value).iterable();
+    output = translate(inputTextBox.value)[Symbol.iterator]();
     size = 0;
     moreOutput();
   }
