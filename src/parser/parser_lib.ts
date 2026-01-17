@@ -11,12 +11,14 @@ type Cache<T> = Map<number, MemoizationCacheResult<ParserResult<T>>>;
 let currentSource = "";
 const allCache: Set<WeakRef<Cache<unknown>>> = new Set();
 
+const rawParser = Symbol("rawParser");
+
 export class Parser<T> {
-  readonly rawParser: RawParser<T>;
+  readonly [rawParser]: RawParser<T>;
   constructor(parser: RawParser<T>) {
     const cache: Cache<T> = new Map();
     allCache.add(new WeakRef(cache));
-    this.rawParser = memoize<RawParser<T>, number, Cache<T>>(
+    this[rawParser] = memoize<RawParser<T>, number, Cache<T>>(
       parser,
       { cache },
     );
@@ -31,11 +33,11 @@ export class Parser<T> {
         ref.clear();
       }
     }
-    return this.rawParser(0).map(({ value }) => value);
+    return this[rawParser](0).map(({ value }) => value);
   }
   #rawMap<U>(mapper: (value: T) => U): Parser<U> {
     return new Parser((input) =>
-      this.rawParser(input)
+      this[rawParser](input)
         .map(({ value, length }): ValueLength<U> => ({
           value: mapper(value),
           length,
@@ -50,7 +52,7 @@ export class Parser<T> {
   }
   #rawFilter(mapper: (value: T) => boolean): Parser<T> {
     return new Parser((input) =>
-      this.rawParser(input).filter(({ value }) => mapper(value))
+      this[rawParser](input).filter(({ value }) => mapper(value))
     );
   }
   filter(mapper: (value: T) => boolean): Parser<T> {
@@ -62,10 +64,10 @@ export class Parser<T> {
   }
   then<U>(mapper: (value: T) => Parser<U>): Parser<U> {
     return new Parser((position) =>
-      this.rawParser(position)
+      this[rawParser](position)
         .flatMap(({ value, length }) =>
           mapper(value)
-            .rawParser(position + length)
+            [rawParser](position + length)
             .map(({ value, length: addedLength }): ValueLength<U> => ({
               value,
               length: length + addedLength,
@@ -75,7 +77,7 @@ export class Parser<T> {
   }
   sort(comparer: (left: T, right: T) => number): Parser<T> {
     return new Parser((input) =>
-      this.rawParser(input)
+      this[rawParser](input)
         .sort((left, right) => comparer(left.value, right.value))
     );
   }
@@ -143,12 +145,12 @@ export const nothing: Parser<null> = new Parser(() =>
 export const emptyArray: Parser<ReadonlyArray<never>> = nothing.map(() => []);
 export function lookAhead<T>(parser: Parser<T>): Parser<T> {
   return new Parser((input) =>
-    parser.rawParser(input)
+    parser[rawParser](input)
       .map(({ value }): ValueLength<T> => ({ value, length: 0 }))
   );
 }
 export function lazy<T>(parser: () => Parser<T>): Parser<T> {
-  return new Parser((input) => parser().rawParser(input));
+  return new Parser((input) => parser()[rawParser](input));
 }
 export function choice<T>(
   ...choices: ReadonlyArray<Parser<T>>
@@ -160,7 +162,7 @@ export function choice<T>(
   );
   return new Parser((input) =>
     IterableResult.fromArray(choices).flatMap((parser) =>
-      parser.rawParser(input)
+      parser[rawParser](input)
     )
   );
 }
@@ -175,9 +177,9 @@ export function choiceOnlyOne<T>(
   return choices.reduceRight(
     (right, left) =>
       new Parser((input) => {
-        const arrayResult = left.rawParser(input);
+        const arrayResult = left[rawParser](input);
         if (arrayResult.isError()) {
-          return IterableResult.concat(arrayResult, right.rawParser(input));
+          return IterableResult.concat(arrayResult, right[rawParser](input));
         } else {
           return arrayResult;
         }
@@ -333,7 +335,7 @@ export const notEnd: Parser<null> = new Parser((position) =>
 export type WithSource<T> = readonly [value: T, source: string];
 export function withSource<T>(parser: Parser<T>): Parser<WithSource<T>> {
   return new Parser((position) =>
-    parser.rawParser(position).map(
+    parser[rawParser](position).map(
       ({ value, length }): ValueLength<WithSource<T>> => ({
         value: [
           value,
@@ -347,7 +349,7 @@ export function withSource<T>(parser: Parser<T>): Parser<WithSource<T>> {
 export type WithPosition<T> = Readonly<{ value: T }> & Position;
 export function withPosition<T>(parser: Parser<T>): Parser<WithPosition<T>> {
   return new Parser((position) =>
-    parser.rawParser(position).map(
+    parser[rawParser](position).map(
       ({ value, length }): ValueLength<WithPosition<T>> => ({
         value: { value, position, length },
         length,
@@ -385,7 +387,7 @@ export function choiceWithCheck<T>(
   return new Parser((position) => {
     const errors: Array<ResultError> = [];
     for (const { check, parser } of choices) {
-      const result = check.rawParser(position);
+      const result = check[rawParser](position);
       if (result.isError()) {
         for (const error of result) {
           if (error.type === "error") {
@@ -393,7 +395,7 @@ export function choiceWithCheck<T>(
           }
         }
       } else {
-        return parser.rawParser(position);
+        return parser[rawParser](position);
       }
     }
     return IterableResult.errors(errors);
