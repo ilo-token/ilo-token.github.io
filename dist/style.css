@@ -2,19 +2,24 @@
   font-family: nasin-nanpa;
   src: url("./nasin_nanpa.otf");
 }
+
 body {
   margin: 10px;
   font-family: sans-serif, nasin-nanpa;
 }
+
 code {
   font-family: monospace;
 }
+
 a {
   color: #0057af;
 }
+
 a:visited {
   color: #551a8b;
 }
+
 input[type="text"],
 textarea {
   background-color: inherit;
@@ -23,6 +28,7 @@ textarea {
   border-width: 2px;
   border-radius: 2px;
 }
+
 #input {
   box-sizing: border-box;
   resize: none;
@@ -30,51 +36,63 @@ textarea {
   padding: 5px;
   overflow: hidden;
 }
+
 #error,
 #error-list {
   color: #b60000;
 }
+
 summary {
   cursor: pointer;
 }
+
 button,
 select {
   padding: 10px;
 }
+
 dialog {
   padding: 20px 0;
   resize: both;
 }
+
 dialog.flex:modal {
   display: flex;
   flex-direction: column;
 }
+
 #custom-dictionary-box {
   box-sizing: border-box;
   height: 100%;
   width: 100%;
 }
+
 dialog.flex details {
   margin: 0;
   padding: 0;
   resize: both;
 }
+
 dialog.flex details.flex {
   flex-direction: column;
   display: flex;
 }
+
 dialog.flex label,
 dialog.flex summary,
 dialog.flex > h1 {
   padding: 10px;
   margin: 0;
 }
+
 dialog.flex > label[for] {
   padding-bottom: 5px;
 }
+
 dialog.flex > select {
   margin: 0 10px 10px;
 }
+
 dialog.flex > textarea {
   font-family: monospace;
   margin: 10px;
@@ -82,43 +100,54 @@ dialog.flex > textarea {
   overflow: auto;
   flex-grow: 1;
 }
+
 dialog.flex > div {
   margin: 10px;
   display: flex;
 }
+
 dialog.flex > div > div,
 dialog.flex > div > input[type="text"] {
   flex-grow: 1;
 }
+
 #custom-dictionary-error-list li {
   cursor: pointer;
 }
+
 #custom-dictionary-error-list li:hover {
   text-decoration: underline;
 }
+
 @media (min-width: 800px) {
   body {
     margin: 50px;
   }
+
   dialog {
     padding: 20px;
   }
 }
+
 @media (prefers-color-scheme: dark) {
   body {
     background-color: black;
     color: white;
   }
+
   dialog {
     background-color: black;
     color: white;
   }
+
   a {
     color: #3197ff;
   }
+
   a:visited {
     color: #b47de7;
   }
+
   #error,
   #error-list {
     color: #ff5e5e;

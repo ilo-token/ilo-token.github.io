@@ -3,29 +3,29 @@
   <head>
     <meta charset="utf-8" />
     <title lang="tok">ilo Token</title>
-    <meta name="author" content="neverRare" />
+    <meta content="neverRare" name="author" />
     <meta
+      content="An open-source rule-based Toki Pona to English translator"
       name="description"
-      content="An open-source rule-based Toki Pona to English translator"
     />
-    <meta property="og:title" content="ilo Token" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://ilo-token.github.io/" />
+    <meta content="ilo Token" property="og:title" />
+    <meta content="website" property="og:type" />
+    <meta content="https://ilo-token.github.io/" property="og:url" />
     <meta
-      property="og:image"
       content="https://ilo-token.github.io/images/preview.png"
+      property="og:image"
     />
     <meta
-      property="og:description"
       content="An open-source rule-based Toki Pona to English translator"
+      property="og:description"
     />
-    <link rel="shortcut icon" href="./images/ico.ico" />
-    <link rel="icon" type="image/png" href="./images/192.png" sizes="192x192" />
-    <link rel="apple-touch-icon" href="./images/180.png" sizes="180x180" />
-    <meta name="theme-color" content="#893cf3" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="./normalize.css" />
-    <link rel="stylesheet" href="./style.css" />
+    <link href="./images/ico.ico" rel="shortcut icon" />
+    <link href="./images/192.png" rel="icon" sizes="192x192" type="image/png" />
+    <link href="./images/180.png" rel="apple-touch-icon" sizes="180x180" />
+    <meta content="#893cf3" name="theme-color" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <link href="./normalize.css" rel="stylesheet" />
+    <link href="./style.css" rel="stylesheet" />
     <script src="./main.js"></script>
   </head>
   <body>
@@ -49,10 +49,10 @@
         <button id="settings-button">Settings</button>
       </p>
       <textarea
-        id="input"
-        placeholder="o toki tawa ni"
-        lang="tok"
         cols="10"
+        id="input"
+        lang="tok"
+        placeholder="o toki tawa ni"
         rows="1"
       ></textarea>
       <div>
@@ -116,7 +116,7 @@
         - <a href="https://github.com/ilo-token/ilo-token.github.io">GitHub</a>
       </p>
     </footer>
-    <dialog id="settings-box" class="flex">
+    <dialog class="flex" id="settings-box">
       <h1>
         Settings
         <a
@@ -124,19 +124,19 @@
           target="_blank"
         >(Help)</a>
       </h1>
-      <label><input type="checkbox" id="randomize" />
+      <label><input id="randomize" type="checkbox" />
         Randomize output order</label>
-      <label><input type="checkbox" id="multiline" />
+      <label><input id="multiline" type="checkbox" />
         Multiline input</label>
       <label for="quantity">Singular and plural forms</label>
       <select id="quantity">
-        <option value="both" selected>Show all</option>
+        <option selected value="both">Show all</option>
         <option value="condensed">Condensed</option>
         <option value="default only">Show singular only</option>
       </select>
       <label for="tense">Verb tenses</label>
       <select id="tense">
-        <option value="both" selected>Show all</option>
+        <option selected value="both">Show all</option>
         <option value="condensed">Condensed</option>
         <option value="default only">Show present only</option>
       </select>
@@ -147,7 +147,7 @@
         <button id="confirm-button">Confirm</button>
       </div>
     </dialog>
-    <dialog id="custom-dictionary-box" class="flex">
+    <dialog class="flex" id="custom-dictionary-box">
       <h1>
         Custom Dictionary
         <a

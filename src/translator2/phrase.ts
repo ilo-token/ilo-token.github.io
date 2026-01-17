@@ -1,17 +1,19 @@
 import * as English from "./ast.ts";
 import { addWay, AdjectiveWithInWay } from "./adjective.ts";
-import { adjectivalIsNone, AdjectivalModifier } from "./modifier.ts";
+import {
+  adjectivalIsNone,
+  AdjectivalModifier,
+  AdverbialModifier,
+  multipleModifiers,
+} from "./modifier.ts";
 import { ExhaustedError, FilteredError } from "./error.ts";
 import { mapNullable, nullableAsArray } from "../misc/misc.ts";
-import { nounAsPreposition } from "./preposition.ts";
-import { AdverbialModifier } from "./modifier.ts";
+import { nounAsPreposition, preposition } from "./preposition.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { IterableResult } from "../compound.ts";
 import { wordUnit } from "./word_unit.ts";
-import { multipleModifiers } from "./modifier.ts";
 import * as Composer from "../parser/composer.ts";
 import { CONJUNCTION } from "./misc.ts";
-import { preposition } from "./preposition.ts";
 import { equal } from "@std/assert/equal";
 
 export type PhraseTranslation =

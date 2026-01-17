@@ -1,34 +1,60 @@
 {
   "compilerOptions": {
-    "lib": ["dom", "deno.ns"]
+    "lib": [
+      "dom",
+      "deno.ns"
+    ]
   },
   "permissions": {
     "build-dictionary": {
-      "env": ["NO_COLOR", "DEBUG_TAGS", "DEBUG_CHUNKS"],
-      "read": ["./dictionary/dictionary"],
-      "write": ["./dictionary/dictionary.ts"]
+      "env": [
+        "NO_COLOR",
+        "DEBUG_TAGS",
+        "DEBUG_CHUNKS"
+      ],
+      "read": [
+        "./dictionary/dictionary"
+      ],
+      "write": [
+        "./dictionary/dictionary.ts"
+      ]
     },
     "soft-build-dictionary": {
-      "env": ["NO_COLOR", "DEBUG_TAGS", "DEBUG_CHUNKS"],
-      "read": ["./dictionary/dictionary", "./dictionary/dictionary.ts"],
-      "write": ["./dictionary/dictionary.ts"]
+      "env": [
+        "NO_COLOR",
+        "DEBUG_TAGS",
+        "DEBUG_CHUNKS"
+      ],
+      "read": [
+        "./dictionary/dictionary",
+        "./dictionary/dictionary.ts"
+      ],
+      "write": [
+        "./dictionary/dictionary.ts"
+      ]
     }
   },
   "tasks": {
     "build": {
       "description": "Builds every static files needed for GitHub pages. This builds the dictionary first at `./dictionary/dictionary.ts` then the distribution code `./dist/main.js`.",
       "command": "deno bundle --output=./dist/main.js --minify --sourcemap=linked --platform=browser --format=iife ./src/main.ts",
-      "dependencies": ["build-dictionary"]
+      "dependencies": [
+        "build-dictionary"
+      ]
     },
     "start": {
       "description": "Starts a development server which automatically rebuilds the project whenever there are changes to the code. However, there is no server that serves frontend and you have to manually refresh the page.",
       "command": "(trap 'kill 0' SIGINT; deno run --permission-set=build-dictionary --no-prompt --frozen --cached-only --watch --no-clear-screen ./dictionary/watch.ts & deno bundle --output=./dist/main.js --sourcemap=linked --platform=browser --format=iife --watch ./src/main.ts)",
-      "dependencies": ["soft-build-dictionary"]
+      "dependencies": [
+        "soft-build-dictionary"
+      ]
     },
     "repl": {
       "description": "Starts a REPL",
       "command": "deno run --no-prompt --frozen --cached-only ./src/repl.ts",
-      "dependencies": ["build-dictionary"]
+      "dependencies": [
+        "build-dictionary"
+      ]
     },
     "build-dictionary": {
       "description": "Builds the dictionary at `./dictionary/dictionary.ts`",
@@ -51,7 +77,9 @@
       "./dist/main.js"
     ],
     "rules": {
-      "tags": ["recommended"],
+      "tags": [
+        "recommended"
+      ],
       "include": [
         "camelcase",
         "explicit-module-boundary-types",
@@ -67,7 +95,9 @@
         "prefer-ascii",
         "single-var-declarator"
       ],
-      "exclude": ["no-explicit-any"]
+      "exclude": [
+        "no-explicit-any"
+      ]
     }
   },
   "imports": {
