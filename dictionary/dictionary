@@ -13,6 +13,8 @@
 #   https://github.com/lipu-linku/sona/blob/main/LICENSE.CC-BY-SA-4.0
 
 a:
+    # core
+
     ah/aah/aaah(f);
     # oh/ohh/ohhh(f);
     # ha/haa/haaa(f);
@@ -23,6 +25,8 @@ a:
     `[`placed after something for emphasis or emotion`]`(particle def);
 
 akesi:
+    # core
+
     reptile(n);
     amphibian(n);
     scaly(adj material) creature(n);
@@ -32,6 +36,8 @@ akesi:
     amphibian(adj qualifier);
 
 ala:
+    # core
+
     not(d negative);
     not(adv negative);
     nothing(n plural);
@@ -48,6 +54,8 @@ ala:
         # out!
 
 alasa:
+    # core
+
     # hunt(v) [object];
     search(v) for(prep) [object];
 
@@ -60,6 +68,8 @@ alasa:
     searching(adj qualifier gerund-like);
 
 ale, ali:
+    # core, uncommon
+
     all(d quantifier plural);
     # every(d distributive);
     everything(n singular);
@@ -71,6 +81,8 @@ ale, ali:
     completely(adv);
 
 anpa:
+    # core
+
     # bottom(n singular);
     underside(n singular);
 
@@ -81,6 +93,8 @@ anpa:
     defeat(v) [object];
 
 ante:
+    # core
+
     different(adj opinion);
     # altered(adj opinion);
 
@@ -96,11 +110,15 @@ ante:
     differently(adv);
 
 anu:
+    # core
+
     `[`separates multiple possibilities, replacing another particle`]`
         (particle def);
     or(particle def);
 
 awen:
+    # core
+
     # stay(v);
     remain(v linking) [predicate];
         # Thanks to ilo Tani for telling me this is supposed to be a linking
@@ -128,17 +146,25 @@ awen:
     continuing(adj qualifier gerund-like);
 
 e:
+    # core
+
     `[`marks the start of a direct object`]`(particle def);
 
-eliki:
-    trial(n);
-    adversity(n);
-    bittersweet(adj opinion);
+# eliki:
+#     # sandbox
+#
+#     trial(n);
+#     adversity(n);
+#     bittersweet(adj opinion);
 
 en:
+    # core
+
     `[`separates multiple subjects`]`(particle def);
 
 epiku:
+    # ucommon
+
     # epic(adj opinion);
     # cool(adj opinion); # Could be conflated with "cool" as in lete
     awesome(adj opinion);
@@ -150,6 +176,8 @@ epiku:
     amazingly(adv);
 
 esun:
+    # core
+
     # trade(v) [object];
     # barter(v) [object];
     # exchange(v) [object];
@@ -178,6 +206,8 @@ esun:
     sell(adj qualifier);
 
 ijo:
+    # core
+
     # thing(n);
     # object(n);
     entity(n);
@@ -186,6 +216,8 @@ ijo:
     phenomenon(n);
 
 ike:
+    # core
+
     bad(adj opinion);
     # unpleasant(adj opinion);
     # harmful(adj opinion);
@@ -198,6 +230,8 @@ ike:
     # harmfully(adv);
 
 ilo:
+    # core
+
     tool(n);
     # implement(n);
     # machine(n);
@@ -209,6 +243,8 @@ ilo:
     # device-related(adj opinion);
 
 insa:
+    # core
+
     inside(adj qualifier) part(n);
     # center(n singular);
     middle(n);
@@ -217,6 +253,8 @@ insa:
     internal(adj qualifier);
 
 jaki:
+    # core
+
     disgusting(adj opinion);
     unclean(adj opinion);
     # unsanitary(adj opinion);
@@ -231,6 +269,8 @@ jaki:
     disgustingly(adv);
 
 jan:
+    # core
+
     person(n);
     somebody(n singular);
     human being(n);
@@ -242,6 +282,8 @@ jan:
     # person-related(adj opinion);
 
 jasima:
+    # uncommon
+
     reflect(v) [object];
     # echo(v) [object];
     # mirror(v) [object];
@@ -258,6 +300,8 @@ jasima:
     duplicating(adj qualifier gerund-like);
 
 jelo:
+    # core
+
     yellow(adj color);
     # golden(adj color);
     # lime(adv) yellow(adj color);
@@ -268,6 +312,8 @@ jelo:
     # yellowish(adj color) orange(n singular);
 
 jo:
+    # core
+
     # hold(v) [object];
     carry(v) [object];
     contain(v) [object];
@@ -279,6 +325,8 @@ jo:
     owning(n gerund);
 
 kala:
+    # core
+
     fish(n);
     # marine(adj qualifier) animal(n);
     # sea(adj qualifier) creature(n);
@@ -292,12 +340,16 @@ kala:
     swimming(adj qualifier gerund-like);
 
 kalama:
+    # core
+
     produce(v) sound(n);
     sound(n);
 
     sound-related(adj opinion);
 
 kama:
+    # core
+
     arrive(v);
     # approach(v);
     summon(v) [object];
@@ -318,6 +370,8 @@ kama:
     becoming(adj qualifier gerund-like);
 
 kasi:
+    # core
+
     plant(n);
     # vegetation(n);
     # herb(n);
@@ -334,6 +388,8 @@ kasi:
     leaf-related(adj opinion);
 
 ken:
+    # core
+
     can(v modal) [predicate];
     may(v modal) [predicate];
 
@@ -345,12 +401,16 @@ ken:
     enable(v) [object];
 
 kepeken:
+    # core
+
     use(v) [object];
 
     using(prep) [indirect object];
     by means of(prep) [indirect object];
 
 kijetesantakalu:
+    # common
+
     raccoon(n);
     # kinkajou(n);
     procyonid(n);
@@ -366,6 +426,8 @@ kijetesantakalu:
     # kinkajou-related(adj opinion);
 
 kili:
+    # core
+
     fruit(n);
     vegetable(n);
     mushroom(n);
@@ -379,11 +441,15 @@ kili:
     mushroom-related(adj opinion);
 
 kin:
+    # common
+
     `[`at sentence start`]`(particle def);
     also(adv);
     additionally(adv);
 
 kipisi:
+    # common
+
     # split(v) [object];
     cut(v) [object];
     # slice(v) [object];
@@ -399,6 +465,8 @@ kipisi:
     # slicing(n gerund);
 
 kiwen:
+    # core
+
     hard(adj material) object(n);
     # metal(n);
     # rock(n);
@@ -407,6 +475,8 @@ kiwen:
     hard(adj material);
 
 ko:
+    # core
+
     semi-solid(n singular);
     # paste(n singular);
     powder(n singular);
@@ -421,10 +491,14 @@ ko:
     sticky(adj material);
 
 kokosila:
+    # obscure
+
     speak(v) a(d article singular) non-Toki Pona(adj qualifier)
         language(n singular);
 
 kon:
+    # core
+
     air(n);
     # breath(n);
     # wind(n);
@@ -453,11 +527,15 @@ kon:
     # ghost-related(adj opinion);
 
 ku:
+    # common
+
     interact(v) with(prep) the(d article) Toki Pona(adj qualifier)
         Dictionary(n singular);
     the(d article) Toki Pona(adj qualifier) Dictionary(n);
 
 kule:
+    # core
+
     color(n);
     # pigment(n);
     category(n);
@@ -470,6 +548,8 @@ kule:
     colorfully(adv);
 
 kulupu:
+    # core
+
     group(n);
     # community(n);
     # society(n);
@@ -489,6 +569,8 @@ kulupu:
     # crowd-related(adj opinion);
 
 kute:
+    # core
+
     ear(n);
     hearing(adj qualifier gerund-like) organ(n);
 
@@ -506,10 +588,14 @@ kute:
     obeying(adj qualifier gerund-like);
 
 la:
+    # core
+
     `[`mark the previous statement as context to a following statement`]`
         (particle def);
 
 lanpan:
+    # uncommon
+
     take(v) [object];
     # seize(v) [object];
     # steal(v) [object];
@@ -523,6 +609,8 @@ lanpan:
     # stealing(adj qualifier gerund-like);
 
 lape:
+    # core
+
     sleep(n singular);
     rest(n singular);
     sleep(v);
@@ -532,6 +620,8 @@ lape:
     resting(adj qualifier gerund-like);
 
 laso:
+    # core
+
     # turquoise(adj color);
     blue(adj color);
     green(adj color);
@@ -547,6 +637,8 @@ laso:
     # lime(adj color) green(n singular);
 
 lawa:
+    # core
+
     head(n);
     mind(n);
     brain(n);
@@ -570,6 +662,8 @@ lawa:
     law-related(adj opinion);
 
 leko:
+    # common
+
     square(n);
     # cube(n);
     block(n);
@@ -582,6 +676,8 @@ leko:
     blocky(adj physical quality);
 
 len:
+    # core
+
     # cloth(n);
     # clothing(n);
     fabric(n);
@@ -598,6 +694,8 @@ len:
     secretly(adv);
 
 lete:
+    # core
+
     cold(adj material);
     # cool(adj material); # Could be conflated with "cool" as in pona
     # frozen(adj material);
@@ -612,9 +710,13 @@ lete:
     # coolness(n);
 
 li:
+    # core
+
     `[`marks the start of an indicative verb `(`statement`)``]`(particle def);
 
 lili:
+    # core
+
     small(adj size);
     short(adj size);
     young(adj age);
@@ -630,6 +732,8 @@ lili:
     slightly(adv);
 
 linja:
+    # core
+
     long(adj size) flexible(adj material) thing(n);
     # rope(n);
     # yarn(n);
@@ -641,6 +745,8 @@ linja:
     long(adj size) and(c) flexible(adj material);
 
 lipu:
+    # core
+
     flat(adj physical quality) bendable(adj material) object(n);
     paper(n);
     # card(n);
@@ -655,6 +761,8 @@ lipu:
     flat(adj size) and(c) bendable(adj material);
 
 loje:
+    # core
+
     red(adj color);
     # magenta(adj color);
     # scarlet(adj color);
@@ -670,6 +778,8 @@ loje:
     # reddish(adj color) orange(n singular);
 
 lon:
+    # core
+
     present(adj origin);
     existing(adj opinion);
     real(adj opinion);
@@ -685,6 +795,8 @@ lon:
     truthfully(adv);
 
 luka:
+    # core
+
     hand(n);
     arm(n);
     tactile(adj qualifier) organ(n);
@@ -703,6 +815,8 @@ luka:
     arm-related(adj opinion);
 
 lukin, oko:
+    # core, uncommon
+
     see(v) [object];
     look(v) at(prep) [object];
     # view(v) at(prep) [object];
@@ -718,6 +832,8 @@ lukin, oko:
     try to(v) [predicate];
 
 lupa:
+    # core
+
     hole(n);
     # pit(n);
     # cave(n);
@@ -730,6 +846,8 @@ lupa:
     hole-related(adj opinion);
 
 ma:
+    # core
+
     earth(n singular);
     land(n singular);
     soil(n singular);
@@ -749,6 +867,8 @@ ma:
     outdoor-related(adj opinion);
 
 majuna:
+    # ucommon
+
     old(adj age);
     # aged(adj age);
     ancient(adj age);
@@ -756,6 +876,8 @@ majuna:
     oldness(n);
 
 mama:
+    # core
+
     parent(n);
     ancestor(n);
 
@@ -775,6 +897,8 @@ mama:
     guardian-related(adj opinion);
 
 mani:
+    # core
+
     money(n singular);
     # currency(n);
     valuable(adj opinion) thing(n);
@@ -786,27 +910,37 @@ mani:
     valuable(adj opinion);
 
 meli:
+    # common
+
     woman(n);
     feminine(adj opinion);
     wife(n);
     girlfriend(n);
 
 meso:
+    # uncommon
+
     midpoint(n);
     medium(adj size);
     mediocre(adj opinion);
 
 mi:
+    # core
+
     I/me/we/us(personal pronoun first);
     my/our(d possessive);
 
 mije:
+    # common
+
     man(n);
     masculine(adj qualifier);
     husband(n);
     boyfriend(n);
 
 misikeke:
+    # common
+
     medical(adj qualifier) item(n);
     # prescription(n);
     meditation(n);
@@ -817,6 +951,8 @@ misikeke:
     medical(adj qualifier);
 
 moku:
+    # core
+
     eat(v) [object];
     drink(v) [object];
     consume(v) [object];
@@ -829,6 +965,8 @@ moku:
     food-related(adj opinion);
 
 moli:
+    # core
+
     death(n singular);
     dead(adj age);
     die(v);
@@ -837,6 +975,8 @@ moli:
     # murder(v) [object];
 
 monsi:
+    # core
+
     back(n singular);
     rear(n singular);
 
@@ -844,6 +984,8 @@ monsi:
     rear-related(adj opinion);
 
 monsuta:
+    # common
+
     fear(n);
     # nervousness(n);
     dread(n);
@@ -857,6 +999,8 @@ monsuta:
     danger(n);
 
 mu:
+    # core
+
     bark(v);
     cough(v);
     roar(v);
@@ -921,6 +1065,8 @@ mu:
     chomping(n gerund);
 
 mun:
+    # core
+
     # moon(n singular);
     night sky(adj qualifier) object(n);
     # star(n);
@@ -932,6 +1078,8 @@ mun:
     star-related(adj opinion);
 
 musi:
+    # core
+
     # fun(n singular);
     game(n);
     entertainment(n);
@@ -949,6 +1097,8 @@ musi:
     comically(adv);
 
 mute:
+    # core
+
     many(d quantifier plural);
     # several(d quantifier plural);
     very(adv);
@@ -957,6 +1107,8 @@ mute:
     quantity(n);
 
 n:
+    # common
+
     hm/hmm/hmmm(f);
     # uh/uhh/uhhh(f);
     # mm/mmm/mmmm(f);
@@ -965,6 +1117,8 @@ n:
     `[`indicate thinking or pause`]`(particle def);
 
 namako:
+    # common
+
     spice(n);
     ornament(n);
     # adornment(n);
@@ -973,6 +1127,8 @@ namako:
     additional(adj opinion);
 
 nanpa:
+    # core
+
     number(n);
     -th(particle def);
     `[`ordinal number`]`(particle def);
@@ -980,6 +1136,8 @@ nanpa:
     numeric(adj opinion);
 
 nasa:
+    # core
+
     unusual(adj opinion);
     # strange(adj opinion);
     silly(adj opinion);
@@ -994,6 +1152,8 @@ nasa:
     strangeness(n singular);
 
 nasin:
+    # core
+
     method(n);
     doctrine(n);
     tradition(n);
@@ -1010,6 +1170,8 @@ nasin:
     # way-related(adj opinion);
 
 nena:
+    # core
+
     protuberance(n);
     bump(n);
     button(n);
@@ -1023,12 +1185,16 @@ nena:
     nose-related(adj opinion);
 
 ni:
+    # core
+
     this/these(n);
     that/those(n);
     this/these(d demonstrative);
     that/those(d demonstrative);
 
 nimi:
+    # core
+
     word(n);
     name(n);
 
@@ -1036,6 +1202,8 @@ nimi:
     name-related(adj opinion);
 
 noka:
+    # core
+
     foot(n);
     leg(n);
     locomotive(adj qualifier) organ(n);
@@ -1050,6 +1218,8 @@ noka:
     root-related(adj opinion);
 
 o:
+    # core
+
     `[`marks the end of a vocative `(`who is being spoken to`)``]`
         (particle def);
     `[`marks the start of an imperative `(`command, wish, instruction`)``]`
@@ -1057,6 +1227,8 @@ o:
     should(particle def);
 
 olin:
+    # core
+
     have(v) strong(adj opinion) emotional(adj opinion) bond(n singular)
         with(prep) [object];
     respect(v) [object];
@@ -1074,12 +1246,16 @@ olin:
     romantically(adv);
 
 ona:
+    # core
+
     they/them(personal pronoun third plural);
     it/it(personal pronoun third singular);
     their(d possessive);
     its(d possessive);
 
 open:
+    # core
+
     # begin(v);
     start(v);
     open(v) [object];
@@ -1090,6 +1266,8 @@ open:
     beginning-related(adj opinion);
 
 pakala:
+    # core
+
     damaged(adj opinion);
     # broken(adj opinion);
     # botched(adj opinion);
@@ -1107,6 +1285,8 @@ pakala:
     incorrectly(adv);
 
 pali:
+    # core
+
     # work(n);
     activity(n);
 
@@ -1121,6 +1301,8 @@ pali:
     activity-related(adj opinion);
 
 palisa:
+    # core
+
     long(adj size) hard(adj material) thing(n);
     # branch(n);
     # pole(n);
@@ -1132,6 +1314,8 @@ palisa:
     long(adj size) and(c) hard(adj material);
 
 pan:
+    # core
+
     grain(n);
     starchy(adj material) food(n);
     baked(adj qualifier) goods(n plural);
@@ -1148,6 +1332,8 @@ pan:
     grain-related(adj opinion);
 
 pana:
+    # core
+
     give(v) [object];
     # send(v) [object];
     emit(v) [object];
@@ -1170,9 +1356,13 @@ pana:
     releasing(adj qualifier gerund-like);
 
 pi:
+    # core
+
     `[`modify the next word with one or more following words`]`(particle def);
 
 pilin:
+    # core
+
     experience(n);
     emotion(n);
     # feeling(n);
@@ -1190,6 +1380,8 @@ pilin:
     heart-related(adj opinion);
 
 pimeja:
+    # core
+
     dark(adj color);
     unlit(adj color);
 
@@ -1201,6 +1393,8 @@ pimeja:
     darkness(n singular);
 
 pini:
+    # core
+
     finish(v) [object];
     stop(v) [object];
     prevent(v) [object];
@@ -1217,6 +1411,8 @@ pini:
     conclusion(n);
 
 pipi:
+    # core
+
     insect(n);
     bug(n);
     # spider(n);
@@ -1229,12 +1425,16 @@ pipi:
     bug-related(adj opinion);
 
 poka:
+    # core
+
     hip(n);
     side(n);
     vicinity(n);
     nearby(adj origin);
 
 poki:
+    # core
+
     container(n);
     # bag(n);
     # bowl(n);
@@ -1248,6 +1448,8 @@ poki:
     container-related(adj opinion);
 
 pona:
+    # core
+
     good(adj opinion);
     # pleasant(adj opinion);
     # helpful(adj opinion);
@@ -1261,12 +1463,16 @@ pona:
     # TODO: well(adv); # Implement this when ilo Token can add adverbs after the verbs or adjectives
 
 pu:
+    # core
+
     interact(v) with(prep) the(d article) book(n singular) titled(adj)
         Toki Pona`:` The Language of Good(n proper);
     the(d article) book(n) titled(adj)
         Toki Pona`:` The Language of Good(n proper);
 
 sama:
+    # core
+
     same(adj opinion);
     # similar(adj opinion);
     # alike(adj opinion);
@@ -1281,6 +1487,8 @@ sama:
     equally(adv);
 
 seli:
+    # core
+
     hot(adj material);
     warm(adj material);
 
@@ -1291,6 +1499,8 @@ seli:
     burn(v) [object];
 
 selo:
+    # core
+
     outer(adj origin) layer(n);
     # skin(n singular);
     # peel(n singular);
@@ -1305,6 +1515,8 @@ selo:
     boundary-related(adj opinion);
 
 seme:
+    # core
+
     `[`indicate a question by marking missing info in a sentence`]`
         (particle def);
     what/what(n);
@@ -1313,6 +1525,8 @@ seme:
     which(d interrogative);
 
 sewi:
+    # core
+
     # top(adj origin);
     above(adj origin);
     highest(adj origin) part(n);
@@ -1328,6 +1542,8 @@ sewi:
     elevate(v) [object];
 
 sijelo:
+    # core
+
     body(n);
     shape(n);
     physical(adj qualifier) state(n);
@@ -1342,6 +1558,8 @@ sijelo:
     form-related(adj opinion);
 
 sike:
+    # core
+
     circle(n);
     sphere(n);
     spiral(n);
@@ -1360,6 +1578,8 @@ sike:
     repeatedly(adv);
 
 sin:
+    # core
+
     new(adj age);
     fresh(adj opinion);
 
@@ -1371,10 +1591,14 @@ sin:
     newly(adv);
 
 sina:
+    # core
+
     you/you(personal pronoun second plural);
     your(d possessive);
 
 sinpin:
+    # core
+
     vertical(adj physical quality) surface(n);
     # wall(n);
     # board(n);
@@ -1388,6 +1612,8 @@ sinpin:
     face-related(adj opinion);
 
 sitelen:
+    # core
+
     image(n);
     # picture(n);
     representation(n);
@@ -1403,6 +1629,8 @@ sitelen:
     # writing-related(adj opinion);
 
 soko:
+    # common
+
     mushroom(n);
     fungus(n);
     lichen(n);
@@ -1416,6 +1644,8 @@ soko:
     lichen-related(adj opinion);
 
 sona:
+    # core
+
     knowledge(n);
     information(n);
     data(n plural); # data is not singular, datum sounds unfamiliar
@@ -1433,6 +1663,8 @@ sona:
     data-related(adj opinion);
 
 soweli:
+    # core
+
     fuzzy(adj material) creature(n);
     land(adj qualifier) animal(n);
     beast(n);
@@ -1444,11 +1676,15 @@ soweli:
     beast-related(adj opinion);
 
 su:
+    # uncommon
+
     interact(v) with(prep) Mrs. Lang's(d possessive) story(adj qualifier)
         book(adj qualifier) series(n singular);
     Mrs. Lang's(d possessive) story(adj qualifier) book(adj qualifier) series(n);
 
 suli:
+    # core
+
     big(adj size);
     heavy(adj size);
     # large(adj size);
@@ -1463,6 +1699,8 @@ suli:
     importance(n singular);
 
 suno:
+    # core
+
     # light(v);
     shine(v);
     # glow(v);
@@ -1477,6 +1715,8 @@ suno:
     light-related(adj opinion);
 
 supa:
+    # core
+
     horizontal(adj physical quality) surface(n);
     # bed(n);
     # floor(n);
@@ -1488,6 +1728,8 @@ supa:
     horizontal(adj physical quality);
 
 suwi:
+    # core
+
     sweet(adj material);
     fragrant(adj material);
     cute(adj opinion);
@@ -1500,6 +1742,8 @@ suwi:
     charmingly(adv);
 
 tan:
+    # core
+
     from(prep) [indirect object];
     because of(prep) [indirect object];
 
@@ -1507,6 +1751,8 @@ tan:
     cause(n);
 
 taso:
+    # core
+
     only(adj opinion);
     only(adv);
     `[`marks a sentence as qualifying or contradictory`]`(particle def);
@@ -1514,6 +1760,8 @@ taso:
     however(particle def);
 
 tawa:
+    # core
+
     motion(n);
     # walk(v);
     shake(v) [object];
@@ -1533,6 +1781,8 @@ tawa:
     moving(adj physical quality);
 
 telo:
+    # core
+
     liquid(n singular);
     # water(n singular);
     # gasoline(n singular);
@@ -1545,6 +1795,8 @@ telo:
     liquid(adj material);
 
 tenpo:
+    # core
+
     time(n singular);
     # event(n);
     # situation(n);
@@ -1560,6 +1812,8 @@ tenpo:
     # duration-related(adj opinion);
 
 toki:
+    # core
+
     communicate(v) about(prep) [object];
     # say(v) [object];
     think(v) about(prep) [object];
@@ -1578,6 +1832,8 @@ toki:
     language-related(adj opinion);
 
 tomo:
+    # core
+
     indoor(adj qualifier) space(n);
     # shelter(n);
     # room(n);
@@ -1594,6 +1850,8 @@ tomo:
     # shack-related(adj opinion);
 
 tonsi:
+    # common
+
     non-binary(adj qualifier) person(n);
     gender nonconforming(adj qualifier) person(n);
     gender-queer(adj qualifier) person(n);
@@ -1605,6 +1863,8 @@ tonsi:
     transgender(adj qualifier);
 
 tu:
+    # core
+
     2(num);
     separate(v) [object];
     divide(v) [object];
@@ -1619,6 +1879,8 @@ tu:
     split(adj opinion);
 
 unpa:
+    # core
+
     sexual(adj qualifier) activity(n);
     have(v) sex(n singular) with(prep) [object];
 
@@ -1627,6 +1889,8 @@ unpa:
     sexually(adv);
 
 uta:
+    # core
+
     mouth(n);
     lip(n);
     throat(n);
@@ -1637,6 +1901,8 @@ uta:
     throat-related(adj opinion);
 
 utala:
+    # core
+
     # fight(v) against(prep) [object];
     compete(v) against(prep) [object];
     # battle(v) against(prep) [object];
@@ -1652,6 +1918,8 @@ utala:
     challenge-related(adj opinion);
 
 walo:
+    # core
+
     light-colored(adj color);
     # white(adj color);
     # pale(adj color);
@@ -1665,6 +1933,8 @@ walo:
     # cream(adj qualifier) color(n);
 
 wan:
+    # core
+
     1(num);
     singular(adj opinion);
 
@@ -1674,6 +1944,8 @@ wan:
     # fuse(v) [object];
 
 waso:
+    # core
+
     bird(n);
     flying(adj qualifier gerund-like) creature(n);
     winged(adj qualifier) animal(n);
@@ -1684,6 +1956,8 @@ waso:
     bird-related(adj physical quality);
 
 wawa:
+    # core
+
     power(n);
     # energy(n);
     # strength(n);
@@ -1698,6 +1972,8 @@ wawa:
     powerfully(adv);
 
 weka:
+    # core
+
     absent(adj origin);
     away(adj origin);
     distant(adj origin);
@@ -1709,6 +1985,8 @@ weka:
     removal(n);
 
 wile:
+    # core
+
     want(v) [object];
     # desire(v) [object];
     # wish(v) for(prep) [object];
