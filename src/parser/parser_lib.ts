@@ -1,7 +1,7 @@
 import { assertGreater } from "@std/assert/greater";
 import { MemoizationCacheResult, memoize } from "@std/cache/memoize";
 import { IterableResult, ResultError } from "../compound.ts";
-import { lazy as lazyEval } from "../misc/misc.ts";
+import { ErrorOption, lazy as lazyEval } from "../misc/misc.ts";
 
 type ValueLength<T> = Readonly<{ value: T; length: number }>;
 type ParserResult<T> = IterableResult<ValueLength<T>>;
@@ -33,7 +33,7 @@ export class Parser<T> {
     }
     return this.rawParser(0).map(({ value }) => value);
   }
-  map<U>(mapper: (value: T) => U): Parser<U> {
+  #rawMap<U>(mapper: (value: T) => U): Parser<U> {
     return new Parser((input) =>
       this.rawParser(input)
         .map(({ value, length }): ValueLength<U> => ({
@@ -42,18 +42,22 @@ export class Parser<T> {
         }))
     );
   }
-  mapWithPositionedError<U>(mapper: (value: T) => U): Parser<U> {
+  map<U>(mapper: (value: T) => U): Parser<U> {
     return withPosition(this)
-      .map((value) => withPositionedError(() => mapper(value.value), value));
+      .#rawMap((value) =>
+        withPositionedError(() => mapper(value.value), value)
+      );
   }
-  filter(mapper: (value: T) => boolean): Parser<T> {
+  #rawFilter(mapper: (value: T) => boolean): Parser<T> {
     return new Parser((input) =>
       this.rawParser(input).filter(({ value }) => mapper(value))
     );
   }
-  filterWithPositionedError(mapper: (value: T) => boolean): Parser<T> {
+  filter(mapper: (value: T) => boolean): Parser<T> {
     return withPosition(this)
-      .filter((value) => withPositionedError(() => mapper(value.value), value))
+      .#rawFilter((value) =>
+        withPositionedError(() => mapper(value.value), value)
+      )
       .map(({ value }) => value);
   }
   then<U>(mapper: (value: T) => Parser<U>): Parser<U> {
@@ -88,19 +92,23 @@ export class Parser<T> {
 export type Position = Readonly<{ position: number; length: number }>;
 export class PositionedError extends ResultError {
   override name = "PositionedError";
+  position: null | Position;
   constructor(
     message: string,
-    public readonly position: null | Position = null,
+    option?: Position & ErrorOption,
   ) {
-    super(message);
+    super(message, option);
+    this.position = option ?? null;
   }
 }
 function withPositionedError<T>(fn: () => T, position: Position) {
   try {
     return fn();
   } catch (error) {
-    if (typeof error === "string") {
-      throw new PositionedError(error, position);
+    if (error instanceof PositionedError && error.position != null) {
+      throw error;
+    } else if (error instanceof ResultError) {
+      throw new PositionedError(error.message, { ...position, cause: error });
     } else {
       throw error;
     }
@@ -108,17 +116,21 @@ function withPositionedError<T>(fn: () => T, position: Position) {
 }
 export class UnexpectedError extends PositionedError {
   override name = "UnexpectedError";
-  constructor(unexpected: string, expected: string, position?: Position) {
+  constructor(
+    unexpected: string,
+    expected: string,
+    option?: Position & ErrorOption,
+  ) {
     super(
       `unexpected ${unexpected}. ${expected} were expected instead`,
-      position,
+      option,
     );
   }
 }
 export class UnrecognizedError extends PositionedError {
   override name = "UnrecognizedError";
-  constructor(element: string, position?: Position) {
-    super(`${element} is unrecognized`, position);
+  constructor(element: string, option?: Position & ErrorOption) {
+    super(`${element} is unrecognized`, option);
   }
 }
 export function error(error: ResultError): Parser<never> {
@@ -346,21 +358,15 @@ export function withPosition<T>(parser: Parser<T>): Parser<WithPosition<T>> {
 export class CheckedParser<T> {
   constructor(public check: Parser<unknown>, public parser: Parser<T>) {}
   map<U>(mapper: (value: T) => U): CheckedParser<U> {
-    return new CheckedParser(this.check, this.parser.map(mapper));
-  }
-  mapWithPositionedError<U>(mapper: (value: T) => U): CheckedParser<U> {
     return new CheckedParser(
       this.check,
-      this.parser.mapWithPositionedError(mapper),
+      this.parser.map(mapper),
     );
   }
   filter(check: (value: T) => boolean): CheckedParser<T> {
-    return new CheckedParser(this.check, this.parser.filter(check));
-  }
-  filterWithPositionedError(check: (value: T) => boolean): CheckedParser<T> {
     return new CheckedParser(
       this.check,
-      this.parser.filterWithPositionedError(check),
+      this.parser.filter(check),
     );
   }
 }

@@ -1,10 +1,12 @@
+import { ErrorOption } from "./misc/misc.ts";
+
 export class ResultError extends Error {
   override name = "ArrayResultError";
 }
 export class TodoError extends ResultError {
   override name = "TodoError";
-  constructor(functionality: string) {
-    super(`${functionality} is not yet implemented`);
+  constructor(functionality: string, option?: ErrorOption) {
+    super(`${functionality} is not yet implemented`, option);
   }
 }
 export type Result<T> =
