@@ -198,7 +198,7 @@ export const token: Parser<Token> = choiceOnlyOne(
 );
 
 const alaX = memoize((word: string) =>
-  sequence(specificWord("ala"), specificWord(word)).map(() => word)
+  sequence(specificWord("ala"), specificWord(word))
 );
 const xAlaX = word.then(alaX);
 const xAlaXInside = sequence(many(token), xAlaX);
