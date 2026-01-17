@@ -1,8 +1,10 @@
 // this code is browser only
 
+import { closestString } from "@std/text/closest-string";
 import BrowserDetector from "browser-dtector";
 import { dictionary } from "../dictionary/dictionary.ts";
 import { parseDictionary } from "../dictionary/parser.ts";
+import { Dictionary } from "../dictionary/type.ts";
 import PROJECT_DATA from "../project_data.json" with { type: "json" };
 import { extractResultError, Result, ResultError } from "./compound.ts";
 import { loadCustomDictionary } from "./dictionary.ts";
@@ -10,6 +12,7 @@ import {
   assertQuotaExceededError,
   checkLocalStorage,
 } from "./local_storage.ts";
+import { hasXAlaX } from "./parser/lexer.ts";
 import { PositionedError } from "./parser/parser_lib.ts";
 import { settings } from "./settings.ts";
 import {
@@ -19,9 +22,6 @@ import {
   resetDomToDefault,
 } from "./settings_frontend.ts";
 import { translate } from "./translator/translator.ts";
-import { closestString } from "@std/text/closest-string";
-import { Dictionary } from "../dictionary/type.ts";
-import { hasXAlaX } from "./parser/lexer.ts";
 
 const DICTIONARY_AUTO_PARSE_THRESHOLD = 5000;
 const INITIAL_PAGE_SIZE = 100;

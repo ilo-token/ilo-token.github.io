@@ -1,13 +1,13 @@
-import { nullableAsArray } from "../misc/misc.ts";
 import { IterableResult } from "../compound.ts";
+import { nullableAsArray } from "../misc/misc.ts";
 import * as TokiPona from "../parser/ast.ts";
+import { FilteredError, UntranslatableError } from "../translator2/error.ts";
+import { CONJUNCTION } from "../translator2/misc.ts";
 import {
   AdjectiveWithInWay,
   extractNegativeFromAdjective,
 } from "./adjective.ts";
 import * as English from "./ast.ts";
-import { FilteredError, UntranslatableError } from "../translator2/error.ts";
-import { CONJUNCTION } from "../translator2/misc.ts";
 import { extractNegativeFromNoun } from "./noun.ts";
 import {
   multiplePhrases,

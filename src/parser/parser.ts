@@ -1,5 +1,4 @@
 import { memoize } from "@std/cache/memoize";
-import { lazy as lazyEval, nullableAsArray, throwError } from "../misc/misc.ts";
 import {
   contentWordSet,
   fillerSet,
@@ -8,6 +7,7 @@ import {
   preverbSet,
   tokiPonaWordSet,
 } from "../dictionary.ts";
+import { lazy as lazyEval, nullableAsArray, throwError } from "../misc/misc.ts";
 import {
   Clause,
   ContextClause,

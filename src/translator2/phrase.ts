@@ -1,20 +1,20 @@
-import * as English from "./ast.ts";
+import { equal } from "@std/assert/equal";
+import { IterableResult } from "../compound.ts";
+import { mapNullable, nullableAsArray } from "../misc/misc.ts";
+import * as TokiPona from "../parser/ast.ts";
+import * as Composer from "../parser/composer.ts";
 import { addWay, AdjectiveWithInWay } from "./adjective.ts";
+import * as English from "./ast.ts";
+import { ExhaustedError, FilteredError } from "./error.ts";
+import { CONJUNCTION } from "./misc.ts";
 import {
   adjectivalIsNone,
   AdjectivalModifier,
   AdverbialModifier,
   multipleModifiers,
 } from "./modifier.ts";
-import { ExhaustedError, FilteredError } from "./error.ts";
-import { mapNullable, nullableAsArray } from "../misc/misc.ts";
 import { nounAsPreposition, preposition } from "./preposition.ts";
-import * as TokiPona from "../parser/ast.ts";
-import { IterableResult } from "../compound.ts";
 import { wordUnit } from "./word_unit.ts";
-import * as Composer from "../parser/composer.ts";
-import { CONJUNCTION } from "./misc.ts";
-import { equal } from "@std/assert/equal";
 
 export type PhraseTranslation =
   | Readonly<{

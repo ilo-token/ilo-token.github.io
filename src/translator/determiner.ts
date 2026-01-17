@@ -1,10 +1,10 @@
 import { zip } from "@std/collections/zip";
 import * as Dictionary from "../../dictionary/type.ts";
 import { IterableResult } from "../compound.ts";
-import * as English from "./ast.ts";
 import { FilteredError } from "../translator2/error.ts";
-import { simpleNounForms } from "./noun.ts";
 import { word } from "../translator2/word.ts";
+import * as English from "./ast.ts";
+import { simpleNounForms } from "./noun.ts";
 
 function filterQuantity(
   determiners: ReadonlyArray<English.Determiner>,

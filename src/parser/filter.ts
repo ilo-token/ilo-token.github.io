@@ -1,5 +1,5 @@
-import { throwError } from "../misc/misc.ts";
 import { extractResultError } from "../compound.ts";
+import { throwError } from "../misc/misc.ts";
 import {
   Clause,
   ContextClause,

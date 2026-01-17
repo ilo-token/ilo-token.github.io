@@ -1,7 +1,10 @@
-import { mapNullable, nullableAsArray } from "../misc/misc.ts";
 import { IterableResult } from "../compound.ts";
+import { mapNullable, nullableAsArray } from "../misc/misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as Composer from "../parser/composer.ts";
+import { ExhaustedError, FilteredError } from "../translator2/error.ts";
+import { CONJUNCTION } from "../translator2/misc.ts";
+import { word } from "../translator2/word.ts";
 import {
   AdjectiveWithInWay,
   combineAdjective,
@@ -10,8 +13,6 @@ import {
 import { extractNegativeFromMultipleAdverbs, NOT } from "./adverb.ts";
 import * as English from "./ast.ts";
 import { getNumber } from "./determiner.ts";
-import { ExhaustedError, FilteredError } from "../translator2/error.ts";
-import { CONJUNCTION } from "../translator2/misc.ts";
 import {
   AdjectivalModifier,
   AdverbialModifier,
@@ -30,7 +31,6 @@ import {
 } from "./preposition.ts";
 import { Place } from "./pronoun.ts";
 import { PartialSimpleVerb, PartialVerb } from "./verb.ts";
-import { word } from "../translator2/word.ts";
 import { wordUnit } from "./word_unit.ts";
 
 export type PhraseTranslation =

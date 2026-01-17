@@ -1,10 +1,10 @@
-import * as TokiPona from "../parser/ast.ts";
 import { IterableResult } from "../compound.ts";
-import * as English from "./ast.ts";
-import { phrase } from "./phrase.ts";
 import { throwError } from "../misc/misc.ts";
+import * as TokiPona from "../parser/ast.ts";
+import * as English from "./ast.ts";
 import { FilteredError } from "./error.ts";
 import { adverbialIsNone } from "./modifier.ts";
+import { phrase } from "./phrase.ts";
 
 export function nanpa(
   nanpa: TokiPona.Nanpa,

@@ -3,8 +3,8 @@ import { IterableResult, ResultError } from "../compound.ts";
 import { parser } from "../parser/parser.ts";
 import { settings } from "../settings.ts";
 import * as EnglishComposer from "./composer.ts";
-import { multipleSentences } from "./sentence.ts";
 import { fixMultipleSentences } from "./fixer.ts";
+import { multipleSentences } from "./sentence.ts";
 
 const RANDOMIZATION_LIMIT = 25248;
 

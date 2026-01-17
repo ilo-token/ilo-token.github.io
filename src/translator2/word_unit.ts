@@ -3,12 +3,12 @@ import { dictionary } from "../dictionary.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";
 import * as English from "./ast.ts";
-import { noun } from "./noun.ts";
-import { pronoun } from "./pronoun.ts";
-import { word } from "./word.ts";
-import { verb } from "./verb.ts";
 import { TranslationTodoError } from "./error.ts";
+import { noun } from "./noun.ts";
 import { number, numberAsText } from "./number.ts";
+import { pronoun } from "./pronoun.ts";
+import { verb } from "./verb.ts";
+import { word } from "./word.ts";
 
 export type WordUnitTranslation =
   | (Readonly<{ type: "noun" }> & English.SimpleNounPhrase)

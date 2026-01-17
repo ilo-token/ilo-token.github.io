@@ -2,14 +2,14 @@ import { Definition } from "../../dictionary/type.ts";
 import { IterableResult } from "../compound.ts";
 import { dictionary } from "../dictionary.ts";
 import * as TokiPona from "../parser/ast.ts";
+import { TranslationTodoError } from "../translator2/error.ts";
+import { number, numberAsText } from "../translator2/number.ts";
+import { word } from "../translator2/word.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";
 import * as English from "./ast.ts";
-import { TranslationTodoError } from "../translator2/error.ts";
 import { PartialNoun, partialNoun } from "./noun.ts";
-import { number, numberAsText } from "../translator2/number.ts";
 import { Place, pronounAsPartialNoun } from "./pronoun.ts";
 import { PartialSimpleVerb, partialSimpleVerb } from "./verb.ts";
-import { word } from "../translator2/word.ts";
 
 export type WordUnitTranslation =
   | (Readonly<{ type: "noun" }> & PartialNoun)

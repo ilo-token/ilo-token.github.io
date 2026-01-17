@@ -1,11 +1,11 @@
 import * as Dictionary from "../../dictionary/type.ts";
-import { mapNullable, nullableAsArray } from "../misc/misc.ts";
 import { IterableResult } from "../compound.ts";
+import { mapNullable, nullableAsArray } from "../misc/misc.ts";
 import * as TokiPona from "../parser/ast.ts";
-import { extractNegativeFromMultipleAdverbs } from "./adverb.ts";
-import * as English from "./ast.ts";
 import { UntranslatableError } from "../translator2/error.ts";
 import { noEmphasis, word } from "../translator2/word.ts";
+import { extractNegativeFromMultipleAdverbs } from "./adverb.ts";
+import * as English from "./ast.ts";
 
 export type AdjectiveWithInWay = Readonly<{
   adjective: English.AdjectivePhrase;

@@ -1,17 +1,17 @@
-import * as English from "./ast.ts";
-import { number, numberAsText } from "./number.ts";
-import * as TokiPona from "../parser/ast.ts";
 import { IterableResult } from "../compound.ts";
-import { ExhaustedError, TranslationTodoError } from "./error.ts";
 import { dictionary } from "../dictionary.ts";
-import { getReduplicationCount } from "./word_unit.ts";
-import { noun } from "./noun.ts";
-import { pronoun } from "./pronoun.ts";
-import { adjective, compoundAdjective } from "./adjective.ts";
+import * as TokiPona from "../parser/ast.ts";
 import * as Composer from "../parser/composer.ts";
-import { word } from "./word.ts";
-import { phrase, PhraseTranslation } from "./phrase.ts";
+import { adjective, compoundAdjective } from "./adjective.ts";
+import * as English from "./ast.ts";
+import { ExhaustedError, TranslationTodoError } from "./error.ts";
 import { nanpa } from "./nanpa.ts";
+import { noun } from "./noun.ts";
+import { number, numberAsText } from "./number.ts";
+import { phrase, PhraseTranslation } from "./phrase.ts";
+import { pronoun } from "./pronoun.ts";
+import { word } from "./word.ts";
+import { getReduplicationCount } from "./word_unit.ts";
 
 export type ModifierTranslation =
   | Readonly<{ type: "noun"; noun: English.NounPhrase }>

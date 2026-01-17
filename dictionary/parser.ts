@@ -1,3 +1,4 @@
+import { assert } from "@std/assert/assert";
 import { memoize } from "@std/cache/memoize";
 import { escape as escapeHtml } from "@std/html/entities";
 import { escape as escapeRegex } from "@std/regexp/escape";
@@ -37,7 +38,6 @@ import {
   NounForms,
   VerbAccessory,
 } from "./type.ts";
-import { assert } from "@std/assert/assert";
 
 const RESERVED_SYMBOLS = "#()*+/:;<=>@[\\]^`{|}~";
 
