@@ -174,9 +174,9 @@ function main() {
   });
 
   // set version
-  const displayDate = PROJECT_DATA.onDevelopment
-    ? "(on development)"
-    : `- Released ${new Date(PROJECT_DATA.releaseDate).toLocaleDateString()}`;
+  const displayDate = location.href === "https://ilo-token.github.io/"
+    ? `- Released ${new Date(PROJECT_DATA.releaseDate).toLocaleDateString()}`
+    : "(on development)";
 
   versionDisplay.innerText = `${PROJECT_DATA.version} ${displayDate}`;
 
