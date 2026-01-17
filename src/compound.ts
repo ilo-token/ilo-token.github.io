@@ -135,11 +135,11 @@ export class IterableResult<T> {
               yield result;
               break;
           }
-          if (!hasError) {
-            const sorted = array.toSorted(comparer);
-            for (const value of sorted) {
-              yield { type: "value" as const, value };
-            }
+        }
+        if (!hasError) {
+          const sorted = array.toSorted(comparer);
+          for (const value of sorted) {
+            yield { type: "value" as const, value };
           }
         }
       }
