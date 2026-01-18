@@ -90,16 +90,18 @@ export async function parseDictionary(source: string): Promise<Dictionary> {
       }
       continue;
     }
-    if (errors.length === 0) {
-      for (const [word, definition] of entries.entries()) {
-        if (dictionary.has(word)) {
-          errors.push(new ResultError(`duplicate Toki Pona word "${word}"`));
-          break;
-        } else {
-          dictionary.set(word, definition);
-        }
+    for (const [word, definition] of entries.entries()) {
+      if (dictionary.has(word)) {
+        errors.push(new ResultError(`duplicate Toki Pona word "${word}"`));
+        break;
+      } else {
+        dictionary.set(word, definition);
       }
     }
   }
-  return dictionary;
+  if (errors.length === 0) {
+    return dictionary;
+  } else {
+    throw new AggregateError(errors);
+  }
 }
