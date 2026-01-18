@@ -6,7 +6,7 @@ import {
   prepositionSet,
   preverbSet,
   tokiPonaWordSet,
-} from "../dictionary.ts";
+} from "../dictionary/dictionary.ts";
 import { lazy as lazyEval, nullableAsArray, throwError } from "../misc/misc.ts";
 import {
   Clause,

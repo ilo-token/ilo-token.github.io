@@ -1,6 +1,6 @@
 import { Definition } from "../dictionary/type.ts";
 import { IterableResult } from "../compound.ts";
-import { dictionary } from "../dictionary.ts";
+import { dictionary } from "../dictionary/dictionary.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { TranslationTodoError } from "../translator2/error.ts";
 import { number, numberAsText } from "../translator2/number.ts";
