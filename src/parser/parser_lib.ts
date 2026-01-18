@@ -106,6 +106,7 @@ export class PositionedError extends ResultError {
   position: null | Position;
   constructor(
     message: string,
+    // TODO: it's better to separate these two instead
     option?: Position & ErrorOption,
   ) {
     super(message, option);
