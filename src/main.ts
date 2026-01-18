@@ -229,22 +229,27 @@ function main() {
     customDictionaryErrorList.innerHTML = "";
     for (const error of errors) {
       const listItem = document.createElement("li");
-      const link = document.createElement("a");
-      listItem.appendChild(link);
       customDictionaryErrorList.appendChild(listItem);
 
-      link.href = "#";
-      link.innerText = error.message;
-      const { position: { position, length } } = error as PositionedError & {
-        position: Position;
-      };
-      link.addEventListener("click", () => {
-        customDictionaryTextBox.focus();
-        customDictionaryTextBox.setSelectionRange(
-          position,
-          position + length,
-        );
-      });
+      if (error instanceof PositionedError && error.position != null) {
+        const link = document.createElement("a");
+        listItem.appendChild(link);
+
+        link.href = "#";
+        link.innerText = error.message;
+        const { position: { position, length } } = error as PositionedError & {
+          position: Position;
+        };
+        link.addEventListener("click", () => {
+          customDictionaryTextBox.focus();
+          customDictionaryTextBox.setSelectionRange(
+            position,
+            position + length,
+          );
+        });
+      } else {
+        listItem.innerText = error.message;
+      }
     }
   }
   // add all event listener
