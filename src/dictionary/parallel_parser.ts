@@ -93,7 +93,6 @@ export async function parseDictionary(source: string): Promise<Dictionary> {
     for (const [word, definition] of entries.entries()) {
       if (dictionary.has(word)) {
         errors.push(new ResultError(`duplicate Toki Pona word "${word}"`));
-        break;
       } else {
         dictionary.set(word, definition);
       }
