@@ -31,7 +31,7 @@ export function repeatArray<T>(
 export function repeatWithSpace(text: string, count: number): string {
   return repeatArray(text, count).join(" ");
 }
-export function throwError(error: unknown): never {
+export function throwError(error: Error): never {
   throw error;
 }
 export function compound(
