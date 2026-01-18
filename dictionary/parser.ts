@@ -20,9 +20,9 @@ import {
   optionalAll,
   optionalWithCheck,
   Parser,
+  PositionedError,
   sequence,
   UnexpectedError,
-  UnrecognizedError,
   withPosition,
   withSource,
 } from "../src/parser/parser_lib.ts";
@@ -80,16 +80,17 @@ const semicolon = lex(matchString(";", "semicolon"));
 const slash = lex(matchString("/", "slash"));
 
 const keyword = memoize(<T extends string>(keyword: T) =>
-  lex(withPosition(match(/[a-z\-]+/, `"${keyword}"`)))
-    .map((positioned) =>
-      positioned.value === keyword ? positioned.value : throwError(
-        new UnexpectedError(
-          `"${positioned.value}"`,
-          `"${keyword}"`,
-          positioned,
-        ),
-      )
-    ) as Parser<T>
+  lex(
+    match(/[a-z\-]+/, `"${keyword}"`)
+      .filter((value) =>
+        value === keyword || throwError(
+          new UnexpectedError(
+            `"${value}"`,
+            `"${keyword}"`,
+          ),
+        )
+      ) as Parser<T>,
+  )
 );
 const checkedCharacter = checkedAsWhole(wordCharacter);
 const escape = checkedSequence(backtick, character.skip(backtick))
@@ -647,11 +648,11 @@ const dictionaryParser: Parser<Dictionary> = ignore
       words.map((word) => [word, definition] as const)
     );
     const recorded: Set<string> = new Set();
-    const errors: Array<UnrecognizedError> = [];
+    const errors: Array<PositionedError> = [];
     for (const [head] of entries) {
       if (recorded.has(head.value)) {
         errors.push(
-          new UnrecognizedError(
+          new PositionedError(
             `duplicate Toki Pona word "${head.value}"`,
             head,
           ),
