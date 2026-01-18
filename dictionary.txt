@@ -1,7 +1,7 @@
 # Read the guidelines for editing:
-# https://github.com/ilo-token/ilo-token.github.io/wiki/Guidelines-for-editing-dictionary
+# https://github.com/ilo-token/ilo-token.github.io/wiki/Guidelines-for-editing-custom_dictionary
 
-# The dictionary is licensed under:
+# The custom_dictionary is licensed under:
 # Creative Commons Attribution-ShareAlike 4.0 International
 # https://creativecommons.org/licenses/by-sa/4.0/
 

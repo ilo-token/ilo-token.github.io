@@ -1,11 +1,11 @@
 // this code is Deno only
 
-import { extractResultError, ResultError } from "../src/compound.ts";
-import { PositionedError } from "../src/parser/parser_lib.ts";
+import { extractResultError, ResultError } from "../compound.ts";
+import { PositionedError } from "../parser/parser_lib.ts";
 import { parseDictionary } from "./parser.ts";
 import { Dictionary } from "./type.ts";
 
-const SOURCE = new URL("./dictionary", import.meta.url);
+const SOURCE = new URL("../../dictionary.txt", import.meta.url);
 const DESTINATION = new URL("./dictionary.ts", import.meta.url);
 
 export async function buildWithDictionary(

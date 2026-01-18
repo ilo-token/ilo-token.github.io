@@ -1,4 +1,4 @@
-import * as Dictionary from "../../dictionary/type.ts";
+import * as Dictionary from "../dictionary/type.ts";
 
 // When editing, update `./fixer.ts` as well
 

@@ -1,4 +1,4 @@
-import * as Dictionary from "../../dictionary/type.ts";
+import * as Dictionary from "../dictionary/type.ts";
 import * as English from "./ast.ts";
 
 export type Place = "subject" | "object";

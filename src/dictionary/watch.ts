@@ -6,7 +6,7 @@ import { build } from "./build.ts";
 
 if (import.meta.main) {
   await using stack = new AsyncDisposableStack();
-  using watcher = Deno.watchFs("./dictionary/dictionary");
+  using watcher = Deno.watchFs("./dictionary.txt");
   let task = Promise.resolve();
   stack.defer(async () => await task);
   const buildDebounced = debounce(() => {

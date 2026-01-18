@@ -1,4 +1,4 @@
-import * as Dictionary from "../../dictionary/type.ts";
+import * as Dictionary from "../dictionary/type.ts";
 
 export type Word = Readonly<{
   word: string;

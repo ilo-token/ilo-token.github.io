@@ -1,4 +1,4 @@
 /.vscode/
-/dictionary/dictionary.ts
+/src/dictionary/dictionary.ts
 /dist/main.js
 /dist/main.js.map

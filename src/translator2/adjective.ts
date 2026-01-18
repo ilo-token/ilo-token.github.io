@@ -1,4 +1,4 @@
-import * as Dictionary from "../../dictionary/type.ts";
+import * as Dictionary from "../dictionary/type.ts";
 import { IterableResult } from "../compound.ts";
 import { nullableAsArray } from "../misc/misc.ts";
 import * as TokiPona from "../parser/ast.ts";

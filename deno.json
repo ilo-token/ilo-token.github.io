@@ -13,10 +13,10 @@
         "DEBUG_CHUNKS"
       ],
       "read": [
-        "./dictionary/dictionary"
+        "./dictionary.txt"
       ],
       "write": [
-        "./dictionary/dictionary.ts"
+        "./src/dictionary/dictionary.ts"
       ]
     },
     "soft-build-dictionary": {
@@ -26,17 +26,17 @@
         "DEBUG_CHUNKS"
       ],
       "read": [
-        "./dictionary/dictionary",
-        "./dictionary/dictionary.ts"
+        "./dictionary.txt",
+        "./src/dictionary/dictionary.ts"
       ],
       "write": [
-        "./dictionary/dictionary.ts"
+        "./src/dictionary/dictionary.ts"
       ]
     }
   },
   "tasks": {
     "build": {
-      "description": "Builds every static files needed for GitHub pages. This builds the dictionary first at `./dictionary/dictionary.ts` then the distribution code `./dist/main.js`.",
+      "description": "Builds every static files needed for GitHub pages. This builds the dictionary first at `./src/dictionary/dictionary.ts` then the distribution code `./dist/main.js`.",
       "command": "deno bundle --output=./dist/main.js --minify --sourcemap=linked --platform=browser --format=iife ./src/main.ts",
       "dependencies": [
         "build-dictionary"
@@ -44,7 +44,7 @@
     },
     "start": {
       "description": "Starts a development server which automatically rebuilds the project whenever there are changes to the code. However, there is no server that serves frontend and you have to manually refresh the page.",
-      "command": "(trap 'kill 0' SIGINT; deno run --permission-set=build-dictionary --no-prompt --frozen --cached-only --watch --no-clear-screen ./dictionary/watch.ts & deno bundle --output=./dist/main.js --sourcemap=linked --platform=browser --format=iife --watch ./src/main.ts)",
+      "command": "(trap 'kill 0' SIGINT; deno run --permission-set=build-dictionary --no-prompt --frozen --cached-only --watch --no-clear-screen ./src/dictionary/watch.ts & deno bundle --output=./dist/main.js --sourcemap=linked --platform=browser --format=iife --watch ./src/main.ts)",
       "dependencies": [
         "soft-build-dictionary"
       ]
@@ -57,23 +57,23 @@
       ]
     },
     "build-dictionary": {
-      "description": "Builds the dictionary at `./dictionary/dictionary.ts`",
-      "command": "deno run --permission-set=build-dictionary --no-prompt --frozen --cached-only ./dictionary/build.ts"
+      "description": "Builds the dictionary at `./src/dictionary/dictionary.ts`",
+      "command": "deno run --permission-set=build-dictionary --no-prompt --frozen --cached-only ./src/dictionary/build.ts"
     },
     "soft-build-dictionary": {
-      "description": "Only builds the dictionary at `./dictionary/dictionary.ts` when it doesn't exists. When an error occurs, an empty dictionary is provided.",
-      "command": "deno run --permission-set=soft-build-dictionary --no-prompt --frozen --cached-only ./dictionary/soft-build.ts"
+      "description": "Only builds the dictionary at `./src/dictionary/dictionary.ts` when it doesn't exists. When an error occurs, an empty dictionary is provided.",
+      "command": "deno run --permission-set=soft-build-dictionary --no-prompt --frozen --cached-only ./src/dictionary/soft-build.ts"
     }
   },
   "fmt": {
     "exclude": [
-      "./dictionary/dictionary.ts",
+      "./src/dictionary/dictionary.ts",
       "./dist/main.js"
     ]
   },
   "lint": {
     "exclude": [
-      "./dictionary/dictionary.ts",
+      "./src/dictionary/dictionary.ts",
       "./dist/main.js"
     ],
     "rules": {

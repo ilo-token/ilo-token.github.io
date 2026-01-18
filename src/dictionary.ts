@@ -1,5 +1,5 @@
-import { dictionary as globalDictionary } from "../dictionary/dictionary.ts";
-import { Definition, Dictionary } from "../dictionary/type.ts";
+import { dictionary as globalDictionary } from "./dictionary/dictionary.ts";
+import { Definition, Dictionary } from "./dictionary/type.ts";
 
 // all of these global constants are mutable
 

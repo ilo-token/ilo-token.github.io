@@ -3,8 +3,8 @@ import { memoize } from "@std/cache/memoize";
 import { escape as escapeHtml } from "@std/html/entities";
 import { escape as escapeRegex } from "@std/regexp/escape";
 import nlp from "compromise/three";
-import { ResultError } from "../src/compound.ts";
-import { nullableAsArray, throwError } from "../src/misc/misc.ts";
+import { ResultError } from "../compound.ts";
+import { nullableAsArray, throwError } from "../misc/misc.ts";
 import {
   all,
   allWithCheck,
@@ -25,7 +25,7 @@ import {
   UnexpectedError,
   withPosition,
   withSource,
-} from "../src/parser/parser_lib.ts";
+} from "../parser/parser_lib.ts";
 import {
   Adjective,
   AdjectiveName,
