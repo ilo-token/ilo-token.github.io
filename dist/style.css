@@ -106,7 +106,7 @@ dialog.flex > div {
   display: flex;
 }
 
-dialog.flex > div > div,
+dialog.flex > div > .expand,
 dialog.flex > div > input[type="text"] {
   flex-grow: 1;
 }
