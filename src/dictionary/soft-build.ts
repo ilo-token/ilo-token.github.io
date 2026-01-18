@@ -3,7 +3,7 @@
 import { exists } from "@std/fs/exists";
 
 if (import.meta.main) {
-  if (!await exists(new URL("./dictionary.ts", import.meta.url))) {
+  if (!await exists(new URL("./global_dictionary.ts", import.meta.url))) {
     const Dictionary = await import("./build.ts");
     if (!await Dictionary.build()) {
       await Dictionary.buildWithDictionary(new Map());

@@ -6,7 +6,7 @@ import { parseDictionary } from "./parser.ts";
 import { Dictionary } from "./type.ts";
 
 const SOURCE = new URL("../../dictionary.txt", import.meta.url);
-const DESTINATION = new URL("./dictionary.ts", import.meta.url);
+const DESTINATION = new URL("./global_dictionary.ts", import.meta.url);
 
 export async function buildWithDictionary(
   dictionary: Dictionary,
