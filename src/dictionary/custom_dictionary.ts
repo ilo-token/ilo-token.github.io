@@ -1,4 +1,4 @@
-import { dictionary as globalDictionary } from "./custom_dictionary.ts";
+import { dictionary as globalDictionary } from "./dictionary.ts";
 import { Definition, Dictionary } from "./type.ts";
 
 // all of these global constants are mutable
