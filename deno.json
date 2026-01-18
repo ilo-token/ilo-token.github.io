@@ -13,7 +13,8 @@
         "DEBUG_CHUNKS"
       ],
       "read": [
-        "./dictionary.txt"
+        "./dictionary.txt",
+        "./src/"
       ],
       "write": [
         "./src/dictionary/global_dictionary.ts"
@@ -27,7 +28,7 @@
       ],
       "read": [
         "./dictionary.txt",
-        "./src/dictionary/global_dictionary.ts"
+        "./src/"
       ],
       "write": [
         "./src/dictionary/global_dictionary.ts"

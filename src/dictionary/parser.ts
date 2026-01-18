@@ -40,6 +40,8 @@ import {
   VerbAccessory,
 } from "./type.ts";
 
+export const HEADS = /^\s*(?:[a-z][a-zA-Z]*\s*,\s*)*[a-z][a-zA-Z]*\s*:/mg;
+
 const RESERVED_SYMBOLS = "#()*+/:;<=>@[\\]^`{|}~";
 
 const hashSign = matchString("#", "hash sign");

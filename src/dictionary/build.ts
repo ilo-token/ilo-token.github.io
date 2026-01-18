@@ -1,8 +1,9 @@
 // this code is Deno only
 
+import { unreachable } from "@std/assert/unreachable";
 import { extractResultError, ResultError } from "../compound.ts";
 import { PositionedError } from "../parser/parser_lib.ts";
-import { parseDictionary } from "./parser.ts";
+import { HEADS, parseDictionary } from "./parser.ts";
 import { Dictionary } from "./type.ts";
 
 const SOURCE = new URL("../../dictionary.txt", import.meta.url);
@@ -27,28 +28,69 @@ export const dictionary: Dictionary = new Map(Object.entries(json));
 `;
   await Deno.writeTextFile(DESTINATION, code);
 }
+function buildOffloaded(src: string): Promise<Dictionary> {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(
+      new URL("./worker.ts", import.meta.url),
+      { type: "module" },
+    );
+    worker.postMessage(src);
+    worker.onmessage = (event) => {
+      resolve(event.data as Dictionary);
+      worker.terminate();
+    };
+    worker.onerror = (event) => {
+      reject(event.error);
+    };
+  });
+}
 export async function build(): Promise<boolean> {
   // deno-lint-ignore no-console
-  console.log("Building dictionary...");
+  console.log(
+    `Building dictionary with ${navigator.hardwareConcurrency} threads...`,
+  );
   const start = performance.now();
   const text = await Deno.readTextFile(SOURCE);
-  const startDictionary = performance.now();
-  let dictionary: Dictionary;
+  const heads = [...text.matchAll(HEADS)].map((match) => match.index);
+  const regionIndices = [...new Array(navigator.hardwareConcurrency).keys()]
+    .map((index) => {
+      const start = index * text.length / navigator.hardwareConcurrency;
+      for (const head of heads) {
+        if (start <= head) {
+          return head;
+        }
+      }
+    });
+  const regions = regionIndices.map((index, i) =>
+    text.slice(index, regionIndices[i + 1] ?? text.length)
+  );
+  const dictionary: Dictionary = new Map();
   try {
-    dictionary = parseDictionary(text);
-  } catch (error) {
-    displayError(text, extractResultError(error));
-    return false;
+    const entries = await Promise.all(
+      regions.map((region) => buildOffloaded(region)),
+    );
+    for (const entry of entries) {
+      for (const [name, definition] of entry) {
+        if (dictionary.has(name)) {
+          throw new Error();
+        }
+        dictionary.set(name, definition);
+      }
+    }
+  } catch (_) {
+    try {
+      parseDictionary(text);
+    } catch (error) {
+      displayError(`${SOURCE}`, extractResultError(error));
+      return false;
+    }
+    unreachable();
   }
-  const endDictionary = performance.now();
   await buildWithDictionary(dictionary);
   const end = performance.now();
   const total = Math.floor(end - start);
-  const parsing = Math.floor(endDictionary - startDictionary);
   // deno-lint-ignore no-console
-  console.log(
-    `Building dictionary done in ${total}ms (parsing dictionary took ${parsing}ms)`,
-  );
+  console.log(`Building dictionary done in ${total}ms`);
   return true;
 }
 function displayError(source: string, errors: ReadonlyArray<ResultError>) {
