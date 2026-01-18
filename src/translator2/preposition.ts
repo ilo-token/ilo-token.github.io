@@ -1,5 +1,5 @@
 import { IterableResult } from "../compound.ts";
-import { dictionary } from "../dictionary/dictionary.ts";
+import { dictionary } from "../dictionary/custom_dictionary.ts";
 import { throwError } from "../misc/misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";

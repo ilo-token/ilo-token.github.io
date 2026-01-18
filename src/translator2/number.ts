@@ -1,6 +1,6 @@
 import { sumOf } from "@std/collections/sum-of";
 import { IterableResult } from "../compound.ts";
-import { dictionary } from "../dictionary/dictionary.ts";
+import { dictionary } from "../dictionary/custom_dictionary.ts";
 import { FilteredError } from "./error.ts";
 
 const WORDS = [

@@ -1,7 +1,7 @@
 // this code is Deno only
 
 import { assertMatch } from "@std/assert/match";
-import { dictionary } from "./dictionary.ts";
+import { dictionary } from "./custom_dictionary.ts";
 
 Deno.test("definition source has leading space", () => {
   for (const [word, { source }] of dictionary) {
