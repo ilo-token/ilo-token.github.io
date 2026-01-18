@@ -88,10 +88,12 @@ function nasinNanpaPona(numbers: ReadonlyArray<number>) {
 function combineNumbers(numbers: ReadonlyArray<number>) {
   if (numbers.length === 1 || !numbers.includes(0)) {
     return IterableResult.concat(
-      IterableResult.from(() =>
+      IterableResult.handleThrows(() =>
         IterableResult.fromNullable(nasinNanpaPona(numbers))
       ),
-      IterableResult.from(() => IterableResult.single(regularNumber(numbers))),
+      IterableResult.handleThrows(() =>
+        IterableResult.single(regularNumber(numbers))
+      ),
     );
   } else {
     return IterableResult.errors([

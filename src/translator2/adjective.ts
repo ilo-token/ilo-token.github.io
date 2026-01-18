@@ -32,7 +32,7 @@ export function adjective(
   const { definition, reduplicationCount, emphasis } = options;
   type EmphasisSo = Readonly<{ emphasis: boolean; so: null | string }>;
   return IterableResult.concat(
-    IterableResult.from(() => IterableResult.single(so(emphasis)))
+    IterableResult.handleThrows(() => IterableResult.single(so(emphasis)))
       .map((so): EmphasisSo => ({ emphasis: false, so })),
     IterableResult.single<EmphasisSo>({ emphasis: emphasis != null, so: null }),
   )

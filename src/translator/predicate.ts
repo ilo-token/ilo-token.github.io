@@ -130,7 +130,7 @@ function predicateVerb(
     case "adjective":
       return make(predicate, object);
     case "verb":
-      return IterableResult.from(() =>
+      return IterableResult.handleThrows(() =>
         IterableResult.single(verbObject(predicate.verb, object))
       );
   }

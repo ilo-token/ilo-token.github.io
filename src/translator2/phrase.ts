@@ -187,7 +187,7 @@ function defaultPhrase(
       } else if (
         headWord.type === "verb" && adjectivalIsNone(modifier.adjectival)
       ) {
-        return IterableResult.from(() =>
+        return IterableResult.handleThrows(() =>
           IterableResult.single<PhraseTranslation>({
             type: "verb",
             verb: {

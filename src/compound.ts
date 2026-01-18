@@ -141,7 +141,9 @@ export class IterableResult<T> {
     ) as IterableResult<T>;
   }
 
-  static from<T>(iterableResult: () => IterableResult<T>): IterableResult<T> {
+  static handleThrows<T>(
+    iterableResult: () => IterableResult<T>,
+  ): IterableResult<T> {
     try {
       return iterableResult();
     } catch (error) {
@@ -202,7 +204,9 @@ export class IterableResult<T> {
         for (const result of this) {
           switch (result.type) {
             case "value": {
-              const more = IterableResult.from(() => mapper(result.value));
+              const more = IterableResult.handleThrows(() =>
+                mapper(result.value)
+              );
               for (const result of more) {
                 switch (result.type) {
                   case "value":

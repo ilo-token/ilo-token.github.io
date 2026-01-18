@@ -46,7 +46,7 @@ function nounPhrase(
   }>,
 ) {
   const { emphasis, noun, modifier } = options;
-  return IterableResult.from(() => {
+  return IterableResult.handleThrows(() => {
     const determiners = [
       ...modifier.determiners.toReversed(),
       ...noun.determiners,
@@ -222,7 +222,7 @@ function defaultPhrase(
       } else if (
         headWord.type === "verb" && modifier.type === "adverbial"
       ) {
-        return IterableResult.from(() =>
+        return IterableResult.handleThrows(() =>
           IterableResult.single<PhraseTranslation>({
             type: "verb",
             verb: {
