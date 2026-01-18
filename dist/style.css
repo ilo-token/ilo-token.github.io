@@ -115,6 +115,10 @@ dialog.flex > div > input[type="text"] {
   cursor: pointer;
 }
 
+.hide {
+  display: none;
+}
+
 @media (min-width: 800px) {
   body {
     margin: 50px;
