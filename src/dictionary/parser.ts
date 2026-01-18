@@ -656,7 +656,7 @@ const dictionaryParser: Parser<Dictionary> = ignore
         errors.push(
           new PositionedError(
             `duplicate Toki Pona word "${head.value}"`,
-            head,
+            { position: head },
           ),
         );
       } else {

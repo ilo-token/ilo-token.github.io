@@ -1,7 +1,7 @@
 import { assertGreater } from "@std/assert/greater";
 import { MemoizationCacheResult, memoize } from "@std/cache/memoize";
 import { IterableResult, ResultError } from "../compound.ts";
-import { ErrorOption, lazy as lazyEval } from "../misc/misc.ts";
+import { lazy as lazyEval } from "../misc/misc.ts";
 
 type ValueLength<T> = Readonly<{ value: T; length: number }>;
 type ParserResult<T> = IterableResult<ValueLength<T>>;
@@ -101,16 +101,19 @@ export class Parser<T> {
   }
 }
 export type Position = Readonly<{ position: number; length: number }>;
+export type PositionedErrorOption = Readonly<{
+  position?: Position;
+  cause?: unknown;
+}>;
 export class PositionedError extends ResultError {
   override name = "PositionedError";
   position: null | Position;
   constructor(
     message: string,
-    // TODO: it's better to separate these two instead
-    option?: Position & ErrorOption,
+    option?: PositionedErrorOption,
   ) {
     super(message, option);
-    this.position = option ?? null;
+    this.position = option?.position ?? null;
   }
 }
 function withPositionedError<T>(fn: () => T, position: Position) {
@@ -120,7 +123,7 @@ function withPositionedError<T>(fn: () => T, position: Position) {
     if (error instanceof PositionedError && error.position != null) {
       throw error;
     } else if (error instanceof ResultError) {
-      throw new PositionedError(error.message, { ...position, cause: error });
+      throw new PositionedError(error.message, { position, cause: error });
     } else {
       throw error;
     }
@@ -131,7 +134,7 @@ export class UnexpectedError extends PositionedError {
   constructor(
     unexpected: string,
     expected: string,
-    option?: Position & ErrorOption,
+    option?: PositionedErrorOption,
   ) {
     super(
       `unexpected ${unexpected}. ${expected} were expected instead`,
@@ -141,7 +144,7 @@ export class UnexpectedError extends PositionedError {
 }
 export class UnrecognizedError extends PositionedError {
   override name = "UnrecognizedError";
-  constructor(element: string, option?: Position & ErrorOption) {
+  constructor(element: string, option?: PositionedErrorOption) {
     super(`${element} is unrecognized`, option);
   }
 }
@@ -279,7 +282,11 @@ function generateError(position: number, expected: string) {
     }
   }
   return IterableResult.errors([
-    new UnexpectedError(unexpected, expected, { position, length }),
+    new UnexpectedError(
+      unexpected,
+      expected,
+      { position: { position, length } },
+    ),
   ]);
 }
 export function matchCapture(
@@ -338,7 +345,7 @@ export const notEnd: Parser<null> = new Parser((position) =>
       new UnexpectedError(
         "end of text",
         "not end of text",
-        { position, length: currentSource.length - position },
+        { position: { position, length: currentSource.length - position } },
       ),
     ])
 );

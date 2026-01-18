@@ -1,4 +1,5 @@
-import { extractResultError, ResultError } from "../compound.ts";
+import { extractResultError, type ResultError } from "../compound.ts";
+import { type PositionedError } from "../parser/parser_lib.ts";
 import { parseDictionary } from "./parser.ts";
 
 onmessage = (message) => {
@@ -12,8 +13,11 @@ onmessage = (message) => {
       throw { type: "other", error };
     }
     throw {
-      type: "positioned error",
-      error: errors.map((error) => ({ ...error })),
+      type: "result error",
+      error: errors.map((error) => ({
+        message: error.message,
+        position: (error as PositionedError).position,
+      })),
     };
   }
 };

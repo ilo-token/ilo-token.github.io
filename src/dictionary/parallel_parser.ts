@@ -4,12 +4,12 @@ import { HEADS } from "./parser.ts";
 import { Dictionary } from "./type.ts";
 
 type WorkerError =
-  | Readonly<
-    {
-      type: "positioned error";
-      errors: ReadonlyArray<Position & Readonly<{ message: string }>>;
-    }
-  >
+  | Readonly<{
+    type: "result error";
+    errors: ReadonlyArray<
+      Readonly<{ message: string; position: null | Position }>
+    >;
+  }>
   | Readonly<{ type: "other"; error: unknown }>;
 
 function buildOffloaded(source: string): Promise<Dictionary> {
@@ -26,11 +26,14 @@ function buildOffloaded(source: string): Promise<Dictionary> {
     worker.onerror = (event) => {
       const error = event.error as WorkerError;
       switch (error.type) {
-        case "positioned error":
+        case "result error":
           reject(
             new AggregateError(
               error.errors.map((error) =>
-                new PositionedError(error.message, error)
+                new PositionedError(
+                  error.message,
+                  { position: error.position ?? undefined },
+                )
               ),
             ),
           );
@@ -74,8 +77,10 @@ export async function parseDictionary(source: string): Promise<Dictionary> {
         ) {
           errors.push(
             new PositionedError(resultError.message, {
-              position: job.index + resultError.position.position,
-              length: resultError.position.length,
+              position: {
+                position: job.index + resultError.position.position,
+                length: resultError.position.length,
+              },
               cause: resultError,
             }),
           );
