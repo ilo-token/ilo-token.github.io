@@ -9,7 +9,7 @@ import { multipleSentences } from "./sentence.ts";
 const RANDOMIZATION_LIMIT = 25248;
 
 export function translate(tokiPona: string): IterableResult<string> {
-  return new IterableResult(function* () {
+  return new IterableResult([], function* () {
     const iterableResult = parser
       .parse(tokiPona)
       .flatMap(multipleSentences)

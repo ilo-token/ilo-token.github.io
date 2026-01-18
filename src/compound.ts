@@ -1,4 +1,4 @@
-import { ErrorOption } from "./misc/misc.ts";
+import { ErrorOption, nullableAsArray } from "./misc/misc.ts";
 
 export class ResultError extends Error {
   override name = "ArrayResultError";
@@ -16,48 +16,44 @@ export type Result<T> =
 export class IterableResult<T> {
   #evaluated: Array<Result<T>> = [];
   #iterator: Iterator<Result<T>>;
-  constructor(generator: () => Iterator<Result<T>>) {
+  constructor(
+    evaluated: ReadonlyArray<Result<T>>,
+    generator: () => Iterator<Result<T>>,
+  ) {
+    this.#evaluated = [...evaluated];
     this.#iterator = generator();
   }
 
   static fromArray<T>(array: ReadonlyArray<T>): IterableResult<T> {
-    return new IterableResult(function* () {
-      for (const value of array) {
-        yield { type: "value", value };
-      }
-    });
+    return new IterableResult(
+      array.map((value) => ({ type: "value", value })),
+      function* () {},
+    );
   }
 
   static fromNullable<T>(value?: T): IterableResult<NonNullable<T>> {
-    return new IterableResult(function* () {
-      if (value != null) {
-        yield { type: "value", value };
-      }
-    });
+    return IterableResult.fromArray(nullableAsArray(value));
   }
 
   static single<T>(value: T): IterableResult<T> {
-    return new IterableResult(function* () {
-      yield { type: "value", value };
-    });
+    return IterableResult.fromArray([value]);
   }
 
   static errors(errors: ReadonlyArray<ResultError>): IterableResult<never> {
-    return new IterableResult(function* () {
-      for (const error of errors) {
-        yield { type: "error", error };
-      }
-    });
+    return new IterableResult(
+      errors.map((error) => ({ type: "error", error })),
+      function* () {},
+    );
   }
 
   static empty(): IterableResult<never> {
-    return new IterableResult(function* () {});
+    return IterableResult.fromArray([]);
   }
 
   static concat<T>(
     ...iterableResults: ReadonlyArray<IterableResult<T>>
   ): IterableResult<T> {
-    return new IterableResult(function* () {
+    return new IterableResult([], function* () {
       const errors: Array<ResultError> = [];
       let yielded = false;
       for (const iterable of iterableResults) {
@@ -89,7 +85,7 @@ export class IterableResult<T> {
     // we resorted to using `any` types here, make sure it works properly
     return iterableResults.reduce(
       (left: IterableResult<any>, right) =>
-        new IterableResult(function* () {
+        new IterableResult([], function* () {
           let rightAggregate: null | Array<any> = null;
           let yielded = false;
           for (const leftResult of left) {
@@ -198,6 +194,7 @@ export class IterableResult<T> {
 
   flatMap<U>(mapper: (value: T) => IterableResult<U>): IterableResult<U> {
     return new IterableResult(
+      [],
       function* (this: IterableResult<T>): Generator<Result<U>> {
         const errors: Array<ResultError> = [];
         let yielded = false;
@@ -235,6 +232,7 @@ export class IterableResult<T> {
 
   sort(comparer: (left: T, right: T) => number): IterableResult<T> {
     return new IterableResult(
+      [],
       function* (this: IterableResult<T>) {
         let hasError = false;
         const array: Array<T> = [];
@@ -273,6 +271,7 @@ export class IterableResult<T> {
 
   addErrorWhenNone(error: () => ResultError): IterableResult<T> {
     return new IterableResult(
+      [],
       function* (this: IterableResult<T>): Generator<Result<T>> {
         let yielded = false;
         for (const result of this) {
