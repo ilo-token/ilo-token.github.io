@@ -163,7 +163,7 @@ en:
     `[`separates multiple subjects`]`(particle def);
 
 epiku:
-    # ucommon
+    # uncommon
 
     # epic(adj opinion);
     # cool(adj opinion); # Could be conflated with "cool" as in lete
@@ -867,7 +867,7 @@ ma:
     outdoor-related(adj opinion);
 
 majuna:
-    # ucommon
+    # uncommon
 
     old(adj age);
     # aged(adj age);
