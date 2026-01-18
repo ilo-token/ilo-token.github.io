@@ -1,5 +1,5 @@
-import * as Dictionary from "../dictionary/type.ts";
 import { IterableResult } from "../compound.ts";
+import * as Dictionary from "../dictionary/type.ts";
 import { nullableAsArray } from "../misc/misc.ts";
 import { settings } from "../settings.ts";
 import { FilteredError } from "../translator2/error.ts";

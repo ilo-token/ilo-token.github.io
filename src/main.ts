@@ -2,12 +2,11 @@
 
 import { closestString } from "@std/text/closest-string";
 import BrowserDetector from "browser-dtector";
-import { dictionary } from "./dictionary/dictionary.ts";
-import { parseDictionary } from "./dictionary/parser.ts";
-import { Dictionary } from "./dictionary/type.ts";
 import PROJECT_DATA from "../project_data.json" with { type: "json" };
 import { extractResultError, Result, ResultError } from "./compound.ts";
-import { loadCustomDictionary } from "./dictionary/dictionary.ts";
+import { dictionary, loadCustomDictionary } from "./dictionary/dictionary.ts";
+import { parseDictionary } from "./dictionary/parser.ts";
+import { Dictionary } from "./dictionary/type.ts";
 import {
   assertQuotaExceededError,
   checkLocalStorage,

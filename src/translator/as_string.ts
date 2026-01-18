@@ -1,5 +1,5 @@
-import * as Dictionary from "../dictionary/type.ts";
 import { IterableResult } from "../compound.ts";
+import * as Dictionary from "../dictionary/type.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";
 import * as EnglishComposer from "./composer.ts";
 import { noun, simpleNounForms } from "./noun.ts";

@@ -35,26 +35,14 @@ export class Parser<T> {
     }
     return this[rawParser](0).map(({ value }) => value);
   }
-  #rawMap<U>(mapper: (value: T) => U): Parser<U> {
-    return new Parser((input) =>
-      this[rawParser](input)
-        .map(({ value, length }): ValueLength<U> => ({
-          value: mapper(value),
-          length,
-        }))
-    );
-  }
+
   map<U>(mapper: (value: T) => U): Parser<U> {
     return withPosition(this)
       .#rawMap((value) =>
         withPositionedError(() => mapper(value.value), value)
       );
   }
-  #rawFilter(mapper: (value: T) => boolean): Parser<T> {
-    return new Parser((input) =>
-      this[rawParser](input).filter(({ value }) => mapper(value))
-    );
-  }
+
   filter(mapper: (value: T) => boolean): Parser<T> {
     return withPosition(this)
       .#rawFilter((value) =>
@@ -62,6 +50,7 @@ export class Parser<T> {
       )
       .map(({ value }) => value);
   }
+
   then<U>(mapper: (value: T) => Parser<U>): Parser<U> {
     return new Parser((position) =>
       this[rawParser](position)
@@ -75,20 +64,40 @@ export class Parser<T> {
         )
     );
   }
+
   sort(comparer: (left: T, right: T) => number): Parser<T> {
     return new Parser((input) =>
       this[rawParser](input)
         .sort((left, right) => comparer(left.value, right.value))
     );
   }
+
   sortBy(mapper: (value: T) => number): Parser<T> {
     return this.sort((left, right) => mapper(left) - mapper(right));
   }
+
   with<U>(parser: Parser<U>): Parser<U> {
     return sequence(this, parser).map(([_, arrayResult]) => arrayResult);
   }
+
   skip<U>(parser: Parser<U>): Parser<T> {
     return sequence(this, parser).map(([arrayResult]) => arrayResult);
+  }
+
+  #rawMap<U>(mapper: (value: T) => U): Parser<U> {
+    return new Parser((input) =>
+      this[rawParser](input)
+        .map(({ value, length }): ValueLength<U> => ({
+          value: mapper(value),
+          length,
+        }))
+    );
+  }
+
+  #rawFilter(mapper: (value: T) => boolean): Parser<T> {
+    return new Parser((input) =>
+      this[rawParser](input).filter(({ value }) => mapper(value))
+    );
   }
 }
 export type Position = Readonly<{ position: number; length: number }>;
