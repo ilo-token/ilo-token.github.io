@@ -13,7 +13,7 @@ import {
   checkLocalStorage,
 } from "./local_storage.ts";
 import { hasXAlaX } from "./parser/lexer.ts";
-import { PositionedError } from "./parser/parser_lib.ts";
+import { Position, PositionedError } from "./parser/parser_lib.ts";
 import { settings } from "./settings.ts";
 import {
   loadFromDom,
@@ -237,7 +237,7 @@ function main() {
       link.href = "#";
       link.innerText = error.message;
       const { position: { position, length } } = error as PositionedError & {
-        position: { position: number; length: number };
+        position: Position;
       };
       link.addEventListener("click", () => {
         customDictionaryTextBox.focus();
