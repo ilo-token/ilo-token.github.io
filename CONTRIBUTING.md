@@ -55,10 +55,6 @@ You **don't** have to open a new issue this if:
 - It is a contribution to the dictionary
 - It is a minor edit e.g. a typo fix
 
-Please don't do the following, the maintainers can do this.
-
-- Updating dependencies
-
 More things to remember:
 
 - Keep the source code as runtime agnostic as possible: Browser and Deno are
