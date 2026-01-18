@@ -115,10 +115,6 @@ dialog.flex > div > input[type="text"] {
   cursor: pointer;
 }
 
-#custom-dictionary-error-list li:hover {
-  text-decoration: underline;
-}
-
 @media (min-width: 800px) {
   body {
     margin: 50px;
