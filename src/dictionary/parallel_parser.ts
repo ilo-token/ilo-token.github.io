@@ -1,4 +1,3 @@
-import { unreachable } from "@std/assert/unreachable";
 import { extractResultError, ResultError } from "../compound.ts";
 import { Position, PositionedError } from "../parser/parser_lib.ts";
 import { HEADS } from "./parser.ts";
@@ -13,13 +12,13 @@ type WorkerError =
   >
   | Readonly<{ type: "other"; error: unknown }>;
 
-function buildOffloaded(src: string): Promise<Dictionary> {
+function buildOffloaded(source: string): Promise<Dictionary> {
   return new Promise((resolve, reject) => {
     const worker = new Worker(
       new URL("./worker.ts", import.meta.url),
       { type: "module" },
     );
-    worker.postMessage(src);
+    worker.postMessage(source);
     worker.onmessage = (event) => {
       resolve(event.data as Dictionary);
       worker.terminate();
@@ -43,24 +42,23 @@ function buildOffloaded(src: string): Promise<Dictionary> {
     };
   });
 }
-export async function parseDictionary(src: string): Promise<Dictionary> {
-  const heads = [
-    ...[...src.matchAll(HEADS)].map((match) => match.index),
-    src.length,
-  ];
+export async function parseDictionary(source: string): Promise<Dictionary> {
+  const heads = [...source.matchAll(HEADS)].map((match) => match.index);
   const regionIndices = [...new Array(navigator.hardwareConcurrency).keys()]
     .map((index) => {
-      const start = index * src.length / navigator.hardwareConcurrency;
+      const start = index * source.length / navigator.hardwareConcurrency;
       for (const head of heads) {
         if (start <= head) {
           return head;
         }
       }
-      unreachable();
+      return source.length;
     });
   const jobs = regionIndices.map((index, i) => ({
     index: index,
-    job: buildOffloaded(src.slice(index, regionIndices[i + 1] ?? src.length)),
+    job: buildOffloaded(
+      source.slice(index, regionIndices[i + 1] ?? source.length),
+    ),
   }));
   const dictionary: Dictionary = new Map();
   const errors: Array<ResultError> = [];

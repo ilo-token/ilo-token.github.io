@@ -203,6 +203,6 @@ const alaX = memoize((word: string) =>
 const xAlaX = word.then(alaX);
 const xAlaXInside = sequence(many(token), xAlaX);
 
-export function hasXAlaX(src: string): boolean {
-  return !xAlaXInside.parse(src).isError();
+export function hasXAlaX(source: string): boolean {
+  return !xAlaXInside.parse(source).isError();
 }
