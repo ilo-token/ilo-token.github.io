@@ -19,20 +19,6 @@
       "write": [
         "./src/dictionary/global_dictionary.ts"
       ]
-    },
-    "soft-build-dictionary": {
-      "env": [
-        "NO_COLOR",
-        "DEBUG_TAGS",
-        "DEBUG_CHUNKS"
-      ],
-      "read": [
-        "./dictionary.txt",
-        "./src/"
-      ],
-      "write": [
-        "./src/dictionary/global_dictionary.ts"
-      ]
     }
   },
   "tasks": {
@@ -63,7 +49,7 @@
     },
     "soft-build-dictionary": {
       "description": "Only builds the dictionary at `./src/dictionary/global_dictionary.ts` when it doesn't exists. When an error occurs, an empty dictionary is provided.",
-      "command": "deno run --permission-set=soft-build-dictionary --no-prompt --frozen --cached-only ./src/dictionary/soft-build.ts"
+      "command": "deno run --permission-set=build-dictionary --no-prompt --frozen --cached-only ./src/dictionary/soft-build.ts"
     }
   },
   "fmt": {
