@@ -23,47 +23,50 @@ class ParserWorker {
   [Symbol.dispose]() {
     this.#worker.terminate();
   }
-  parse(position: number, source: string): Promise<Dictionary> {
-    if (this.#cachedSource === source) {
-      return Promise.resolve(this.#cachedDictionary);
-    } else {
-      return new Promise((resolve, reject) => {
-        const messageCallback = (event: MessageEvent) => {
-          const result = event.data as Result;
-          switch (result.type) {
-            case "value":
-              resolve(result.value);
-              this.#cachedSource = source;
-              this.#cachedDictionary = result.value;
-              break;
-            case "error":
-              reject(
-                new AggregateError(
-                  result.error.map((result) =>
-                    new PositionedError(result.message, {
-                      position: mapNullable(
-                        result.position,
-                        ({ position: offsetPosition, length }) => ({
-                          position: position + offsetPosition,
-                          length,
-                        }),
-                      ) ?? undefined,
-                    })
-                  ),
+  #rawParse(position: number, source: string): Promise<Dictionary> {
+    return new Promise((resolve, reject) => {
+      const messageCallback = (event: MessageEvent) => {
+        const result = event.data as Result;
+        switch (result.type) {
+          case "value":
+            resolve(result.value);
+            this.#cachedSource = source;
+            this.#cachedDictionary = result.value;
+            break;
+          case "error":
+            reject(
+              new AggregateError(
+                result.error.map((result) =>
+                  new PositionedError(result.message, {
+                    position: mapNullable(
+                      result.position,
+                      ({ position: offsetPosition, length }) => ({
+                        position: position + offsetPosition,
+                        length,
+                      }),
+                    ) ?? undefined,
+                  })
                 ),
-              );
-              break;
-          }
-          this.#worker.removeEventListener("message", messageCallback);
-        };
-        this.#worker.addEventListener("message", messageCallback);
-        const errorCallback = (event: ErrorEvent) => {
-          reject(event.error);
-          this.#worker.removeEventListener("error", errorCallback);
-        };
-        this.#worker.addEventListener("error", errorCallback);
-        this.#worker.postMessage(source);
-      });
+              ),
+            );
+            break;
+        }
+        this.#worker.removeEventListener("message", messageCallback);
+      };
+      this.#worker.addEventListener("message", messageCallback);
+      const errorCallback = (event: ErrorEvent) => {
+        reject(event.error);
+        this.#worker.removeEventListener("error", errorCallback);
+      };
+      this.#worker.addEventListener("error", errorCallback);
+      this.#worker.postMessage(source);
+    });
+  }
+  async parse(position: number, source: string): Promise<Dictionary> {
+    if (this.#cachedSource === source) {
+      return this.#cachedDictionary;
+    } else {
+      return await this.#rawParse(position, source);
     }
   }
 }
