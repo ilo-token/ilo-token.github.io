@@ -2,23 +2,40 @@
 
 import { unreachable } from "@std/assert/unreachable";
 import { debounce } from "@std/async/debounce";
+import { MuxAsyncIterator } from "@std/async/mux-async-iterator";
 import { build } from "./build.ts";
 import { Parser } from "./parallel_parser.ts";
 
+// deno-lint-ignore require-yield
+async function* errorOnly(promise: Promise<never>): AsyncGenerator<never> {
+  await promise;
+  unreachable();
+}
 if (import.meta.main) {
-  await using stack = new AsyncDisposableStack();
   using watcher = Deno.watchFs("./dictionary.txt");
   using parser = new Parser();
+
+  const { promise, reject } = Promise.withResolvers<never>();
+  const errorGenerator = errorOnly(promise);
+
   let task = Promise.resolve();
-  stack.defer(async () => await task);
   const buildDebounced = debounce(() => {
     task = task.then(async () => {
-      await build(parser);
+      try {
+        await build(parser);
+      } catch (error) {
+        reject(error);
+      }
     });
   }, 200);
+
+  const watcherWithError = new MuxAsyncIterator<Deno.FsEvent>();
+  watcherWithError.add(watcher);
+  watcherWithError.add(errorGenerator);
+
   buildDebounced();
   buildDebounced.flush();
-  for await (const _ of watcher) {
+  for await (const _ of watcherWithError) {
     buildDebounced();
   }
   unreachable();
