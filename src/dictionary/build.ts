@@ -2,7 +2,7 @@
 
 import { extractResultError, ResultError } from "../compound.ts";
 import { PositionedError } from "../parser/parser_lib.ts";
-import { parseDictionary } from "./parallel_parser.ts";
+import { Parser } from "./parallel_parser.ts";
 import { Dictionary } from "./type.ts";
 
 const SOURCE = new URL("../../dictionary.txt", import.meta.url);
@@ -27,7 +27,7 @@ export const dictionary: Dictionary = new Map(Object.entries(json));
 `;
   await Deno.writeTextFile(DESTINATION, code);
 }
-export async function build(): Promise<boolean> {
+export async function build(parser: Parser): Promise<boolean> {
   // deno-lint-ignore no-console
   console.log(
     `Building dictionary with ${navigator.hardwareConcurrency} threads...`,
@@ -36,7 +36,7 @@ export async function build(): Promise<boolean> {
   const text = await Deno.readTextFile(SOURCE);
   let dictionary: Dictionary;
   try {
-    dictionary = await parseDictionary(text);
+    dictionary = await parser.parse(text);
   } catch (error) {
     displayError(text, extractResultError(error));
     return false;
@@ -117,5 +117,6 @@ function displayError(source: string, errors: ReadonlyArray<ResultError>) {
   }
 }
 if (import.meta.main) {
-  Deno.exitCode = await build() ? 0 : 1;
+  using parser = new Parser();
+  Deno.exitCode = await build(parser) ? 0 : 1;
 }
