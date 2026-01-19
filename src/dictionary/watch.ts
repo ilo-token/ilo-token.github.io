@@ -9,7 +9,13 @@ import { Parser } from "./parallel_parser.ts";
 // deno-lint-ignore require-yield
 async function* errorOnly(promise: Promise<never>): AsyncGenerator<never> {
   await promise;
-  unreachable();
+}
+async function* addOneBefore<T>(
+  first: T,
+  iterable: AsyncIterable<T>,
+): AsyncGenerator<T> {
+  yield first;
+  yield* iterable;
 }
 if (import.meta.main) {
   using watcher = Deno.watchFs("./dictionary.txt");
@@ -29,12 +35,10 @@ if (import.meta.main) {
     });
   }, 200);
 
-  const watcherWithError = new MuxAsyncIterator<Deno.FsEvent>();
-  watcherWithError.add(watcher);
+  const watcherWithError = new MuxAsyncIterator<null | Deno.FsEvent>();
+  watcherWithError.add(addOneBefore(null, watcher));
   watcherWithError.add(errorGenerator);
 
-  buildDebounced();
-  buildDebounced.flush();
   for await (const _ of watcherWithError) {
     buildDebounced();
   }
