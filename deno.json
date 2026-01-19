@@ -48,7 +48,7 @@
       "command": "deno run --permission-set=build-dictionary --no-prompt --frozen --cached-only ./src/dictionary/build.ts"
     },
     "watch-dictionary": {
-      "description": "Rebuild the dictionary everytime it is updated",
+      "description": "Rebuild the dictionary everytime it is updated. Will also auto update when the dictionary builder codes has changed.",
       "command": "deno run --permission-set=build-dictionary --no-prompt --frozen --cached-only --watch --no-clear-screen ./src/dictionary/watch.ts",
       "dependencies": [
         "soft-build-dictionary"
