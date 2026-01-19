@@ -281,8 +281,8 @@ function main() {
   function moreOutput() {
     const errors: Array<ResultError> = [];
     let yielded = false;
-    let i = 0;
-    while (i < Math.min(INITIAL_PAGE_SIZE * 2 ** size, MAX_PAGE_SIZE)) {
+    let count = 0;
+    while (count < Math.min(INITIAL_PAGE_SIZE * 2 ** size, MAX_PAGE_SIZE)) {
       const next = output!.next();
       if (!next.done) {
         const { value: result } = next;
@@ -292,7 +292,7 @@ function main() {
             const list = document.createElement("li");
             list.innerHTML = result.value;
             outputList.appendChild(list);
-            i++;
+            count++;
             break;
           }
           case "error":

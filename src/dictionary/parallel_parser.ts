@@ -68,8 +68,8 @@ export class Parser {
   async parse(source: string): Promise<Dictionary> {
     const heads = [...source.matchAll(HEADS)].map((match) => match.index);
     const regionPositions = [...new Array(this.#workers.length).keys()]
-      .map((index) => {
-        const start = index * source.length / this.#workers.length;
+      .map((i) => {
+        const start = i * source.length / this.#workers.length;
         for (const head of heads) {
           if (start <= head) {
             return head;
