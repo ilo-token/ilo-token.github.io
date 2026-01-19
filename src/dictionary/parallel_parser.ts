@@ -67,7 +67,7 @@ export class Parser {
   }
   async parse(source: string): Promise<Dictionary> {
     const heads = [...source.matchAll(HEADS)].map((match) => match.index);
-    const regionIndices = [...new Array(this.#workers.length).keys()]
+    const regionPositions = [...new Array(this.#workers.length).keys()]
       .map((index) => {
         const start = index * source.length / this.#workers.length;
         for (const head of heads) {
@@ -77,10 +77,10 @@ export class Parser {
         }
         return source.length;
       });
-    const jobs = regionIndices.map((index, i) => ({
-      index: index,
+    const jobs = regionPositions.map((position, i) => ({
+      position,
       job: this.#workers[i].parse(
-        source.slice(index, regionIndices[i + 1] ?? source.length),
+        source.slice(position, regionPositions[i + 1] ?? source.length),
       ),
     }));
     const dictionary: Dictionary = new Map();
@@ -99,7 +99,7 @@ export class Parser {
             errors.push(
               new PositionedError(resultError.message, {
                 position: {
-                  position: job.index + resultError.position.position,
+                  position: job.position + resultError.position.position,
                   length: resultError.position.length,
                 },
                 cause: resultError,
