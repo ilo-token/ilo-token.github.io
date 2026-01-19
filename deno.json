@@ -31,9 +31,9 @@
     },
     "start": {
       "description": "Starts a development server which automatically rebuilds the project whenever there are changes to the code. However, there is no server that serves frontend and you have to manually refresh the page.",
-      "command": "(trap 'kill 0' SIGINT; deno run --permission-set=build-dictionary --no-prompt --frozen --cached-only --watch --no-clear-screen ./src/dictionary/watch.ts & deno bundle --output=./dist/main.js --sourcemap=linked --platform=browser --format=iife --watch ./src/main.ts)",
       "dependencies": [
-        "soft-build-dictionary"
+        "watch-code",
+        "watch-dictionary"
       ]
     },
     "repl": {
@@ -46,6 +46,20 @@
     "build-dictionary": {
       "description": "Builds the dictionary at `./src/dictionary/global_dictionary.ts`",
       "command": "deno run --permission-set=build-dictionary --no-prompt --frozen --cached-only ./src/dictionary/build.ts"
+    },
+    "watch-dictionary": {
+      "description": "Rebuild the dictionary everytime it is updated",
+      "command": "deno run --permission-set=build-dictionary --no-prompt --frozen --cached-only --watch --no-clear-screen ./src/dictionary/watch.ts",
+      "dependencies": [
+        "soft-build-dictionary"
+      ]
+    },
+    "watch-code": {
+      "description": "Rebuild the code, not including the dictionary, everytime it is updated",
+      "command": "deno bundle --output=./dist/main.js --sourcemap=linked --platform=browser --format=iife --watch ./src/main.ts",
+      "dependencies": [
+        "soft-build-dictionary"
+      ]
     },
     "soft-build-dictionary": {
       "description": "Only builds the dictionary at `./src/dictionary/global_dictionary.ts` when it doesn't exists. When an error occurs, an empty dictionary is provided.",
