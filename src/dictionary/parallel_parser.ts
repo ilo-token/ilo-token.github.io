@@ -1,18 +1,17 @@
 // This code is Deno only (it uses the new `using` keyword)
 
 import { extractResultError, ResultError } from "../compound.ts";
+import { mapNullable } from "../misc/misc.ts";
 import { Position, PositionedError } from "../parser/parser_lib.ts";
 import { HEADS } from "./parser.ts";
 import { Dictionary } from "./type.ts";
 
-type WorkerError =
+type Result =
+  | Readonly<{ type: "value"; value: Dictionary }>
   | Readonly<{
-    type: "result error";
-    errors: ReadonlyArray<
-      Readonly<{ message: string; position: null | Position }>
-    >;
-  }>
-  | Readonly<{ type: "other"; error: unknown }>;
+    type: "error";
+    error: ReadonlyArray<{ message: string; position: null | Position }>;
+  }>;
 
 class ParserWorker {
   #worker = new Worker(
@@ -22,32 +21,37 @@ class ParserWorker {
   [Symbol.dispose]() {
     this.#worker.terminate();
   }
-  parse(source: string): Promise<Dictionary> {
+  parse(position: number, source: string): Promise<Dictionary> {
     return new Promise((resolve, reject) => {
       const messageCallback = (event: MessageEvent) => {
-        resolve(event.data as Dictionary);
-        this.#worker.removeEventListener("message", messageCallback);
-      };
-      this.#worker.addEventListener("message", messageCallback);
-      const errorCallback = (event: ErrorEvent) => {
-        const error = event.error as WorkerError;
-        switch (error.type) {
-          case "result error":
+        const result = event.data as Result;
+        switch (result.type) {
+          case "value":
+            resolve(result.value);
+            break;
+          case "error":
             reject(
               new AggregateError(
-                error.errors.map((error) =>
-                  new PositionedError(
-                    error.message,
-                    { position: error.position ?? undefined },
-                  )
+                result.error.map((result) =>
+                  new PositionedError(result.message, {
+                    position: mapNullable(
+                      result.position,
+                      ({ position: offsetPosition, length }) => ({
+                        position: position + offsetPosition,
+                        length,
+                      }),
+                    ) ?? undefined,
+                  })
                 ),
               ),
             );
             break;
-          case "other":
-            reject(error.error);
-            break;
         }
+        this.#worker.removeEventListener("message", messageCallback);
+      };
+      this.#worker.addEventListener("message", messageCallback);
+      const errorCallback = (event: ErrorEvent) => {
+        reject(event.error);
         this.#worker.removeEventListener("error", errorCallback);
       };
       this.#worker.addEventListener("error", errorCallback);
@@ -77,46 +81,31 @@ export class Parser {
         }
         return source.length;
       });
-    const jobs = regionPositions.map((position, i) => ({
-      position,
-      job: this.#workers[i].parse(
-        source.slice(position, regionPositions[i + 1] ?? source.length),
+    const jobs = await Promise.allSettled(
+      regionPositions.map((position, i) =>
+        this.#workers[i].parse(
+          position,
+          source.slice(position, regionPositions[i + 1] ?? source.length),
+        )
       ),
-    }));
+    );
     const dictionary: Dictionary = new Map();
     const errors: Array<ResultError> = [];
     for (const job of jobs) {
-      let entries: Dictionary;
-      try {
-        // deno-lint-ignore no-await-in-loop
-        entries = await job.job;
-      } catch (error) {
-        for (const resultError of extractResultError(error)) {
-          if (
-            resultError instanceof PositionedError &&
-            resultError.position != null
-          ) {
-            errors.push(
-              new PositionedError(resultError.message, {
-                position: {
-                  position: job.position + resultError.position.position,
-                  length: resultError.position.length,
-                },
-                cause: resultError,
-              }),
-            );
-          } else {
-            errors.push(resultError);
+      switch (job.status) {
+        case "fulfilled":
+          for (const [word, definition] of job.value.entries()) {
+            if (dictionary.has(word)) {
+              errors.push(
+                new ResultError(`duplicate Toki Pona word "${word}"`),
+              );
+            } else {
+              dictionary.set(word, definition);
+            }
           }
-        }
-        continue;
-      }
-      for (const [word, definition] of entries.entries()) {
-        if (dictionary.has(word)) {
-          errors.push(new ResultError(`duplicate Toki Pona word "${word}"`));
-        } else {
-          dictionary.set(word, definition);
-        }
+          break;
+        case "rejected":
+          errors.push(...extractResultError(job.reason));
       }
     }
     if (errors.length === 0) {

@@ -1,23 +1,22 @@
-import { extractResultError, type ResultError } from "../compound.ts";
+import { extractResultError } from "../compound.ts";
 import { type PositionedError } from "../parser/parser_lib.ts";
 import { parseDictionary } from "./parser.ts";
+import { type Dictionary } from "./type.ts";
 
 onmessage = (message) => {
+  let dictionary: Dictionary;
   try {
-    postMessage(parseDictionary(message.data as string));
+    dictionary = parseDictionary(message.data as string);
   } catch (error) {
-    let errors: ReadonlyArray<ResultError>;
-    try {
-      errors = extractResultError(error);
-    } catch (error) {
-      throw { type: "other", error };
-    }
-    throw {
-      type: "result error",
-      error: errors.map((error) => ({
-        message: error.message,
-        position: (error as PositionedError).position,
-      })),
-    };
+    postMessage({
+      type: "error",
+      error: extractResultError(error)
+        .map((error) => ({
+          message: error.message,
+          position: (error as PositionedError).position,
+        })),
+    });
+    return;
   }
+  postMessage({ type: "value", value: dictionary });
 };
