@@ -14,7 +14,7 @@ type Result =
   }>;
 
 class ParserWorker {
-  #worker = new Worker(
+  readonly #worker = new Worker(
     new URL("./worker.ts", import.meta.url),
     { type: "module" },
   );
@@ -68,7 +68,7 @@ class ParserWorker {
   }
 }
 export class Parser {
-  #workers = new Array(navigator.hardwareConcurrency)
+  readonly #workers = new Array(navigator.hardwareConcurrency)
     .fill(undefined)
     .map(() => new ParserWorker());
   [Symbol.dispose](): void {
