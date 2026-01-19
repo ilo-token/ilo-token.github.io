@@ -30,8 +30,6 @@ class ParserWorker {
         switch (result.type) {
           case "value":
             resolve(result.value);
-            this.#cachedSource = source;
-            this.#cachedDictionary = result.value;
             break;
           case "error":
             reject(
@@ -66,7 +64,10 @@ class ParserWorker {
     if (this.#cachedSource === source) {
       return this.#cachedDictionary;
     } else {
-      return await this.#rawParse(position, source);
+      const dictionary = await this.#rawParse(position, source);
+      this.#cachedSource = source;
+      this.#cachedDictionary = dictionary;
+      return dictionary;
     }
   }
 }
