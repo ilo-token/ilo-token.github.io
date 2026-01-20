@@ -16,6 +16,11 @@ NOTE: Before publishing:
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
 
+- Implement nasin sitelen kalama pi linja lili a.k.a. cartouche tally marks.
+- Implement a bunch of words from the new UCSUR specification. This doesn't mean
+  these will be recognized, only Linku is used for inclusion criteria. However,
+  you can add these on the custom dictionary, then you can UCSUR characters for
+  these words.
 - Remove X ala X partial parsing setting. It is now always turned on.
 - Warn user when X ala X is used. It is still not implemented.
 - Link related projects.

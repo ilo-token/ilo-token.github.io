@@ -14,6 +14,7 @@ export const START_OF_REVERSE_LONG_GLYPH = "\u{F199A}";
 export const END_OF_REVERSE_LONG_GLYPH = "\u{F199B}";
 export const UCSUR_MIDDLE_DOT = "\u{F199C}";
 export const UCSUR_COLON = "\u{F199D}";
+export const COMBINING_TALLY_MARK = "\u{F199E}";
 
 export const SPECIAL_UCSUR_DESCRIPTIONS = {
   [START_OF_CARTOUCHE]: "start of cartouche",
@@ -30,6 +31,7 @@ export const SPECIAL_UCSUR_DESCRIPTIONS = {
   [END_OF_REVERSE_LONG_GLYPH]: "end of reverse long glyph",
   [UCSUR_MIDDLE_DOT]: "middle dot",
   [UCSUR_COLON]: "colon",
+  [COMBINING_TALLY_MARK]: "combining tally mark",
 };
 
 export type SpecialUcsur = keyof typeof SPECIAL_UCSUR_DESCRIPTIONS;
@@ -175,16 +177,45 @@ export const KU_SULI_WORDS = [
   "misikeke",
   "ku",
 ];
-export const KU_LILI_WORDS = [
+export const VARIANTS = [
+  "ni",
+  "ni",
+  "ni",
+  "sewi",
+];
+export const OTHER_WORDS = [
   "pake",
   "apeja",
   "majuna",
   "powe",
+  "linluwi",
+  "kiki",
+  "su",
+  "isipin",
+  "kamalawala",
+  "kapesi",
+  "melome",
+  "mijomi",
+  "misa",
+  "nimisin",
+  "nja",
+  "oke",
+  "omekapo",
+  "puwa",
+  "san",
+  "taki",
+  "te",
+  "to",
+  "unu",
+  "usawi",
+  "wa",
+  "wuwojiti",
+  "yupekosi",
 ];
 export const UCSUR_TO_LATIN = new Map(
   [
-    { start: 0xF1900, words: [...PU_WORDS, ...KU_SULI_WORDS] },
-    { start: 0xF19A0, words: KU_LILI_WORDS },
+    { start: 0xF1900, words: [...PU_WORDS, ...KU_SULI_WORDS, ...VARIANTS] },
+    { start: 0xF19A0, words: OTHER_WORDS },
   ]
     .flatMap(({ start, words }) =>
       words.map((latin, i) => [String.fromCodePoint(start + i), latin] as const)

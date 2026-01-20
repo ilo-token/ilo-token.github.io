@@ -26,6 +26,7 @@ import {
 } from "./punctuation.ts";
 import { Token } from "./token.ts";
 import {
+  COMBINING_TALLY_MARK,
   END_OF_CARTOUCHE,
   END_OF_LONG_GLYPH,
   END_OF_REVERSE_LONG_GLYPH,
@@ -100,6 +101,25 @@ const punctuation = choiceOnlyOne(
 )
   .map((punctuation): Token => ({ type: "punctuation", punctuation }));
 const cartoucheElement = choiceOnlyOne(
+  sequence(
+    singleUcsurWord,
+    count(
+      allAtLeastOnce(
+        matchString(
+          COMBINING_TALLY_MARK,
+          SPECIAL_UCSUR_DESCRIPTIONS[COMBINING_TALLY_MARK],
+        )
+          .skip(spaces),
+      ),
+    ),
+  )
+    .map(([word, tallyMarks]) => {
+      if (tallyMarks <= word.length) {
+        return word.slice(0, tallyMarks);
+      } else {
+        throw new UnrecognizedError("excess dots");
+      }
+    }),
   singleUcsurWord
     .skip(match(NSK_COLON, "full width colon").skip(spaces)),
   sequence(
@@ -112,7 +132,7 @@ const cartoucheElement = choiceOnlyOne(
   )
     .map(([word, dots]) => {
       const count = /^[aeiou]/.test(word) ? dots + 1 : dots;
-      const morae = word.match(/[jklmnpstw]?[aeiou]|n/g)!;
+      const morae = word.match(/[jklmnpstwy]?[aeiou]|n/g)!;
       if (count <= morae.length) {
         return morae.slice(0, count).join("");
       } else {
