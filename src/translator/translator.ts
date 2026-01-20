@@ -1,3 +1,4 @@
+import { randomIntegerBetween } from "@std/random/integer-between";
 import { shuffle } from "@std/random/shuffle";
 import { IterableResult, ResultError } from "../compound.ts";
 import { parser } from "../parser/parser.ts";
@@ -6,7 +7,7 @@ import * as EnglishComposer from "./composer.ts";
 import { fixMultipleSentences } from "./fixer.ts";
 import { multipleSentences } from "./sentence.ts";
 
-const RANDOMIZATION_LIMIT = 25248;
+const RANDOMIZATION_LIMIT = 20_000;
 
 export function translate(tokiPona: string): IterableResult<string> {
   return new IterableResult([], function* () {
@@ -20,16 +21,15 @@ export function translate(tokiPona: string): IterableResult<string> {
     const unique: Set<string> = new Set();
     if (settings.randomize) {
       for (const result of iterableResult) {
-        if (unique.size > RANDOMIZATION_LIMIT) {
-          yield {
-            type: "error",
-            error: new ResultError("too many output to shuffle"),
-          };
-          return;
-        }
         switch (result.type) {
           case "value":
             unique.add(result.value);
+            if (unique.size > RANDOMIZATION_LIMIT) {
+              const sample = [...unique];
+              const value = sample[randomIntegerBetween(0, sample.length)];
+              unique.delete(value);
+              yield { type: "value", value };
+            }
             break;
           case "error":
             aggregateErrors.push(result.error);

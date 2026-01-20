@@ -22,9 +22,9 @@ import {
 } from "./settings_frontend.ts";
 import { translate } from "./translator/translator.ts";
 
-const DICTIONARY_AUTO_PARSE_THRESHOLD = 5000;
+const DICTIONARY_AUTO_PARSE_THRESHOLD = 5_000;
 const INITIAL_PAGE_SIZE = 100;
-const MAX_PAGE_SIZE = 25248;
+const MAX_PAGE_SIZE = 20_000;
 
 // never change this
 const DICTIONARY_KEY = "dictionary";
