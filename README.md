@@ -19,3 +19,9 @@ After this, you can start away by running `deno task start` then open
 rebuild the project. However, you need to manually refresh the page.
 
 Run `deno task` to see more useful command lines.
+
+## License
+
+The project is licensed under [Mozilla Public License 2.0](./LICENSE) with an
+exception: `./dictionary.txt` is licensed under
+[Creative Commons Attribution-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/).
