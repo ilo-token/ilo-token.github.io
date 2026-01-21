@@ -9,10 +9,7 @@ import { phrase } from "./phrase.ts";
 export function nanpa(
   nanpa: TokiPona.Nanpa,
 ): IterableResult<English.SimpleNounPhrase> {
-  return phrase({
-    phrase: nanpa.phrase,
-    includeGerund: true,
-  })
+  return phrase(nanpa.phrase)
     .filterMap((phrase): null | English.SimpleNounPhrase =>
       phrase.type !== "noun"
         ? throwError(

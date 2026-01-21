@@ -1,7 +1,7 @@
 // this code is Deno only
 
 import { exists } from "@std/fs/exists";
-import { Parser } from './parallel_parser.ts'
+import { Parser } from "./parallel_parser.ts";
 
 if (import.meta.main) {
   using parser = new Parser();

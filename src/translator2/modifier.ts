@@ -167,10 +167,7 @@ function defaultModifier(wordUnit: TokiPona.WordUnit) {
 function pi(
   insidePhrase: TokiPona.Phrase,
 ): IterableResult<ModifierTranslation> {
-  return phrase({
-    phrase: insidePhrase,
-    includeGerund: true,
-  })
+  return phrase(insidePhrase)
     .filter((modifier) =>
       modifier.type !== "verb" &&
       (modifier.type !== "adjective" || modifier.inWayPhrase == null) &&

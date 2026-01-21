@@ -9,10 +9,11 @@ import { ExhaustedError, FilteredError } from "./error.ts";
 import { CONJUNCTION } from "./misc.ts";
 import {
   adjectivalIsNone,
-  AdjectivalModifier, adverbialIsNone,
+  AdjectivalModifier,
+  adverbialIsNone,
   AdverbialModifier,
   multipleModifiers,
-} from './modifier.ts'
+} from "./modifier.ts";
 import { nounAsPreposition, preposition } from "./preposition.ts";
 import { wordUnit } from "./word_unit.ts";
 
@@ -148,12 +149,8 @@ function verbPhrase(
   };
 }
 function defaultPhrase(
-  options: Readonly<{
-    phrase: TokiPona.Phrase & { type: "simple" };
-    includeGerund: boolean;
-  }>,
+  phrase: TokiPona.Phrase & { type: "simple" },
 ) {
-  const { phrase } = options;
   const emphasis = phrase.emphasis != null;
   return IterableResult.combine(
     wordUnit(phrase.headWord),
@@ -248,10 +245,7 @@ function preverb(
     );
   return IterableResult.combine(
     verb,
-    translatePhrase({
-      phrase: preverb.phrase,
-      includeGerund: false,
-    }),
+    translatePhrase(preverb.phrase),
   )
     .filterMap(([verb, predicate]): null | English.SimpleVerbPhrase => {
       if (
@@ -301,15 +295,11 @@ function preverb(
 }
 const translatePhrase = phrase;
 export function phrase(
-  options: Readonly<{
-    phrase: TokiPona.Phrase;
-    includeGerund: boolean;
-  }>,
+  phrase: TokiPona.Phrase,
 ): IterableResult<PhraseTranslation> {
-  const { phrase } = options;
   switch (phrase.type) {
     case "simple":
-      return defaultPhrase({ ...options, phrase });
+      return defaultPhrase(phrase);
     case "preposition":
       return preposition(phrase)
         .map(prepositionAsVerb)
@@ -394,14 +384,13 @@ export function phraseAsVerb(
 export function multiplePhrases(
   options: Readonly<{
     phrases: TokiPona.MultiplePhrases;
-    includeGerund: boolean;
     andParticle: null | string;
   }>,
 ): IterableResult<PhraseTranslation> {
   const { phrases, andParticle } = options;
   switch (phrases.type) {
     case "simple":
-      return phrase({ ...options, phrase: phrases.phrase });
+      return phrase(phrases.phrase);
     case "and":
     case "anu": {
       const conjunction = CONJUNCTION[phrases.type];

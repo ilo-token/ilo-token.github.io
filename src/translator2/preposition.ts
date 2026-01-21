@@ -33,7 +33,6 @@ export function preposition(
       ),
     multiplePhrases({
       phrases: preposition.phrases,
-      includeGerund: true,
       andParticle: null,
     })
       .filterMap((phrases) =>
