@@ -16,6 +16,8 @@ NOTE: Before publishing:
 The latest on-development version can be accessed by building the source code.
 On this on-development version, things can be broken.
 
+- Preverbs are now used whenever possible making use of "be" e.g. "I try to be
+  good" and "I may be good".
 - Implement nasin sitelen kalama pi linja lili a.k.a. cartouche tally marks.
 - Implement a bunch of words from the new UCSUR specification. This doesn't mean
   these will be recognized, only Linku is used for inclusion criteria. However,

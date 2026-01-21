@@ -271,26 +271,28 @@ function preverb(
             break;
         }
         return { ...verb, subjectComplement, emphasis };
-      } else if (
-        verb.predicateType === "verb" && predicate.type === "verb" &&
-        predicate.verb.type === "simple"
-      ) {
-        const first = predicate.verb.verb[0];
-        // TODO: filter out modal verb when found in the middle
-        const predicateVerb: English.AdverbVerb = {
-          preAdverbs: first.preAdverbs,
-          verb: first.verb,
-          postAdverb: null,
-        };
-        return {
-          ...predicate.verb,
-          verb: [
-            ...verb.verb,
-            predicateVerb,
-            ...predicate.verb.verb.slice(1),
-          ],
-          emphasis,
-        };
+      } else if (verb.predicateType === "verb") {
+        const predicateAsVerb = phraseAsVerb(predicate);
+        if (predicateAsVerb.type === "simple") {
+          const first = predicateAsVerb.verb[0];
+          // TODO: filter out modal verb when found in the middle
+          const verbForPreverb: English.AdverbVerb = {
+            preAdverbs: first.preAdverbs,
+            verb: first.verb,
+            postAdverb: null,
+          };
+          return {
+            ...predicateAsVerb,
+            verb: [
+              ...verb.verb,
+              verbForPreverb,
+              ...predicateAsVerb.verb.slice(1),
+            ],
+            emphasis,
+          };
+        } else {
+          return null;
+        }
       } else {
         return null;
       }
