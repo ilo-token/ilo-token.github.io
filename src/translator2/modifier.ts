@@ -287,7 +287,8 @@ export function multipleModifiers(
       new ExhaustedError(modifiers.map(Composer.modifier).join(" "))
     );
 }
-function combinationOnTwo<T>(
+// TODO: move this as IterableResult static method
+export function combinationOnTwo<T>(
   array: ReadonlyArray<T>,
 ): IterableResult<readonly [ReadonlyArray<T>, ReadonlyArray<T>]> {
   if (array.length == 0) {

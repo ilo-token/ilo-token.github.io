@@ -62,3 +62,25 @@ export function verb(
       emphasis,
     }));
 }
+// TODO: error messages
+export function forObject(verb: English.VerbPhrase): boolean | string {
+  const [{ forObject }, ...rest] = flattenPartialVerb(verb);
+  if (
+    forObject !== false &&
+    rest.every(({ forObject: otherForObject }) => forObject === otherForObject)
+  ) {
+    return forObject;
+  } else {
+    return false;
+  }
+}
+function flattenPartialVerb(
+  verb: English.VerbPhrase,
+): ReadonlyArray<English.SimpleVerbPhrase> {
+  switch (verb.type) {
+    case "simple":
+      return [verb];
+    case "compound":
+      return verb.verbs.flatMap(flattenPartialVerb);
+  }
+}
