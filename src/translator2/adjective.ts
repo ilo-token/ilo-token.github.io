@@ -4,7 +4,6 @@ import { nullableAsArray } from "../misc/misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "./ast.ts";
 import { UntranslatableError } from "./error.ts";
-import { combinationOnTwo } from "./modifier.ts";
 import { noEmphasis, word } from "./word.ts";
 
 export type AdjectiveWithInWay = Readonly<{
@@ -113,12 +112,13 @@ export function shareAdverb(
 > {
   switch (adjective.type) {
     case "simple":
-      return combinationOnTwo(adjective.adverbs).map<
-        readonly [English.AdjectivePhrase, ReadonlyArray<English.Adverb>]
-      >(([forAdjective, forAdverb]) => [
-        { ...adjective, adverbs: forAdjective },
-        forAdverb,
-      ]);
+      return IterableResult.combinationOnTwo(adjective.adverbs)
+        .map<readonly [English.AdjectivePhrase, ReadonlyArray<English.Adverb>]>(
+          ([forAdjective, forAdverb]) => [
+            { ...adjective, adverbs: forAdjective },
+            forAdverb,
+          ],
+        );
     case "compound":
       return IterableResult.single<
         readonly [English.AdjectivePhrase, ReadonlyArray<English.Adverb>]

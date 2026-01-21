@@ -273,7 +273,7 @@ export function multipleModifiers(
   modifiers: ReadonlyArray<TokiPona.Modifier>,
 ): IterableResult<MultipleModifierTranslation> {
   return IterableResult.combine(...modifiers.map(modifier))
-    .flatMap(combinationOnTwo)
+    .flatMap(IterableResult.combinationOnTwo)
     .filterMap(([forAdjectival, forAdverbial]) => {
       const adjectival = adjectivalModifier(forAdjectival);
       const adverbial = adverbialModifier(forAdverbial);
@@ -286,22 +286,4 @@ export function multipleModifiers(
     .addErrorWhenNone(() =>
       new ExhaustedError(modifiers.map(Composer.modifier).join(" "))
     );
-}
-// TODO: move this as IterableResult static method
-export function combinationOnTwo<T>(
-  array: ReadonlyArray<T>,
-): IterableResult<readonly [ReadonlyArray<T>, ReadonlyArray<T>]> {
-  if (array.length == 0) {
-    return IterableResult.single([[], []]);
-  } else {
-    const init = array.slice(0, array.length - 1);
-    const last = array[array.length - 1];
-    return combinationOnTwo(init)
-      .flatMap(([left, right]) =>
-        IterableResult.fromArray([
-          [[...left, last], right],
-          [left, [...right, last]],
-        ])
-      );
-  }
 }

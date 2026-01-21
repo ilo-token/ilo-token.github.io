@@ -137,6 +137,24 @@ export class IterableResult<T> {
     ) as IterableResult<T>;
   }
 
+  static combinationOnTwo<T>(
+    array: ReadonlyArray<T>,
+  ): IterableResult<readonly [ReadonlyArray<T>, ReadonlyArray<T>]> {
+    if (array.length == 0) {
+      return IterableResult.single([[], []]);
+    } else {
+      const init = array.slice(0, array.length - 1);
+      const last = array[array.length - 1];
+      return IterableResult.combinationOnTwo(init)
+        .flatMap(([left, right]) =>
+          IterableResult.fromArray([
+            [[...left, last], right],
+            [left, [...right, last]],
+          ])
+        );
+    }
+  }
+
   static handleThrows<T>(
     iterableResult: () => IterableResult<T>,
   ): IterableResult<T> {
