@@ -1,7 +1,10 @@
+import { settings } from "../settings.ts";
 import { dictionary as globalDictionary } from "./global_dictionary.ts";
-import { Definition, Dictionary } from "./type.ts";
+import { Definition, Dictionary, Entry } from "./type.ts";
 
 // all of these global constants are mutable
+
+let sandbox = false;
 
 const customDictionary: Dictionary = new Map();
 export const dictionary: Dictionary = new Map();
@@ -15,6 +18,12 @@ export const tokiPonaWordSet: Set<string> = new Set();
 
 update();
 
+export function updateSandboxInclusion(): void {
+  if (sandbox !== settings.sandbox) {
+    sandbox = settings.sandbox;
+    update();
+  }
+}
 export function loadCustomDictionary(dictionary: Dictionary): void {
   customDictionary.clear();
   for (const [key, value] of dictionary) {
@@ -24,10 +33,14 @@ export function loadCustomDictionary(dictionary: Dictionary): void {
 }
 function update() {
   dictionary.clear();
-  const words = new Set([
-    ...globalDictionary.keys(),
-    ...customDictionary.keys(),
-  ]);
+  const words = new Set(
+    [
+      ...globalDictionary.entries(),
+      ...customDictionary.entries(),
+    ]
+      .filter(([_, entry]) => !entry.sandbox || settings.sandbox)
+      .map(([word]) => word),
+  );
   for (const word of words) {
     const entry = customDictionary.get(word) ?? globalDictionary.get(word)!;
     if (entry.definitions.length > 0) {

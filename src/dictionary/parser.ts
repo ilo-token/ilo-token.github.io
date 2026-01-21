@@ -80,6 +80,7 @@ const closeBracket = lex(matchString("]", "close bracket"));
 const comma = lex(matchString(",", "comma"));
 const semicolon = lex(matchString(";", "semicolon"));
 const slash = lex(matchString("/", "slash"));
+const atSign = lex(matchString("@", "slash"));
 
 const keyword = memoize(<T extends string>(keyword: T) =>
   lex(
@@ -629,15 +630,19 @@ const positionedHead = sequence(
   .map(([init, last]) => [...init, last]);
 const entry = withSource(
   ignore.with(
-    allWithCheck(
-      new CheckedParser(
-        sequence(unescapedWord, choiceOnlyOne(openParenthesis, slash)),
-        definition.skip(semicolon),
+    sequence(
+      optionalAll(sequence(atSign, keyword("sandbox"), semicolon)),
+      allWithCheck(
+        new CheckedParser(
+          sequence(unescapedWord, choiceOnlyOne(openParenthesis, slash)),
+          definition.skip(semicolon),
+        ),
       ),
     ),
   ),
 )
-  .map(([definitions, source]): Entry => ({
+  .map(([[sandbox, definitions], source]): Entry => ({
+    sandbox: sandbox != null,
     definitions,
     source: source.trimEnd(),
   }));

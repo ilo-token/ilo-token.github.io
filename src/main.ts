@@ -4,7 +4,11 @@ import { closestString } from "@std/text/closest-string";
 import BrowserDetector from "browser-dtector";
 import PROJECT_DATA from "../project_data.json" with { type: "json" };
 import { extractResultError, Result, ResultError } from "./compound.ts";
-import { dictionary, loadCustomDictionary } from "./dictionary/dictionary.ts";
+import {
+  dictionary,
+  loadCustomDictionary,
+  updateSandboxInclusion,
+} from "./dictionary/dictionary.ts";
 import { parseDictionary } from "./dictionary/parser.ts";
 import { Dictionary } from "./dictionary/type.ts";
 import {
@@ -181,6 +185,7 @@ function main() {
 
   // load settings
   loadFromLocalStorage();
+  updateSandboxInclusion();
 
   // states for storing previous dictionary states for discarding dictionary edits
   let lastSavedText: string = customDictionaryTextBox.value;
@@ -332,6 +337,7 @@ function main() {
   });
   confirmButton.addEventListener("click", () => {
     loadFromDom();
+    updateSandboxInclusion();
     updateLabel();
     settingsDialogBox.close();
   });

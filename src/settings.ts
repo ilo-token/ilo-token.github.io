@@ -4,6 +4,7 @@ export type Redundancy = "both" | "condensed" | "default only";
 export type Settings = {
   randomize: boolean;
   multiline: boolean;
+  sandbox: boolean;
   quantity: Redundancy;
   tense: Redundancy;
 };
@@ -11,6 +12,7 @@ export type Settings = {
 export const defaultSettings: Readonly<Settings> = Object.freeze({
   randomize: false,
   multiline: false,
+  sandbox: false,
   quantity: "both",
   tense: "both",
 });

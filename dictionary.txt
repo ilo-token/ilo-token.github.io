@@ -151,11 +151,11 @@ e:
     `[`marks the start of a direct object`]`(particle def);
 
 eliki:
-#     # sandbox
-#
-#     trial(n);
-#     adversity(n);
-#     bittersweet(adj opinion);
+    @sandbox;
+
+    trial(n);
+    adversity(n);
+    bittersweet(adj opinion);
 
 en:
     # core

@@ -94,6 +94,7 @@ export type Definition =
   | Readonly<{ type: "preposition"; preposition: string }>
   | Readonly<{ type: "interjection"; interjection: string }>;
 export type Entry = Readonly<{
+  sandbox: boolean;
   definitions: ReadonlyArray<Definition>;
   source: string;
 }>;
