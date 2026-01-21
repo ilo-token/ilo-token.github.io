@@ -1,4 +1,3 @@
-import { equal } from "@std/assert/equal";
 import { IterableResult } from "../compound.ts";
 import { mapNullable, nullableAsArray } from "../misc/misc.ts";
 import * as TokiPona from "../parser/ast.ts";
@@ -409,11 +408,11 @@ export function multiplePhrases(
             );
           }
           if (phrase.every((phrase) => phrase.type === "noun")) {
-            const firstAdverbial = phrase[0].adverbialModifier;
-            const allEqual = phrase.slice(1).every((phrase) =>
-              equal(phrase.adverbialModifier, firstAdverbial)
-            );
-            if (allEqual) {
+            if (
+              phrase.every((phrase) =>
+                adverbialIsNone(phrase.adverbialModifier)
+              )
+            ) {
               return {
                 type: "noun",
                 // TODO: flatten compound nouns on the grammar fixer
@@ -422,7 +421,7 @@ export function multiplePhrases(
                   conjunction,
                   nouns: phrase.map(({ noun }) => noun),
                 },
-                adverbialModifier: firstAdverbial,
+                adverbialModifier: { adverbs: [], inWayPhrase: null },
               };
             } else {
               return null;
