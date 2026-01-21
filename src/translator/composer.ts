@@ -1,4 +1,4 @@
-import { compound, nullableAsArray } from "../misc/misc.ts";
+import { nullableAsArray } from "../misc/misc.ts";
 import * as English from "./ast.ts";
 
 const EMPHASIS_STARTING_TAG = "<strong>";
@@ -163,4 +163,19 @@ function capitalize(text: string) {
     /(?<![<&\p{Alpha}\p{Nd}\p{Nl}\p{No}])[\p{Alpha}\p{Nd}\p{Nl}\p{No}]/u,
     (character) => character.toLocaleUpperCase(),
   );
+}
+export function compound(
+  values: ReadonlyArray<string>,
+  conjunction: string,
+  repeat: boolean,
+): string {
+  if (repeat || values.length <= 2) {
+    return values.join(` ${conjunction} `);
+  } else {
+    const lastIndex = values.length - 1;
+    const init = values.slice(0, lastIndex);
+    const last = values[lastIndex];
+    const initText = init.map((item) => `${item},`).join(" ");
+    return `${initText} ${conjunction} ${last}`;
+  }
 }

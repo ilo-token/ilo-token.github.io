@@ -34,21 +34,6 @@ export function repeatWithSpace(text: string, count: number): string {
 export function throwError(error: Error): never {
   throw error;
 }
-export function compound(
-  values: ReadonlyArray<string>,
-  conjunction: string,
-  repeat: boolean,
-): string {
-  if (repeat || values.length <= 2) {
-    return values.join(` ${conjunction} `);
-  } else {
-    const lastIndex = values.length - 1;
-    const init = values.slice(0, lastIndex);
-    const last = values[lastIndex];
-    const initText = init.map((item) => `${item},`).join(" ");
-    return `${initText} ${conjunction} ${last}`;
-  }
-}
 export function lazy<T>(fn: () => T): () => T {
   let defined = false;
   let value: T;
