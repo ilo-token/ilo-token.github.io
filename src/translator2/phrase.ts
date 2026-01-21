@@ -9,10 +9,10 @@ import { ExhaustedError, FilteredError } from "./error.ts";
 import { CONJUNCTION } from "./misc.ts";
 import {
   adjectivalIsNone,
-  AdjectivalModifier,
+  AdjectivalModifier, adverbialIsNone,
   AdverbialModifier,
   multipleModifiers,
-} from "./modifier.ts";
+} from './modifier.ts'
 import { nounAsPreposition, preposition } from "./preposition.ts";
 import { wordUnit } from "./word_unit.ts";
 
@@ -273,7 +273,7 @@ function preverb(
         return { ...verb, subjectComplement, emphasis };
       } else if (verb.predicateType === "verb") {
         const predicateAsVerb = phraseAsVerb(predicate);
-        if (predicateAsVerb.type === "simple") {
+        if (predicateAsVerb != null && predicateAsVerb.type === "simple") {
           const first = predicateAsVerb.verb[0];
           // TODO: filter out modal verb when found in the middle
           const verbForPreverb: English.AdverbVerb = {
@@ -327,7 +327,7 @@ export function phrase(
 }
 export function phraseAsVerb(
   phrase: PhraseTranslation,
-): English.VerbPhrase {
+): null | English.VerbPhrase {
   // TODO: on grammar fixer, extract noun and adjective negative modifier and put it on the verb
   switch (phrase.type) {
     case "noun":
@@ -336,11 +336,15 @@ export function phraseAsVerb(
       let inWayPhrase: null | English.AdjectivePhrase;
       switch (phrase.type) {
         case "noun": {
-          inWayPhrase = null;
-          subjectComplement = {
-            type: "noun",
-            noun: phrase.noun,
-          };
+          if (adverbialIsNone(phrase.adverbialModifier)) {
+            inWayPhrase = null;
+            subjectComplement = {
+              type: "noun",
+              noun: phrase.noun,
+            };
+          } else {
+            return null;
+          }
           break;
         }
         case "adjective": {
@@ -450,17 +454,22 @@ export function multiplePhrases(
               };
             }
           } else {
-            return {
-              type: "verb",
-              verb: {
-                type: "compound",
-                conjunction,
-                verbs: phrase.map(phraseAsVerb),
-                object: null,
-                objectComplement: null,
-                prepositions: [],
-              },
-            };
+            const verbs = phrase.map(phraseAsVerb);
+            if (verbs.every((verb) => verb != null)) {
+              return {
+                type: "verb",
+                verb: {
+                  type: "compound",
+                  conjunction,
+                  verbs,
+                  object: null,
+                  objectComplement: null,
+                  prepositions: [],
+                },
+              };
+            } else {
+              return null;
+            }
           }
         })
         .addErrorWhenNone(() =>
