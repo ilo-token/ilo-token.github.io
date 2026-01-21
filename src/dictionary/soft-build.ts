@@ -4,8 +4,8 @@ import { exists } from "@std/fs/exists";
 import { Parser } from "./parallel_parser.ts";
 
 if (import.meta.main) {
-  using parser = new Parser();
   if (!await exists(new URL("./global_dictionary.ts", import.meta.url))) {
+    using parser = new Parser();
     const Dictionary = await import("./build.ts");
     if (!await Dictionary.build(parser)) {
       await Dictionary.buildWithDictionary(new Map());
