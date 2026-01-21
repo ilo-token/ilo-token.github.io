@@ -31,10 +31,7 @@ export function preposition(
             ))
           : throwError(new FilteredError("adjectives modifying preposition"))
       ),
-    multiplePhrases({
-      phrases: preposition.phrases,
-      andParticle: null,
-    })
+    multiplePhrases(preposition.phrases)
       .filterMap((phrases) =>
         phrases.type === "noun"
           ? adverbialIsNone(phrases.adverbialModifier) ? phrases.noun : null

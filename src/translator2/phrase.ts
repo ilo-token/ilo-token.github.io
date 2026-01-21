@@ -381,12 +381,8 @@ export function phraseAsVerb(
 }
 
 export function multiplePhrases(
-  options: Readonly<{
-    phrases: TokiPona.MultiplePhrases;
-    andParticle: null | string;
-  }>,
+  phrases: TokiPona.MultiplePhrases,
 ): IterableResult<PhraseTranslation> {
-  const { phrases, andParticle } = options;
   switch (phrases.type) {
     case "simple":
       return phrase(phrases.phrase);
@@ -395,7 +391,7 @@ export function multiplePhrases(
       const conjunction = CONJUNCTION[phrases.type];
       return IterableResult.combine(
         ...phrases.phrases
-          .map((phrases) => multiplePhrases({ ...options, phrases })),
+          .map((phrases) => multiplePhrases(phrases)),
       )
         .filterMap((phrase): null | PhraseTranslation => {
           if (
@@ -458,7 +454,7 @@ export function multiplePhrases(
           }
         })
         .addErrorWhenNone(() =>
-          new ExhaustedError(Composer.multiplePhrases(phrases, andParticle))
+          new ExhaustedError(Composer.multiplePhrases(phrases, "(and)"))
         );
     }
   }

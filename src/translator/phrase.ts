@@ -427,7 +427,7 @@ export function multiplePhrases(
     phrases: TokiPona.MultiplePhrases;
     place: Place;
     includeGerund: boolean;
-    andParticle: null | string;
+    andParticle: string;
   }>,
 ): IterableResult<PhraseTranslation> {
   const { phrases, andParticle } = options;

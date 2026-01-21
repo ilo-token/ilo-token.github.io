@@ -30,7 +30,7 @@ export function preposition(
       phrases: preposition.phrases,
       place: "object",
       includeGerund: true,
-      andParticle: null,
+      andParticle: preposition.preposition.word,
     })
       .map((phrases) =>
         phrases.type === "noun"

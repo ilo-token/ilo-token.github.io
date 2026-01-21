@@ -90,16 +90,16 @@ export function phrase(value: Phrase): string {
       return preposition(value);
   }
 }
-function particle(type: "and" | "anu", particle: null | string) {
+function particle(type: "and" | "anu", particle: string) {
   if (type === "and") {
-    return particle!;
+    return particle;
   } else {
     return "anu;";
   }
 }
 export function multiplePhrases(
   phrases: MultiplePhrases,
-  andParticle: null | string,
+  andParticle: string,
 ): string {
   switch (phrases.type) {
     case "simple":
