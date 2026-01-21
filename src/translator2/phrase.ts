@@ -427,20 +427,17 @@ export function multiplePhrases(
               return null;
             }
           } else if (phrase.every((phrase) => phrase.type === "adjective")) {
-            if (andParticle === "en" && conjunction === "and") {
-              return null;
-            } else {
-              return {
-                type: "adjective",
-                // TODO: flatten compound adjective on the grammar fixer
-                adjective: {
-                  type: "compound",
-                  conjunction,
-                  adjectives: phrase.map(({ adjective }) => adjective),
-                },
-                inWayPhrase: null,
-              };
-            }
+            // TODO: filter out "<adjective> and <adjective>" when used as a sole phrase
+            return {
+              type: "adjective",
+              // TODO: flatten compound adjective on the grammar fixer
+              adjective: {
+                type: "compound",
+                conjunction,
+                adjectives: phrase.map(({ adjective }) => adjective),
+              },
+              inWayPhrase: null,
+            };
           } else {
             const verbs = phrase.map(phraseAsVerb);
             if (verbs.every((verb) => verb != null)) {
