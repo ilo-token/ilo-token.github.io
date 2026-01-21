@@ -454,7 +454,7 @@ export function multiplePhrases(
           }
         })
         .addErrorWhenNone(() =>
-          new ExhaustedError(Composer.multiplePhrases(phrases, "(and)"))
+          new ExhaustedError(Composer.multiplePhrases(phrases))
         );
     }
   }

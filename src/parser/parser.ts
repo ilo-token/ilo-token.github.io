@@ -324,6 +324,7 @@ function nestedPhrasesOnly(
     const longAnuParser = type === "anu"
       ? longAnu.map((phrases): MultiplePhrases => ({
         type: "anu",
+        particle: "anu",
         phrases: phrases.map((phrase): MultiplePhrases => ({
           type: "simple",
           phrase,
@@ -342,6 +343,7 @@ function nestedPhrasesOnly(
       )
         .map(([group, moreGroups]): MultiplePhrases => ({
           type,
+          particle: first,
           phrases: [group, ...moreGroups],
         })),
     );
@@ -494,6 +496,7 @@ function multiplePredicates(
     const longAnuParser: Parser<Predicate> = type === "anu"
       ? longAnu.map((phrases): Predicate => ({
         type: "anu",
+        particle: "anu",
         predicates: phrases.map((predicate): Predicate => ({
           type: "simple",
           predicate,
@@ -521,6 +524,7 @@ function multiplePredicates(
       )
         .map(([group, moreGroups]): Predicate => ({
           type,
+          particle: first,
           predicates: [group, ...moreGroups],
         })),
       multiplePredicates(rest),

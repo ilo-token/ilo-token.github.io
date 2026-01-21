@@ -487,7 +487,7 @@ export function multiplePhrases(
           }
         })
         .addErrorWhenNone(() =>
-          new ExhaustedError(Composer.multiplePhrases(phrases, andParticle))
+          new ExhaustedError(Composer.multiplePhrases(phrases))
         );
     }
   }

@@ -90,25 +90,15 @@ export function phrase(value: Phrase): string {
       return preposition(value);
   }
 }
-function particle(type: "and" | "anu", particle: string) {
-  if (type === "and") {
-    return particle;
-  } else {
-    return "anu;";
-  }
-}
-export function multiplePhrases(
-  phrases: MultiplePhrases,
-  andParticle: string,
-): string {
+export function multiplePhrases(phrases: MultiplePhrases): string {
   switch (phrases.type) {
     case "simple":
       return phrase(phrases.phrase);
     case "and":
     case "anu": {
       return phrases.phrases
-        .map((phrases) => multiplePhrases(phrases, andParticle))
-        .join(` ${particle(phrases.type, andParticle)} `);
+        .map((phrases) => multiplePhrases(phrases))
+        .join(` ${phrases.particle} `);
     }
   }
 }
@@ -116,24 +106,23 @@ export function preposition(preposition: Preposition): string {
   return [
     wordUnit(preposition.preposition),
     ...preposition.modifiers.map(modifier),
-    multiplePhrases(preposition.phrases, ""),
+    multiplePhrases(preposition.phrases),
     ...emphasisAsArray(preposition.emphasis),
   ]
     .join(" ");
 }
 export function multiplePredicates(
   predicates: Predicate,
-  andParticle: string,
 ): string {
   switch (predicates.type) {
     case "simple":
       return phrase(predicates.predicate);
     case "associated": {
       return [
-        multiplePhrases(predicates.predicates, andParticle),
+        multiplePhrases(predicates.predicates),
         ...nullableAsArray(predicates.objects).map(() => "e"),
         ...nullableAsArray(predicates.objects)
-          .map((objects) => multiplePhrases(objects, "e")),
+          .map((objects) => multiplePhrases(objects)),
         ...predicates.prepositions.map(preposition),
       ]
         .join(" ");
@@ -141,31 +130,31 @@ export function multiplePredicates(
     case "and":
     case "anu":
       return predicates.predicates
-        .map((predicates) => multiplePredicates(predicates, andParticle))
-        .join(` ${particle(predicates.type, andParticle)} `);
+        .map((predicates) => multiplePredicates(predicates))
+        .join(` ${predicates.particle} `);
   }
 }
 export function clause(clause: Clause): string {
   switch (clause.type) {
     case "phrases":
-      return multiplePhrases(clause.phrases, "en");
+      return multiplePhrases(clause.phrases);
     case "o vocative":
-      return `${multiplePhrases(clause.phrases, "en")} o`;
+      return `${multiplePhrases(clause.phrases)} o`;
     case "li clause": {
       const li = clause.explicitLi ? ["li"] : [];
       return [
-        multiplePhrases(clause.subjects, "en"),
+        multiplePhrases(clause.subjects),
         ...li,
-        multiplePredicates(clause.predicates, "li"),
+        multiplePredicates(clause.predicates),
       ]
         .join(" ");
     }
     case "o clause":
       return [
         ...nullableAsArray(clause.subjects)
-          .map((subjects) => multiplePhrases(subjects, "en")),
+          .map((subjects) => multiplePhrases(subjects)),
         "o",
-        multiplePredicates(clause.predicates, "o"),
+        multiplePredicates(clause.predicates),
       ]
         .join(" ");
   }

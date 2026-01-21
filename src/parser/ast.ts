@@ -41,10 +41,10 @@ export type Phrase =
 export type MultiplePhrases =
   | Readonly<{ type: "simple"; phrase: Phrase }>
   | Readonly<{
-    type: "and";
+    type: "and" | "anu";
+    particle: string;
     phrases: ReadonlyArray<MultiplePhrases>;
-  }>
-  | Readonly<{ type: "anu"; phrases: ReadonlyArray<MultiplePhrases> }>;
+  }>;
 export type Preposition = Readonly<{
   preposition: HeadedWordUnit;
   modifiers: ReadonlyArray<Modifier>;
@@ -59,8 +59,11 @@ export type Predicate =
     objects: null | MultiplePhrases;
     prepositions: ReadonlyArray<Preposition>;
   }>
-  | Readonly<{ type: "and"; predicates: ReadonlyArray<Predicate> }>
-  | Readonly<{ type: "anu"; predicates: ReadonlyArray<Predicate> }>;
+  | Readonly<{
+    type: "and" | "anu";
+    particle: string;
+    predicates: ReadonlyArray<Predicate>;
+  }>;
 export type Clause =
   | Readonly<{ type: "phrases"; phrases: MultiplePhrases }>
   | Readonly<{ type: "o vocative"; phrases: MultiplePhrases }>
