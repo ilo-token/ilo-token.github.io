@@ -246,7 +246,7 @@ function fixMultipleVerb(
   const first = newVerb[0];
   const notIndex = first.preAdverbs.findIndex((adverb) => adverb.negative);
   const newNewVerb: ReadonlyArray<AdverbVerb> =
-    notIndex !== -1 && first.verb.type !== "modal" &&
+    notIndex !== -1 && first.verb.type === "non-modal" &&
       first.verb.presentSingular !== "is"
       ? [
         {
