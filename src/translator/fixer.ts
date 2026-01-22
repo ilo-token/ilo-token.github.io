@@ -222,7 +222,8 @@ function fixComplement(complement: English.Complement): English.Complement {
 }
 function fixAdverbVerb(adverbVerb: English.AdverbVerb): English.AdverbVerb {
   const notIndex = adverbVerb.preAdverbs.findIndex((adverb) => adverb.negative);
-  const [not, adverbs] = adverbVerb.verb.type === "modal" && notIndex !== -1
+  const [not, adverbs] = (adverbVerb.verb.type === "modal" ||
+      adverbVerb.verb.presentSingular === "is") && notIndex !== -1
     ? [
       adverbVerb.preAdverbs[notIndex],
       adverbVerb.preAdverbs.toSpliced(notIndex, 1),
@@ -245,29 +246,27 @@ function fixMultipleVerb(
   }
   const first = newVerb[0];
   const notIndex = first.preAdverbs.findIndex((adverb) => adverb.negative);
-  const newNewVerb: ReadonlyArray<AdverbVerb> =
-    notIndex !== -1 && first.verb.type === "non-modal" &&
-      first.verb.presentSingular !== "is"
-      ? [
-        {
-          verb: {
-            type: "non-modal",
-            presentPlural: "do",
-            presentSingular: "does",
-            past: "did",
-            reduplicationCount: 1,
-            emphasis: false,
-          },
-          preAdverbs: [],
-          postAdverb: first.preAdverbs[notIndex],
+  const newNewVerb: ReadonlyArray<AdverbVerb> = notIndex !== -1
+    ? [
+      {
+        verb: {
+          type: "non-modal",
+          presentPlural: "do",
+          presentSingular: "does",
+          past: "did",
+          reduplicationCount: 1,
+          emphasis: false,
         },
-        {
-          ...first,
-          preAdverbs: first.preAdverbs.toSpliced(notIndex, 1),
-        },
-        ...newVerb.slice(1),
-      ]
-      : newVerb;
+        preAdverbs: [],
+        postAdverb: first.preAdverbs[notIndex],
+      },
+      {
+        ...first,
+        preAdverbs: first.preAdverbs.toSpliced(notIndex, 1),
+      },
+      ...newVerb.slice(1),
+    ]
+    : newVerb;
   return [
     newNewVerb[0],
     ...newNewVerb
