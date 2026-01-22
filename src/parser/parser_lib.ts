@@ -103,7 +103,7 @@ export class Parser<T> {
 export type Position = Readonly<{ position: number; length: number }>;
 export type PositionedErrorOption = Readonly<{
   position?: Position;
-  cause?: unknown;
+  cause?: Error;
 }>;
 export class PositionedError extends ResultError {
   override name = "PositionedError";

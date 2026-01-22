@@ -1,7 +1,7 @@
 // ensure this module don't have imports and as runtime agnostic as possible,
 // make separate module when necessary
 
-export type ErrorOption = Readonly<{ cause?: unknown }>;
+export type ErrorOption = Readonly<{ cause?: Error }>;
 
 export function nullableAsArray<T>(
   value?: T,
