@@ -18,6 +18,8 @@ jobs:
         run: deno install --frozen
       - name: Build Dictionary
         run: deno task build-dictionary
+      - name: Check types
+        run: deno check
       - name: Check formatting
         run: deno fmt --check
       - name: Lint
