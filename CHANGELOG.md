@@ -21,9 +21,8 @@ On this on-development version, things can be broken.
 - Preverbs are now used whenever possible making use of "be" e.g. "I try to be
   good" and "I may be good".
 - Implement nasin sitelen kalama pi linja lili a.k.a. cartouche tally marks.
-- Implement a bunch of words from the new UCSUR specification. Marginal words
-  are still unrecognized until the setting "recognize marginal words" is turned
-  on.
+- Implement a bunch of words from the new UCSUR specification. However, these
+  needs dictionary definition. If you want these added, please contribute.
 - Remove X ala X partial parsing setting. It is now always turned on.
 - Warn user when X ala X is used. It is still not implemented.
 - Link related projects.
