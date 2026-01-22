@@ -24,7 +24,7 @@ import {
   resetDomToCurrent,
   resetDomToDefault,
 } from "./settings_frontend.ts";
-import { translate } from "./translator/translator.ts";
+import { translate } from "./translator_legacy/translator.ts";
 
 const DICTIONARY_AUTO_PARSE_THRESHOLD = 5_000;
 const INITIAL_PAGE_SIZE = 100;
