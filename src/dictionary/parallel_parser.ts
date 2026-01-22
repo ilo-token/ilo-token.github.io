@@ -23,6 +23,18 @@ class ParserWorker {
   [Symbol.dispose]() {
     this.#worker.terminate();
   }
+
+  async parse(position: number, source: string): Promise<Dictionary> {
+    if (this.#cachedSource === source) {
+      return this.#cachedDictionary;
+    } else {
+      const dictionary = await this.#rawParse(position, source);
+      this.#cachedSource = source;
+      this.#cachedDictionary = dictionary;
+      return dictionary;
+    }
+  }
+
   #rawParse(position: number, source: string): Promise<Dictionary> {
     return new Promise((resolve, reject) => {
       const messageCallback = (event: MessageEvent) => {
@@ -59,16 +71,6 @@ class ParserWorker {
       this.#worker.addEventListener("error", errorCallback);
       this.#worker.postMessage(source);
     });
-  }
-  async parse(position: number, source: string): Promise<Dictionary> {
-    if (this.#cachedSource === source) {
-      return this.#cachedDictionary;
-    } else {
-      const dictionary = await this.#rawParse(position, source);
-      this.#cachedSource = source;
-      this.#cachedDictionary = dictionary;
-      return dictionary;
-    }
   }
 }
 export class Parser {

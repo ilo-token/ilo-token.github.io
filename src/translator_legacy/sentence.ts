@@ -2,10 +2,10 @@ import { IterableResult } from "../compound.ts";
 import { dictionary } from "../dictionary/dictionary.ts";
 import { nullableAsArray } from "../misc/misc.ts";
 import * as TokiPona from "../parser/ast.ts";
+import * as English from "../resolver_and_composer/ast.ts";
 import { TranslationTodoError } from "../translator/error.ts";
 import { noEmphasis, word } from "../translator/word.ts";
 import { definitionAsPlainString } from "./as_string.ts";
-import * as English from "../resolver_and_composer/ast.ts";
 import { clause, contextClause, unwrapSingleWord } from "./clause.ts";
 import { fromSimpleDefinition, getReduplicationCount } from "./word_unit.ts";
 

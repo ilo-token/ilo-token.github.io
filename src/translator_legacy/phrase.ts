@@ -2,6 +2,7 @@ import { IterableResult } from "../compound.ts";
 import { mapNullable, nullableAsArray } from "../misc/misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as Composer from "../parser/composer.ts";
+import * as English from "../resolver_and_composer/ast.ts";
 import { CONJUNCTION } from "../translator/conjuction.ts";
 import { ExhaustedError, FilteredError } from "../translator/error.ts";
 import { word } from "../translator/word.ts";
@@ -11,7 +12,6 @@ import {
   extractNegativeFromAdjective,
 } from "./adjective.ts";
 import { extractNegativeFromMultipleAdverbs, NOT } from "./adverb.ts";
-import * as English from "../resolver_and_composer/ast.ts";
 import { getNumber } from "./determiner.ts";
 import {
   AdjectivalModifier,

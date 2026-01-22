@@ -1,7 +1,7 @@
 import { IterableResult } from "../compound.ts";
 import * as Dictionary from "../dictionary/type.ts";
-import { adjective, compoundAdjective } from "./adjective.ts";
 import * as EnglishComposer from "../resolver_and_composer/composer.ts";
+import { adjective, compoundAdjective } from "./adjective.ts";
 import { noun, simpleNounForms } from "./noun.ts";
 import { pronoun } from "./pronoun.ts";
 import { partialSimpleVerb, verb } from "./verb.ts";

@@ -1,15 +1,15 @@
 import { IterableResult } from "../compound.ts";
 import * as Dictionary from "../dictionary/type.ts";
 import { mapNullable, nullableAsArray } from "../misc/misc.ts";
+import * as English from "../resolver_and_composer/ast.ts";
 import { settings } from "../settings.ts";
-import { condense } from "./misc.ts";
 import { word } from "../translator/word.ts";
 import { adjective } from "./adjective.ts";
-import * as English from "../resolver_and_composer/ast.ts";
 import {
   determiner,
   extractNegativeFromMultipleDeterminers,
 } from "./determiner.ts";
+import { condense } from "./misc.ts";
 
 export type PartialNoun =
   & Dictionary.NounForms

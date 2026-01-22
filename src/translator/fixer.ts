@@ -1,9 +1,9 @@
 import { zip } from "@std/collections/zip";
-import { mapNullable } from "../misc/misc.ts";
-import { AdverbVerb } from "./ast.ts";
-import * as English from "./ast.ts";
-import { FilteredError } from "./error.ts";
 import * as Dictionary from "../dictionary/type.ts";
+import { mapNullable } from "../misc/misc.ts";
+import * as English from "./ast.ts";
+import { AdverbVerb } from "./ast.ts";
+import { FilteredError } from "./error.ts";
 
 function fixNounPhrase(noun: English.NounPhrase): English.NounPhrase {
   switch (noun.type) {

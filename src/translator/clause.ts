@@ -1,17 +1,16 @@
 import { IterableResult } from "../compound.ts";
 import { nullableAsArray, throwError } from "../misc/misc.ts";
 import * as TokiPona from "../parser/ast.ts";
-import { nanpa } from "./nanpa.ts";
-import { preposition } from "./preposition.ts";
-import { fromSimpleDefinition } from "./word_unit.ts";
-import { predicate } from "./predicate.ts";
 import { addWay } from "./adjective.ts";
 import * as English from "./ast.ts";
-import { multiplePhrases } from "./phrase.ts";
-import { nounAsPreposition } from "./preposition.ts";
 import { FilteredError, UntranslatableError } from "./error.ts";
+import { nanpa } from "./nanpa.ts";
+import { multiplePhrases } from "./phrase.ts";
+import { predicate } from "./predicate.ts";
+import { nounAsPreposition, preposition } from "./preposition.ts";
 import { addVerbBefore } from "./verb.ts";
 import { noEmphasis } from "./word.ts";
+import { fromSimpleDefinition } from "./word_unit.ts";
 
 function phraseClause(phrases: TokiPona.MultiplePhrases) {
   return multiplePhrases(phrases)

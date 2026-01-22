@@ -1,9 +1,9 @@
 import { zip } from "@std/collections/zip";
 import { IterableResult } from "../compound.ts";
 import * as Dictionary from "../dictionary/type.ts";
+import * as English from "../resolver_and_composer/ast.ts";
 import { FilteredError } from "../translator/error.ts";
 import { word } from "../translator/word.ts";
-import * as English from "../resolver_and_composer/ast.ts";
 import { simpleNounForms } from "./noun.ts";
 
 function filterQuantity(

@@ -5,10 +5,10 @@ import * as TokiPona from "../parser/ast.ts";
 import { definitionAsPlainString } from "../translator_legacy/as_string.ts";
 import * as English from "./ast.ts";
 import { clause, contextClause, unwrapSingleWord } from "./clause.ts";
-import { fixMultipleSentences } from "./fixer.ts";
-import { fromSimpleDefinition, getReduplicationCount } from "./word_unit.ts";
 import { TranslationTodoError } from "./error.ts";
+import { fixMultipleSentences } from "./fixer.ts";
 import { noEmphasis, word } from "./word.ts";
+import { fromSimpleDefinition, getReduplicationCount } from "./word_unit.ts";
 
 function filler(filler: TokiPona.Filler) {
   switch (filler.type) {

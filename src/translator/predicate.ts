@@ -1,17 +1,18 @@
 import { IterableResult } from "../compound.ts";
 import { nullableAsArray } from "../misc/misc.ts";
 import * as TokiPona from "../parser/ast.ts";
-import { CONJUNCTION } from "./conjuction.ts";
-import { multiplePhrases, phrase } from "./phrase.ts";
-import { preposition } from "./preposition.ts";
-import { phraseAsVerb } from "./phrase.ts";
-import { PhraseTranslation } from "./phrase.ts";
-import { AdjectiveWithInWay, shareAdverb } from "./adjective.ts";
-import { addWay } from "./adjective.ts";
+import { addWay, AdjectiveWithInWay, shareAdverb } from "./adjective.ts";
 import * as English from "./ast.ts";
-import { AdverbialModifier } from "./modifier.ts";
-import { nounAsPreposition } from "./preposition.ts";
+import { CONJUNCTION } from "./conjuction.ts";
 import { FilteredError, UntranslatableError } from "./error.ts";
+import { AdverbialModifier } from "./modifier.ts";
+import {
+  multiplePhrases,
+  phrase,
+  phraseAsVerb,
+  PhraseTranslation,
+} from "./phrase.ts";
+import { nounAsPreposition, preposition } from "./preposition.ts";
 import { forObject } from "./verb.ts";
 
 function verbObject(

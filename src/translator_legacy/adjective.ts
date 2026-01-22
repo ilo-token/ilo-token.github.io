@@ -2,10 +2,10 @@ import { IterableResult } from "../compound.ts";
 import * as Dictionary from "../dictionary/type.ts";
 import { mapNullable, nullableAsArray } from "../misc/misc.ts";
 import * as TokiPona from "../parser/ast.ts";
+import * as English from "../resolver_and_composer/ast.ts";
 import { UntranslatableError } from "../translator/error.ts";
 import { noEmphasis, word } from "../translator/word.ts";
 import { extractNegativeFromMultipleAdverbs } from "./adverb.ts";
-import * as English from "../resolver_and_composer/ast.ts";
 
 export type AdjectiveWithInWay = Readonly<{
   adjective: English.AdjectivePhrase;
