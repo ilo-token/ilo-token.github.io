@@ -15,8 +15,7 @@ open an issue for:
 
 Please remember to search first before opening an issue, it might already exist!
 Also check the [changelog](./CHANGELOG.md) and open the on-development
-changelog, it might be already fixed but hasn't published yet! Duplicate issues
-are unnecessary.
+changelog, it might be already fixed but hasn't published yet!
 
 <details>
 
@@ -42,7 +41,7 @@ as a public space for ilo Token development. You may open a new page for:
 - Questions
 - Any opinions or suggestions you want to share
 
-Please search first before opening a new page! Duplicate pages are unnecessary.
+Please search first before opening a new page!
 
 ## [Pull request](https://github.com/ilo-token/ilo-token.github.io/pulls)
 
