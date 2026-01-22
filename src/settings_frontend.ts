@@ -41,6 +41,7 @@ const REDUNDANCY_UPDATER: Updater<Redundancy> = {
 const UPDATERS: Readonly<{ [K in keyof Settings]: Updater<Settings[K]> }> = {
   randomize: BOOL_UPDATER,
   multiline: BOOL_UPDATER,
+  sandbox: BOOL_UPDATER,
   quantity: REDUNDANCY_UPDATER,
   tense: REDUNDANCY_UPDATER,
 };
