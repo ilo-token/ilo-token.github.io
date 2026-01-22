@@ -271,8 +271,8 @@ function fixMultipleVerb(
           case "modal":
             throw new FilteredError("modal verb after another verb");
           case "non-modal":
-            return verb.verb.presentSingular === "is"
-              ? {
+            if (verb.verb.presentSingular === "is") {
+              return {
                 ...verb,
                 verb: {
                   ...verb.verb,
@@ -280,8 +280,10 @@ function fixMultipleVerb(
                   presentSingular: "be",
                   past: "been",
                 },
-              }
-              : verb;
+              };
+            } else {
+              return verb;
+            }
         }
       }),
   ];
