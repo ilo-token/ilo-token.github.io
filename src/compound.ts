@@ -14,8 +14,8 @@ export type Result<T> =
   | Readonly<{ type: "error"; error: ResultError }>;
 
 export class IterableResult<T> {
-  #evaluated: Array<Result<T>> = [];
-  #iterator: Iterator<Result<T>>;
+  readonly #evaluated: Array<Result<T>> = [];
+  readonly #iterator: Iterator<Result<T>>;
   constructor(
     evaluated: ReadonlyArray<Result<T>>,
     generator: () => Iterator<Result<T>>,
