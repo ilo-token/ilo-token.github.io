@@ -84,3 +84,17 @@ function flattenPartialVerb(
       return verb.verbs.flatMap(flattenPartialVerb);
   }
 }
+export function addVerbBefore(
+  verb: English.VerbPhrase,
+  verbToAdd: English.AdverbVerb,
+): English.VerbPhrase {
+  switch (verb.type) {
+    case "simple":
+      return { ...verb, verb: [verbToAdd, ...verb.verb] };
+    case "compound":
+      return {
+        ...verb,
+        verbs: verb.verbs.map((verb) => addVerbBefore(verb, verbToAdd)),
+      };
+  }
+}

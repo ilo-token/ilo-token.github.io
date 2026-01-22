@@ -1,5 +1,6 @@
 import { IterableResult } from "../compound.ts";
 import { dictionary } from "../dictionary/dictionary.ts";
+import { Definition } from "../dictionary/type.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";
 import * as English from "./ast.ts";
@@ -146,5 +147,29 @@ export function getReduplicationCount(wordUnit: TokiPona.WordUnit): number {
       return 1;
     case "reduplication":
       return wordUnit.count;
+  }
+}
+export function fromSimpleDefinition(
+  wordUnit: TokiPona.WordUnit,
+  mapper: (definition: Definition) => null | string,
+): IterableResult<English.Word> {
+  switch (wordUnit.type) {
+    case "simple":
+    case "reduplication":
+      return IterableResult.fromArray(
+        dictionary.get(wordUnit.word)!.definitions,
+      )
+        .filterMap(mapper)
+        .map((useWord) =>
+          word({
+            word: useWord,
+            reduplicationCount: getReduplicationCount(wordUnit),
+            emphasis: wordUnit.emphasis != null,
+          })
+        );
+    case "number":
+      return IterableResult.empty();
+    case "x ala x":
+      return IterableResult.errors([new TranslationTodoError("x ala x")]);
   }
 }
