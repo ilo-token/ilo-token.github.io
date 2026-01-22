@@ -1,8 +1,8 @@
 import { IterableResult } from "../compound.ts";
 import { nullableAsArray, throwError } from "../misc/misc.ts";
 import * as TokiPona from "../parser/ast.ts";
-import { FilteredError, UntranslatableError } from "../translator2/error.ts";
-import { noEmphasis } from "../translator2/word.ts";
+import { FilteredError, UntranslatableError } from "../translator/error.ts";
+import { noEmphasis } from "../translator/word.ts";
 import * as English from "./ast.ts";
 import { nanpa } from "./nanpa.ts";
 import { perspective, quantity } from "./noun.ts";

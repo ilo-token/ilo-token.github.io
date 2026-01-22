@@ -2,7 +2,7 @@
 
 import { assertArrayIncludes } from "@std/assert/array-includes";
 import { assert } from "@std/assert/assert";
-import { number } from "../translator2/number.ts";
+import { number } from "../translator/number.ts";
 import { translate } from "./translator.ts";
 
 Deno.test("verb with adverb", () => {

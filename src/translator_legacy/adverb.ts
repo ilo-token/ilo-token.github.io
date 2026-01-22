@@ -1,4 +1,4 @@
-import { noEmphasis } from "../translator2/word.ts";
+import { noEmphasis } from "../translator/word.ts";
 import * as English from "./ast.ts";
 
 export const NOT: English.Adverb = {

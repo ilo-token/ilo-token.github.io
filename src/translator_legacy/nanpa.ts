@@ -1,7 +1,7 @@
 import { IterableResult } from "../compound.ts";
 import { throwError } from "../misc/misc.ts";
 import * as TokiPona from "../parser/ast.ts";
-import { FilteredError } from "../translator2/error.ts";
+import { FilteredError } from "../translator/error.ts";
 import * as English from "./ast.ts";
 import { phrase } from "./phrase.ts";
 

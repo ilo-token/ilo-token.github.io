@@ -1,8 +1,8 @@
 import { zip } from "@std/collections/zip";
 import { IterableResult } from "../compound.ts";
 import * as Dictionary from "../dictionary/type.ts";
-import { FilteredError } from "../translator2/error.ts";
-import { word } from "../translator2/word.ts";
+import { FilteredError } from "../translator/error.ts";
+import { word } from "../translator/word.ts";
 import * as English from "./ast.ts";
 import { simpleNounForms } from "./noun.ts";
 
