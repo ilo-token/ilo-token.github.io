@@ -71,7 +71,7 @@ function complement(complement: English.Complement) {
       return adjective(complement.adjective, 0);
   }
 }
-function singeVerb(verbAdverb: English.Verb) {
+function singeVerb(verbAdverb: English.VerbAdverb) {
   const { preAdverbs, verb, postAdverb } = verbAdverb;
   const verbPost = verb.word === "can" && postAdverb != null &&
       postAdverb.adverb.word === "not"

@@ -24,13 +24,13 @@ export type VerbAccessory = Readonly<{
   prepositions: ReadonlyArray<English.Preposition>;
 }>;
 export type FirstVerb =
-  | (Readonly<{ type: "modal" }> & English.Verb)
+  | (Readonly<{ type: "modal" }> & English.VerbAdverb)
   | (Readonly<{ type: "non-modal" }> & VerbFormsWithAccessory);
 export type PartialSimpleVerb =
   & VerbAccessory
   & Readonly<{
     first: FirstVerb;
-    rest: ReadonlyArray<English.Verb>;
+    rest: ReadonlyArray<English.VerbAdverb>;
     subjectComplement: null | English.Complement;
     forObject: boolean | string;
     predicateType: null | "verb" | "noun adjective";
@@ -65,7 +65,7 @@ function addModal(
       throw new FilteredError("nested modal verb");
     case "non-modal": {
       const newRest = nullableAsArray(first)
-        .map((first): English.Verb => {
+        .map((first): English.VerbAdverb => {
           const { adverbs, presentPlural, negated } = first;
           const useVerb = presentPlural === "are" ? "be" : presentPlural;
           const preAdverbs = takeNegative ? adverbs : [
@@ -189,7 +189,7 @@ function fromVerbForms(
   verbForms: VerbFormsWithAccessory,
   perspective: Dictionary.Perspective,
   quantity: English.Quantity,
-): IterableResult<English.WholeVerb> {
+): IterableResult<English.Verb> {
   const { negated, adverbs } = verbForms;
   const is = verbForms.presentSingular === "is";
   const presentSingular = is && perspective === "first"
@@ -203,8 +203,8 @@ function fromVerbForms(
       ? [pastPlural, verbForms.presentPlural, "do"]
       : [pastSingular, presentSingular, "does"];
   type Result = Readonly<{
-    modal: null | English.Verb;
-    doesNot: null | English.Verb;
+    modal: null | English.VerbAdverb;
+    doesNot: null | English.VerbAdverb;
     verb: string;
     postAdverb: null | English.Adverb;
   }>;
@@ -346,7 +346,7 @@ function fromVerbForms(
   }
   return result.map((
     { modal, doesNot, verb, postAdverb },
-  ): English.WholeVerb => ({
+  ): English.Verb => ({
     modal,
     verbs: [
       ...nullableAsArray(doesNot),
@@ -401,6 +401,6 @@ export function verb(
     }
   }
 }
-export function noAdverbs(verb: English.Word): English.Verb {
+export function noAdverbs(verb: English.Word): English.VerbAdverb {
   return { preAdverbs: [], verb, postAdverb: null };
 }

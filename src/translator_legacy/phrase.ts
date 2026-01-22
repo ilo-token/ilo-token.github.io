@@ -310,7 +310,7 @@ function preverb(
         predicate.verb.type === "simple"
       ) {
         const first = predicate.verb.first;
-        let predicateVerb: English.Verb;
+        let predicateVerb: English.VerbAdverb;
         switch (first.type) {
           case "modal":
             return null;

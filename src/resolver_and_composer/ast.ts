@@ -26,10 +26,10 @@ export type NounPhrase =
   }>;
 export type Determiner = Readonly<{
   determiner: Word;
-
-  // TODO: remove these two
-  kind: Dictionary.DeterminerType;
   quantity: Dictionary.Quantity;
+
+  // TODO: remove this
+  kind: Dictionary.DeterminerType;
 }>;
 export type AdjectivePhrase =
   | Readonly<{
@@ -52,21 +52,22 @@ export type Complement =
   | Readonly<{ type: "adjective"; adjective: AdjectivePhrase }>;
 export type Adverb = Readonly<{
   adverb: Word;
+  // TODO: remove this
   negative: boolean;
 }>;
-export type Verb = {
+export type VerbAdverb = {
   preAdverbs: ReadonlyArray<Adverb>;
   verb: Word;
   postAdverb: null | Adverb;
 };
-export type WholeVerb = Readonly<{
-  modal: null | Verb;
-  verbs: ReadonlyArray<Verb>;
+export type Verb = Readonly<{
+  modal: null | VerbAdverb;
+  verbs: ReadonlyArray<VerbAdverb>;
 }>;
 export type VerbPhrase =
   | Readonly<{
     type: "simple";
-    verb: WholeVerb;
+    verb: Verb;
     subjectComplement: null | Complement;
     contentClause: null | Clause;
     object: null | NounPhrase;

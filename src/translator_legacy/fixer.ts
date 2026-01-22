@@ -180,13 +180,13 @@ function fixComplement(complement: English.Complement): English.Complement {
       };
   }
 }
-function fixSingleVerb(adverbVerb: English.Verb): English.Verb {
+function fixSingleVerb(adverbVerb: English.VerbAdverb): English.VerbAdverb {
   return {
     ...adverbVerb,
     preAdverbs: fixMultipleAdverbs(adverbVerb.preAdverbs),
   };
 }
-function fixVerb(verb: English.WholeVerb): English.WholeVerb {
+function fixVerb(verb: English.Verb): English.Verb {
   return {
     modal: mapNullable(verb.modal, fixSingleVerb),
     verbs: verb.verbs.map(fixSingleVerb),
