@@ -239,11 +239,6 @@ function fixMultipleVerb(
   verb: ReadonlyArray<English.AdverbVerb>,
 ): ReadonlyArray<English.AdverbVerb> {
   const newVerb = verb.map(fixAdverbVerb);
-  for (const verb of newVerb.slice(1)) {
-    if (verb.verb.type === "modal") {
-      throw new FilteredError("modal verb after another verb");
-    }
-  }
   const first = newVerb[0];
   const notIndex = first.preAdverbs.findIndex((adverb) => adverb.negative);
   const newNewVerb: ReadonlyArray<AdverbVerb> = notIndex !== -1
@@ -271,19 +266,24 @@ function fixMultipleVerb(
     newNewVerb[0],
     ...newNewVerb
       .slice(1)
-      .map((verb) =>
-        verb.verb.type === "non-modal" && verb.verb.presentSingular === "is"
-          ? {
-            ...verb,
-            verb: {
-              ...verb.verb,
-              presentPlural: "be",
-              presentSingular: "be",
-              past: "been",
-            },
-          }
-          : verb
-      ),
+      .map((verb) => {
+        switch (verb.verb.type) {
+          case "modal":
+            throw new FilteredError("modal verb after another verb");
+          case "non-modal":
+            return verb.verb.presentSingular === "is"
+              ? {
+                ...verb,
+                verb: {
+                  ...verb.verb,
+                  presentPlural: "be",
+                  presentSingular: "be",
+                  past: "been",
+                },
+              }
+              : verb;
+        }
+      }),
   ];
 }
 function fixVerbPhrase(verb: English.VerbPhrase): English.VerbPhrase {
