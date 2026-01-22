@@ -2,8 +2,8 @@ import { IterableResult } from "../compound.ts";
 import { mapNullable, nullableAsArray } from "../misc/misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as Composer from "../parser/composer.ts";
+import { CONJUNCTION } from "../translator/conjuction.ts";
 import { ExhaustedError, FilteredError } from "../translator/error.ts";
-import { CONJUNCTION } from "../translator/misc.ts";
 import { word } from "../translator/word.ts";
 import {
   AdjectiveWithInWay,

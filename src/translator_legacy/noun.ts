@@ -2,7 +2,7 @@ import { IterableResult } from "../compound.ts";
 import * as Dictionary from "../dictionary/type.ts";
 import { mapNullable, nullableAsArray } from "../misc/misc.ts";
 import { settings } from "../settings.ts";
-import { condense } from "../translator/misc.ts";
+import { condense } from "./misc.ts";
 import { word } from "../translator/word.ts";
 import { adjective } from "./adjective.ts";
 import * as English from "./ast.ts";

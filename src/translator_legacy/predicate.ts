@@ -1,8 +1,8 @@
 import { IterableResult } from "../compound.ts";
 import { nullableAsArray } from "../misc/misc.ts";
 import * as TokiPona from "../parser/ast.ts";
+import { CONJUNCTION } from "../translator/conjuction.ts";
 import { FilteredError, UntranslatableError } from "../translator/error.ts";
-import { CONJUNCTION } from "../translator/misc.ts";
 import {
   AdjectiveWithInWay,
   extractNegativeFromAdjective,

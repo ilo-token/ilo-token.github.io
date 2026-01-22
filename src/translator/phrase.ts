@@ -4,8 +4,8 @@ import * as TokiPona from "../parser/ast.ts";
 import * as Composer from "../parser/composer.ts";
 import { addWay, AdjectiveWithInWay } from "./adjective.ts";
 import * as English from "./ast.ts";
+import { CONJUNCTION } from "./conjuction.ts";
 import { ExhaustedError, FilteredError } from "./error.ts";
-import { CONJUNCTION } from "./misc.ts";
 import {
   adjectivalIsNone,
   AdjectivalModifier,

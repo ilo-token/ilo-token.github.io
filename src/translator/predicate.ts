@@ -1,9 +1,9 @@
 import { IterableResult } from "../compound.ts";
 import { nullableAsArray } from "../misc/misc.ts";
 import * as TokiPona from "../parser/ast.ts";
+import { CONJUNCTION } from "./conjuction.ts";
 import { multiplePhrases, phrase } from "./phrase.ts";
 import { preposition } from "./preposition.ts";
-import { CONJUNCTION } from "./misc.ts";
 import { phraseAsVerb } from "./phrase.ts";
 import { PhraseTranslation } from "./phrase.ts";
 import { AdjectiveWithInWay, shareAdverb } from "./adjective.ts";

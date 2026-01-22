@@ -3,7 +3,7 @@ import * as Dictionary from "../dictionary/type.ts";
 import { nullableAsArray } from "../misc/misc.ts";
 import { settings } from "../settings.ts";
 import { FilteredError } from "../translator/error.ts";
-import { condense } from "../translator/misc.ts";
+import { condense } from "./misc.ts";
 import { noEmphasis, word } from "../translator/word.ts";
 import { NOT } from "./adverb.ts";
 import * as English from "./ast.ts";
