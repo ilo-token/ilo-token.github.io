@@ -3,7 +3,7 @@ import { shuffle } from "@std/random/shuffle";
 import { IterableResult, ResultError } from "../compound.ts";
 import { parser } from "../parser/parser.ts";
 import { settings } from "../settings.ts";
-import * as EnglishComposer from "./composer.ts";
+import * as EnglishComposer from "../resolver_and_composer/composer.ts";
 import { fixMultipleSentences } from "./fixer.ts";
 import { multipleSentences } from "./sentence.ts";
 

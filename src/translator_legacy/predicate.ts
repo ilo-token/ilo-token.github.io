@@ -7,7 +7,7 @@ import {
   AdjectiveWithInWay,
   extractNegativeFromAdjective,
 } from "./adjective.ts";
-import * as English from "./ast.ts";
+import * as English from "../resolver_and_composer/ast.ts";
 import { extractNegativeFromNoun } from "./noun.ts";
 import {
   multiplePhrases,

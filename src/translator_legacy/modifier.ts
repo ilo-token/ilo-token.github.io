@@ -6,7 +6,7 @@ import { ExhaustedError, TranslationTodoError } from "../translator/error.ts";
 import { number, numberAsText } from "../translator/number.ts";
 import { noEmphasis, word } from "../translator/word.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";
-import * as English from "./ast.ts";
+import * as English from "../resolver_and_composer/ast.ts";
 import { determiner } from "./determiner.ts";
 import { nanpa } from "./nanpa.ts";
 import { noun } from "./noun.ts";

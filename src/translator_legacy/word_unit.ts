@@ -6,7 +6,7 @@ import { TranslationTodoError } from "../translator/error.ts";
 import { number, numberAsText } from "../translator/number.ts";
 import { word } from "../translator/word.ts";
 import { adjective, compoundAdjective } from "./adjective.ts";
-import * as English from "./ast.ts";
+import * as English from "../resolver_and_composer/ast.ts";
 import { PartialNoun, partialNoun } from "./noun.ts";
 import { Place, pronounAsPartialNoun } from "./pronoun.ts";
 import { PartialSimpleVerb, partialSimpleVerb } from "./verb.ts";

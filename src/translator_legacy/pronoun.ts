@@ -1,7 +1,7 @@
 import { IterableResult } from "../compound.ts";
 import * as Dictionary from "../dictionary/type.ts";
 import { word } from "../translator/word.ts";
-import * as English from "./ast.ts";
+import * as English from "../resolver_and_composer/ast.ts";
 import { fromNounForms, PartialNoun } from "./noun.ts";
 
 export type Place = "subject" | "object";

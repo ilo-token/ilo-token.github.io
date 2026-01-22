@@ -1,7 +1,7 @@
 import * as Dictionary from "../dictionary/type.ts";
 import { mapNullable } from "../misc/misc.ts";
 import { FilteredError } from "../translator/error.ts";
-import * as English from "./ast.ts";
+import * as English from "../resolver_and_composer/ast.ts";
 import { encodeDeterminer } from "./determiner.ts";
 
 function fixNounPhrase(noun: English.NounPhrase): English.NounPhrase {

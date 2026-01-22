@@ -11,7 +11,7 @@ import {
   extractNegativeFromAdjective,
 } from "./adjective.ts";
 import { extractNegativeFromMultipleAdverbs, NOT } from "./adverb.ts";
-import * as English from "./ast.ts";
+import * as English from "../resolver_and_composer/ast.ts";
 import { getNumber } from "./determiner.ts";
 import {
   AdjectivalModifier,

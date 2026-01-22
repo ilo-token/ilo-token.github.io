@@ -5,7 +5,7 @@ import { settings } from "../settings.ts";
 import { condense } from "./misc.ts";
 import { word } from "../translator/word.ts";
 import { adjective } from "./adjective.ts";
-import * as English from "./ast.ts";
+import * as English from "../resolver_and_composer/ast.ts";
 import {
   determiner,
   extractNegativeFromMultipleDeterminers,

@@ -5,7 +5,7 @@ import * as TokiPona from "../parser/ast.ts";
 import { FilteredError, TranslationTodoError } from "../translator/error.ts";
 import { noEmphasis, word } from "../translator/word.ts";
 import { extractNegativeFromMultipleAdverbs } from "./adverb.ts";
-import * as English from "./ast.ts";
+import * as English from "../resolver_and_composer/ast.ts";
 import { multipleModifiers } from "./modifier.ts";
 import { multiplePhrases } from "./phrase.ts";
 import { getReduplicationCount } from "./word_unit.ts";

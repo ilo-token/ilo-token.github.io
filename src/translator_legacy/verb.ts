@@ -6,7 +6,7 @@ import { FilteredError } from "../translator/error.ts";
 import { condense } from "./misc.ts";
 import { noEmphasis, word } from "../translator/word.ts";
 import { NOT } from "./adverb.ts";
-import * as English from "./ast.ts";
+import * as English from "../resolver_and_composer/ast.ts";
 import { noun } from "./noun.ts";
 import { nounAsPreposition } from "./preposition.ts";
 

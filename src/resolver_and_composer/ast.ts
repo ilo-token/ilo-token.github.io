@@ -1,7 +1,5 @@
 import * as Dictionary from "../dictionary/type.ts";
 
-// When editing, update `./fixer.ts` as well
-
 export type Word = Readonly<{
   word: string;
   emphasis: boolean;
@@ -27,17 +25,21 @@ export type NounPhrase =
     nouns: ReadonlyArray<NounPhrase>;
   }>;
 export type Determiner = Readonly<{
-  kind: Dictionary.DeterminerType;
   determiner: Word;
+
+  // TODO: remove these two
+  kind: Dictionary.DeterminerType;
   quantity: Dictionary.Quantity;
 }>;
 export type AdjectivePhrase =
   | Readonly<{
     type: "simple";
-    kind: Dictionary.AdjectiveType;
     adverbs: ReadonlyArray<Adverb>;
     adjective: Word;
     emphasis: boolean;
+
+    // TODO: remove this
+    kind: Dictionary.AdjectiveType;
   }>
   | Readonly<{
     type: "compound";

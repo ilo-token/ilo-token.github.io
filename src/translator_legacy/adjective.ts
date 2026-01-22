@@ -5,7 +5,7 @@ import * as TokiPona from "../parser/ast.ts";
 import { UntranslatableError } from "../translator/error.ts";
 import { noEmphasis, word } from "../translator/word.ts";
 import { extractNegativeFromMultipleAdverbs } from "./adverb.ts";
-import * as English from "./ast.ts";
+import * as English from "../resolver_and_composer/ast.ts";
 
 export type AdjectiveWithInWay = Readonly<{
   adjective: English.AdjectivePhrase;
