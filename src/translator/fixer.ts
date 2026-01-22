@@ -1,5 +1,6 @@
 import { zip } from "@std/collections/zip";
 import { mapNullable } from "../misc/misc.ts";
+import { AdverbVerb } from "./ast.ts";
 import * as English from "./ast.ts";
 import { FilteredError } from "./error.ts";
 import * as Dictionary from "../dictionary/type.ts";
@@ -220,9 +221,17 @@ function fixComplement(complement: English.Complement): English.Complement {
   }
 }
 function fixAdverbVerb(adverbVerb: English.AdverbVerb): English.AdverbVerb {
+  const notIndex = adverbVerb.preAdverbs.findIndex((adverb) => adverb.negative);
+  const [not, adverbs] = adverbVerb.verb.type === "modal" && notIndex !== -1
+    ? [
+      adverbVerb.preAdverbs[notIndex],
+      adverbVerb.preAdverbs.toSpliced(notIndex, 1),
+    ]
+    : [null, adverbVerb.preAdverbs];
   return {
     ...adverbVerb,
-    preAdverbs: fixMultipleAdverbs(adverbVerb.preAdverbs),
+    preAdverbs: fixMultipleAdverbs(adverbs),
+    postAdverb: not,
   };
 }
 function fixMultipleVerb(
@@ -234,7 +243,49 @@ function fixMultipleVerb(
       throw new FilteredError("modal verb after another verb");
     }
   }
-  return newVerb;
+  const first = newVerb[0];
+  const notIndex = first.preAdverbs.findIndex((adverb) => adverb.negative);
+  const newNewVerb: ReadonlyArray<AdverbVerb> =
+    notIndex !== -1 && first.verb.type !== "modal" &&
+      first.verb.presentSingular !== "is"
+      ? [
+        {
+          verb: {
+            type: "non-modal",
+            presentPlural: "do",
+            presentSingular: "does",
+            past: "did",
+            reduplicationCount: 1,
+            emphasis: false,
+          },
+          preAdverbs: [],
+          postAdverb: first.preAdverbs[notIndex],
+        },
+        {
+          ...first,
+          preAdverbs: first.preAdverbs.toSpliced(notIndex, 1),
+        },
+        ...newVerb.slice(1),
+      ]
+      : newVerb;
+  return [
+    newNewVerb[0],
+    ...newNewVerb
+      .slice(1)
+      .map((verb) =>
+        verb.verb.type === "non-modal" && verb.verb.presentSingular === "is"
+          ? {
+            ...verb,
+            verb: {
+              ...verb.verb,
+              presentPlural: "be",
+              presentSingular: "be",
+              past: "been",
+            },
+          }
+          : verb
+      ),
+  ];
 }
 function fixVerbPhrase(verb: English.VerbPhrase): English.VerbPhrase {
   switch (verb.type) {
