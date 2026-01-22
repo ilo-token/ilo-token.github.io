@@ -66,7 +66,6 @@ export function compoundAdjective(
     emphasis: null | TokiPona.Emphasis;
   }>,
 ): IterableResult<English.AdjectivePhrase> {
-  // TODO: flattening of adjectives in AST fixer
   const { adjectives, reduplicationCount, emphasis } = options;
   if (reduplicationCount === 1) {
     return IterableResult.combine(

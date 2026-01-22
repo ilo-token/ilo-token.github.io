@@ -16,7 +16,6 @@ export type WordUnitTranslation =
   | Readonly<{ type: "adjective"; adjective: English.AdjectivePhrase }>
   | (Readonly<{ type: "verb" }> & English.SimpleVerbPhrase);
 
-// TODO: filter out gerund and gerund-like on fixer
 function defaultWordUnit(
   options: Readonly<{
     word: string;

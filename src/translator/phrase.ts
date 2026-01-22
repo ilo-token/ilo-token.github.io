@@ -268,7 +268,6 @@ function preverb(
         const predicateAsVerb = phraseAsVerb(predicate);
         if (predicateAsVerb != null && predicateAsVerb.type === "simple") {
           const first = predicateAsVerb.verb[0];
-          // TODO: filter out modal verb when found in the middle
           const verbForPreverb: English.AdverbVerb = {
             preAdverbs: first.preAdverbs,
             verb: first.verb,
@@ -411,7 +410,6 @@ export function multiplePhrases(
             ) {
               return {
                 type: "noun",
-                // TODO: flatten compound nouns on the grammar fixer
                 noun: {
                   type: "compound",
                   conjunction,
@@ -426,7 +424,6 @@ export function multiplePhrases(
             // TODO: filter out "<adjective> and <adjective>" when used as a sole phrase
             return {
               type: "adjective",
-              // TODO: flatten compound adjective on the grammar fixer
               adjective: {
                 type: "compound",
                 conjunction,

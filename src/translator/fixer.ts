@@ -26,7 +26,12 @@ function fixNounPhrase(noun: English.NounPhrase): English.NounPhrase {
     case "compound":
       return {
         ...noun,
-        nouns: noun.nouns.map(fixNounPhrase),
+        nouns: noun.nouns.flatMap((item) =>
+          item.type === "compound" && item.conjunction === noun.conjunction
+            ? item.nouns
+            : [item]
+        )
+          .map(fixNounPhrase),
       };
   }
 }
@@ -120,7 +125,14 @@ function fixAdjectivePhrase(
     case "compound":
       return {
         ...adjective,
-        adjectives: adjective.adjectives.map(fixAdjectivePhrase),
+        adjectives: adjective.adjectives
+          .flatMap((item) =>
+            item.type === "compound" &&
+              item.conjunction === adjective.conjunction
+              ? item.adjectives
+              : [item]
+          )
+          .map(fixAdjectivePhrase),
       };
   }
 }
@@ -169,15 +181,42 @@ function fixMultipleAdverbs(adverbs: ReadonlyArray<English.Adverb>) {
     return adverbs;
   }
 }
+function filterGerundNoun(noun: English.NounPhrase): void {
+  switch (noun.type) {
+    case "simple":
+      if (noun.gerund) {
+        throw new FilteredError("continuous tense");
+      }
+      break;
+    case "compound":
+      noun.nouns.forEach(filterGerundNoun);
+      break;
+  }
+}
+function filterGerundLikeAdjective(adjective: English.AdjectivePhrase): void {
+  switch (adjective.type) {
+    case "simple":
+      if (adjective.gerundLike) {
+        throw new FilteredError("continuous tense");
+      }
+      break;
+    case "compound":
+      adjective.adjectives.forEach(filterGerundLikeAdjective);
+      break;
+  }
+}
 function fixComplement(complement: English.Complement): English.Complement {
   switch (complement.type) {
-    case "noun":
-      return { type: "noun", noun: fixNounPhrase(complement.noun) };
-    case "adjective":
-      return {
-        type: "adjective",
-        adjective: fixAdjectivePhrase(complement.adjective),
-      };
+    case "noun": {
+      const noun = fixNounPhrase(complement.noun);
+      filterGerundNoun(noun);
+      return { type: "noun", noun };
+    }
+    case "adjective": {
+      const adjective = fixAdjectivePhrase(complement.adjective);
+      filterGerundLikeAdjective(adjective);
+      return { type: "adjective", adjective };
+    }
   }
 }
 function fixAdverbVerb(adverbVerb: English.AdverbVerb): English.AdverbVerb {
@@ -189,7 +228,13 @@ function fixAdverbVerb(adverbVerb: English.AdverbVerb): English.AdverbVerb {
 function fixMultipleVerb(
   verb: ReadonlyArray<English.AdverbVerb>,
 ): ReadonlyArray<English.AdverbVerb> {
-  return verb.map(fixAdverbVerb);
+  const newVerb = verb.map(fixAdverbVerb);
+  for (const verb of newVerb.slice(1)) {
+    if (verb.verb.type === "modal") {
+      throw new FilteredError("modal verb after another verb");
+    }
+  }
+  return newVerb;
 }
 function fixVerbPhrase(verb: English.VerbPhrase): English.VerbPhrase {
   switch (verb.type) {
