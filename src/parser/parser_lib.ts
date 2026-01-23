@@ -9,7 +9,7 @@ type RawParser<T> = (input: number) => ParserResult<T>;
 type Cache<T> = Map<number, MemoizationCacheResult<ParserResult<T>>>;
 
 let currentSource = "";
-const allCache: Set<WeakRef<Cache<unknown>>> = new Set();
+const allCache: Array<WeakRef<Cache<unknown>>> = [];
 
 const rawParser = Symbol("rawParser");
 
@@ -17,7 +17,7 @@ export class Parser<T> {
   readonly [rawParser]: RawParser<T>;
   constructor(parser: RawParser<T>) {
     const cache: Cache<T> = new Map();
-    allCache.add(new WeakRef(cache));
+    allCache.push(new WeakRef(cache));
     this[rawParser] = memoize<RawParser<T>, number, Cache<T>>(
       parser,
       { cache },
@@ -25,12 +25,14 @@ export class Parser<T> {
   }
   parse(source: string): IterableResult<T> {
     currentSource = source;
-    for (const memo of allCache) {
-      const ref = memo.deref();
+    let i = 0;
+    while (i < allCache.length) {
+      const ref = allCache[i].deref();
       if (ref == null) {
-        allCache.delete(memo);
+        allCache.splice(i, 1);
       } else {
         ref.clear();
+        i++;
       }
     }
     return this[rawParser](0).map(({ value }) => value);
