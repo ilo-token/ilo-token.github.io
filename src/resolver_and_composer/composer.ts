@@ -39,23 +39,21 @@ export function adjective(
   phrases: English.AdjectivePhrase,
   depth: number,
 ): string {
-  let text: string;
   switch (phrases.type) {
     case "simple":
-      text = [
+      const text = [
         ...phrases.adverbs.map(({ adverb }) => word(adverb)),
         word(phrases.adjective),
       ]
         .join(" ");
-      break;
+      return word({ word: text, emphasis: phrases.emphasis });
     case "compound":
-      text = compound(
+      return compound(
         phrases.adjectives.map((phrase) => adjective(phrase, depth + 1)),
         phrases.conjunction,
         depth !== 0,
       );
   }
-  return word({ word: text, emphasis: phrases.emphasis });
 }
 function preposition(preposition: English.Preposition) {
   return word({

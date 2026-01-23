@@ -45,7 +45,6 @@ export type AdjectivePhrase =
     type: "compound";
     conjunction: string;
     adjectives: ReadonlyArray<AdjectivePhrase>;
-    emphasis: boolean;
   }>;
 export type Complement =
   | Readonly<{ type: "noun"; noun: NounPhrase }>
@@ -60,6 +59,7 @@ export type VerbAdverb = {
   verb: Word;
   postAdverb: null | Adverb;
 };
+// TODO: just turn this into an array
 export type Verb = Readonly<{
   modal: null | VerbAdverb;
   verbs: ReadonlyArray<VerbAdverb>;

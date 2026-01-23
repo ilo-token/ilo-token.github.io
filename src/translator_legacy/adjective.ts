@@ -118,6 +118,5 @@ export function combineAdjective(
           return [adjective];
         }
       }),
-    emphasis: false,
   };
 }
