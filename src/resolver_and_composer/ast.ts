@@ -26,9 +26,9 @@ export type NounPhrase =
   }>;
 export type Determiner = Readonly<{
   determiner: Word;
-  quantity: Dictionary.Quantity;
 
-  // TODO: remove this
+  // TODO: remove these
+  quantity: Dictionary.Quantity;
   kind: Dictionary.DeterminerType;
 }>;
 export type AdjectivePhrase =
