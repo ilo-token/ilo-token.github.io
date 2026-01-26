@@ -11,10 +11,7 @@ import {
 } from "./dictionary/dictionary.ts";
 import { parseDictionary } from "./dictionary/parser.ts";
 import { Dictionary } from "./dictionary/type.ts";
-import {
-  assertQuotaExceededError,
-  checkLocalStorage,
-} from "./local_storage.ts";
+import { assertQuotaExceededError, checkLocalStorage } from "./misc/misc.ts";
 import { hasXAlaX } from "./parser/lexer.ts";
 import { Position, PositionedError } from "./parser/parser_lib.ts";
 import { settings } from "./settings.ts";

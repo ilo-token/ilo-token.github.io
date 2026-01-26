@@ -1,7 +1,7 @@
 // this code is browser only
 
 import { toKebabCase } from "@std/text/to-kebab-case";
-import { checkLocalStorage, setIgnoreError } from "./local_storage.ts";
+import { checkLocalStorage, setIgnoreError } from "./misc/misc.ts";
 import { defaultSettings, Redundancy, Settings, settings } from "./settings.ts";
 
 type Updater<T> = Readonly<{
