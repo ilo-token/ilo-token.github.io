@@ -1,4 +1,4 @@
-import { ErrorOption, nullableAsArray } from "./misc/misc.ts";
+import { ErrorOption, nullableAsArray } from "./misc.ts";
 
 export class ResultError extends Error {
   override name = "ArrayResultError";

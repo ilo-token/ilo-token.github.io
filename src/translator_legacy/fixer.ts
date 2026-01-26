@@ -1,5 +1,5 @@
 import * as Dictionary from "../dictionary/type.ts";
-import { mapNullable } from "../misc/misc.ts";
+import { mapNullable } from "../misc.ts";
 import * as English from "../resolver_and_composer/ast.ts";
 import { FilteredError } from "../translator/error.ts";
 import { encodeDeterminer } from "./determiner.ts";

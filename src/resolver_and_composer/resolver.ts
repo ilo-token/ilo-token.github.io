@@ -1,6 +1,6 @@
 import { IterableResult } from "../compound.ts";
 import * as Dictionary from "../dictionary/type.ts";
-import { nullableAsArray } from "../misc/misc.ts";
+import { nullableAsArray } from "../misc.ts";
 import { settings } from "../settings.ts";
 import * as UnresolvedEnglish from "../translator/ast.ts";
 import { FilteredError } from "../translator/error.ts";

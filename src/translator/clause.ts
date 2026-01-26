@@ -1,5 +1,5 @@
 import { IterableResult } from "../compound.ts";
-import { nullableAsArray, throwError } from "../misc/misc.ts";
+import { nullableAsArray, throwError } from "../misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { addWay } from "./adjective.ts";
 import * as English from "./ast.ts";

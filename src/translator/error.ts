@@ -1,5 +1,5 @@
 import { ResultError, TodoError } from "../compound.ts";
-import { ErrorOption } from "../misc/misc.ts";
+import { ErrorOption } from "../misc.ts";
 
 export class TranslationTodoError extends TodoError {
   override name = "TranslationTodoError";

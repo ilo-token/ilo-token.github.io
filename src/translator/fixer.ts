@@ -1,6 +1,6 @@
 import { zip } from "@std/collections/zip";
 import * as Dictionary from "../dictionary/type.ts";
-import { mapNullable } from "../misc/misc.ts";
+import { mapNullable } from "../misc.ts";
 import * as English from "./ast.ts";
 import { AdverbVerb } from "./ast.ts";
 import { FilteredError } from "./error.ts";

@@ -1,6 +1,6 @@
 import { IterableResult } from "../compound.ts";
 import { dictionary } from "../dictionary/dictionary.ts";
-import { throwError } from "../misc/misc.ts";
+import { throwError } from "../misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import * as English from "../resolver_and_composer/ast.ts";
 import { FilteredError, TranslationTodoError } from "../translator/error.ts";

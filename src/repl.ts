@@ -2,7 +2,7 @@
 
 import { unescape } from "@std/html/entities";
 import entityList from "@std/html/named-entity-list.json" with { type: "json" };
-import { repeatArray } from "./misc/misc.ts";
+import { repeatArray } from "./misc.ts";
 import { translate } from "./translator_legacy/translator.ts";
 
 if (import.meta.main) {

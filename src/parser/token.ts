@@ -1,4 +1,4 @@
-import { repeatWithSpace } from "../misc/misc.ts";
+import { repeatWithSpace } from "../misc.ts";
 
 export type Token =
   | Readonly<{ type: "word"; word: string }>

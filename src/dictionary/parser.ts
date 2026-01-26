@@ -4,7 +4,7 @@ import { escape as escapeHtml } from "@std/html/entities";
 import { escape as escapeRegex } from "@std/regexp/escape";
 import nlp from "compromise/three";
 import { ResultError } from "../compound.ts";
-import { nullableAsArray, throwError } from "../misc/misc.ts";
+import { nullableAsArray, throwError } from "../misc.ts";
 import {
   all,
   allWithCheck,

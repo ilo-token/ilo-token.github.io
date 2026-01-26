@@ -1,4 +1,4 @@
-import { repeatWithSpace } from "../misc/misc.ts";
+import { repeatWithSpace } from "../misc.ts";
 import * as English from "./ast.ts";
 
 export function noEmphasis(word: string): English.Word {

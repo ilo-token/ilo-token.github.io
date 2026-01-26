@@ -1,6 +1,6 @@
 import { IterableResult } from "../compound.ts";
 import { dictionary } from "../dictionary/dictionary.ts";
-import { nullableAsArray } from "../misc/misc.ts";
+import { nullableAsArray } from "../misc.ts";
 import * as TokiPona from "../parser/ast.ts";
 import { definitionAsPlainString } from "../translator_legacy/as_string.ts";
 import * as English from "./ast.ts";

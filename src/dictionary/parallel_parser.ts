@@ -1,7 +1,7 @@
 // This code is Deno only (it uses the new `using` keyword)
 
 import { extractResultError, ResultError } from "../compound.ts";
-import { mapNullable } from "../misc/misc.ts";
+import { mapNullable } from "../misc.ts";
 import { Position, PositionedError } from "../parser/parser_lib.ts";
 import { HEADS } from "./parser.ts";
 import { Dictionary } from "./type.ts";

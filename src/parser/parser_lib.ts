@@ -1,7 +1,7 @@
 import { assertGreater } from "@std/assert/greater";
 import { MemoizationCacheResult, memoize } from "@std/cache/memoize";
 import { IterableResult, ResultError } from "../compound.ts";
-import { lazy as lazyEval } from "../misc/misc.ts";
+import { lazy as lazyEval } from "../misc.ts";
 
 type ValueLength<T> = Readonly<{ value: T; length: number }>;
 type ParserResult<T> = IterableResult<ValueLength<T>>;
