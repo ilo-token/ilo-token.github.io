@@ -1,5 +1,7 @@
 # ilo Token
 
+⚠️ Will soon be moved to Codeberg <https://codeberg.org/neverRare/ilo-token>
+
 A rule-based dictionary-based Toki Pona to English translator that translates
 into multiple English outputs showing many possible grammatical and semantic
 interpretation of the text. No machine learning involved.
